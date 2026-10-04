@@ -827,7 +827,6 @@
       let linea = (j.email || "Sesión abierta") + ". ";
       if (j.plan === "paid") linea += "Búsquedas ilimitadas.";
       else linea += "Usadas " + j.used + " de " + (j.limit || 5) + ".";
-      if (!j.cobro_activo && j.plan !== "paid") linea += " El cobro todavía no está activo.";
       if (estado) estado.textContent = linea;
       const pagar = document.getElementById("pagar-plan");
       if (pagar) pagar.hidden = j.plan === "paid";
@@ -1096,7 +1095,7 @@
           if (corteBusqueda(r, j)) return;
           window.__ultima = j;
           if (!r.ok || !j || !j.data) {
-            setState("error", "No pude leer esas tiendas.", "Probá de nuevo. No inventé un precio.");
+            setState("error", "No pude leer esas tiendas.", "Probá de nuevo. Probá de nuevo.");
             return;
           }
           renderElectro(j.data, q);
@@ -1107,7 +1106,7 @@
         try { j = await r.json(); } catch (_) { j = null; }
         if (corteBusqueda(r, j)) return;
         if (!r.ok || !j) {
-          setState("error", "No pude leer los precios.", "Probá de nuevo. No inventé un número.");
+          setState("error", "No pude leer los precios.", "Probá de nuevo. Probá de nuevo.");
           return;
         }
         if (j.fuente === "snapshot") {
@@ -1179,7 +1178,7 @@
           "</article>";
         }).join("");
       } catch (err) {
-        setState("error", "No pude leer los precios.", "Se cortó la conexión. Probá de nuevo. No inventé un número.");
+        setState("error", "No pude leer los precios.", "Se cortó. Probá de nuevo.");
       } finally {
         go.disabled = false;
         refrescarCuenta().catch(() => {});
@@ -1244,17 +1243,26 @@
       "</div>";
     }
 
+    function datoPromo(s) {
+      const t = String(s || "").trim();
+      if (!t) return "";
+      if (/no publicad|sin m[ií]nimo|sin tope/i.test(t)) return "";
+      return t;
+    }
     function promoCard(c) {
+      const cuando = [datoPromo(c.dias), datoPromo(c.canal)].filter(Boolean).join(" · ");
+      const extraBits = [];
+      if (datoPromo(c.tope)) extraBits.push("Tope " + datoPromo(c.tope));
+      if (datoPromo(c.minimo)) extraBits.push("Mínimo " + datoPromo(c.minimo));
+      if (datoPromo(c.vigencia)) extraBits.push(datoPromo(c.vigencia));
+      const meta = [cuando, extraBits.join(" · ")].filter(Boolean).join("<br>");
       return "<article class=\"promo-card\">" +
         "<p class=\"brand\">" + esc(c.cadena || "") + "</p>" +
         "<h4>" + esc(c.banco || "Sin banco") + "</h4>" +
         "<p class=\"promo-offer\">" + esc(c.oferta || "") + "</p>" +
-        "<p class=\"promo-meta\">" + esc(c.dias || "") + " · " + esc(c.canal || "") +
-          "<br>Tope: " + esc(c.tope || "") + " · Mínimo: " + esc(c.minimo || "") +
-          "<br>" + esc(c.vigencia || "") + "</p>" +
+        (meta ? "<p class=\"promo-meta\">" + meta + "</p>" : "") +
       "</article>";
     }
-
     let promoData = null;
     let promoVista = "dia";
     function pintarPromos() {
@@ -1263,10 +1271,9 @@
       const lead = document.getElementById("promos-lead");
       if (!box || !promoData) return;
       if (lead) {
-        lead.textContent = "Hoy es " + (promoData.dia || "") + ". " + (promoData.n || 0) +
-          " tarjetas vigentes, las mismas en las dos vistas. No entran ocultas, vencidas ni fechas en conflicto.";
+        lead.textContent = "Hoy es " + (promoData.dia || "") + ". Las de hoy están abiertas. El resto de los días, plegado.";
       }
-      const grupos = promoVista === "banco" ? (promoData.por_banco || []) : (promoData.por_dia || []);
+      const grupos = (promoVista === "banco" ? (promoData.por_banco || []) : (promoData.por_dia || [])).slice().sort((a, b) => (b.hoy ? 1 : 0) - (a.hoy ? 1 : 0));
       box.innerHTML = grupos.map((g) => {
         const items = Array.isArray(g.items) ? g.items : [];
         if (!items.length) return "";
@@ -1276,9 +1283,7 @@
         return "<details class=\"promo-group\"" + abierto + "><summary><h3>" + esc(titulo) + marca + "</h3></summary><div class=\"promo-grid\">" +
           items.map(promoCard).join("") + "</div></details>";
       }).join("") || "<p class=\"pres\">No hay tarjetas vigentes para mostrar.</p>";
-      if (notas) {
-        notas.innerHTML = (promoData.notas || []).map((n) => "<li>" + esc(n) + "</li>").join("");
-      }
+      if (notas) notas.innerHTML = "";
     }
     function vistaPromos(vista) {
       promoVista = vista;
