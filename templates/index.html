@@ -574,7 +574,7 @@
 
   <footer>
     <div class="wrap">
-      <p>BaratoYa lee la API pública de Precios Claros para CABA (lat {{ lat }}, lng {{ lng }}). En súper también muestra el precio del catálogo público de Mas Online (ex Chango Más), etiquetado aparte. No es un organismo oficial y no agrega un precio propio.</p>
+      <p>BaratoYa lee la API pública de Precios Claros para CABA (lat {{ lat }}, lng {{ lng }}). En súper también muestra el precio del catálogo público de Mas Online (ex Chango Más), Día y Carrefour, etiquetados aparte. No es un organismo oficial y no agrega un precio propio.</p>
       <p>Electro compara Fravega, Cetrogar, Naldo y On City por el catálogo VTEX público, sin scraper pago. Mercado Libre: no disponible desde este servidor. Cobro (Mercado Pago o Stripe): sin implementar. La lista y la marca de baja viven en la misma SQLite local que la lista de espera. No hay login ni envío de mail.</p>
       <p><a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
@@ -723,6 +723,12 @@
     function mismaConsulta(a, b) {
       return (a || "").trim().toLocaleLowerCase("es") === (b || "").trim().toLocaleLowerCase("es");
     }
+    function badgeCadena(p) {
+      if (p.tienda_id === "masonline" || p.tienda === "Mas Online") {
+        return p.tienda + " (ex Chango Más) · catálogo público";
+      }
+      return (p.tienda || "Catálogo") + " · catálogo público";
+    }
     function notaCoincidencia(j, q) {
       const bits = [];
       const pc = j && j.q_precios_claros || "";
@@ -731,7 +737,7 @@
         bits.push("Precios Claros no trajo precios para «" + q + "». Coincidió con «" + pc + "».");
       }
       if (mo && !mismaConsulta(mo, q)) {
-        bits.push("Mas Online no aceptó «" + q + "». Coincidió con «" + mo + "».");
+        bits.push("Mas Online, Día y Carrefour no aceptaron «" + q + "». Coincidió con «" + mo + "».");
       }
       return bits.join(" ");
     }
@@ -789,7 +795,7 @@
       aviso.className = "warn-flag";
       aviso.textContent = "";
       meta.textContent = "";
-      setState("loading", mode === "electro" ? "Buscando en tiendas de electro…" : "Buscando en Precios Claros y Mas Online…", "Sin precios inventados mientras tanto.");
+      setState("loading", mode === "electro" ? "Buscando en tiendas de electro…" : "Buscando en Precios Claros, Mas Online, Día y Carrefour…", "Sin precios inventados mientras tanto.");
       go.disabled = true;
       try {
         if (mode === "electro") {
@@ -838,7 +844,7 @@
           aviso.textContent = aviso.textContent ? (j.aviso + " " + aviso.textContent) : j.aviso;
         }
         if (!parsed.items.length) {
-          setState("empty", "Nada para «" + q + "» en esta zona.", "Precios Claros y Mas Online no devolvieron productos con precio. Probá con otra palabra. La zona de Precios Claros está fija en CABA.");
+          setState("empty", "Nada para «" + q + "» en esta zona.", "Precios Claros, Mas Online, Día y Carrefour no devolvieron productos con precio. Probá con otra palabra. La zona de Precios Claros está fija en CABA.");
           return;
         }
         estado.hidden = true;
@@ -857,7 +863,7 @@
               "<div class=\"prices\">" +
                 "<div><span>Precio en " + esc(p.tienda) + "</span><strong>" + esc(money(p.precio)) + "</strong></div>" +
               "</div>" +
-              "<span class=\"badge\">" + esc(p.tienda) + " (ex Chango Más) · catálogo público</span>" +
+              "<span class=\"badge\">" + esc(badgeCadena(p)) + "</span>" +
               botonGuardar(p, i) +
             "</article>";
           }

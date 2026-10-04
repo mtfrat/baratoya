@@ -23,8 +23,21 @@ Releído el 3 de octubre de 2026, alrededor de las 20:45 ART, desde este servido
 
 `changomas.com.ar` sigue siendo el host viejo: el pase de las 12:48 ART vio un 301 hacia `www.masonline.com.ar` y el mismo JSON. El código pega directo a Mas Online, que es el catálogo que respondió. No hace falta el bundle GeoTrust de `*.changomas.com.ar` para esta URL.
 
-Cómo se busca, sin secretos: `GET {origin}/api/catalog_system/pub/products/search` con `ft` = el texto, `_from=0` y `_to=4`. `origin` es `https://www.masonline.com.ar`. Solo entra un producto si el JSON trae `items[0].sellers[0].commertialOffer.Price` numérico y mayor a 0. El nombre sale de `productName` y el link de `link`.
+Cómo se busca, sin secretos: `GET {origin}/api/catalog_system/pub/products/search` con `ft` = el texto (espacios como `%20`, nunca `+`), `_from=0` y `_to=4`. `origin` es el de cada cadena cableada. Solo entra un producto si el JSON trae `items[0].sellers[0].commertialOffer.Price` numérico y mayor a 0. El nombre sale de `productName` y el link de `link`.
 
-Quedó en `baratoya/super_cadenas.py` y se suma en `GET /api/buscar` (modo Súper). Cada ítem lleva `tienda: Mas Online` y en la home el badge «Mas Online (ex Chango Más) · catálogo público». Precios Claros no se toca: si responde, sus productos siguen; el snapshot local sigue siendo solo Precios Claros. Electro no mezcla esta cadena. Carrefour, Día, Jumbo, Disco y Vea no se re-probaron y no se agregaron.
+Quedó en `baratoya/super_cadenas.py` y se suma en `GET /api/buscar` (modo Súper). Cada ítem lleva `tienda` con el nombre de la cadena. En la home, Mas Online usa el badge «Mas Online (ex Chango Más) · catálogo público»; Día y Carrefour usan «Día · catálogo público» y «Carrefour · catálogo público». Precios Claros no se toca: si responde, sus productos siguen; el snapshot local sigue siendo solo Precios Claros. Electro no mezcla estas cadenas. Coto y Mercado Libre no se agregaron. Jumbo, Disco y Vea no se re-probaron en este pase y no se agregaron.
 
-Nota de la madrugada (no re-probada en este pase): Carrefour, Día, Jumbo, Disco y Vea habían dado 206 con precio. Hoy solo se rehicieron Coto y Chango Más, como se pidió.
+Nota de la madrugada (el pase de las 12:48 ART no las re-probó): Jumbo, Disco y Vea habían dado 206 con precio. Coto sigue sin JSON.
+
+## Día y Carrefour cableados
+
+Releído el 3 de octubre de 2026, alrededor de las 21:46 ART, desde este servidor, antes de cablearlos. Sin scraper pago y sin proxy. El espacio en `ft` va como `%20`.
+
+| Tienda | URL | HTTP | Precio real |
+| --- | --- | --- | --- |
+| Día | `https://diaonline.supermercadosdia.com.ar/api/catalog_system/pub/products/search?ft=yerba%20chamigo&_from=0&_to=4` | 200 | Yerba Mate Chamigo 500 Gr. · `commertialOffer.Price` **1950.0** · `https://diaonline.supermercadosdia.com.ar/yerba-mate-chamigo-500-gr-53413/p` |
+| Día | `https://diaonline.supermercadosdia.com.ar/api/catalog_system/pub/products/search?ft=Yerba%20Mate%20Chamigo%20500%20Gr&_from=0&_to=4` | 206 | El mismo producto, Price **1950.0** |
+| Carrefour | `https://www.carrefour.com.ar/api/catalog_system/pub/products/search?ft=yerba%20natura&_from=0&_to=4` | 206 | Yerba mate Natura 500 g. · `commertialOffer.Price` **1829.0** · `https://www.carrefour.com.ar/yerba-mate-natura-500-g-697155-697155/p` |
+| Carrefour | `https://www.carrefour.com.ar/api/catalog_system/pub/products/search?ft=Yerba%20mate%20Natura%20500%20g&_from=0&_to=4` | 206 | El mismo producto, Price **1829.0** |
+
+La etiqueta es `tienda: Día` y `tienda: Carrefour`. No se inventó ningún precio: si `Price` no es un número mayor a 0, el producto no entra.

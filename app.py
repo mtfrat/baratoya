@@ -20,11 +20,13 @@ from fastapi.templating import Jinja2Templates
 # Paquete (uvicorn baratoya.app:app desde micro-saas) o módulo suelto (Vercel carga app.py).
 try:
     from baratoya.electro import buscar_electro
+    from baratoya.super_cadenas import STORES as SUPER_STORES
     from baratoya.super_cadenas import UA as VTEX_UA
     from baratoya.super_cadenas import _precio as _precio_oferta
     from baratoya.super_cadenas import buscar_super
 except ImportError:
     from electro import buscar_electro
+    from super_cadenas import STORES as SUPER_STORES
     from super_cadenas import UA as VTEX_UA
     from super_cadenas import _precio as _precio_oferta
     from super_cadenas import buscar_super
@@ -174,6 +176,9 @@ def _item_out(row: sqlite3.Row) -> dict[str, Any]:
 VTEX_ORIGINS = {
     "www.masonline.com.ar": "https://www.masonline.com.ar",
     "masonline.com.ar": "https://www.masonline.com.ar",
+    "diaonline.supermercadosdia.com.ar": "https://diaonline.supermercadosdia.com.ar",
+    "www.carrefour.com.ar": "https://www.carrefour.com.ar",
+    "carrefour.com.ar": "https://www.carrefour.com.ar",
     "www.fravega.com": "https://www.fravega.com",
     "fravega.com": "https://www.fravega.com",
     "www.cetrogar.com.ar": "https://www.cetrogar.com.ar",
@@ -233,7 +238,7 @@ def _match_nombre(items: list[dict[str, Any]], nombre: str, tienda: str, url: st
 
 
 async def _precio_vtex_busqueda(nombre: str, tienda: str, url: str) -> float | None:
-    if _norm(tienda) in {"mas online", "masonline"}:
+    if _norm(tienda) in {"mas online", "masonline", "dia", "carrefour"}:
         data = await buscar_super(nombre)
     else:
         data = await buscar_electro(nombre)
@@ -524,7 +529,10 @@ async def buscar(
         cadenas = {
             "productos": [],
             "q_usada": q,
-            "fuentes": [{"tienda": "Mas Online", "tienda_id": "masonline", "http": 0, "ok": False, "n": 0, "error": str(e)}],
+            "fuentes": [
+                {"tienda": s["nombre"], "tienda_id": s["id"], "http": 0, "ok": False, "n": 0, "error": str(e)}
+                for s in SUPER_STORES
+            ],
         }
     q_mo = cadenas.get("q_usada") or q
 
@@ -540,7 +548,7 @@ async def buscar(
             return {
                 "http": code,
                 "fuente": "snapshot",
-                "aviso": "Live Precios Claros falló; mostrando último snapshot local. Mas Online, si respondió, va etiquetado aparte.",
+                "aviso": "Live Precios Claros falló; mostrando último snapshot local. Mas Online, Día y Carrefour, si respondieron, van etiquetados aparte.",
                 "cadenas": cadenas.get("fuentes") or [],
                 "data": body,
                 **_consulta(),
@@ -549,7 +557,7 @@ async def buscar(
             return {
                 "http": 200,
                 "fuente": "mas_online",
-                "aviso": "Precios Claros no respondió. Solo precios de Mas Online, leídos del catálogo público.",
+                "aviso": "Precios Claros no respondió. Solo precios de Mas Online, Día y Carrefour, leídos del catálogo público.",
                 "cadenas": cadenas.get("fuentes") or [],
                 "data": {"productos": cadenas["productos"], "total": len(cadenas["productos"])},
                 **_consulta(),

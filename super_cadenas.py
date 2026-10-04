@@ -1,7 +1,7 @@
-"""Súper: catálogo VTEX público de Mas Online (ex Chango Más). $0.
+"""Súper: catálogos VTEX públicos de Mas Online, Día y Carrefour. $0.
 
-Solo entra una cadena si el JSON trae commertialOffer.Price numérico > 0.
-No hay scrapers pagos, proxies ni Mercado Libre.
+Solo entra un producto si el JSON trae commertialOffer.Price numérico > 0.
+No hay scrapers pagos, proxies, Coto ni Mercado Libre.
 """
 from __future__ import annotations
 
@@ -11,14 +11,28 @@ from urllib.parse import quote
 
 import httpx
 
-# Verificado 2026-10-03 ~20:45 ART desde este servidor:
-# GET https://www.masonline.com.ar/api/catalog_system/pub/products/search?ft=yerba&_from=0&_to=4
-# HTTP 206, Yerba Mate Taragui 500g, Price 3609.0.
+# Verificado 2026-10-03 ~21:46 ART desde este servidor (Price numérico > 0):
+# Mas Online: ft=yerba → HTTP 206, Yerba Mate Taragui 500g, Price 3609.0 (pase 20:45).
+# Día: ft=yerba chamigo → Yerba Mate Chamigo 500 Gr., Price 1950.0.
+# Carrefour: ft=yerba natura → Yerba mate Natura 500 g., Price 1829.0.
 STORES: list[dict[str, str]] = [
     {
         "id": "masonline",
         "nombre": "Mas Online",
         "origin": "https://www.masonline.com.ar",
+        "fuente": "mas_online_vtex",
+    },
+    {
+        "id": "dia",
+        "nombre": "Día",
+        "origin": "https://diaonline.supermercadosdia.com.ar",
+        "fuente": "dia_vtex",
+    },
+    {
+        "id": "carrefour",
+        "nombre": "Carrefour",
+        "origin": "https://www.carrefour.com.ar",
+        "fuente": "carrefour_vtex",
     },
 ]
 
@@ -67,7 +81,7 @@ def _parse(store: dict[str, str], body: Any) -> list[dict[str, Any]]:
                 "precio": price,
                 "url": product.get("link") or "",
                 "disponible": available,
-                "fuente_item": "mas_online_vtex",
+                "fuente_item": store["fuente"],
             }
         )
     return out
@@ -143,7 +157,7 @@ async def _one(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict
 
 
 async def buscar_super(q: str, consultas: list[str] | None = None) -> dict[str, Any]:
-    """Catálogos públicos de súper ya verificados. Hoy: solo Mas Online.
+    """Catálogos públicos de súper ya verificados: Mas Online, Día y Carrefour.
 
     Si la frase completa no trae un precio > 0, prueba las consultas más cortas
     en orden y deja en q_usada la que sí coincidió.

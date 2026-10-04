@@ -65,7 +65,7 @@ Una fila es a la vez el ítem de la lista y la alerta: `email`, `product_key`, `
 - `POST /api/lista` — guarda un producto que ya salió en la búsqueda (`nombre`, `tienda`, `precio`, `url`, `product_key`, `fuente`). No gatea `GET /api/buscar`.
 - `GET /api/lista?email=` — devuelve la lista. No relee precios.
 - `GET /api/alertas?email=` — las mismas filas, sin releer y sin mandar mail.
-- `POST /api/alertas/revisar` — body `{"email": "...", "product_key": "opcional"}`. Llama a `revisar_alertas` / `precio_vigente`, que vuelve a leer Precios Claros (mínimo) o el catálogo público VTEX ya cableado (Mas Online, Fravega, Cetrogar, Naldo, On City) y marca la fila si el precio nuevo es menor.
+- `POST /api/alertas/revisar` — body `{"email": "...", "product_key": "opcional"}`. Llama a `revisar_alertas` / `precio_vigente`, que vuelve a leer Precios Claros (mínimo) o el catálogo público VTEX ya cableado (Mas Online, Día, Carrefour, Fravega, Cetrogar, Naldo, On City) y marca la fila si el precio nuevo es menor.
 
 Esa relectura es a pedido. No hay cron, no hay worker y no se envía mail.
 
