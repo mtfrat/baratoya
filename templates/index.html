@@ -587,7 +587,7 @@
     }
     .cuenta p { margin: 0 0 8px; }
     .cuenta-form { display: flex; flex-direction: column; gap: 8px; max-width: 36rem; }
-    .cuenta-sesion { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+    .cuenta-sesion:not([hidden]) { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
     .cuenta-sesion p { margin: 0; color: var(--color-forest-ink); }
     .busquedas { list-style: none; margin: 8px 0 0; padding: 0; }
     .busquedas li { margin: 0; }
@@ -613,8 +613,7 @@
       form.search { flex-direction: row; align-items: center; }
       form.search input[type="text"] { flex: 1; }
       form.search .btn.lime { width: auto; }
-      .cuenta-form { flex-direction: row; flex-wrap: wrap; align-items: center; }
-      .cuenta-form input[type="email"], .cuenta-form input[type="password"] { flex: 1; min-width: 12rem; }
+      .cuenta-form { max-width: 24rem; }
       .btn-row { flex-direction: row; align-items: center; gap: 16px; }
       .prices { grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); }
       .promo-grid { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
@@ -674,7 +673,7 @@
             {% if cobro_on %}<button class="btn lime" type="button" id="pagar-plan">Pagar con Mercado Pago</button>{% endif %}
           </div>
           {% endif %}
-          <p class="lista-note">Búsquedas anteriores de esta cuenta. No es un carrito.</p>
+          <p class="lista-note" id="busquedas-note" hidden>Búsquedas anteriores.</p>
           <ul class="busquedas" id="busquedas-list"></ul>
           <details class="lista-min" id="mi-lista" hidden>
             <summary>Lista</summary>
@@ -796,6 +795,8 @@
       const rows = Array.isArray(items) ? items : [];
       list.innerHTML = rows.map((it) => "<li><button type=\"button\">" + esc(it.query) + "</button></li>").join("");
     }
+      const note = document.getElementById("busquedas-note");
+      if (note) note.hidden = rows.length === 0;
     async function refrescarCuenta() {
       const formEl = document.getElementById("cuenta-form");
       const sesEl = document.getElementById("cuenta-sesion");
@@ -1243,6 +1244,9 @@
       "</div>";
     }
 
+    function textoPromo(s) {
+      return String(s || "").replace(/\bhatas\b/gi, "hasta").replace(/\b1 cuotas\b/gi, "1 cuota");
+    }
     function datoPromo(s) {
       const t = String(s || "").trim();
       if (!t) return "";
@@ -1258,8 +1262,8 @@
       const meta = [cuando, extraBits.join(" · ")].filter(Boolean).join("<br>");
       return "<article class=\"promo-card\">" +
         "<p class=\"brand\">" + esc(c.cadena || "") + "</p>" +
-        "<h4>" + esc(c.banco || "Sin banco") + "</h4>" +
-        "<p class=\"promo-offer\">" + esc(c.oferta || "") + "</p>" +
+        "<h4>" + esc(textoPromo(c.banco || "Sin banco") + "</h4>" +
+        "<p class=\"promo-offer\">" + esc(textoPromo(c.oferta || "") + "</p>" +
         (meta ? "<p class=\"promo-meta\">" + meta + "</p>" : "") +
       "</article>";
     }
