@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BaratoYa — el precio del súper en CABA, antes de salir</title>
+  <meta name="description" content="Mirá el precio mínimo, el máximo y la cantidad de sucursales de un producto en CABA, con datos de Precios Claros. La búsqueda es gratis y sin tope. La lista local no cobra ni manda mail." />
+  <meta property="og:title" content="BaratoYa — el precio del súper en CABA, antes de salir" />
+  <meta property="og:description" content="Mirá el precio mínimo, el máximo y la cantidad de sucursales de un producto en CABA, con datos de Precios Claros. La búsqueda es gratis y sin tope. La lista local no cobra ni manda mail." />
+  <meta name="theme-color" content="#163300" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-forest-ink: #163300;
+      --color-lime-voltage: #9fe870;
+      --color-spruce: #054d28;
+      --color-linen-mist: #e2f6d5;
+      --color-signal-blue: #0b4c72;
+      --color-alarm-red: #cb272f;
+      --color-charcoal: #454745;
+      --color-obsidian: #0e0f0c;
+      --color-pebble: #868685;
+      --color-slate: #6a6c6a;
+      --color-fog: #e8ebe6;
+      --color-paper: #ffffff;
+      --font-inter: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-wise-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+      --shadow-subtle: rgba(14, 15, 12, 0.12) 0px 0px 0px 1px;
+      --radius-cards: 10px;
+      --radius-inputs: 10px;
+      --radius-buttons: 9999px;
+      --radius-largecards: 28px;
+      --page-max: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--color-paper);
+      color: var(--color-charcoal);
+      font-family: var(--font-inter);
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: -0.006em;
+    }
+    a { color: var(--color-forest-ink); }
+    img { max-width: 100%; }
+    .nav {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--color-paper);
+      box-shadow: var(--shadow-subtle);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      color: var(--color-forest-ink);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .nav-links a {
+      color: var(--color-forest-ink);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: -0.005em;
+      padding: 8px 10px;
+    }
+    .nav-links a.btn { padding: 11px 18px; }
+    .wrap {
+      width: min(100% - 32px, var(--page-max));
+      margin: 0 auto;
+    }
+    .hero { padding: 40px 0 16px; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px;
+      padding: 8px 12px;
+      border-radius: var(--radius-buttons);
+      background: var(--color-linen-mist);
+      color: var(--color-forest-ink);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: -0.003em;
+      line-height: 1.63;
+    }
+    h1 {
+      margin: 0 0 16px;
+      max-width: 14ch;
+      color: var(--color-obsidian);
+      font-family: var(--font-wise-sans);
+      font-weight: 900;
+      font-size: clamp(40px, 11vw, 89px);
+      line-height: 0.9;
+      letter-spacing: -0.03em;
+    }
+    .sub {
+      margin: 0 0 24px;
+      max-width: 38rem;
+      font-size: 18px;
+      line-height: 1.5;
+      letter-spacing: -0.007em;
+      color: var(--color-charcoal);
+    }
+    form.search {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+    label.visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+    input[type="text"], input[type="email"], select {
+      width: 100%;
+      border: 1px solid var(--color-pebble);
+      border-radius: var(--radius-inputs);
+      background: var(--color-paper);
+      color: var(--color-charcoal);
+      font: 400 16px/1.5 var(--font-inter);
+      letter-spacing: -0.006em;
+      padding: 12px 16px;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--color-forest-ink);
+    }
+    ::placeholder { color: var(--color-pebble); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-buttons);
+      padding: 11px 24px;
+      font: 500 16px/1.5 var(--font-inter);
+      letter-spacing: -0.006em;
+      text-decoration: none;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    .btn.lime {
+      background: var(--color-lime-voltage);
+      color: var(--color-forest-ink);
+    }
+    .btn.outline {
+      background: var(--color-paper);
+      color: var(--color-forest-ink);
+      border-color: var(--color-forest-ink);
+    }
+    .btn.text {
+      background: none;
+      border: none;
+      color: var(--color-forest-ink);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 11px 0;
+      justify-content: flex-start;
+    }
+    .btn:disabled { opacity: 0.6; cursor: progress; }
+    .btn-row { display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
+    .meta {
+      min-height: 1.5em;
+      margin: 8px 0 16px;
+      color: var(--color-slate);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .warn-flag {
+      display: none;
+      margin: 0 0 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius-cards);
+      background: var(--color-linen-mist);
+      color: var(--color-forest-ink);
+      font-size: 14px;
+    }
+    .warn-flag.on { display: block; }
+    .state {
+      padding: 24px;
+      border-radius: var(--radius-cards);
+      background: var(--color-fog);
+      box-shadow: var(--shadow-subtle);
+    }
+    .state h2, .state-title {
+      margin: 0 0 8px;
+      color: var(--color-forest-ink);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.007em;
+    }
+    .state p { margin: 0; }
+    .state.error {
+      background: var(--color-paper);
+      box-shadow: var(--shadow-subtle);
+    }
+    .results { display: flex; flex-direction: column; gap: 12px; }
+    .product {
+      background: var(--color-fog);
+      border-radius: var(--radius-cards);
+      padding: 24px;
+      box-shadow: var(--shadow-subtle);
+    }
+    .brand {
+      margin: 0 0 4px;
+      color: var(--color-slate);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .product h3 {
+      margin: 0 0 4px;
+      color: var(--color-obsidian);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.011em;
+      line-height: 1.3;
+    }
+    .pres { margin: 0 0 16px; color: var(--color-slate); font-size: 14px; }
+    .prices {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .prices div { display: flex; flex-direction: column; gap: 2px; }
+    .prices span {
+      color: var(--color-slate);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: -0.003em;
+    }
+    .prices strong {
+      color: var(--color-forest-ink);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      font-variant-numeric: tabular-nums;
+    }
+    .badge {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: var(--radius-buttons);
+      background: var(--color-paper);
+      color: var(--color-forest-ink);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .section { padding: 64px 0; }
+    .dark {
+      background: var(--color-forest-ink);
+      color: var(--color-paper);
+      border-radius: 0;
+    }
+    .dark .wrap { padding: 8px 0; }
+    .dark h2 {
+      margin: 0 0 16px;
+      max-width: 16ch;
+      color: var(--color-lime-voltage);
+      font-family: var(--font-wise-sans);
+      font-weight: 900;
+      font-size: clamp(36px, 8vw, 61px);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+    }
+    .dark p { margin: 0 0 12px; max-width: 40rem; font-size: 18px; line-height: 1.5; color: var(--color-paper); }
+    .dark p:last-child { margin-bottom: 0; }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .split article h3 {
+      margin: 12px 0 8px;
+      color: var(--color-paper);
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .split article p { font-size: 16px; color: var(--color-linen-mist); }
+    h2.sec {
+      margin: 0 0 12px;
+      color: var(--color-forest-ink);
+      font-weight: 700;
+      font-size: clamp(32px, 6vw, 45px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .lead { margin: 0 0 24px; max-width: 40rem; font-size: 18px; }
+    .plans {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .plan {
+      background: var(--color-paper);
+      border-radius: var(--radius-largecards);
+      padding: 24px;
+      box-shadow: var(--shadow-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .plan header { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+    .plan h3 { margin: 0; font-size: 18px; color: var(--color-obsidian); }
+    .tag {
+      padding: 4px 10px;
+      border-radius: var(--radius-buttons);
+      background: var(--color-linen-mist);
+      color: var(--color-forest-ink);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .tag.hip { background: var(--color-fog); }
+    .price {
+      margin: 0;
+      color: var(--color-forest-ink);
+      font-weight: 900;
+      font-size: 36px;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .price small {
+      display: block;
+      margin-top: 4px;
+      font-weight: 500;
+      font-size: 14px;
+      letter-spacing: -0.005em;
+      color: var(--color-slate);
+    }
+    .plan ul { margin: 0; padding-left: 18px; }
+    .plan li { margin: 0 0 8px; }
+    .plan .btn { margin-top: auto; align-self: flex-start; }
+    .wait {
+      background: var(--color-fog);
+      border-radius: var(--radius-largecards);
+      padding: 24px;
+    }
+    form.waitlist { display: flex; flex-direction: column; gap: 12px; max-width: 32rem; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field span { font-size: 14px; font-weight: 600; color: var(--color-forest-ink); }
+    #lista-msg { margin: 0; min-height: 1.5em; font-size: 16px; color: var(--color-forest-ink); }
+    footer {
+      padding: 32px 0 48px;
+      color: var(--color-slate);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    footer p { margin: 0 0 8px; }
+    .paid-on {
+      display: inline-block;
+      margin-left: 8px;
+      background: var(--color-fog);
+      color: var(--color-forest-ink);
+    }
+    .modes {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+    .modes .btn { padding: 8px 16px; }
+    .modes .btn.on {
+      background: var(--color-forest-ink);
+      color: var(--color-paper);
+      border-color: var(--color-forest-ink);
+    }
+    .product a.ext {
+      color: var(--color-forest-ink);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .guardar { margin-top: 12px; padding: 8px 16px; font-size: 14px; }
+    .lista-note { margin: 6px 0 0; color: var(--color-slate); font-size: 14px; max-width: 40rem; }
+    #mi-lista-msg { margin: 12px 0; min-height: 1.5em; color: var(--color-forest-ink); }
+    .drop { color: var(--color-alarm-red); font-weight: 700; }
+    .ok-flag { color: var(--color-spruce); font-weight: 600; }
+    @media (min-width: 720px) {
+      .hero { padding: 64px 0 24px; }
+      form.search { flex-direction: row; align-items: center; }
+      form.search input[type="text"] { flex: 1; }
+      form.search .btn.lime { width: auto; }
+      .btn-row { flex-direction: row; align-items: center; gap: 16px; }
+      .prices { grid-template-columns: repeat(3, 1fr); }
+      .split { grid-template-columns: repeat(3, 1fr); gap: 32px; }
+      .plans { grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+      .section { padding: 80px 0; }
+      .wait { padding: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="/">BaratoYa</a>
+    <nav class="nav-links" aria-label="Secciones">
+      <a href="#buscar">Buscar</a>
+      <a href="#mi-lista">Mi lista</a>
+      <a href="#por-que-pagar">Por qué pagar</a>
+      <a href="#planes">Planes</a>
+      <a class="btn outline" href="#lista">Lista de espera</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <p class="eyebrow">Precios Claros · zona CABA {% if paid_scrapers %}<span class="badge paid-on">ENABLE_PAID_SCRAPERS=on</span>{% endif %}</p>
+        <h1>El precio del súper, antes de salir.</h1>
+        <p class="sub">No sabés cuánto sale un producto en los comercios de CABA hasta que estás en la góndola. Buscá y vas a ver el mínimo, el máximo y en cuántas sucursales lo publica Precios Claros. Eso es gratis y no tiene tope. La lista y el chequeo de baja existen en este servidor, sin cobro y sin mail: el mail que escribís no es un login.</p>
+
+        <div class="modes" role="group" aria-label="Qué comparar">
+          <button type="button" class="btn outline on" id="mode-super" data-mode="super">Súper</button>
+          <button type="button" class="btn outline" id="mode-electro" data-mode="electro">Electro</button>
+        </div>
+        <form class="search" id="buscar" action="/api/buscar" method="get">
+          <label class="visually-hidden" for="q">Producto</label>
+          <input id="q" name="q" type="text" required maxlength="80" placeholder="Yerba, leche, aceite…" autocomplete="off" />
+          <input type="hidden" id="lat" name="lat" value="{{ lat }}" />
+          <input type="hidden" id="lng" name="lng" value="{{ lng }}" />
+          <button class="btn lime" id="go" type="submit">Buscar un precio</button>
+        </form>
+        <div class="field" style="max-width: 32rem; margin-top: 8px;">
+          <label for="lista-email"><span>Mail para la lista</span></label>
+          <input id="lista-email" name="lista-email" type="email" maxlength="200" autocomplete="email" placeholder="tu@mail.com" />
+          <p class="lista-note">Esto es local y no es un login. No hay contraseña ni cuenta: el mail solo agrupa filas en la base de este servidor. Quien escriba el mismo mail ve la misma lista.</p>
+        </div>
+        <div class="btn-row">
+          <a class="btn text" href="#mi-lista">Ver la lista local</a>
+        </div>
+
+        <p id="meta" class="meta"></p>
+        <p id="aviso" class="warn-flag" role="status"></p>
+        <div id="estado" class="state">
+          <p class="state-title">Todavía no buscaste.</p>
+          <p>Escribí un producto. Los números aparecen cuando Precios Claros responde. En esta página no hay precios de muestra.</p>
+        </div>
+        <div id="out" class="results" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="section dark" id="por-que-pagar">
+      <div class="wrap">
+        <h2>Lo gratis no te avisa cuando baja.</h2>
+        <p>Precios Claros es público. El mismo mínimo y el mismo máximo los puede mirar cualquiera. BaratoYa no vende ese dato. La búsqueda no tiene tope ni pide mail.</p>
+        <p>En este servidor ya podés guardar una lista y pedir que se releea el precio. Eso no cobra, no manda mail y no es una cuenta. Lo que seguiría siendo de pago, y todavía no se puede contratar, es que te llegue el aviso solo.</p>
+        <div class="split">
+          <article>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e2f6d5" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
+            <h3>Lista de compra</h3>
+            <p>Los productos que guardaste en este servidor, atados a un mail. No hay contraseña. Los $1.990 siguen sin poder cobrarse.</p>
+          </article>
+          <article>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e2f6d5" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9"/><path d="M10 21h4"/></svg>
+            <h3>Aviso de precio</h3>
+            <p>La fila se marca si el precio releído es menor al que guardaste. No hay envío de mail ni una tarea programada: hay que pedirlo.</p>
+          </article>
+          <article>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e2f6d5" stroke-width="2" aria-hidden="true"><path d="M4 19V5M4 19h16"/><path d="M8 15l4-5 3 3 5-7"/></svg>
+            <h3>Historial</h3>
+            <p>Cómo se movió el mínimo, no una foto de hoy. No se guarda una serie de precios.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="planes">
+      <div class="wrap">
+        <h2 class="sec">Planes. Los pagos son una hipótesis.</h2>
+        <p class="lead">No hay checkout ni Stripe. $0 es lo que ya podés usar. Los otros dos números no salen de una entrevista ni de ventas: están para discutirlos.</p>
+        <div class="plans">
+          <article class="plan">
+            <header>
+              <h3>Buscar</h3>
+              <span class="tag">Ya funciona</span>
+            </header>
+            <p class="price">$0 <small>por búsqueda, sin cuenta</small></p>
+            <ul>
+              <li>Mínimo, máximo y sucursales en CABA.</li>
+              <li>Fuente: Precios Claros, en vivo.</li>
+              <li>Nada se guarda a tu nombre.</li>
+            </ul>
+            <a class="btn outline" href="#buscar">Buscar un precio</a>
+          </article>
+          <article class="plan">
+            <header>
+              <h3>Lista</h3>
+              <span class="tag hip">HIPÓTESIS</span>
+            </header>
+            <p class="price">$1.990 <small>por mes · no se puede contratar</small></p>
+            <ul>
+              <li>Una lista en este servidor, con el mail como clave. No es una cuenta.</li>
+              <li>Un pedido relee el precio y marca la fila si bajó. No manda mail ni corre solo.</li>
+              <li>$1.990 no se puede contratar. No hay Mercado Pago ni Stripe.</li>
+            </ul>
+            <a class="btn lime" href="#mi-lista">Probar la lista local</a>
+          </article>
+          <article class="plan">
+            <header>
+              <h3>Historial</h3>
+              <span class="tag hip">HIPÓTESIS</span>
+            </header>
+            <p class="price">$4.900 <small>por mes · no se puede contratar</small></p>
+            <ul>
+              <li>Varias listas.</li>
+              <li>Historial del precio mínimo y más avisos.</li>
+              <li>Todavía no está construido.</li>
+            </ul>
+            <a class="btn outline" href="#lista" data-plan="historial">Anotarme en la lista de espera</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="mi-lista" style="padding-top: 0;">
+      <div class="wrap">
+        <h2 class="sec">Tu lista en este servidor</h2>
+        <p class="lead">No es una cuenta. El mail de arriba es la clave, nada más. Nadie te escribe si baja el precio: el botón relee y marca la fila. La búsqueda de arriba no pide este mail.</p>
+        <div class="btn-row">
+          <button type="button" class="btn outline" id="ver-lista">Ver mi lista</button>
+          <button type="button" class="btn lime" id="revisar-alertas">Revisar si bajó</button>
+        </div>
+        <p id="mi-lista-msg" role="status"></p>
+        <div id="mi-lista-out" class="results"></div>
+      </div>
+    </section>
+
+    <section class="section" id="lista" style="padding-top: 0;">
+      <div class="wrap">
+        <div class="wait">
+          <h2 class="sec">Lista de espera</h2>
+          <p class="lead">La lista local ya se puede probar arriba. Dejá el mail acá si querés enterarte cuando eso se pueda cobrar o cuando el aviso salga por mail. Queda en la misma base de este servidor. No hay mail de confirmación y no se cobra nada.</p>
+          <form class="waitlist" id="espera">
+            <div class="field">
+              <label for="email"><span>Mail</span></label>
+              <input id="email" name="email" type="email" required maxlength="200" autocomplete="email" placeholder="tu@mail.com" />
+            </div>
+            <div class="field">
+              <label for="plan"><span>Qué te interesa</span></label>
+              <select id="plan" name="plan">
+                <option value="lista">Lista — $1.990/mes, hipótesis</option>
+                <option value="historial">Historial — $4.900/mes, hipótesis</option>
+                <option value="no-se">Todavía no sé</option>
+              </select>
+            </div>
+            <button class="btn lime" type="submit">Anotarme en la lista de espera</button>
+            <p id="lista-msg" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>BaratoYa lee la API pública de Precios Claros para CABA (lat {{ lat }}, lng {{ lng }}). En súper también muestra el precio del catálogo público de Mas Online (ex Chango Más), etiquetado aparte. No es un organismo oficial y no agrega un precio propio.</p>
+      <p>Electro compara Fravega, Cetrogar, Naldo y On City por el catálogo VTEX público, sin scraper pago. Mercado Libre: no disponible desde este servidor. Cobro (Mercado Pago o Stripe): sin implementar. La lista y la marca de baja viven en la misma SQLite local que la lista de espera. No hay login ni envío de mail.</p>
+      <p><a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const form = document.getElementById("buscar");
+    const out = document.getElementById("out");
+    const meta = document.getElementById("meta");
+    const estado = document.getElementById("estado");
+    const aviso = document.getElementById("aviso");
+    const go = document.getElementById("go");
+    const qInput = document.getElementById("q");
+    let mode = "super";
+    let lastItems = [];
+    const listaEmailInput = document.getElementById("lista-email");
+    const LISTA_KEY = "baratoya-lista-email";
+    try {
+      const guardado = localStorage.getItem(LISTA_KEY);
+      if (guardado && listaEmailInput) listaEmailInput.value = guardado;
+    } catch (_) {}
+    if (listaEmailInput) {
+      listaEmailInput.addEventListener("change", () => {
+        try { localStorage.setItem(LISTA_KEY, listaEmailInput.value.trim()); } catch (_) {}
+      });
+    }
+    function mailLista() {
+      return (listaEmailInput && listaEmailInput.value || "").trim();
+    }
+    function botonGuardar(p, i) {
+      const precio = p.tienda ? p.precio : p.precioMin;
+      if (typeof precio !== "number" || !(precio > 0)) return "";
+      if (!(p.nombre || p.id)) return "";
+      return "<button type=\"button\" class=\"btn outline guardar\" data-i=\"" + i + "\">Guardar en mi lista</button>";
+    }
+    function payloadLista(p) {
+      if (p.tienda) {
+        const url = p.url || "";
+        return {
+          nombre: p.nombre || "",
+          tienda: p.tienda,
+          precio: p.precio,
+          url: url,
+          fuente: "vtex",
+          product_key: url ? ("url:" + url) : ((p.tienda_id || p.tienda) + ":" + (p.nombre || ""))
+        };
+      }
+      const nombre = p.nombre || p.descripcion || String(p.id || "");
+      const id = p.id ? String(p.id) : "";
+      return {
+        nombre: nombre,
+        tienda: "Precios Claros",
+        precio: p.precioMin,
+        url: "",
+        fuente: "precios_claros",
+        product_key: id ? ("pc:" + id) : ("pc:" + nombre)
+      };
+    }
+    function renderLista(items) {
+      const box = document.getElementById("mi-lista-out");
+      if (!items.length) {
+        box.innerHTML = "<div class=\"state\"><p class=\"state-title\">Esta lista está vacía.</p><p>Buscá un producto y guardalo. La búsqueda no pide mail.</p></div>";
+        return;
+      }
+      box.innerHTML = items.map((it) => {
+        let estado;
+        if (!it.revisado_at) estado = "<p class=\"pres\">Todavía no se releyó el precio.</p>";
+        else if (it.bajo) estado = "<p class=\"pres drop\">Bajó. Precio de ahora: " + esc(money(it.precio_actual)) + ". No se mandó mail.</p>";
+        else estado = "<p class=\"pres ok-flag\">Revisado: no bajó. Precio de ahora: " + esc(money(it.precio_actual)) + ".</p>";
+        const link = it.url ? "<p class=\"pres\"><a class=\"ext\" href=\"" + esc(it.url) + "\" rel=\"noopener noreferrer\">Ver ficha</a></p>" : "";
+        const nota = it.nota ? "<p class=\"pres\">" + esc(it.nota) + "</p>" : "";
+        return "<article class=\"product\">" +
+          "<p class=\"brand\">" + esc(it.tienda) + "</p>" +
+          "<h3>" + esc(it.nombre) + "</h3>" +
+          link +
+          "<div class=\"prices\">" +
+            "<div><span>Precio al guardar</span><strong>" + esc(money(it.precio_guardado)) + "</strong></div>" +
+            "<div><span>Precio releído</span><strong>" + esc(money(it.precio_actual)) + "</strong></div>" +
+          "</div>" +
+          estado + nota +
+        "</article>";
+      }).join("");
+    }
+    async function cargarLista() {
+      const msg = document.getElementById("mi-lista-msg");
+      const email = mailLista();
+      if (!email) {
+        msg.textContent = "Escribí un mail arriba. No es un login: no hay contraseña.";
+        return;
+      }
+      msg.textContent = "Leyendo la lista…";
+      const r = await fetch("/api/lista?email=" + encodeURIComponent(email), { headers: { "Accept": "application/json" } });
+      let j = null;
+      try { j = await r.json(); } catch (_) { j = null; }
+      if (!r.ok || !j || !j.ok) {
+        msg.textContent = (j && j.error) || "No se pudo leer la lista.";
+        return;
+      }
+      msg.textContent = j.aviso || "";
+      renderLista(j.items || []);
+    }
+
+    function setMode(next) {
+      mode = next === "electro" ? "electro" : "super";
+      document.getElementById("mode-super").classList.toggle("on", mode === "super");
+      document.getElementById("mode-electro").classList.toggle("on", mode === "electro");
+      if (mode === "electro") {
+        qInput.placeholder = "Heladera, televisor, lavarropas…";
+        if (!qInput.value.trim() || qInput.dataset.autofill === "1") {
+          qInput.value = "heladera";
+          qInput.dataset.autofill = "1";
+        }
+      } else {
+        qInput.placeholder = "Yerba, leche, aceite…";
+        if (qInput.dataset.autofill === "1") {
+          qInput.value = "";
+          delete qInput.dataset.autofill;
+        }
+      }
+    }
+    document.getElementById("mode-super").addEventListener("click", () => setMode("super"));
+    document.getElementById("mode-electro").addEventListener("click", () => setMode("electro"));
+    qInput.addEventListener("input", () => {
+      if (qInput.dataset.autofill === "1" && qInput.value !== "heladera") delete qInput.dataset.autofill;
+    });
+
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+    function money(n) {
+      if (n === null || n === undefined || n === "") return "—";
+      const x = Number(n);
+      if (Number.isNaN(x)) return "—";
+      return new Intl.NumberFormat("es-AR", {
+        style: "currency", currency: "ARS", minimumFractionDigits: 2, maximumFractionDigits: 2
+      }).format(x);
+    }
+    function sucursales(n) {
+      if (n === null || n === undefined || n === "") return "sin dato";
+      const x = Number(n);
+      if (Number.isNaN(x)) return "sin dato";
+      return String(x);
+    }
+    function productosDe(j) {
+      const d = j && j.data;
+      if (!d || typeof d !== "object") return { items: [], total: null };
+      if (Array.isArray(d.productos)) return { items: d.productos, total: d.total ?? null };
+      if (d.data && Array.isArray(d.data.productos)) return { items: d.data.productos, total: d.data.total ?? null };
+      return { items: [], total: null };
+    }
+    function renderElectro(data, q) {
+      const items = Array.isArray(data.productos) ? data.productos : [];
+      const fuentes = Array.isArray(data.fuentes) ? data.fuentes : [];
+      const bits = fuentes.map((f) => {
+        if (f.aviso) return f.tienda + ": " + f.aviso;
+        return f.tienda + " HTTP " + f.http + " (" + (f.n || 0) + ")";
+      });
+      meta.textContent = "Fuente: catálogo VTEX público. " + bits.join(" · ");
+      aviso.className = "warn-flag on";
+      aviso.textContent = "Mercado Libre: no disponible desde este servidor. No hay resultados inventados de esa tienda.";
+      if (!items.length) {
+        setState("empty", "Nada con precio para «" + q + "».", "Las tiendas libres no devolvieron un producto con precio. Mercado Libre no se usa desde este servidor.");
+        return;
+      }
+      estado.hidden = true;
+      estado.innerHTML = "";
+      lastItems = items;
+      out.innerHTML = items.map((p, i) => {
+        const link = p.url ? "<p class=\"pres\"><a class=\"ext\" href=\"" + esc(p.url) + "\" rel=\"noopener noreferrer\">Ver en " + esc(p.tienda) + "</a></p>" : "<p class=\"pres\"></p>";
+        return "<article class=\"product\">" +
+          "<p class=\"brand\">" + esc(p.marca || p.tienda) + "</p>" +
+          "<h3>" + esc(p.nombre) + "</h3>" +
+          link +
+          "<div class=\"prices\">" +
+            "<div><span>Precio en " + esc(p.tienda) + "</span><strong>" + esc(money(p.precio)) + "</strong></div>" +
+          "</div>" +
+          "<span class=\"badge\">" + esc(p.tienda) + " · VTEX público</span>" +
+          botonGuardar(p, i) +
+        "</article>";
+      }).join("");
+    }
+    function setState(kind, title, body) {
+      estado.hidden = false;
+      estado.className = "state" + (kind === "error" ? " error" : "");
+      estado.innerHTML = "<p class=\"state-title\">" + esc(title) + "</p><p>" + esc(body) + "</p>";
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const q = document.getElementById("q").value.trim();
+      const lat = document.getElementById("lat").value;
+      const lng = document.getElementById("lng").value;
+      out.innerHTML = "";
+      lastItems = [];
+      aviso.className = "warn-flag";
+      aviso.textContent = "";
+      meta.textContent = "";
+      setState("loading", mode === "electro" ? "Buscando en tiendas de electro…" : "Buscando en Precios Claros y Mas Online…", "Sin precios inventados mientras tanto.");
+      go.disabled = true;
+      try {
+        if (mode === "electro") {
+          const r = await fetch("/api/electro?q=" + encodeURIComponent(q));
+          let j = null;
+          try { j = await r.json(); } catch (_) { j = null; }
+          if (!r.ok || !j || !j.data) {
+            setState("error", "No pudimos leer las tiendas de electro.", "La búsqueda falló. No mostramos un precio inventado. Reintentá.");
+            return;
+          }
+          renderElectro(j.data, q);
+          return;
+        }
+        const r = await fetch("/api/buscar?q=" + encodeURIComponent(q) + "&lat=" + encodeURIComponent(lat) + "&lng=" + encodeURIComponent(lng) + "&limit=20");
+        let j = null;
+        try { j = await r.json(); } catch (_) { j = null; }
+        if (!r.ok || !j) {
+          const detalle = j && j.http != null ? " HTTP de origen " + j.http + "." : "";
+          setState("error", "No pudimos leer Precios Claros.", "La búsqueda falló." + detalle + " No mostramos un precio inventado. Reintentá.");
+          return;
+        }
+        if (j.fuente === "snapshot") {
+          aviso.className = "warn-flag on";
+          aviso.textContent = j.aviso || "Estos números salen del último snapshot local, no de una lectura en vivo.";
+        }
+        const parsed = productosDe(j);
+        const cadenas = Array.isArray(j.cadenas) ? j.cadenas : [];
+        const cadenaTxt = cadenas.map((f) => {
+          if (f.error) return f.tienda + ": " + f.error;
+          if (f.aviso) return f.tienda + ": " + f.aviso;
+          return f.tienda + " HTTP " + f.http + " (" + (f.n || 0) + ")";
+        }).join(" · ");
+        const fuente = j.fuente === "snapshot"
+          ? "snapshot local de Precios Claros"
+          : (j.fuente === "mas_online" ? "Precios Claros no respondió" : "Precios Claros en vivo");
+        const totalTxt = parsed.total != null ? " Total informado por Precios Claros: " + parsed.total + "." : "";
+        meta.textContent = "Fuente: " + fuente + "." + (cadenaTxt ? " " + cadenaTxt + "." : "") + " Resultados en esta página: " + parsed.items.length + "." + totalTxt;
+        if (j.fuente === "mas_online" && j.aviso) {
+          aviso.className = "warn-flag on";
+          aviso.textContent = j.aviso;
+        }
+        if (!parsed.items.length) {
+          setState("empty", "Nada para «" + q + "» en esta zona.", "Precios Claros y Mas Online no devolvieron productos con precio. Probá con otra palabra. La zona de Precios Claros está fija en CABA.");
+          return;
+        }
+        estado.hidden = true;
+        estado.innerHTML = "";
+        const badge = j.fuente === "snapshot" ? "Precios Claros · snapshot" : "Precios Claros";
+        lastItems = parsed.items;
+        out.innerHTML = parsed.items.map((p, i) => {
+          if (p.tienda) {
+            const link = p.url
+              ? "<p class=\"pres\"><a class=\"ext\" href=\"" + esc(p.url) + "\" rel=\"noopener noreferrer\">Ver en " + esc(p.tienda) + "</a></p>"
+              : "<p class=\"pres\"></p>";
+            return "<article class=\"product\">" +
+              "<p class=\"brand\">" + esc(p.marca || p.tienda) + "</p>" +
+              "<h3>" + esc(p.nombre || "Sin nombre") + "</h3>" +
+              link +
+              "<div class=\"prices\">" +
+                "<div><span>Precio en " + esc(p.tienda) + "</span><strong>" + esc(money(p.precio)) + "</strong></div>" +
+              "</div>" +
+              "<span class=\"badge\">" + esc(p.tienda) + " (ex Chango Más) · catálogo público</span>" +
+              botonGuardar(p, i) +
+            "</article>";
+          }
+          const nombre = p.nombre || p.descripcion || p.id || "Sin nombre";
+          const marca = p.marca || "";
+          const pres = p.presentacion || "";
+          return "<article class=\"product\">" +
+            (marca ? "<p class=\"brand\">" + esc(marca) + "</p>" : "") +
+            "<h3>" + esc(nombre) + "</h3>" +
+            (pres ? "<p class=\"pres\">" + esc(pres) + "</p>" : "<p class=\"pres\"></p>") +
+            "<div class=\"prices\">" +
+              "<div><span>Mínimo</span><strong>" + esc(money(p.precioMin)) + "</strong></div>" +
+              "<div><span>Máximo</span><strong>" + esc(money(p.precioMax)) + "</strong></div>" +
+              "<div><span>Sucursales</span><strong>" + esc(sucursales(p.cantSucursalesDisponible)) + "</strong></div>" +
+            "</div>" +
+            "<span class=\"badge\">" + esc(badge) + "</span>" +
+            botonGuardar(p, i) +
+          "</article>";
+        }).join("");
+      } catch (err) {
+        setState("error", "No pudimos leer Precios Claros.", "Falló la conexión con este servidor. No hay un precio de relleno. Reintentá.");
+      } finally {
+        go.disabled = false;
+      }
+    });
+
+    document.querySelectorAll("[data-plan]").forEach((a) => {
+      a.addEventListener("click", () => {
+        const sel = document.getElementById("plan");
+        if (sel) sel.value = a.getAttribute("data-plan");
+      });
+    });
+
+    const espera = document.getElementById("espera");
+    const listaMsg = document.getElementById("lista-msg");
+    document.getElementById("out").addEventListener("click", async (e) => {
+      const btn = e.target.closest(".guardar");
+      if (!btn) return;
+      const i = Number(btn.getAttribute("data-i"));
+      const p = lastItems[i];
+      const msg = document.getElementById("mi-lista-msg");
+      const email = mailLista();
+      if (!email) {
+        msg.textContent = "Escribí un mail arriba. Esto es local y no es un login.";
+        document.getElementById("lista-email").focus();
+        return;
+      }
+      if (!p) return;
+      btn.disabled = true;
+      try {
+        const r = await fetch("/api/lista", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify(Object.assign({ email: email }, payloadLista(p)))
+        });
+        let j = null;
+        try { j = await r.json(); } catch (_) { j = null; }
+        if (!r.ok || !j || !j.ok) {
+          msg.textContent = (j && j.error) || "No se pudo guardar.";
+          btn.disabled = false;
+          return;
+        }
+        btn.textContent = j.nuevo === false ? "Ya estaba en la lista" : "En tu lista";
+        msg.textContent = j.aviso || "Guardado.";
+        try { localStorage.setItem(LISTA_KEY, email); } catch (_) {}
+        await cargarLista();
+      } catch (err) {
+        msg.textContent = "No se pudo guardar. Este servidor no respondió.";
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById("ver-lista").addEventListener("click", () => {
+      cargarLista().catch(() => {
+        document.getElementById("mi-lista-msg").textContent = "No se pudo leer la lista.";
+      });
+    });
+    document.getElementById("revisar-alertas").addEventListener("click", async () => {
+      const msg = document.getElementById("mi-lista-msg");
+      const email = mailLista();
+      if (!email) {
+        msg.textContent = "Escribí un mail arriba. Esto es local y no es un login.";
+        return;
+      }
+      msg.textContent = "Releyendo precios… no se manda ningún mail.";
+      try {
+        const r = await fetch("/api/alertas/revisar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ email: email })
+        });
+        let j = null;
+        try { j = await r.json(); } catch (_) { j = null; }
+        if (!r.ok || !j || !j.ok) {
+          msg.textContent = (j && j.error) || "No se pudo releer.";
+          return;
+        }
+        const bajas = (j.alertas || []).filter((a) => a.bajo).length;
+        msg.textContent = (j.aviso || "") + (j.alertas && j.alertas.length ? " Marcadas por baja: " + bajas + "." : " No hay productos en esta lista.");
+        renderLista(j.alertas || []);
+      } catch (err) {
+        msg.textContent = "No se pudo releer. Este servidor no respondió.";
+      }
+    });
+    if (mailLista()) {
+      cargarLista().catch(() => {});
+    }
+
+    espera.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const plan = document.getElementById("plan").value;
+      listaMsg.textContent = "Anotando…";
+      try {
+        const r = await fetch("/api/lista-espera", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ email, plan })
+        });
+        let j = null;
+        try { j = await r.json(); } catch (_) { j = null; }
+        if (!r.ok) {
+          listaMsg.textContent = (j && j.error) || "No se pudo anotar. Revisá el mail.";
+          return;
+        }
+        listaMsg.textContent = j && j.nuevo === false
+          ? "Ese mail ya estaba. Actualizamos qué plan te interesa. Sigue sin haber cobro."
+          : "Quedó anotado en este servidor. No te vamos a cobrar ni a mandar un mail de confirmación.";
+        if (j && j.nuevo !== false) espera.reset();
+      } catch (err) {
+        listaMsg.textContent = "No se pudo anotar. Este servidor no respondió.";
+      }
+    });
+  </script>
+</body>
+</html>

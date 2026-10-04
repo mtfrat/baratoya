@@ -1,0 +1,711 @@
+"""BaratoYa — comparador unificado Precios Claros (CABA por defecto). $0 APIs pagas."""
+from __future__ import annotations
+
+import asyncio
+import json
+import os
+import re
+import sqlite3
+import unicodedata
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+from urllib.parse import urlparse
+
+import httpx
+from fastapi import FastAPI, Query, Request
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.templating import Jinja2Templates
+
+# Paquete (uvicorn baratoya.app:app desde micro-saas) o módulo suelto (Vercel carga app.py).
+try:
+    from baratoya.electro import buscar_electro
+    from baratoya.super_cadenas import UA as VTEX_UA
+    from baratoya.super_cadenas import _precio as _precio_oferta
+    from baratoya.super_cadenas import buscar_super
+except ImportError:
+    from electro import buscar_electro
+    from super_cadenas import UA as VTEX_UA
+    from super_cadenas import _precio as _precio_oferta
+    from super_cadenas import buscar_super
+
+BASE = os.getenv("PRECIOS_CLAROS_BASE", "https://d3e6htiiul5ek9.cloudfront.net/prod").rstrip("/")
+API_KEY = os.getenv("PRECIOS_CLAROS_API_KEY", "").strip()
+ENABLE_PAID = os.getenv("ENABLE_PAID_SCRAPERS", "false").lower() == "true"
+ENABLE_MLA = os.getenv("ENABLE_MLA", "false").lower() == "true"
+CABA_LAT, CABA_LNG = -34.6037, -58.3816
+SNAPSHOT_DIR = Path(__file__).parent / "snapshots"
+try:
+    SNAPSHOT_DIR.mkdir(exist_ok=True)
+except OSError:
+    pass
+
+
+def _sqlite_path() -> Path:
+    """Local: data/ al lado del código. En Vercel el disco es de solo lectura salvo /tmp.
+
+    /tmp no se comparte entre instancias y se borra. La lista y la lista de espera
+    no sobreviven un restart ni otro contenedor. La búsqueda no usa esta base.
+    """
+    override = os.getenv("BARATOYA_DATA_DIR", "").strip()
+    if override:
+        dest = Path(override)
+    else:
+        dest = Path(__file__).parent / "data"
+    try:
+        dest.mkdir(parents=True, exist_ok=True)
+        probe = dest / ".write_probe"
+        probe.write_text("ok", encoding="utf-8")
+        probe.unlink()
+    except OSError:
+        dest = Path("/tmp/baratoya")
+        dest.mkdir(parents=True, exist_ok=True)
+    return dest / "lista_espera.sqlite"
+
+
+DB_PATH = _sqlite_path()
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+PLANES = {"lista", "historial", "no-se"}
+
+app = FastAPI(title="BaratoYa")
+templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
+
+
+def _headers() -> dict[str, str]:
+    h = {"Accept": "application/json", "User-Agent": "BaratoYa/0.1 (research; $0)"}
+    if API_KEY:
+        h["x-api-key"] = API_KEY
+    return h
+
+
+async def pc_get(path: str, params: dict[str, Any]) -> tuple[int, Any]:
+    url = f"{BASE}{path}"
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            r = await client.get(url, params=params, headers=_headers())
+            try:
+                data = r.json()
+            except Exception:
+                data = {"raw": r.text[:500]}
+            return r.status_code, data
+    except Exception as e:
+        return 0, {"error": str(e)}
+
+
+
+def _db() -> sqlite3.Connection:
+    DB_PATH.parent.mkdir(exist_ok=True)
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    conn.execute(
+        """CREATE TABLE IF NOT EXISTS lista_espera (
+            id INTEGER PRIMARY KEY,
+            email TEXT NOT NULL UNIQUE,
+            plan TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL
+        )"""
+    )
+    # Lista y alerta comparten la fila: email + product_key + precio al guardar.
+    # No hay cuentas. El mail es solo la clave local.
+    conn.execute(
+        """CREATE TABLE IF NOT EXISTS lista_compra (
+            id INTEGER PRIMARY KEY,
+            email TEXT NOT NULL,
+            product_key TEXT NOT NULL,
+            nombre TEXT NOT NULL,
+            tienda TEXT NOT NULL DEFAULT '',
+            precio REAL NOT NULL,
+            url TEXT NOT NULL DEFAULT '',
+            fuente TEXT NOT NULL DEFAULT '',
+            precio_actual REAL,
+            bajo INTEGER NOT NULL DEFAULT 0,
+            revisado_at TEXT,
+            nota TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL,
+            UNIQUE(email, product_key)
+        )"""
+    )
+    return conn
+
+
+def _norm(s: str) -> str:
+    s = unicodedata.normalize("NFKD", s or "")
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return " ".join(s.casefold().split())
+
+
+def _precio_num(v: Any) -> float | None:
+    if isinstance(v, bool) or v is None or isinstance(v, str):
+        if isinstance(v, str):
+            v = v.strip().replace(",", ".")
+        else:
+            return None
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return None
+    if x != x or x <= 0 or x > 1_000_000_000:
+        return None
+    return x
+
+
+def _email_ok(email: str) -> bool:
+    return bool(EMAIL_RE.match(email)) and len(email) <= 200
+
+
+def _item_out(row: sqlite3.Row) -> dict[str, Any]:
+    return {
+        "email": row["email"],
+        "product_key": row["product_key"],
+        "nombre": row["nombre"],
+        "tienda": row["tienda"],
+        "precio_guardado": row["precio"],
+        "url": row["url"],
+        "fuente": row["fuente"],
+        "precio_actual": row["precio_actual"],
+        "bajo": bool(row["bajo"]),
+        "revisado_at": row["revisado_at"],
+        "nota": row["nota"],
+        "created_at": row["created_at"],
+    }
+
+
+# Solo orígenes cuyo catálogo público ya está cableado. Sin Mercado Libre.
+VTEX_ORIGINS = {
+    "www.masonline.com.ar": "https://www.masonline.com.ar",
+    "masonline.com.ar": "https://www.masonline.com.ar",
+    "www.fravega.com": "https://www.fravega.com",
+    "fravega.com": "https://www.fravega.com",
+    "www.cetrogar.com.ar": "https://www.cetrogar.com.ar",
+    "cetrogar.com.ar": "https://www.cetrogar.com.ar",
+    "www.naldo.com.ar": "https://www.naldo.com.ar",
+    "naldo.com.ar": "https://www.naldo.com.ar",
+    "www.oncity.com": "https://www.oncity.com",
+    "oncity.com": "https://www.oncity.com",
+}
+
+
+def _oferta(product: dict[str, Any]) -> float | None:
+    price, _ok = _precio_oferta(product)
+    return price
+
+
+async def _precio_vtex_por_url(url: str) -> float | None:
+    parsed = urlparse(url)
+    origin = VTEX_ORIGINS.get(parsed.netloc.lower())
+    path = parsed.path or ""
+    if not origin or not path.rstrip("/").endswith("/p"):
+        return None
+    api = origin + "/api/catalog_system/pub/products/search" + path
+    try:
+        async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
+            r = await client.get(api, headers={"Accept": "application/json", "User-Agent": VTEX_UA})
+    except Exception:
+        return None
+    if r.status_code not in (200, 206):
+        return None
+    try:
+        body = r.json()
+    except Exception:
+        return None
+    if not isinstance(body, list) or not body or not isinstance(body[0], dict):
+        return None
+    return _oferta(body[0])
+
+
+def _match_nombre(items: list[dict[str, Any]], nombre: str, tienda: str, url: str) -> float | None:
+    nombre_n = _norm(nombre)
+    tienda_n = _norm(tienda)
+    for p in items:
+        if url and (p.get("url") or "") == url:
+            price = _precio_num(p.get("precio"))
+            if price is not None:
+                return price
+    for p in items:
+        if _norm(p.get("nombre") or "") != nombre_n:
+            continue
+        if tienda_n and _norm(p.get("tienda") or "") != tienda_n:
+            continue
+        price = _precio_num(p.get("precio"))
+        if price is not None:
+            return price
+    return None
+
+
+async def _precio_vtex_busqueda(nombre: str, tienda: str, url: str) -> float | None:
+    if _norm(tienda) in {"mas online", "masonline"}:
+        data = await buscar_super(nombre)
+    else:
+        data = await buscar_electro(nombre)
+    items = data.get("productos") if isinstance(data, dict) else None
+    if not isinstance(items, list):
+        return None
+    return _match_nombre(items, nombre, tienda, url)
+
+
+def _pc_match(data: Any, pid: str, nombre: str) -> float | None:
+    productos = data.get("productos") if isinstance(data, dict) else None
+    if not isinstance(productos, list):
+        return None
+    nombre_n = _norm(nombre)
+    by_name = None
+    for p in productos:
+        if not isinstance(p, dict):
+            continue
+        price = _precio_num(p.get("precioMin"))
+        if price is None:
+            continue
+        if pid and str(p.get("id") or "") == pid:
+            return price
+        if nombre_n and _norm(p.get("nombre") or "") == nombre_n:
+            by_name = price
+    return by_name
+
+
+async def _precio_precios_claros(nombre: str, product_key: str) -> float | None:
+    pid = product_key[3:] if product_key.startswith("pc:") else ""
+    words = nombre.split()
+    queries: list[str] = []
+    if nombre:
+        queries.append(nombre)
+    for n in (4, 3, 2):
+        if len(words) >= n:
+            q = " ".join(words[:n])
+            if q not in queries:
+                queries.append(q)
+    for q in queries:
+        code, data = await pc_get(
+            "/productos",
+            {"string": q, "lat": CABA_LAT, "lng": CABA_LNG, "offset": 0, "limit": 50},
+        )
+        if code != 200:
+            continue
+        hit = _pc_match(data, pid, nombre)
+        if hit is not None:
+            return hit
+    return None
+
+
+async def precio_vigente(item: dict[str, Any]) -> tuple[float | None, str]:
+    """Relee el precio actual. None si no hay un número real. No manda mail."""
+    fuente = (item.get("fuente") or "").strip()
+    url = (item.get("url") or "").strip()
+    tienda = item.get("tienda") or ""
+    nombre = item.get("nombre") or ""
+    key = item.get("product_key") or ""
+    host = urlparse(url).netloc.lower() if url else ""
+
+    if host in VTEX_ORIGINS:
+        price = await _precio_vtex_por_url(url)
+        if price is not None:
+            return price, f"Releído en {tienda or 'la tienda'} (catálogo público)."
+        price = await _precio_vtex_busqueda(nombre, tienda, url)
+        if price is not None:
+            return price, f"Releído buscando «{nombre}» en {tienda or 'la tienda'}."
+        return None, "No se pudo releer un precio real en el catálogo de la tienda."
+
+    if fuente == "precios_claros" or key.startswith("pc:") or _norm(tienda) == "precios claros":
+        price = await _precio_precios_claros(nombre, key)
+        if price is not None:
+            return price, "Releído en Precios Claros (mínimo en CABA)."
+        return None, "No se pudo releer el mínimo en Precios Claros."
+
+    return None, "No hay una fuente conocida para releer este producto."
+
+
+def _lista_rows(email: str, product_key: str | None = None) -> list[sqlite3.Row]:
+    conn = _db()
+    try:
+        if product_key:
+            cur = conn.execute(
+                "SELECT * FROM lista_compra WHERE email = ? AND product_key = ? ORDER BY id",
+                (email, product_key),
+            )
+        else:
+            cur = conn.execute(
+                "SELECT * FROM lista_compra WHERE email = ? ORDER BY id",
+                (email,),
+            )
+        return list(cur.fetchall())
+    finally:
+        conn.close()
+
+
+async def revisar_alertas(email: str, product_key: str | None = None) -> list[dict[str, Any]]:
+    """Relee cada fila y marca bajo=1 solo si el precio nuevo es menor. No envía mail."""
+    rows = _lista_rows(email, product_key)
+    if not rows:
+        return []
+    readings = await asyncio.gather(*[precio_vigente(dict(r)) for r in rows])
+    now = datetime.now(timezone.utc).isoformat()
+    conn = _db()
+    try:
+        for row, (price, detalle) in zip(rows, readings):
+            if price is None:
+                conn.execute(
+                    "UPDATE lista_compra SET nota = ?, revisado_at = ? WHERE email = ? AND product_key = ?",
+                    (detalle, now, email, row["product_key"]),
+                )
+            else:
+                bajo = 1 if price < float(row["precio"]) else 0
+                if bajo:
+                    nota = detalle + " El precio es menor al guardado. No se envió ningún mail."
+                else:
+                    nota = detalle + " El precio no es menor. No se envió ningún mail."
+                conn.execute(
+                    """UPDATE lista_compra
+                       SET precio_actual = ?, bajo = ?, nota = ?, revisado_at = ?
+                       WHERE email = ? AND product_key = ?""",
+                    (price, bajo, nota, now, email, row["product_key"]),
+                )
+        conn.commit()
+    finally:
+        conn.close()
+    return [_item_out(r) for r in _lista_rows(email, product_key)]
+
+
+
+def _merge_cadenas(data: Any, cadenas: dict[str, Any]) -> Any:
+    """Suma ítems con precio real de cadenas públicas. No pisa los de Precios Claros."""
+    extra = cadenas.get("productos") if isinstance(cadenas, dict) else None
+    if not isinstance(extra, list) or not extra:
+        if isinstance(data, dict):
+            return data
+        return {"productos": []}
+    if not isinstance(data, dict):
+        data = {"productos": []}
+    else:
+        data = dict(data)
+    productos = data.get("productos")
+    if not isinstance(productos, list):
+        productos = []
+    else:
+        productos = list(productos)
+    productos.extend(extra)
+    data["productos"] = productos
+    return data
+
+
+def _unwrap_snapshot(body: Any) -> Any:
+    """last_ok.json guarda {q, lat, lng, data}. La UI espera productos en data."""
+    if isinstance(body, dict) and "productos" not in body and isinstance(body.get("data"), dict):
+        return body["data"]
+    return body
+
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "index.html",
+        {"lat": CABA_LAT,
+            "lng": CABA_LNG,
+            "paid_scrapers": ENABLE_PAID,
+            "mla": ENABLE_MLA,
+        },
+    )
+
+
+@app.get("/aviso-precios", response_class=HTMLResponse)
+async def aviso_precios(request: Request):
+    return templates.TemplateResponse(request, "legal.html", {"page": "aviso-precios"})
+
+
+@app.get("/terminos", response_class=HTMLResponse)
+async def terminos(request: Request):
+    return templates.TemplateResponse(request, "legal.html", {"page": "terminos"})
+
+
+@app.get("/privacidad", response_class=HTMLResponse)
+async def privacidad(request: Request):
+    return templates.TemplateResponse(request, "legal.html", {"page": "privacidad"})
+
+
+@app.get("/api/sucursales")
+async def sucursales(
+    lat: float = Query(CABA_LAT),
+    lng: float = Query(CABA_LNG),
+    limit: int = Query(10, ge=1, le=50),
+):
+    code, data = await pc_get("/sucursales", {"lat": lat, "lng": lng, "limit": limit})
+    return JSONResponse({"http": code, "fuente": "precios_claros", "data": data}, status_code=200 if code else 502)
+
+
+@app.get("/api/buscar")
+async def buscar(
+    q: str = Query(..., min_length=1),
+    lat: float = Query(CABA_LAT),
+    lng: float = Query(CABA_LNG),
+    offset: int = 0,
+    limit: int = Query(20, ge=1, le=50),
+):
+    # TODO: if ENABLE_PAID_SCRAPERS: merge VTEX/MLA paid paths
+    if ENABLE_MLA:
+        pass  # cableado off — requiere MLA_ACCESS_TOKEN / IP limpia
+    cadenas_task = asyncio.create_task(buscar_super(q.strip()))
+    code, data = await pc_get(
+        "/productos",
+        {"string": q, "lat": lat, "lng": lng, "offset": offset, "limit": limit},
+    )
+    try:
+        cadenas = await cadenas_task
+    except Exception as e:
+        cadenas = {
+            "productos": [],
+            "fuentes": [{"tienda": "Mas Online", "tienda_id": "masonline", "http": 0, "ok": False, "n": 0, "error": str(e)}],
+        }
+    if code != 200:
+        # fallback snapshot si existe. El snapshot sigue siendo solo Precios Claros.
+        snap = SNAPSHOT_DIR / "last_ok.json"
+        if snap.exists():
+            body = _unwrap_snapshot(json.loads(snap.read_text()))
+            body = _merge_cadenas(body, cadenas)
+            return {
+                "http": code,
+                "fuente": "snapshot",
+                "aviso": "Live Precios Claros falló; mostrando último snapshot local. Mas Online, si respondió, va etiquetado aparte.",
+                "cadenas": cadenas.get("fuentes") or [],
+                "data": body,
+            }
+        if cadenas.get("productos"):
+            return {
+                "http": 200,
+                "fuente": "mas_online",
+                "aviso": "Precios Claros no respondió. Solo precios de Mas Online, leídos del catálogo público.",
+                "cadenas": cadenas.get("fuentes") or [],
+                "data": {"productos": cadenas["productos"], "total": len(cadenas["productos"])},
+            }
+        return JSONResponse(
+            {
+                "http": code,
+                "fuente": "precios_claros",
+                "error": data,
+                "cadenas": cadenas.get("fuentes") or [],
+            },
+            status_code=502,
+        )
+    # guardar snapshot liviano (solo Precios Claros, sin mezclar otras cadenas)
+    try:
+        (SNAPSHOT_DIR / "last_ok.json").write_text(
+            json.dumps({"q": q, "lat": lat, "lng": lng, "data": data}, ensure_ascii=False)[:500_000]
+        )
+    except Exception:
+        pass
+    productos = data.get("productos") if isinstance(data, dict) else []
+    # ordenar por precioMin
+    if isinstance(productos, list):
+        productos = sorted(
+            productos,
+            key=lambda p: (p.get("precioMin") is None, p.get("precioMin") or 0),
+        )
+        data = dict(data)
+        data["productos"] = productos
+    data = _merge_cadenas(data, cadenas)
+    return {
+        "http": code,
+        "fuente": "precios_claros_live",
+        "cadenas": cadenas.get("fuentes") or [],
+        "data": data,
+    }
+
+
+@app.get("/api/electro")
+async def electro(
+    q: str = Query("heladera", min_length=1, max_length=80),
+):
+    """Electrodomésticos: VTEX público (Fravega, Cetrogar, Naldo, On City). ML no se inventa."""
+    if ENABLE_PAID:
+        # Sigue apagado por defecto. Este endpoint no usa scrapers pagos.
+        pass
+    data = await buscar_electro(q.strip())
+    return {"http": 200, "fuente": "vtex_publico", "data": data}
+
+
+@app.get("/health")
+async def health():
+    code, data = await pc_get("/sucursales", {"lat": CABA_LAT, "lng": CABA_LNG, "limit": 1})
+    return {"ok": code == 200, "precios_claros_http": code, "paid_scrapers": ENABLE_PAID}
+
+
+@app.post("/api/lista-espera")
+async def lista_espera(request: Request):
+    """Lista de espera local. No cobra, no manda mail, no prende Stripe."""
+    ctype = request.headers.get("content-type", "")
+    if ctype.startswith("application/json"):
+        try:
+            payload = await request.json()
+        except Exception:
+            payload = {}
+        if not isinstance(payload, dict):
+            payload = {}
+        email = str(payload.get("email") or "")
+        plan = str(payload.get("plan") or "")
+    else:
+        form = await request.form()
+        email = str(form.get("email") or "")
+        plan = str(form.get("plan") or "")
+    email = email.strip().lower()
+    plan = plan.strip().lower()
+    if plan not in PLANES:
+        plan = ""
+    if not EMAIL_RE.match(email) or len(email) > 200:
+        return JSONResponse(
+            {"ok": False, "error": "Ese mail no sirve. Revisalo."},
+            status_code=400,
+        )
+    conn = _db()
+    try:
+        cur = conn.execute("SELECT id FROM lista_espera WHERE email = ?", (email,))
+        if cur.fetchone():
+            conn.execute("UPDATE lista_espera SET plan = ? WHERE email = ?", (plan, email))
+            conn.commit()
+            return {"ok": True, "nuevo": False}
+        conn.execute(
+            "INSERT INTO lista_espera (email, plan, created_at) VALUES (?, ?, ?)",
+            (email, plan, datetime.now(timezone.utc).isoformat()),
+        )
+        conn.commit()
+        return {"ok": True, "nuevo": True}
+    finally:
+        conn.close()
+
+
+def _leer_payload_lista(payload: dict[str, Any]) -> dict[str, Any] | JSONResponse:
+    email = str(payload.get("email") or "").strip().lower()
+    if not _email_ok(email):
+        return JSONResponse({"ok": False, "error": "Ese mail no sirve. Revisalo."}, status_code=400)
+    nombre = " ".join(str(payload.get("nombre") or "").split())
+    tienda = " ".join(str(payload.get("tienda") or "").split())
+    url = str(payload.get("url") or "").strip()
+    fuente = str(payload.get("fuente") or "").strip().lower()
+    product_key = " ".join(str(payload.get("product_key") or "").split())
+    precio = _precio_num(payload.get("precio"))
+    if not nombre or len(nombre) > 300:
+        return JSONResponse({"ok": False, "error": "Falta el nombre del producto."}, status_code=400)
+    if not tienda or len(tienda) > 80:
+        return JSONResponse({"ok": False, "error": "Falta la tienda."}, status_code=400)
+    if precio is None:
+        return JSONResponse({"ok": False, "error": "Ese producto no tiene un precio para guardar."}, status_code=400)
+    if url and (len(url) > 500 or not url.startswith(("http://", "https://"))):
+        return JSONResponse({"ok": False, "error": "La URL del producto no sirve."}, status_code=400)
+    if fuente not in {"", "precios_claros", "vtex"}:
+        fuente = ""
+    if not product_key:
+        product_key = ("url:" + url) if url else f"{fuente or tienda}:{nombre}"
+    if len(product_key) > 400:
+        return JSONResponse({"ok": False, "error": "La clave del producto es demasiado larga."}, status_code=400)
+    return {
+        "email": email,
+        "nombre": nombre,
+        "tienda": tienda,
+        "url": url,
+        "fuente": fuente,
+        "product_key": product_key,
+        "precio": precio,
+    }
+
+
+@app.post("/api/lista")
+async def guardar_en_lista(request: Request):
+    """Guarda un producto ya visto. El mail es la clave local: no hay contraseña ni cobro."""
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = None
+    if not isinstance(payload, dict):
+        return JSONResponse({"ok": False, "error": "Mandá JSON con email, nombre, tienda, precio y url."}, status_code=400)
+    parsed = _leer_payload_lista(payload)
+    if isinstance(parsed, JSONResponse):
+        return parsed
+    conn = _db()
+    try:
+        cur = conn.execute(
+            "SELECT * FROM lista_compra WHERE email = ? AND product_key = ?",
+            (parsed["email"], parsed["product_key"]),
+        )
+        ya = cur.fetchone()
+        if ya:
+            return {"ok": True, "nuevo": False, "aviso": "Ya estaba en la lista. El precio guardado no se cambió.", "item": _item_out(ya)}
+        n = conn.execute("SELECT COUNT(*) AS n FROM lista_compra WHERE email = ?", (parsed["email"],)).fetchone()["n"]
+        if n >= 100:
+            return JSONResponse({"ok": False, "error": "Esta lista local llega hasta 100 productos."}, status_code=400)
+        conn.execute(
+            """INSERT INTO lista_compra
+               (email, product_key, nombre, tienda, precio, url, fuente, created_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                parsed["email"],
+                parsed["product_key"],
+                parsed["nombre"],
+                parsed["tienda"],
+                parsed["precio"],
+                parsed["url"],
+                parsed["fuente"],
+                datetime.now(timezone.utc).isoformat(),
+            ),
+        )
+        conn.commit()
+        row = conn.execute(
+            "SELECT * FROM lista_compra WHERE email = ? AND product_key = ?",
+            (parsed["email"], parsed["product_key"]),
+        ).fetchone()
+        return {
+            "ok": True,
+            "nuevo": True,
+            "aviso": "Guardado en este servidor. No es un login y no se cobra.",
+            "item": _item_out(row),
+        }
+    finally:
+        conn.close()
+
+
+@app.get("/api/lista")
+async def ver_lista(email: str = Query(..., min_length=3, max_length=200)):
+    email = email.strip().lower()
+    if not _email_ok(email):
+        return JSONResponse({"ok": False, "error": "Ese mail no sirve. Revisalo."}, status_code=400)
+    items = [_item_out(r) for r in _lista_rows(email)]
+    return {
+        "ok": True,
+        "email": email,
+        "aviso": "Local. No es un login: no hay contraseña. Quien escriba este mail ve esta lista.",
+        "items": items,
+    }
+
+
+@app.get("/api/alertas")
+async def ver_alertas(email: str = Query(..., min_length=3, max_length=200)):
+    """Filas de alerta ya guardadas, sin releer precios y sin mandar mail."""
+    email = email.strip().lower()
+    if not _email_ok(email):
+        return JSONResponse({"ok": False, "error": "Ese mail no sirve. Revisalo."}, status_code=400)
+    return {
+        "ok": True,
+        "email": email,
+        "aviso": "No se envió mail. bajo=true solo si una relectura anterior vio un precio menor.",
+        "alertas": [_item_out(r) for r in _lista_rows(email)],
+    }
+
+
+@app.post("/api/alertas/revisar")
+async def alertas_revisar(request: Request):
+    """Relee el precio vigente y marca la fila si bajó. No programa nada y no manda mail."""
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = None
+    if not isinstance(payload, dict):
+        payload = {}
+    email = str(payload.get("email") or "").strip().lower()
+    product_key = str(payload.get("product_key") or "").strip() or None
+    if not _email_ok(email):
+        return JSONResponse({"ok": False, "error": "Ese mail no sirve. Revisalo."}, status_code=400)
+    if product_key and len(product_key) > 400:
+        return JSONResponse({"ok": False, "error": "La clave del producto es demasiado larga."}, status_code=400)
+    alertas = await revisar_alertas(email, product_key)
+    return {
+        "ok": True,
+        "email": email,
+        "aviso": "Relectura a pedido. No hay envío de mail ni una tarea programada. La búsqueda sigue libre.",
+        "alertas": alertas,
+    }
