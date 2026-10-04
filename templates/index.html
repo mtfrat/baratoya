@@ -104,12 +104,12 @@
     }
     h1 {
       margin: 0 0 16px;
-      max-width: 14ch;
+      max-width: min(100%, 20em);
       color: var(--color-obsidian);
       font-family: var(--font-wise-sans);
       font-weight: 900;
-      font-size: clamp(40px, 11vw, 89px);
-      line-height: 0.9;
+      font-size: clamp(32px, 4.4vw, 56px);
+      line-height: 1.15;
       letter-spacing: -0.03em;
     }
     .sub {
@@ -444,14 +444,6 @@
           <input type="hidden" id="lng" name="lng" value="{{ lng }}" />
           <button class="btn lime" id="go" type="submit">Buscar un precio</button>
         </form>
-        <div class="field" style="max-width: 32rem; margin-top: 8px;">
-          <label for="lista-email"><span>Mail para la lista</span></label>
-          <input id="lista-email" name="lista-email" type="email" maxlength="200" autocomplete="email" placeholder="tu@mail.com" />
-          <p class="lista-note">Esto es local y no es un login. No hay contraseña ni cuenta: el mail solo agrupa filas en la base de este servidor. Quien escriba el mismo mail ve la misma lista.</p>
-        </div>
-        <div class="btn-row">
-          <a class="btn text" href="#mi-lista">Ver la lista local</a>
-        </div>
 
         <p id="meta" class="meta"></p>
         <p id="aviso" class="warn-flag" role="status"></p>
@@ -539,7 +531,12 @@
     <section class="section" id="mi-lista" style="padding-top: 0;">
       <div class="wrap">
         <h2 class="sec">Tu lista en este servidor</h2>
-        <p class="lead">No es una cuenta. El mail de arriba es la clave, nada más. Nadie te escribe si baja el precio: el botón relee y marca la fila. La búsqueda de arriba no pide este mail.</p>
+        <p class="lead">No es una cuenta. El mail de esta sección es la clave, nada más. La búsqueda de arriba no lo usa y funciona con el mail vacío. Nadie te escribe si baja el precio: el botón relee y marca la fila.</p>
+        <div class="field" style="max-width: 32rem; margin-bottom: 16px;">
+          <label for="lista-email"><span>Mail para la lista</span></label>
+          <input id="lista-email" name="lista-email" type="email" maxlength="200" autocomplete="email" placeholder="tu@mail.com" />
+          <p class="lista-note">Esto es local y no es un login. No hay contraseña ni cuenta: el mail solo agrupa filas en la base de este servidor. Quien escriba el mismo mail ve la misma lista. No hace falta para buscar.</p>
+        </div>
         <div class="btn-row">
           <button type="button" class="btn outline" id="ver-lista">Ver mi lista</button>
           <button type="button" class="btn lime" id="revisar-alertas">Revisar si bajó</button>
@@ -723,6 +720,21 @@
       if (Number.isNaN(x)) return "sin dato";
       return String(x);
     }
+    function mismaConsulta(a, b) {
+      return (a || "").trim().toLocaleLowerCase("es") === (b || "").trim().toLocaleLowerCase("es");
+    }
+    function notaCoincidencia(j, q) {
+      const bits = [];
+      const pc = j && j.q_precios_claros || "";
+      const mo = j && j.q_mas_online || "";
+      if (pc && !mismaConsulta(pc, q)) {
+        bits.push("Precios Claros no trajo precios para «" + q + "». Coincidió con «" + pc + "».");
+      }
+      if (mo && !mismaConsulta(mo, q)) {
+        bits.push("Mas Online no aceptó «" + q + "». Coincidió con «" + mo + "».");
+      }
+      return bits.join(" ");
+    }
     function productosDe(j) {
       const d = j && j.data;
       if (!d || typeof d !== "object") return { items: [], total: null };
@@ -815,9 +827,15 @@
           : (j.fuente === "mas_online" ? "Precios Claros no respondió" : "Precios Claros en vivo");
         const totalTxt = parsed.total != null ? " Total informado por Precios Claros: " + parsed.total + "." : "";
         meta.textContent = "Fuente: " + fuente + "." + (cadenaTxt ? " " + cadenaTxt + "." : "") + " Resultados en esta página: " + parsed.items.length + "." + totalTxt;
+        const nota = notaCoincidencia(j, q);
+        if (nota) {
+          meta.textContent = nota + " " + meta.textContent;
+          aviso.className = "warn-flag on";
+          aviso.textContent = aviso.textContent ? (aviso.textContent + " " + nota) : nota;
+        }
         if (j.fuente === "mas_online" && j.aviso) {
           aviso.className = "warn-flag on";
-          aviso.textContent = j.aviso;
+          aviso.textContent = aviso.textContent ? (j.aviso + " " + aviso.textContent) : j.aviso;
         }
         if (!parsed.items.length) {
           setState("empty", "Nada para «" + q + "» en esta zona.", "Precios Claros y Mas Online no devolvieron productos con precio. Probá con otra palabra. La zona de Precios Claros está fija en CABA.");

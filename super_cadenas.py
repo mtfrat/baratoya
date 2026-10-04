@@ -5,7 +5,9 @@ No hay scrapers pagos, proxies ni Mercado Libre.
 """
 from __future__ import annotations
 
+import re
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 
@@ -71,14 +73,28 @@ def _parse(store: dict[str, str], body: Any) -> list[dict[str, Any]]:
     return out
 
 
-async def _one(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict[str, Any]:
-    url = store["origin"].rstrip("/") + VTEX_PATH
+_PUNCT = re.compile(r"[^\w\s]", re.UNICODE)
+
+
+def _limpia(s: str) -> str:
+    return " ".join((s or "").split())
+
+
+def _sin_puntuacion(s: str) -> str:
+    """VTEX responde 400 si ft trae '+' o signos. El espacio va como %20, no como '+'."""
+    return _limpia(_PUNCT.sub(" ", s or "").replace("_", " "))
+
+
+def _ft_url(origin: str, q: str) -> str:
+    # quote (no quote_plus): un '+' en ft hace que Mas Online conteste
+    # "Bad Request! Scripts are not allowed!".
+    return origin.rstrip("/") + VTEX_PATH + "?ft=" + quote(q, safe="") + "&_from=0&_to=4"
+
+
+async def _fetch(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict[str, Any]:
+    url = _ft_url(store["origin"], q)
     try:
-        r = await client.get(
-            url,
-            params={"ft": q, "_from": 0, "_to": 4},
-            headers={"Accept": "application/json", "User-Agent": UA},
-        )
+        r = await client.get(url, headers={"Accept": "application/json", "User-Agent": UA})
     except Exception as e:
         return {
             "tienda": store["nombre"],
@@ -87,6 +103,7 @@ async def _one(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict
             "ok": False,
             "error": str(e),
             "productos": [],
+            "q_usada": q,
         }
     productos: list[dict[str, Any]] = []
     parse_error = ""
@@ -102,6 +119,7 @@ async def _one(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict
         "http": r.status_code,
         "ok": bool(productos),
         "productos": productos,
+        "q_usada": q,
     }
     if parse_error:
         row["error"] = parse_error
@@ -110,27 +128,62 @@ async def _one(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict
     return row
 
 
-async def buscar_super(q: str) -> dict[str, Any]:
-    """Catálogos públicos de súper ya verificados. Hoy: solo Mas Online."""
-    productos: list[dict[str, Any]] = []
+async def _one(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict[str, Any]:
+    intento = _limpia(q)
+    row = await _fetch(client, store, intento)
+    if row["http"] in (200, 206):
+        return row
+    sano = _sin_puntuacion(intento)
+    if not sano or sano.casefold() == intento.casefold():
+        return row
+    retry = await _fetch(client, store, sano)
+    if retry["http"] in (200, 206) or retry["http"] not in (0,):
+        return retry
+    return row
+
+
+async def buscar_super(q: str, consultas: list[str] | None = None) -> dict[str, Any]:
+    """Catálogos públicos de súper ya verificados. Hoy: solo Mas Online.
+
+    Si la frase completa no trae un precio > 0, prueba las consultas más cortas
+    en orden y deja en q_usada la que sí coincidió.
+    """
+    intentos: list[str] = []
+    for cand in consultas or [q]:
+        limpio = _limpia(cand)
+        if limpio and limpio.casefold() not in {x.casefold() for x in intentos}:
+            intentos.append(limpio)
+    if not intentos:
+        intentos = [_limpia(q) or q]
+
     fuentes: list[dict[str, Any]] = []
+    productos: list[dict[str, Any]] = []
+    q_usada = intentos[0]
     async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
-        for store in STORES:
-            row = await _one(client, store, q)
-            fuentes.append(
-                {
-                    "tienda": row["tienda"],
-                    "tienda_id": row["tienda_id"],
-                    "http": row["http"],
-                    "ok": row["ok"],
-                    "n": len(row["productos"]),
-                    **({"error": row["error"]} if row.get("error") else {}),
-                }
-            )
-            productos.extend(row["productos"])
+        for intento in intentos:
+            fuentes = []
+            productos = []
+            for store in STORES:
+                row = await _one(client, store, intento)
+                fuentes.append(
+                    {
+                        "tienda": row["tienda"],
+                        "tienda_id": row["tienda_id"],
+                        "http": row["http"],
+                        "ok": row["ok"],
+                        "n": len(row["productos"]),
+                        "q": row.get("q_usada") or intento,
+                        **({"error": row["error"]} if row.get("error") else {}),
+                    }
+                )
+                productos.extend(row["productos"])
+            q_usada = next((f["q"] for f in fuentes if f.get("q")), intento)
+            if productos:
+                break
     productos.sort(key=lambda p: p["precio"])
     return {
         "q": q,
+        "q_usada": q_usada,
         "fuente": "vtex_publico",
         "productos": productos,
         "fuentes": fuentes,

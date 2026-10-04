@@ -386,6 +386,64 @@ def _merge_cadenas(data: Any, cadenas: dict[str, Any]) -> Any:
     return data
 
 
+
+_STOP = {
+    "la", "el", "los", "las", "de", "del", "y", "e", "o", "u",
+    "con", "para", "por", "en", "al", "un", "una", "lo", "a",
+}
+# Medidas de góndola: "1 Lt.", "500g", "1,5 kg". Se sacan solo si la frase entera no trae precios.
+_SIZE = re.compile(
+    r"(?i)(?<!\w)\d+(?:[.,]\d+)?\s*(?:litros?|lts?|lt|l|mililitros?|mls?|cc|kilos?|kgs?|gramos?|grs?|gr|g|unidades?|uds?|un|u|cm|mm|oz)\.?(?!\w)"
+)
+_PUNCT_Q = re.compile(r"[^\w\s]", re.UNICODE)
+
+
+def _limpia_q(s: str) -> str:
+    return " ".join((s or "").split())
+
+
+def _sin_puntuacion_q(s: str) -> str:
+    return _limpia_q(_PUNCT_Q.sub(" ", s or "").replace("_", " "))
+
+
+def _sin_medidas_q(s: str) -> str:
+    return _limpia_q(_SIZE.sub(" ", s or ""))
+
+
+def consultas_busqueda(q: str, tope: int = 8) -> list[str]:
+    """Frase original y, si hiciera falta, versiones más cortas.
+
+    Orden: texto tal cual, sin puntuación, sin medidas (1 Lt y parecidas),
+    sin artículos, y después sacando una palabra por vez. Tope para no
+    martillar Precios Claros.
+    """
+    base = _limpia_q(q)
+    out: list[str] = []
+
+    def add(s: str) -> None:
+        s = _limpia_q(s)
+        if not s or len(out) >= tope:
+            return
+        if any(s.casefold() == prev.casefold() for prev in out):
+            return
+        out.append(s)
+
+    add(base)
+    add(_sin_puntuacion_q(base))
+    sin_medida = _sin_puntuacion_q(_sin_medidas_q(base))
+    add(sin_medida)
+    tokens = [t for t in sin_medida.split() if t.casefold() not in _STOP]
+    add(" ".join(tokens))
+    if len(tokens) > 2:
+        for i in range(len(tokens)):
+            add(" ".join(tokens[:i] + tokens[i + 1 :]))
+    return out or ([base] if base else [])
+
+
+def _pc_tiene(data: Any) -> bool:
+    return isinstance(data, dict) and isinstance(data.get("productos"), list) and bool(data["productos"])
+
+
 def _unwrap_snapshot(body: Any) -> Any:
     """last_ok.json guarda {q, lat, lng, data}. La UI espera productos en data."""
     if isinstance(body, dict) and "productos" not in body and isinstance(body.get("data"), dict):
@@ -442,18 +500,37 @@ async def buscar(
     # TODO: if ENABLE_PAID_SCRAPERS: merge VTEX/MLA paid paths
     if ENABLE_MLA:
         pass  # cableado off — requiere MLA_ACCESS_TOKEN / IP limpia
-    cadenas_task = asyncio.create_task(buscar_super(q.strip()))
+    q = _limpia_q(q)
+    consultas = consultas_busqueda(q)
+    cadenas_task = asyncio.create_task(buscar_super(q, consultas))
     code, data = await pc_get(
         "/productos",
         {"string": q, "lat": lat, "lng": lng, "offset": offset, "limit": limit},
     )
+    q_pc = q
+    if code == 200 and not _pc_tiene(data):
+        for alt in consultas[1:]:
+            code_alt, data_alt = await pc_get(
+                "/productos",
+                {"string": alt, "lat": lat, "lng": lng, "offset": offset, "limit": limit},
+            )
+            if code_alt == 200 and _pc_tiene(data_alt):
+                code, data = code_alt, data_alt
+                q_pc = alt
+                break
     try:
         cadenas = await cadenas_task
     except Exception as e:
         cadenas = {
             "productos": [],
+            "q_usada": q,
             "fuentes": [{"tienda": "Mas Online", "tienda_id": "masonline", "http": 0, "ok": False, "n": 0, "error": str(e)}],
         }
+    q_mo = cadenas.get("q_usada") or q
+
+    def _consulta() -> dict[str, str]:
+        return {"q": q, "q_precios_claros": q_pc, "q_mas_online": q_mo}
+
     if code != 200:
         # fallback snapshot si existe. El snapshot sigue siendo solo Precios Claros.
         snap = SNAPSHOT_DIR / "last_ok.json"
@@ -466,6 +543,7 @@ async def buscar(
                 "aviso": "Live Precios Claros falló; mostrando último snapshot local. Mas Online, si respondió, va etiquetado aparte.",
                 "cadenas": cadenas.get("fuentes") or [],
                 "data": body,
+                **_consulta(),
             }
         if cadenas.get("productos"):
             return {
@@ -474,6 +552,7 @@ async def buscar(
                 "aviso": "Precios Claros no respondió. Solo precios de Mas Online, leídos del catálogo público.",
                 "cadenas": cadenas.get("fuentes") or [],
                 "data": {"productos": cadenas["productos"], "total": len(cadenas["productos"])},
+                **_consulta(),
             }
         return JSONResponse(
             {
@@ -481,16 +560,18 @@ async def buscar(
                 "fuente": "precios_claros",
                 "error": data,
                 "cadenas": cadenas.get("fuentes") or [],
+                **_consulta(),
             },
             status_code=502,
         )
     # guardar snapshot liviano (solo Precios Claros, sin mezclar otras cadenas)
-    try:
-        (SNAPSHOT_DIR / "last_ok.json").write_text(
-            json.dumps({"q": q, "lat": lat, "lng": lng, "data": data}, ensure_ascii=False)[:500_000]
-        )
-    except Exception:
-        pass
+    if _pc_tiene(data):
+        try:
+            (SNAPSHOT_DIR / "last_ok.json").write_text(
+                json.dumps({"q": q_pc, "lat": lat, "lng": lng, "data": data}, ensure_ascii=False)[:500_000]
+            )
+        except Exception:
+            pass
     productos = data.get("productos") if isinstance(data, dict) else []
     # ordenar por precioMin
     if isinstance(productos, list):
@@ -506,6 +587,7 @@ async def buscar(
         "fuente": "precios_claros_live",
         "cadenas": cadenas.get("fuentes") or [],
         "data": data,
+        **_consulta(),
     }
 
 
