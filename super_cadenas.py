@@ -981,7 +981,18 @@ def agrupar_mismo_producto(
             nombre = str(m.get("nombre") or "")
             url = str(m.get("url") or "")
             ean = _ean_of(m) or (g["clave"][1] if g["clave"][0] == "ean" else "")
-            promo = aplicar_oferta(tienda_id or "", nombre, precio)
+            lista = m.get("precio_lista")
+            badge = m.get("descuento_tienda")
+            ya_descuento = (
+                isinstance(lista, (int, float))
+                and not isinstance(lista, bool)
+                and float(lista) > float(precio)
+            ) or (
+                isinstance(badge, (int, float))
+                and not isinstance(badge, bool)
+                and float(badge) > 0
+            )
+            promo = aplicar_oferta(tienda_id or "", nombre, precio, ya_descuento=ya_descuento)
             row = {
                 "tienda": tienda,
                 "tienda_id": tienda_id or "precios_claros",
@@ -1010,11 +1021,11 @@ def agrupar_mismo_producto(
         ofertas = list(by_store.values())
         if not ofertas:
             continue
-        # El comparable es el precio de venta. El total honesto solo baja si una promo de hoy sí se resta.
-        piso = min(o.get("total") or o["precio"] for o in ofertas)
+        # La marca es el precio que se paga ahora. Un total de promo no elige la card.
+        piso = min(o["precio"] for o in ofertas)
         for o in ofertas:
-            o["barato"] = (o.get("total") or o["precio"]) == piso
-        ofertas.sort(key=lambda o: (o.get("total") or o["precio"], o["precio"], _TIENDA_ORDEN.get(o["tienda_id"], 50), o["tienda"]))
+            o["barato"] = o["precio"] == piso
+        ofertas.sort(key=lambda o: (o["precio"], _TIENDA_ORDEN.get(o["tienda_id"], 50), o["tienda"]))
         baratos = [o["tienda"] for o in ofertas if o["barato"]]
         elegido = next(o for o in ofertas if o["barato"])
         best = g["best"]

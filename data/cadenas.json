@@ -1,0 +1,186 @@
+[
+  {
+    "chain": "Jumbo",
+    "storefront": "https://www.jumbo.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://www.jumbo.com.ar/descuentos-del-dia",
+    "promo_in_html": false,
+    "example": "Oblea Leche 4 Fingers 41.5 Grs Kitkat — Price 2800.0 — ean 7891000248799 (VTEX JSON)"
+  },
+  {
+    "chain": "Disco",
+    "storefront": "https://www.disco.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://www.disco.com.ar/descuentos-del-dia",
+    "promo_in_html": false,
+    "example": "Oblea Leche 4 Fingers 41.5 Grs Kitkat — Price 2900.0 — ean 7891000248799 (VTEX JSON)"
+  },
+  {
+    "chain": "Vea",
+    "storefront": "https://www.vea.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://www.vea.com.ar/descuentos-del-dia",
+    "promo_in_html": false,
+    "example": "Oblea Leche 4 Fingers 41.5 Grs Kitkat — Price 2690.0 — ean 7891000248799 (VTEX JSON)"
+  },
+  {
+    "chain": "Carrefour",
+    "storefront": "https://www.carrefour.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://www.carrefour.com.ar/descuentos-bancarios",
+    "promo_in_html": false,
+    "example": "Pepitas artesanales dulce de leche — Price 5190.0 — ean 7798133500605 (VTEX JSON)"
+  },
+  {
+    "chain": "Día",
+    "storefront": "https://diaonline.supermercadosdia.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://diaonline.supermercadosdia.com.ar/medios-de-pago-y-promociones",
+    "promo_in_html": true,
+    "example": "Arroz con leche con dulce de leche Tregar 180 Gr. — Price 2390.0 — ean 7793913013467 (VTEX JSON)"
+  },
+  {
+    "chain": "Mas Online (ChangoMás)",
+    "storefront": "https://www.masonline.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://www.masonline.com.ar/promociones-bancarias",
+    "promo_in_html": false,
+    "example": "Arroz Con Leche Tregar Con Dulce De Leche 180g — Price 2399.0 — ean 7793913013467 (VTEX JSON)"
+  },
+  {
+    "chain": "Cordiez",
+    "storefront": "https://www.cordiez.com.ar/",
+    "catalog_status": "price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": "Tableta De Chocolate Con Leche y Dulce De Leche 29 Gr — Price 2579.0 — ean 7622202322068 (VTEX JSON)"
+  },
+  {
+    "chain": "Josimar",
+    "storefront": "https://www.josimar.com.ar/",
+    "catalog_status": "price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": "Arroz con Leche/ Dulce de Leche Tregar 180 gr — Price 1990.0 — ean 7793913013467 (VTEX JSON)"
+  },
+  {
+    "chain": "Toledo",
+    "storefront": "https://www.toledodigital.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://www.toledodigital.com.ar/promociones-bancarias",
+    "promo_in_html": true,
+    "example": "Hervidor Leche Paris — Price 22041.75 — ean 7891112298590 (VTEX JSON)"
+  },
+  {
+    "chain": "La Anónima",
+    "storefront": "https://www.laanonima.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://www.laanonima.com.ar/empresa/promociones-y-descuentos",
+    "promo_in_html": true,
+    "example": "Fideos Spaghetti Fort Favorita x 500 g. — price 1350 ARS (JSON-LD, no barcode on the listing)"
+  },
+  {
+    "chain": "Super Mami",
+    "storefront": "https://www.supermami.com.ar/super/home",
+    "catalog_status": "price",
+    "promo_url": "https://www.supermami.com.ar/super/financiacion",
+    "promo_in_html": true,
+    "example": "YERBA AMANDA CON PALOS X 1 KG. — $3,449.00 x un. (HTML)"
+  },
+  {
+    "chain": "El Abastecedor",
+    "storefront": "https://www.abastecedor.com.ar/",
+    "catalog_status": "price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": "Yerba Mate Suave Cosmico 500g — Price 4100.0 — ean 7798423800019 (VTEX JSON)"
+  },
+  {
+    "chain": "Comodín",
+    "storefront": "https://www.comodinencasa.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://www.comodinencasa.com.ar/promociones-bancarias",
+    "promo_in_html": false,
+    "example": "Yerba Amanda 1kg — Price 4300.39 — ean 7792710000175 (VTEX JSON)"
+  },
+  {
+    "chain": "Maxiconsumo",
+    "storefront": "https://www.maxiconsumo.com/",
+    "catalog_status": "price",
+    "promo_url": "https://www.maxiconsumo.com/promociones",
+    "promo_in_html": true,
+    "example": "ACEITE MAROLIO GIRASOL 900 CC — Precio unitario por bulto cerrado $ 2.699,90 (HTML, sucursal Moreno)"
+  },
+  {
+    "chain": "Coto Digital",
+    "storefront": "https://www.coto.com.ar/",
+    "catalog_status": "price",
+    "promo_url": "https://static.cotodigital3.com.ar/sitios/cdigi/promo/promotions.jsp",
+    "promo_in_html": true,
+    "example": "Regador Sapo 1\" MAEZ (172293) — $3.349,00 (HTML, static.cotodigital3.com.ar)"
+  },
+  {
+    "chain": "Libertad",
+    "storefront": "https://www.hiperlibertad.com.ar/",
+    "catalog_status": "no-price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": null
+  },
+  {
+    "chain": "Makro",
+    "storefront": "https://makro.com.ar/",
+    "catalog_status": "no-price",
+    "promo_url": "https://makro.com.ar/beneficios-bancarios/",
+    "promo_in_html": true,
+    "example": null
+  },
+  {
+    "chain": "Diarco",
+    "storefront": "https://www.diarco.com.ar/",
+    "catalog_status": "no-price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": null
+  },
+  {
+    "chain": "Walmart",
+    "storefront": null,
+    "catalog_status": "no-price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": null
+  },
+  {
+    "chain": "Cooperativa Obrera",
+    "storefront": "https://www.lacoopeencasa.coop/",
+    "catalog_status": "no-price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": null
+  },
+  {
+    "chain": "La Gallega",
+    "storefront": "https://www.lagallega.com.ar/",
+    "catalog_status": "no-price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": null
+  },
+  {
+    "chain": "Supercoop",
+    "storefront": "https://www.supercoop.coop/",
+    "catalog_status": "no-price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": null
+  },
+  {
+    "chain": "Masivos",
+    "storefront": "https://www.masivos.com/",
+    "catalog_status": "no-price",
+    "promo_url": null,
+    "promo_in_html": false,
+    "example": null
+  }
+]

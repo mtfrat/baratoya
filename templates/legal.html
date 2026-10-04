@@ -4,82 +4,65 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% if page == "aviso-precios" %}Aviso de precios{% elif page == "terminos" %}Términos de uso{% else %}Privacidad{% endif %} — BaratoYa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --ink: #163300; --lime: #9fe870; --paper: #fff; --muted: #454745; --fog: #e8ebe6; --red: #cb272f; }
+    :root { --ink: #163300; --paper: #fff; --muted: #454745; --fog: #e8ebe6; }
     * { box-sizing: border-box; }
     body { margin: 0; color: var(--muted); background: var(--paper); font: 16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
     a { color: var(--ink); }
-    .nav { padding: 16px; border-bottom: 1px solid #d9ddd8; }
-    .nav a { font-weight: 700; text-decoration: none; }
-    main { width: min(100% - 32px, 820px); margin: 0 auto; padding: 48px 0 64px; }
-    .draft-banner { margin: 0 0 28px; padding: 14px 16px; border-left: 5px solid var(--red); background: #fff1f1; color: #6d171b; font-weight: 700; }
-    h1, h2, h3 { color: var(--ink); line-height: 1.2; }
-    h1 { margin: 0 0 12px; font-size: clamp(32px, 6vw, 52px); }
-    h2 { margin: 36px 0 12px; font-size: 28px; }
-    h3 { margin: 28px 0 8px; font-size: 20px; }
+    .nav { min-height: 64px; display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #d9ddd8; }
+    .nav a { font-weight: 700; text-decoration: none; letter-spacing: -0.02em; }
+    main { width: min(100% - 32px, 40rem); margin: 0 auto; padding: 48px 0 64px; }
+    h1, h2 { color: var(--ink); line-height: 1.2; letter-spacing: -0.02em; }
+    h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); font-weight: 600; }
+    h2 { margin: 32px 0 8px; font-size: 20px; }
     p { margin: 0 0 16px; }
-    ul { margin: 0 0 20px; padding-left: 24px; }
+    ul { margin: 0 0 16px; padding-left: 20px; }
     li { margin: 0 0 8px; }
-    .intro { color: var(--muted); font-size: 18px; }
-    .meta { padding: 16px; background: var(--fog); border-radius: 10px; }
-    footer { padding: 24px 16px 40px; background: #f7f8f6; color: #6a6c6a; }
-    footer .links { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-bottom: 12px; }
+    footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
+    footer .wrap { width: min(100% - 32px, 40rem); margin: 0 auto; }
   </style>
 </head>
 <body>
   <header class="nav"><a href="/">BaratoYa</a></header>
   <main>
-    <div class="draft-banner" role="note">BORRADOR — no publicar sin abogado<br><span>Borrador. Revisar con abogado antes de publicar.</span></div>
-
     {% if page == "aviso-precios" %}
       <h1>Aviso de precios</h1>
-      <p class="intro">Los precios de BaratoYa salen de terceros: Precios Claros y catálogos públicos de comercios (entre otros, Frávega, Cetrogar, Naldo, On City, Carrefour, Disco, Día y Mas Online). No somos la tienda. No vendemos el producto, no cobramos la compra y no confirmamos stock ni promociones.</p>
-      <p>Esos datos pueden estar desactualizados, incompletos o mal leídos. El precio que vale es el que te muestra el comercio al pagar, en el local o en su sitio. Si hay diferencia, manda el del comercio.</p>
-      <p>Mercado Libre todavía no está en la comparación.</p>
+      <p>El número grande es el precio que la cadena publica como el que se paga ahora. Si la tienda tacha otro, queda al lado y no se usa para comparar. Una promo de banco se muestra aparte y solo se resta cuando la letra de esa tarjeta lo permite, está vigente y el tope se conoce.</p>
+      <p>Esos números salen de lo que publican las cadenas y de Precios Claros. BaratoYa no pone un precio propio, no vende el producto y no confirma stock. El precio que vale es el del comercio al pagar.</p>
+      <p>Si una cadena no publica el precio del ítem, no aparece. No se inventa un descuento.</p>
 
     {% elif page == "terminos" %}
-      <h1>Términos de uso (beta)</h1>
-      <p class="intro">Borrador. Revisar con abogado antes de publicar.</p>
-      <h2>Qué es BaratoYa</h2>
-      <p>BaratoYa es un comparador de precios en beta, operado por Puna Tech (Martin Fraticelli). Te muestra precios que encontramos en fuentes públicas —Precios Claros y catálogos de comercios— para que compares. El sitio de la factory es puna-tech.com. Contacto: punatechba@gmail.com.</p>
-      <p>Hoy el uso es gratis. No hay cobro activo. Si más adelante hay planes pagos (por ejemplo alertas o una lista guardada), van a tener sus propias condiciones y no se activan con estos términos.</p>
-      <h2>Qué no prometemos</h2>
+      <h1>Términos de uso</h1>
+      <p>BaratoYa lo opera Puna Tech (Martin Fraticelli). Contacto: punatechba@gmail.com.</p>
+      <h2>Qué es</h2>
+      <p>Un comparador. Entrá, elegí un producto y el día, y ves el mismo ítem en las cadenas que publican un precio. No se compra el súper desde acá.</p>
+      <h2>La cuenta</h2>
+      <p>Sin cuenta no se busca. Las primeras cinco búsquedas se cuentan en el servidor, aunque no haya resultados. Después, la búsqueda se corta hasta que haya un plan pago. Hoy ese cobro no está activo: la página no muestra un precio ni simula un pago.</p>
+      <h2>Qué no promete</h2>
       <ul>
-        <li>Que el precio, el stock o la promo estén al día.</li>
-        <li>Que estén todos los comercios ni todos los productos. Mercado Libre no está conectado.</li>
-        <li>Que la compra salga bien: la venta es entre vos y el comercio.</li>
-        <li>Un resultado de búsqueda completo ni un orden que sea “el más barato real” en todo el país.</li>
+        <li>Que el precio, el stock o la promo coincidan con la caja.</li>
+        <li>Que estén todas las cadenas o todos los productos.</li>
+        <li>Que un descuento de banco se reste si la letra dice que no acumula, si no hay tope, o si la tarjeta está vencida u oculta.</li>
       </ul>
-      <h2>Uso aceptable</h2>
-      <p>Podés usar BaratoYa para comparar precios, para vos o para tu hogar o negocio.</p>
-      <p>No podés:</p>
-      <ul>
-        <li>sobrecargar el sitio con bots o scrapers masivos;</li>
-        <li>hacerte pasar por BaratoYa, por Puna Tech o por un comercio;</li>
-        <li>usar los datos para engañar a terceros (publicar un precio como si fuera oferta nuestra).</li>
-      </ul>
-      <p>Si el uso rompe el servicio o estos términos, podemos limitar o cortar el acceso.</p>
-      <h2>Responsabilidad</h2>
-      <p>BaratoYa se ofrece “como está”, en beta. No respondemos por decisiones de compra tomadas con un precio que después no coincidió, ni por caídas, errores de lectura o cambios en los sitios de terceros.</p>
-      <p>Esto no limita derechos que la ley argentina no deja renunciar (incluida la defensa del consumidor, cuando corresponda). Un abogado tiene que revisar si esta cláusula se puede mantener frente a un consumidor.</p>
-      <h2>Ley</h2>
-      <p>Estos términos se rigen por las leyes de la República Argentina. Salvo norma imperativa que fije otro fuero (por ejemplo, defensa del consumidor), las controversias se someten a los tribunales ordinarios de la Ciudad Autónoma de Buenos Aires.</p>
-      <p class="meta">Falta completar, antes de publicar: razón social, CUIT y domicilio del operador.</p>
+      <h2>Uso</h2>
+      <p>Podés usarlo para comparar, para vos. No podés sobrecargar el sitio, hacerte pasar por BaratoYa o por un comercio, ni publicar un precio como si fuera una oferta nuestra.</p>
+      <p>Se rige por las leyes de la República Argentina. Esto no limita derechos que la ley no deja renunciar.</p>
 
     {% else %}
-      <h1>Privacidad mínima</h1>
-      <p class="intro">Borrador. Revisar con abogado (Ley 25.326) antes de publicar. No estamos declarando inscripción en ningún registro.</p>
-      <p>Hoy BaratoYa casi no guarda datos personales.</p>
-      <p>Si te anotás en la lista de espera, guardamos el email que nos das, en forma local, solo para avisarte cuando haya novedades del producto. No vendemos esa lista. No la compartimos con tiendas ni con anunciantes.</p>
-      <p>No hace falta cuenta para buscar precios. No pedimos documento, tarjeta ni domicilio.</p>
-      <p>Para borrar tu email de la lista, escribinos a punatechba@gmail.com con el asunto “Borrar mi email — BaratoYa”. Lo sacamos de la lista local.</p>
-      <p>Si más adelante sumamos cookies, analítica u otros datos, actualizamos este texto antes de activarlos.</p>
-      <p class="meta">Responsable (dato conocido, sin CUIT ni domicilio todavía): Puna Tech · Martin Fraticelli · punatechba@gmail.com.</p>
+      <h1>Privacidad</h1>
+      <p>Para buscar hace falta una cuenta. Guardamos el mail y la contraseña a través del proveedor de cuentas (Supabase), y el texto de cada búsqueda con la fecha, para contar las cinco búsquedas y mostrar las anteriores de esa cuenta.</p>
+      <p>No guardamos números de tarjeta. El cobro, cuando exista, lo hace Mercado Pago. Volver de esa página no marca la cuenta como paga: solo lo hace el aviso que Mercado Pago manda al servidor.</p>
+      <p>No vendemos la lista de mails. Para borrar la cuenta, escribinos a punatechba@gmail.com con el asunto “Borrar mi cuenta — BaratoYa”.</p>
+      <p>Responsable: Puna Tech · Martin Fraticelli · punatechba@gmail.com.</p>
     {% endif %}
   </main>
   <footer>
-    <div class="links"><a href="/aviso-precios">Aviso de precios</a><a href="/terminos">Términos</a><a href="/privacidad">Privacidad</a></div>
-    <div>BaratoYa · Borrador. Revisar con abogado antes de publicar.</div>
+    <div class="wrap">
+      <p><a href="/">BaratoYa</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+    </div>
   </footer>
 </body>
 </html>

@@ -7,7 +7,7 @@ import os
 import re
 import sqlite3
 import unicodedata
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -27,6 +27,7 @@ try:
     from baratoya.super_cadenas import buscar_promos
     from baratoya.super_cadenas import buscar_super
     from baratoya.promos_hoy import catalogo as catalogo_promos
+    from baratoya import cuentas
 except ImportError:
     from electro import buscar_electro
     from super_cadenas import STORES as SUPER_STORES
@@ -36,6 +37,7 @@ except ImportError:
     from super_cadenas import buscar_promos
     from super_cadenas import buscar_super
     from promos_hoy import catalogo as catalogo_promos
+    import cuentas
 
 BASE = os.getenv("PRECIOS_CLAROS_BASE", "https://d3e6htiiul5ek9.cloudfront.net/prod").rstrip("/")
 API_KEY = os.getenv("PRECIOS_CLAROS_API_KEY", "").strip()
@@ -458,11 +460,98 @@ def _pc_tiene(data: Any) -> bool:
 _MESES = "ene feb mar abr may jun jul ago sep oct nov dic".split()
 
 
+# America/Buenos_Aires es UTC−3 todo el año. No etiquetar la hora UTC del servidor como ART.
+_ART = timezone(timedelta(hours=-3))
+
+
 def _leido_ahora() -> tuple[str, str]:
-    """Hora de esta lectura. No es un precio ni una promo."""
-    dt = datetime.now().astimezone()
-    texto = f"{dt.day} {_MESES[dt.month - 1]} {dt.year}, {dt:%H:%M} ART"
+    """Hora de esta lectura en Buenos Aires. No es un precio ni una promo."""
+    dt = datetime.now(_ART)
+    texto = f"{dt.day} {_MESES[dt.month - 1]} {dt.year}, {dt:%H:%M} (Buenos Aires)"
     return dt.isoformat(timespec="seconds"), texto
+
+
+def _con_cuenta(payload: dict[str, Any], quota: dict[str, Any]) -> dict[str, Any]:
+    payload = dict(payload)
+    payload["cuenta"] = _cuenta_publica(quota)
+    return payload
+
+
+def _cuenta_publica(quota: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "plan": quota.get("plan"),
+        "used": quota.get("used"),
+        "remaining": quota.get("remaining"),
+        "limit": quota.get("limit") or cuentas.FREE_LIMIT,
+    }
+
+
+async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONResponse:
+    """Sin sesión no se busca. El cupo se descuenta en Supabase antes de salir a las tiendas."""
+    if not cuentas.cupo_on():
+        return JSONResponse(
+            {
+                "ok": False,
+                "reason": "unconfigured",
+                "error": "El buscador pide una cuenta y este servidor no puede contarla. No se buscó.",
+            },
+            status_code=503,
+        )
+    token = cuentas.bearer(request.headers)
+    if not token:
+        return JSONResponse(
+            {
+                "ok": False,
+                "reason": "auth",
+                "error": "Sin cuenta no se busca. Entrá o creá una cuenta.",
+            },
+            status_code=401,
+        )
+    try:
+        user = await cuentas.usuario(token)
+    except Exception:
+        return JSONResponse(
+            {"ok": False, "reason": "auth", "error": "No se pudo verificar la sesión. No se buscó."},
+            status_code=503,
+        )
+    if not user:
+        return JSONResponse(
+            {"ok": False, "reason": "auth", "error": "La sesión no sirve. Volvé a entrar."},
+            status_code=401,
+        )
+    try:
+        quota = await cuentas.consumir(user["id"], q)
+    except Exception:
+        return JSONResponse(
+            {
+                "ok": False,
+                "reason": "quota_unavailable",
+                "error": "No se pudo contar la búsqueda en el servidor. No se buscó.",
+            },
+            status_code=503,
+        )
+    if not quota.get("ok"):
+        if quota.get("reason") == "quota":
+            return JSONResponse(
+                {
+                    "ok": False,
+                    "reason": "quota",
+                    "error": "Usaste las 5 búsquedas. Para seguir hace falta el plan, y el cobro tiene que estar activo.",
+                    "plan": quota.get("plan") or "free",
+                    "used": quota.get("used"),
+                    "remaining": 0,
+                    "limit": quota.get("limit") or cuentas.FREE_LIMIT,
+                },
+                status_code=402,
+            )
+        return JSONResponse(
+            {"ok": False, "reason": quota.get("reason") or "bad_query", "error": "Esa búsqueda no se contó."},
+            status_code=400,
+        )
+    quota["user_id"] = user["id"]
+    quota["email"] = user["email"]
+    quota["token"] = token
+    return quota
 
 
 def _presentar_super(q: str, data: Any, leido: str) -> Any:
@@ -492,10 +581,12 @@ async def home(request: Request):
     return templates.TemplateResponse(
         request,
         "index.html",
-        {"lat": CABA_LAT,
+        {
+            "lat": CABA_LAT,
             "lng": CABA_LNG,
             "paid_scrapers": ENABLE_PAID,
             "mla": ENABLE_MLA,
+            **cuentas.pagina_publica(),
         },
     )
 
@@ -534,6 +625,7 @@ async def promos_bancarias():
 
 @app.get("/api/buscar")
 async def buscar(
+    request: Request,
     q: str = Query(..., min_length=1),
     lat: float = Query(CABA_LAT),
     lng: float = Query(CABA_LNG),
@@ -544,6 +636,11 @@ async def buscar(
     if ENABLE_MLA:
         pass  # cableado off — requiere MLA_ACCESS_TOKEN / IP limpia
     q = _limpia_q(q)
+    if not q:
+        return JSONResponse({"ok": False, "error": "Escribí un producto."}, status_code=400)
+    gate = await _exigir_busqueda(request, q)
+    if isinstance(gate, JSONResponse):
+        return gate
     consultas = consultas_busqueda(q)
     cadenas_task = asyncio.create_task(buscar_super(q, consultas))
     promos_task = asyncio.create_task(buscar_promos())
@@ -593,14 +690,14 @@ async def buscar(
     if code != 200:
         # El snapshot es una lectura vieja: no se mezcla con precios de esta request.
         if cadenas.get("productos"):
-            return {
+            return _con_cuenta({
                 "http": 200,
                 "fuente": "mas_online",
                 "aviso": "Precios Claros no respondió. Solo precios leídos ahora del catálogo público de las cadenas que respondieron.",
                 "cadenas": cadenas.get("fuentes") or [],
                 "data": _presentar_super(q, {"productos": cadenas["productos"]}, leido),
                 **_consulta(),
-            }
+            }, gate)
         snap = SNAPSHOT_DIR / "last_ok.json"
         if snap.exists():
             body = _unwrap_snapshot(json.loads(snap.read_text()))
@@ -608,24 +705,23 @@ async def buscar(
             consulta = _consulta()
             consulta["leido"] = ""
             consulta["leido_texto"] = ""
-            return {
+            return _con_cuenta({
                 "http": code,
                 "fuente": "snapshot",
                 "aviso": "Live Precios Claros falló y las cadenas no trajeron precio. Mostrando el último snapshot local, que no es de esta lectura.",
                 "cadenas": cadenas.get("fuentes") or [],
                 "data": body,
                 **consulta,
-            }
-        return JSONResponse(
-            {
+            }, gate)
+        err = {
                 "http": code,
                 "fuente": "precios_claros",
                 "error": data,
                 "cadenas": cadenas.get("fuentes") or [],
                 **_consulta(),
-            },
-            status_code=502,
-        )
+            }
+        err["cuenta"] = _cuenta_publica(gate)
+        return JSONResponse(err, status_code=502)
     # guardar snapshot liviano (solo Precios Claros, sin mezclar otras cadenas)
     if _pc_tiene(data):
         try:
@@ -644,25 +740,114 @@ async def buscar(
         data = dict(data)
         data["productos"] = productos
     data = _presentar_super(q, _merge_cadenas(data, cadenas), leido)
-    return {
+    return _con_cuenta({
         "http": code,
         "fuente": "precios_claros_live",
         "cadenas": cadenas.get("fuentes") or [],
         "data": data,
         **_consulta(),
-    }
+    }, gate)
 
 
 @app.get("/api/electro")
 async def electro(
+    request: Request,
     q: str = Query("heladera", min_length=1, max_length=80),
 ):
     """Electrodomésticos: VTEX público (Fravega, Cetrogar, Naldo, On City). ML no se inventa."""
     if ENABLE_PAID:
         # Sigue apagado por defecto. Este endpoint no usa scrapers pagos.
         pass
-    data = await buscar_electro(q.strip())
-    return {"http": 200, "fuente": "vtex_publico", "data": data}
+    q = _limpia_q(q)
+    if not q:
+        return JSONResponse({"ok": False, "error": "Escribí un producto."}, status_code=400)
+    gate = await _exigir_busqueda(request, q)
+    if isinstance(gate, JSONResponse):
+        return gate
+    data = await buscar_electro(q)
+    return _con_cuenta({"http": 200, "fuente": "vtex_publico", "data": data}, gate)
+
+
+
+@app.get("/api/cuenta")
+async def ver_cuenta(request: Request):
+    if not cuentas.cuentas_on():
+        return JSONResponse(
+            {"ok": False, "error": "Las cuentas no están configuradas en este servidor."},
+            status_code=503,
+        )
+    token = cuentas.bearer(request.headers)
+    if not token:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "Sin sesión."}, status_code=401)
+    user = await cuentas.usuario(token)
+    if not user:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
+    perfil = await cuentas.leer_cuenta(token, user["id"])
+    return {
+        "ok": True,
+        "email": user["email"],
+        "plan": perfil["plan"],
+        "used": perfil["used"],
+        "remaining": perfil["remaining"],
+        "limit": perfil["limit"],
+        "cobro_activo": cuentas.cobro_on(),
+        "plan_label": cuentas.plan_label() if cuentas.cobro_on() else "",
+    }
+
+
+@app.get("/api/cuenta/busquedas")
+async def ver_busquedas(request: Request):
+    """Búsquedas pasadas. No es un carrito y no compra en el súper."""
+    if not cuentas.cuentas_on():
+        return JSONResponse({"ok": False, "error": "Las cuentas no están configuradas."}, status_code=503)
+    token = cuentas.bearer(request.headers)
+    if not token:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "Sin sesión."}, status_code=401)
+    user = await cuentas.usuario(token)
+    if not user:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
+    items = await cuentas.listar_busquedas(token, user["id"])
+    return {"ok": True, "items": items}
+
+
+@app.post("/api/cuenta/checkout")
+async def checkout_cuenta(request: Request):
+    if not cuentas.cuentas_on():
+        return JSONResponse({"ok": False, "error": "Las cuentas no están configuradas."}, status_code=503)
+    token = cuentas.bearer(request.headers)
+    if not token:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "Sin sesión."}, status_code=401)
+    user = await cuentas.usuario(token)
+    if not user:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
+    perfil = await cuentas.leer_cuenta(token, user["id"])
+    if perfil.get("plan") == "paid":
+        return {"ok": True, "already": True, "error": "Esta cuenta ya tiene búsquedas ilimitadas."}
+    result = await cuentas.crear_preferencia(user["id"], user["email"])
+    status = int(result.pop("status", 200))
+    return JSONResponse(result, status_code=status)
+
+
+@app.api_route("/api/mercadopago/webhook", methods=["GET", "POST"])
+async def mercadopago_webhook(request: Request):
+    body: dict[str, Any] = {}
+    if request.method == "POST":
+        ctype = request.headers.get("content-type", "")
+        if "application/json" in ctype:
+            try:
+                parsed = await request.json()
+            except Exception:
+                parsed = None
+            if isinstance(parsed, dict):
+                body = parsed
+        elif "form" in ctype:
+            form = await request.form()
+            body = {k: form.get(k) for k in form.keys()}
+    try:
+        result = await cuentas.procesar_aviso(dict(request.query_params), body)
+    except Exception:
+        return JSONResponse({"ok": False, "error": "No se pudo anotar el aviso."}, status_code=502)
+    return JSONResponse(result["body"], status_code=result["status"])
 
 
 @app.get("/health")
@@ -850,6 +1035,6 @@ async def alertas_revisar(request: Request):
     return {
         "ok": True,
         "email": email,
-        "aviso": "Relectura a pedido. No hay envío de mail ni una tarea programada. La búsqueda sigue libre.",
+        "aviso": "Relectura a pedido. No hay envío de mail ni una tarea programada.",
         "alertas": alertas,
     }

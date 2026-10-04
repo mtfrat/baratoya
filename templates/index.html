@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BaratoYa — el precio del súper en CABA, antes de salir</title>
-  <meta name="description" content="Mirá el precio mínimo, el máximo y la cantidad de sucursales de un producto en CABA, con datos de Precios Claros. La búsqueda es gratis y sin tope. La lista local no cobra ni manda mail." />
-  <meta property="og:title" content="BaratoYa — el precio del súper en CABA, antes de salir" />
-  <meta property="og:description" content="Mirá el precio mínimo, el máximo y la cantidad de sucursales de un producto en CABA, con datos de Precios Claros. La búsqueda es gratis y sin tope. La lista local no cobra ni manda mail." />
+  <title>BaratoYa — el mismo producto, en cada cadena, al precio de hoy</title>
+  <meta name="description" content="El mismo producto, en cada cadena, al precio de hoy. Hace falta una cuenta. Cinco búsquedas, contadas en el servidor. No se compra el súper desde acá." />
+  <meta property="og:title" content="BaratoYa — el mismo producto, en cada cadena, al precio de hoy" />
+  <meta property="og:description" content="El mismo producto, en cada cadena, al precio de hoy. Hace falta una cuenta. Cinco búsquedas, contadas en el servidor." />
   <meta name="theme-color" content="#163300" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,7 +32,7 @@
       --radius-inputs: 10px;
       --radius-buttons: 9999px;
       --radius-largecards: 28px;
-      --page-max: 1200px;
+      --page-max: 40rem;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -103,14 +103,14 @@
       line-height: 1.63;
     }
     h1 {
-      margin: 0 0 16px;
-      max-width: min(100%, 20em);
+      margin: 0 0 20px;
+      max-width: 18em;
       color: var(--color-obsidian);
       font-family: var(--font-wise-sans);
-      font-weight: 900;
-      font-size: clamp(32px, 4.4vw, 56px);
-      line-height: 1.15;
-      letter-spacing: -0.03em;
+      font-weight: 600;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
     }
     .sub {
       margin: 0 0 24px;
@@ -294,14 +294,14 @@
     }
     .dark .wrap { padding: 8px 0; }
     .dark h2 {
-      margin: 0 0 16px;
-      max-width: 16ch;
+      margin: 0 0 12px;
+      max-width: 22em;
       color: var(--color-lime-voltage);
       font-family: var(--font-wise-sans);
-      font-weight: 900;
-      font-size: clamp(36px, 8vw, 61px);
-      line-height: 0.95;
-      letter-spacing: -0.03em;
+      font-weight: 600;
+      font-size: 28px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
     }
     .dark p { margin: 0 0 12px; max-width: 40rem; font-size: 18px; line-height: 1.5; color: var(--color-paper); }
     .dark p:last-child { margin-bottom: 0; }
@@ -319,11 +319,11 @@
     }
     .split article p { font-size: 16px; color: var(--color-linen-mist); }
     h2.sec {
-      margin: 0 0 12px;
+      margin: 0 0 8px;
       color: var(--color-forest-ink);
-      font-weight: 700;
-      font-size: clamp(32px, 6vw, 45px);
-      line-height: 1.1;
+      font-weight: 600;
+      font-size: 28px;
+      line-height: 1.2;
       letter-spacing: -0.02em;
     }
     .lead { margin: 0 0 24px; max-width: 40rem; font-size: 18px; }
@@ -412,85 +412,106 @@
     }
     .guardar { margin-top: 12px; padding: 8px 16px; font-size: 14px; }
     .lista-note { margin: 6px 0 0; color: var(--color-slate); font-size: 14px; max-width: 40rem; }
+    .lista-min { margin-top: 16px; }
+    .lista-min summary { cursor: pointer; color: var(--color-forest-ink); font-size: 14px; font-weight: 600; }
+    .lista-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+    .lista-row input { max-width: 16rem; }
+    .lista-min .results:empty { display: none; }
     #mi-lista-msg { margin: 12px 0; min-height: 1.5em; color: var(--color-forest-ink); }
     .drop { color: var(--color-alarm-red); font-weight: 700; }
     .ok-flag { color: var(--color-spruce); font-weight: 600; }
 
     .store-cards {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin: 0 0 16px;
-    }
-    .store-card {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      padding: 16px 16px 14px;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+    .store-card {
+      display: block;
+      padding: 16px 18px 14px;
       background: var(--color-paper);
       border-radius: var(--radius-cards);
       box-shadow: var(--shadow-subtle);
       color: inherit;
-      text-decoration: none;
     }
-    a.store-card:hover { background: var(--color-linen-mist); }
     .store-card.barato {
-      background: var(--color-linen-mist);
-      box-shadow: 0 0 0 2px var(--color-spruce);
+      border-left: 3px solid var(--color-spruce);
+    }
+    .store-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
     }
     .store-name {
-      color: var(--color-slate);
+      margin: 0;
+      color: var(--color-forest-ink);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .store-mark {
+      margin: 0;
+      color: var(--color-spruce);
       font-size: 13px;
       font-weight: 600;
+      white-space: nowrap;
     }
-    .store-card.barato .store-name { color: var(--color-spruce); }
+    .store-product {
+      margin: 2px 0 0;
+      color: var(--color-charcoal);
+      font-size: 15px;
+      line-height: 1.35;
+    }
     .store-price {
+      margin: 10px 0 4px;
       color: var(--color-forest-ink);
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
       font-variant-numeric: tabular-nums;
-      line-height: 1.1;
+      line-height: 1;
     }
     .store-extra {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: baseline;
-      min-height: 0;
-    }
-    .store-extra:empty { display: none; }
-    .store-lista {
-      color: var(--color-pebble);
+      margin: 0;
+      color: var(--color-slate);
       font-size: 14px;
-      font-weight: 500;
-    }
-    .store-badge {
-      color: var(--color-spruce);
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .store-pum {
-      color: var(--color-charcoal);
-      font-size: 14px;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-    }
-    .store-promo {
-      margin: 6px 0 0;
-      color: var(--color-charcoal);
-      font-size: 13px;
       line-height: 1.4;
     }
-    .store-promo.off { color: var(--color-slate); }
+    .store-extra:empty { display: none; }
+    .store-extra s {
+      color: var(--color-pebble);
+      font-weight: 500;
+      text-decoration-thickness: 1px;
+    }
     .store-link {
-      margin-top: 6px;
-      color: var(--color-forest-ink);
+      display: inline-block;
+      margin-top: 8px;
+      color: var(--color-signal-blue);
       font-size: 14px;
       font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
-    .store-link.mute { color: var(--color-pebble); font-weight: 500; }
+    .store-legal {
+      margin-top: 8px;
+    }
+    .store-legal summary {
+      color: var(--color-pebble);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .store-legal p {
+      margin: 6px 0 0;
+      color: var(--color-slate);
+      font-size: 13px;
+      line-height: 1.45;
+    }
     .promo-browser { display: flex; flex-direction: column; gap: 28px; }
+    .promo-group summary { cursor: pointer; list-style: none; }
+    .promo-group summary::-webkit-details-marker { display: none; }
     .promo-group h3 {
       margin: 0 0 10px;
       color: var(--color-forest-ink);
@@ -545,14 +566,57 @@
       font-size: 14px;
     }
     .promo-notas li { margin: 0 0 6px; }
+
+    .regla {
+      margin: 4px 0 16px;
+      max-width: 40rem;
+      color: var(--color-charcoal);
+      font-size: 14px;
+    }
+    .cuenta {
+      margin: 8px 0 20px;
+      padding: 0;
+      background: transparent;
+    }
+    .cuenta h2 {
+      margin: 0 0 8px;
+      color: var(--color-forest-ink);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .cuenta p { margin: 0 0 8px; }
+    .cuenta-form { display: flex; flex-direction: column; gap: 8px; max-width: 36rem; }
+    .cuenta-sesion { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+    .cuenta-sesion p { margin: 0; color: var(--color-forest-ink); }
+    .busquedas { list-style: none; margin: 8px 0 0; padding: 0; }
+    .busquedas li { margin: 0; }
+    .busquedas button {
+      background: none;
+      border: 0;
+      padding: 4px 0;
+      color: var(--color-signal-blue);
+      font: 500 14px/1.45 var(--font-inter);
+      cursor: pointer;
+      text-align: left;
+    }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
+    .product { animation: card-in 220ms ease-out both; }
+    @media (prefers-reduced-motion: reduce) {
+      .product { animation: none; }
+    }
     @media (min-width: 720px) {
       .hero { padding: 64px 0 24px; }
       form.search { flex-direction: row; align-items: center; }
       form.search input[type="text"] { flex: 1; }
       form.search .btn.lime { width: auto; }
+      .cuenta-form { flex-direction: row; flex-wrap: wrap; align-items: center; }
+      .cuenta-form input[type="email"], .cuenta-form input[type="password"] { flex: 1; min-width: 12rem; }
       .btn-row { flex-direction: row; align-items: center; gap: 16px; }
       .prices { grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); }
-      .store-cards { grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr)); }
       .promo-grid { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
       .split { grid-template-columns: repeat(3, 1fr); gap: 32px; }
       .plans { grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
@@ -567,19 +631,15 @@
     <nav class="nav-links" aria-label="Secciones">
       <a href="#buscar">Buscar</a>
       <a href="#promos-bancarias">Promos</a>
-      <a href="#mi-lista">Mi lista</a>
-      <a href="#por-que-pagar">Por qué pagar</a>
-      <a href="#planes">Planes</a>
-      <a class="btn outline" href="#lista">Lista de espera</a>
+      <a href="#cuenta">Cuenta</a>
     </nav>
   </header>
 
   <main>
     <section class="hero">
       <div class="wrap">
-        <p class="eyebrow">Precios Claros · zona CABA {% if paid_scrapers %}<span class="badge paid-on">ENABLE_PAID_SCRAPERS=on</span>{% endif %}</p>
-        <h1>El precio del súper, antes de salir.</h1>
-        <p class="sub">El número grande es el precio de ahora, el que se paga. Si la tienda tacha otro, queda al lado y no se compara. La promo de banco de hoy va aparte, y solo se resta cuando la letra lo permite.</p>
+        <h1>El mismo producto, en cada cadena, al precio de hoy.</h1>
+        <p class="sub">El número grande es el que se paga ahora. El tachado queda al lado y no se compara.</p>
 
         <div class="modes" role="group" aria-label="Qué comparar">
           <button type="button" class="btn outline on" id="mode-super" data-mode="super">Súper</button>
@@ -593,12 +653,48 @@
           <button class="btn lime" id="go" type="submit">Buscar un precio</button>
         </form>
 
+        <p class="regla" id="regla-cupo">Sin cuenta no se busca. Las primeras {{ free_limit }} búsquedas se cuentan en el servidor.</p>
+        <div class="cuenta" id="cuenta">
+          <h2>Para buscar</h2>
+          <p id="cuenta-msg" role="status">{% if not cuentas_on %}Las cuentas no están configuradas en este servidor. El buscador no corre.{% endif %}</p>
+          {% if cuentas_on %}
+          <form class="cuenta-form" id="cuenta-form">
+            <label class="visually-hidden" for="cuenta-email">Mail</label>
+            <input id="cuenta-email" type="email" maxlength="200" autocomplete="username" placeholder="Mail" required />
+            <label class="visually-hidden" for="cuenta-pass">Contraseña</label>
+            <input id="cuenta-pass" type="password" minlength="6" maxlength="200" autocomplete="current-password" placeholder="Contraseña" required />
+            <div class="btn-row">
+              <button class="btn lime" type="submit" id="cuenta-entrar">Entrar</button>
+              <button class="btn outline" type="button" id="cuenta-crear">Crear cuenta</button>
+            </div>
+          </form>
+          <div class="cuenta-sesion" id="cuenta-sesion" hidden>
+            <p id="cuenta-estado"></p>
+            <button class="btn outline" type="button" id="cuenta-salir">Salir</button>
+            {% if cobro_on %}<button class="btn lime" type="button" id="pagar-plan">Pagar con Mercado Pago</button>{% endif %}
+          </div>
+          {% endif %}
+          <p class="lista-note">Búsquedas anteriores de esta cuenta. No es un carrito.</p>
+          <ul class="busquedas" id="busquedas-list"></ul>
+          <details class="lista-min" id="mi-lista" hidden>
+            <summary>Lista</summary>
+            <div class="lista-row">
+              <label class="visually-hidden" for="lista-email">Mail</label>
+              <input id="lista-email" name="lista-email" type="email" maxlength="200" autocomplete="email" placeholder="Mail" />
+              <button type="button" class="btn outline" id="ver-lista">Ver</button>
+              <button type="button" class="btn outline" id="revisar-alertas">Revisar si bajó</button>
+            </div>
+            <p id="mi-lista-msg" role="status"></p>
+            <div id="mi-lista-out" class="results"></div>
+          </details>
+        </div>
+
         <p id="meta" class="meta"></p>
         <p id="aviso" class="warn-flag" role="status"></p>
         <ul id="promos" class="promos" hidden></ul>
         <div id="estado" class="state">
           <p class="state-title">Todavía no buscaste.</p>
-          <p>Escribí un producto. Los números aparecen cuando Precios Claros responde. En esta página no hay precios de muestra.</p>
+          <p>Escribí un producto. Sin sesión no se busca, y acá no hay un precio de muestra.</p>
         </div>
         <div id="out" class="results" aria-live="polite"></div>
       </div>
@@ -617,133 +713,145 @@
         <ul id="promo-notas" class="promo-notas"></ul>
       </div>
     </section>
-
-    <section class="section dark" id="por-que-pagar">
-      <div class="wrap">
-        <h2>Lo gratis no te avisa cuando baja.</h2>
-        <p>Precios Claros es público. El mismo mínimo y el mismo máximo los puede mirar cualquiera. BaratoYa no vende ese dato. La búsqueda no tiene tope ni pide mail.</p>
-        <p>En este servidor ya podés guardar una lista y pedir que se releea el precio. Eso no cobra, no manda mail y no es una cuenta. Lo que seguiría siendo de pago, y todavía no se puede contratar, es que te llegue el aviso solo.</p>
-        <div class="split">
-          <article>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e2f6d5" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"/></svg>
-            <h3>Lista de compra</h3>
-            <p>Los productos que guardaste en este servidor, atados a un mail. No hay contraseña. Los $1.990 siguen sin poder cobrarse.</p>
-          </article>
-          <article>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e2f6d5" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9"/><path d="M10 21h4"/></svg>
-            <h3>Aviso de precio</h3>
-            <p>La fila se marca si el precio releído es menor al que guardaste. No hay envío de mail ni una tarea programada: hay que pedirlo.</p>
-          </article>
-          <article>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e2f6d5" stroke-width="2" aria-hidden="true"><path d="M4 19V5M4 19h16"/><path d="M8 15l4-5 3 3 5-7"/></svg>
-            <h3>Historial</h3>
-            <p>Cómo se movió el mínimo, no una foto de hoy. No se guarda una serie de precios.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="planes">
-      <div class="wrap">
-        <h2 class="sec">Planes. Los pagos son una hipótesis.</h2>
-        <p class="lead">No hay checkout ni Stripe. $0 es lo que ya podés usar. Los otros dos números no salen de una entrevista ni de ventas: están para discutirlos.</p>
-        <div class="plans">
-          <article class="plan">
-            <header>
-              <h3>Buscar</h3>
-              <span class="tag">Ya funciona</span>
-            </header>
-            <p class="price">$0 <small>por búsqueda, sin cuenta</small></p>
-            <ul>
-              <li>Mínimo, máximo y sucursales en CABA.</li>
-              <li>Fuente: Precios Claros, en vivo.</li>
-              <li>Nada se guarda a tu nombre.</li>
-            </ul>
-            <a class="btn outline" href="#buscar">Buscar un precio</a>
-          </article>
-          <article class="plan">
-            <header>
-              <h3>Lista</h3>
-              <span class="tag hip">HIPÓTESIS</span>
-            </header>
-            <p class="price">$1.990 <small>por mes · no se puede contratar</small></p>
-            <ul>
-              <li>Una lista en este servidor, con el mail como clave. No es una cuenta.</li>
-              <li>Un pedido relee el precio y marca la fila si bajó. No manda mail ni corre solo.</li>
-              <li>$1.990 no se puede contratar. No hay Mercado Pago ni Stripe.</li>
-            </ul>
-            <a class="btn lime" href="#mi-lista">Probar la lista local</a>
-          </article>
-          <article class="plan">
-            <header>
-              <h3>Historial</h3>
-              <span class="tag hip">HIPÓTESIS</span>
-            </header>
-            <p class="price">$4.900 <small>por mes · no se puede contratar</small></p>
-            <ul>
-              <li>Varias listas.</li>
-              <li>Historial del precio mínimo y más avisos.</li>
-              <li>Todavía no está construido.</li>
-            </ul>
-            <a class="btn outline" href="#lista" data-plan="historial">Anotarme en la lista de espera</a>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="mi-lista" style="padding-top: 0;">
-      <div class="wrap">
-        <h2 class="sec">Tu lista en este servidor</h2>
-        <p class="lead">No es una cuenta. El mail de esta sección es la clave, nada más. La búsqueda de arriba no lo usa y funciona con el mail vacío. Nadie te escribe si baja el precio: el botón relee y marca la fila.</p>
-        <div class="field" style="max-width: 32rem; margin-bottom: 16px;">
-          <label for="lista-email"><span>Mail para la lista</span></label>
-          <input id="lista-email" name="lista-email" type="email" maxlength="200" autocomplete="email" placeholder="tu@mail.com" />
-          <p class="lista-note">Esto es local y no es un login. No hay contraseña ni cuenta: el mail solo agrupa filas en la base de este servidor. Quien escriba el mismo mail ve la misma lista. No hace falta para buscar.</p>
-        </div>
-        <div class="btn-row">
-          <button type="button" class="btn outline" id="ver-lista">Ver mi lista</button>
-          <button type="button" class="btn lime" id="revisar-alertas">Revisar si bajó</button>
-        </div>
-        <p id="mi-lista-msg" role="status"></p>
-        <div id="mi-lista-out" class="results"></div>
-      </div>
-    </section>
-
-    <section class="section" id="lista" style="padding-top: 0;">
-      <div class="wrap">
-        <div class="wait">
-          <h2 class="sec">Lista de espera</h2>
-          <p class="lead">La lista local ya se puede probar arriba. Dejá el mail acá si querés enterarte cuando eso se pueda cobrar o cuando el aviso salga por mail. Queda en la misma base de este servidor. No hay mail de confirmación y no se cobra nada.</p>
-          <form class="waitlist" id="espera">
-            <div class="field">
-              <label for="email"><span>Mail</span></label>
-              <input id="email" name="email" type="email" required maxlength="200" autocomplete="email" placeholder="tu@mail.com" />
-            </div>
-            <div class="field">
-              <label for="plan"><span>Qué te interesa</span></label>
-              <select id="plan" name="plan">
-                <option value="lista">Lista — $1.990/mes, hipótesis</option>
-                <option value="historial">Historial — $4.900/mes, hipótesis</option>
-                <option value="no-se">Todavía no sé</option>
-              </select>
-            </div>
-            <button class="btn lime" type="submit">Anotarme en la lista de espera</button>
-            <p id="lista-msg" role="status"></p>
-          </form>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <p>BaratoYa lee la API pública de Precios Claros para CABA (lat {{ lat }}, lng {{ lng }}). En súper también muestra el precio de venta del catálogo público de Día, Carrefour, Mas Online (ex Chango Más), Jumbo, Disco, Vea, Cordiez, Toledo, Josimar, El Abastecedor, Comodín, La Anónima y Super Mami, cuando esa cadena devuelve un precio. Coto Digital no entra si el listado responde bloqueado. Makro no tiene precio de producto. No es un organismo oficial y no agrega un precio propio.</p>
-      <p>Electro compara Fravega, Cetrogar, Naldo y On City por el catálogo VTEX público, sin scraper pago. Mercado Libre: no disponible desde este servidor. Cobro (Mercado Pago o Stripe): sin implementar. La lista y la marca de baja viven en la misma SQLite local que la lista de espera. No hay login ni envío de mail.</p>
+      <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
       <p><a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
   </footer>
 
   <script>
+
+    const CUENTA = {
+      url: {{ supabase_url|tojson }},
+      anon: {{ supabase_anon_key|tojson }},
+      on: {{ cuentas_on|tojson }},
+      cobro: {{ cobro_on|tojson }},
+      limit: {{ free_limit|tojson }}
+    };
+    const SESION_KEY = "baratoya-sesion";
+    function leerSesion() {
+      try { return JSON.parse(localStorage.getItem(SESION_KEY) || "null"); }
+      catch (_) { return null; }
+    }
+    function guardarSesion(j) {
+      if (!j || !j.access_token) return false;
+      localStorage.setItem(SESION_KEY, JSON.stringify({
+        access_token: j.access_token,
+        refresh_token: j.refresh_token || "",
+        expires_at: j.expires_at || 0
+      }));
+      return true;
+    }
+    function borrarSesion() {
+      try { localStorage.removeItem(SESION_KEY); } catch (_) {}
+    }
+    async function authPost(path, body) {
+      const r = await fetch(CUENTA.url + path, {
+        method: "POST",
+        headers: { "apikey": CUENTA.anon, "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(body)
+      });
+      let j = null;
+      try { j = await r.json(); } catch (_) { j = null; }
+      return { ok: r.ok, status: r.status, j: j };
+    }
+    async function tokenFresco() {
+      const s = leerSesion();
+      if (!s || !s.access_token) return "";
+      const now = Math.floor(Date.now() / 1000);
+      if (!s.expires_at || s.expires_at - 30 > now) return s.access_token;
+      if (!s.refresh_token || !CUENTA.on) return s.access_token;
+      const res = await authPost("/auth/v1/token?grant_type=refresh_token", { refresh_token: s.refresh_token });
+      if (res.ok && guardarSesion(res.j)) return res.j.access_token;
+      return "";
+    }
+    async function headersAuth(extra) {
+      const h = Object.assign({ "Accept": "application/json" }, extra || {});
+      const t = await tokenFresco();
+      if (t) h.Authorization = "Bearer " + t;
+      return h;
+    }
+    function notaCuenta(j) {
+      const c = j && j.cuenta;
+      if (!c) return "";
+      if (c.plan === "paid") return "Búsquedas ilimitadas. ";
+      if (c.remaining != null) return "Te quedan " + c.remaining + " de " + (c.limit || CUENTA.limit || 5) + ". ";
+      return "";
+    }
+    function msgAuth(j) {
+      const raw = (j && (j.msg || j.error_description || j.message || j.error)) || "";
+      const s = String(raw);
+      if (/already registered|already exists/i.test(s)) return "Ese mail ya tiene cuenta. Entrá.";
+      if (/invalid login|invalid credentials/i.test(s)) return "Mail o contraseña no sirven.";
+      if (/password/i.test(s) && /short|least/i.test(s)) return "La contraseña tiene que tener al menos 6 caracteres.";
+      if (s) return "No se pudo. Revisá el mail y la contraseña.";
+      return "No se pudo hablar con la cuenta.";
+    }
+    async function pintarBusquedas(items) {
+      const list = document.getElementById("busquedas-list");
+      if (!list) return;
+      const rows = Array.isArray(items) ? items : [];
+      list.innerHTML = rows.map((it) => "<li><button type=\"button\">" + esc(it.query) + "</button></li>").join("");
+    }
+    async function refrescarCuenta() {
+      const formEl = document.getElementById("cuenta-form");
+      const sesEl = document.getElementById("cuenta-sesion");
+      const estado = document.getElementById("cuenta-estado");
+      const msg = document.getElementById("cuenta-msg");
+      if (!CUENTA.on) {
+        if (formEl) formEl.hidden = true;
+        if (msg && !msg.textContent) msg.textContent = "Las cuentas no están configuradas en este servidor. El buscador no corre.";
+        return;
+      }
+      const t = await tokenFresco();
+      if (!t) {
+        if (formEl) formEl.hidden = false;
+        if (sesEl) sesEl.hidden = true;
+        await pintarBusquedas([]);
+        return;
+      }
+      const r = await fetch("/api/cuenta", { headers: await headersAuth() });
+      let j = null;
+      try { j = await r.json(); } catch (_) { j = null; }
+      if (!r.ok || !j || !j.ok) {
+        if (r.status === 401) borrarSesion();
+        if (formEl) formEl.hidden = false;
+        if (sesEl) sesEl.hidden = true;
+        return;
+      }
+      if (formEl) formEl.hidden = true;
+      if (sesEl) sesEl.hidden = false;
+      let linea = (j.email || "Sesión abierta") + ". ";
+      if (j.plan === "paid") linea += "Búsquedas ilimitadas.";
+      else linea += "Usadas " + j.used + " de " + (j.limit || 5) + ".";
+      if (!j.cobro_activo && j.plan !== "paid") linea += " El cobro todavía no está activo.";
+      if (estado) estado.textContent = linea;
+      const pagar = document.getElementById("pagar-plan");
+      if (pagar) pagar.hidden = j.plan === "paid";
+      const br = await fetch("/api/cuenta/busquedas", { headers: await headersAuth() });
+      let bj = null;
+      try { bj = await br.json(); } catch (_) { bj = null; }
+      await pintarBusquedas(bj && bj.items || []);
+    }
+    function corteBusqueda(r, j) {
+      if (r.status !== 401 && r.status !== 402 && r.status !== 503) return false;
+      const crudo = String((j && j.error) || "");
+      const humano = crudo.replace(/HTTP\s*\d+/gi, "").replace(/\b(401|402|503)\b/g, "").replace(/\s+/g, " ").trim();
+      if (r.status === 402) {
+        setState("error", "Ya usaste las cinco búsquedas.", humano || "Para seguir, el cobro tiene que estar activo. Desde acá no se compra el súper.");
+        return true;
+      }
+      if (r.status === 503) {
+        setState("error", "Ahora no puedo buscar.", humano || "No pude contar la búsqueda. No hay un precio para mostrar.");
+        return true;
+      }
+      setState("error", "Hace falta entrar.", humano || "Sin sesión no se busca.");
+      return true;
+    }
+
     const form = document.getElementById("buscar");
     const out = document.getElementById("out");
     const meta = document.getElementById("meta");
@@ -769,6 +877,7 @@
       return (listaEmailInput && listaEmailInput.value || "").trim();
     }
     function botonGuardar(p, i) {
+      return "";
       const precio = p.tienda ? p.precio : p.precioMin;
       if (typeof precio !== "number" || !(precio > 0)) return "";
       if (!(p.nombre || p.id)) return "";
@@ -817,10 +926,13 @@
     }
     function renderLista(items) {
       const box = document.getElementById("mi-lista-out");
+      if (!box) return;
       if (!items.length) {
-        box.innerHTML = "<div class=\"state\"><p class=\"state-title\">Esta lista está vacía.</p><p>Buscá un producto y guardalo. La búsqueda no pide mail.</p></div>";
+        box.innerHTML = "";
         return;
       }
+      const det = document.getElementById("mi-lista");
+      if (det) det.open = true;
       box.innerHTML = items.map((it) => {
         let estado;
         if (!it.revisado_at) estado = "<p class=\"pres\">Todavía no se releyó el precio.</p>";
@@ -865,9 +977,9 @@
       document.getElementById("mode-electro").classList.toggle("on", mode === "electro");
       if (mode === "electro") {
         qInput.placeholder = "Heladera, televisor, lavarropas…";
-        if (!qInput.value.trim() || qInput.dataset.autofill === "1") {
-          qInput.value = "heladera";
-          qInput.dataset.autofill = "1";
+        if (qInput.dataset.autofill === "1") {
+          qInput.value = "";
+          delete qInput.dataset.autofill;
         }
       } else {
         qInput.placeholder = "Yerba, leche, aceite…";
@@ -933,32 +1045,23 @@
     function renderElectro(data, q) {
       const items = Array.isArray(data.productos) ? data.productos : [];
       const fuentes = Array.isArray(data.fuentes) ? data.fuentes : [];
-      const bits = fuentes.map((f) => {
-        if (f.aviso) return f.tienda + ": " + f.aviso;
-        return f.tienda + " HTTP " + f.http + " (" + (f.n || 0) + ")";
-      });
-      meta.textContent = "Fuente: catálogo VTEX público. " + bits.join(" · ");
-      aviso.className = "warn-flag on";
-      aviso.textContent = "Mercado Libre: no disponible desde este servidor. No hay resultados inventados de esa tienda.";
+      const quienes = fuentes.filter((f) => f && f.n).map((f) => f.tienda);
+      meta.textContent = notaCuenta(window.__ultima) + (quienes.length ? "Respondieron " + quienes.join(", ") + "." : "Ninguna tienda publicó un precio.");
       if (!items.length) {
-        setState("empty", "Nada con precio para «" + q + "».", "Las tiendas libres no devolvieron un producto con precio. Mercado Libre no se usa desde este servidor.");
+        setState("empty", "No encontré «" + q + "».", "Esas tiendas no publicaron un precio.");
         return;
       }
       estado.hidden = true;
       estado.innerHTML = "";
       lastItems = items;
       out.innerHTML = items.map((p, i) => {
-        const link = p.url ? "<p class=\"pres\"><a class=\"ext\" href=\"" + esc(p.url) + "\" rel=\"noopener noreferrer\">Ver en " + esc(p.tienda) + "</a></p>" : "<p class=\"pres\"></p>";
-        return "<article class=\"product\">" +
-          "<p class=\"brand\">" + esc(p.marca || p.tienda) + "</p>" +
-          "<h3>" + esc(p.nombre) + "</h3>" +
+        const link = p.url ? "<a class=\"store-link\" href=\"" + esc(p.url) + "\" rel=\"noopener noreferrer\">Ver precio</a>" : "";
+        return "<article class=\"product\"><div class=\"store-card\">" +
+          "<p class=\"store-name\">" + esc(p.tienda || p.marca || "") + "</p>" +
+          "<p class=\"store-product\">" + esc(p.nombre) + "</p>" +
+          "<p class=\"store-price\">" + esc(money(p.precio)) + "</p>" +
           link +
-          "<div class=\"prices\">" +
-            "<div><span>Precio en " + esc(p.tienda) + "</span><strong>" + esc(money(p.precio)) + "</strong></div>" +
-          "</div>" +
-          "<span class=\"badge\">" + esc(p.tienda) + " · VTEX público</span>" +
-          botonGuardar(p, i) +
-        "</article>";
+        "</div>" + botonGuardar(p, i) + "</article>";
       }).join("");
     }
     function setState(kind, title, body) {
@@ -978,26 +1081,33 @@
       aviso.textContent = "";
       meta.textContent = "";
       if (promosEl) { promosEl.hidden = true; promosEl.innerHTML = ""; }
-      setState("loading", mode === "electro" ? "Buscando en tiendas de electro…" : "Buscando el mismo producto en los catálogos públicos…", "Sin precios inventados mientras tanto.");
+      setState("loading", "Estoy buscando.", "Leo lo que publican las cadenas. Todavía no hay un número.");
+      if (CUENTA.on && !(await tokenFresco())) {
+        setState("error", "Hace falta entrar.", "Sin sesión no se busca. No hay una búsqueda de muestra.");
+        document.getElementById("cuenta")?.scrollIntoView({ block: "nearest" });
+        return;
+      }
       go.disabled = true;
       try {
         if (mode === "electro") {
-          const r = await fetch("/api/electro?q=" + encodeURIComponent(q));
+          const r = await fetch("/api/electro?q=" + encodeURIComponent(q), { headers: await headersAuth() });
           let j = null;
           try { j = await r.json(); } catch (_) { j = null; }
+          if (corteBusqueda(r, j)) return;
+          window.__ultima = j;
           if (!r.ok || !j || !j.data) {
-            setState("error", "No pudimos leer las tiendas de electro.", "La búsqueda falló. No mostramos un precio inventado. Reintentá.");
+            setState("error", "No pude leer esas tiendas.", "Probá de nuevo. No inventé un precio.");
             return;
           }
           renderElectro(j.data, q);
           return;
         }
-        const r = await fetch("/api/buscar?q=" + encodeURIComponent(q) + "&lat=" + encodeURIComponent(lat) + "&lng=" + encodeURIComponent(lng) + "&limit=20");
+        const r = await fetch("/api/buscar?q=" + encodeURIComponent(q) + "&lat=" + encodeURIComponent(lat) + "&lng=" + encodeURIComponent(lng) + "&limit=20", { headers: await headersAuth() });
         let j = null;
         try { j = await r.json(); } catch (_) { j = null; }
+        if (corteBusqueda(r, j)) return;
         if (!r.ok || !j) {
-          const detalle = j && j.http != null ? " HTTP de origen " + j.http + "." : "";
-          setState("error", "No pudimos leer Precios Claros.", "La búsqueda falló." + detalle + " No mostramos un precio inventado. Reintentá.");
+          setState("error", "No pude leer los precios.", "Probá de nuevo. No inventé un número.");
           return;
         }
         if (j.fuente === "snapshot") {
@@ -1006,17 +1116,10 @@
         }
         const parsed = productosDe(j);
         const cadenas = Array.isArray(j.cadenas) ? j.cadenas : [];
-        const cadenaTxt = cadenas.map((f) => {
-          if (f.error) return f.tienda + ": " + f.error;
-          if (f.aviso) return f.tienda + ": " + f.aviso;
-          return f.tienda + " HTTP " + f.http + " (" + (f.n || 0) + ")";
-        }).join(" · ");
-        const fuente = j.fuente === "snapshot"
-          ? "snapshot local de Precios Claros"
-          : (j.fuente === "mas_online" ? "Precios Claros no respondió" : "Precios Claros en vivo");
-        const totalTxt = "";
+        const respondieron = cadenas.filter((f) => f && f.n && !f.error).map((f) => f.tienda);
         const leidoTxt = j.leido_texto ? "Precios leídos el " + j.leido_texto + ". " : "";
-        meta.textContent = leidoTxt + "Fuente: " + fuente + "." + (cadenaTxt ? " " + cadenaTxt + "." : "") + " Resultados: " + parsed.items.length + "." + totalTxt;
+        const quienesTxt = respondieron.length ? "Respondieron " + respondieron.join(", ") + "." : "";
+        meta.textContent = (notaCuenta(j) + leidoTxt + quienesTxt).trim();
         if (promosEl) {
           promosEl.hidden = true;
           promosEl.innerHTML = "";
@@ -1032,50 +1135,32 @@
           aviso.textContent = aviso.textContent ? (j.aviso + " " + aviso.textContent) : j.aviso;
         }
         if (!parsed.items.length) {
-          setState("empty", "Nada para «" + q + "» en esta zona.", "Ninguna cadena con catálogo público devolvió ese producto con precio. Probá con otra palabra. La zona de Precios Claros está fija en CABA.");
+          setState("empty", "No encontré «" + q + "».", "Ninguna cadena publicó un precio para eso. Probá con otra palabra.");
           return;
         }
         estado.hidden = true;
         estado.innerHTML = "";
         const badge = j.fuente === "snapshot" ? "Precios Claros · snapshot" : "Precios Claros";
         lastItems = parsed.items;
-        function quienes(nombres) {
-          if (!nombres || !nombres.length) return "";
-          if (nombres.length === 1) return nombres[0];
-          if (nombres.length === 2) return nombres[0] + " y " + nombres[1];
-          return nombres.slice(0, -1).join(", ") + " y " + nombres[nombres.length - 1];
-        }
+        parsed.items.forEach((p) => {
+          if (!Array.isArray(p.ofertas) || !p.ofertas.length) return;
+          const marcadas = marcarPorPrecio(p.ofertas);
+          p.ofertas = marcadas;
+          p.mas_barato = marcadas.filter((o) => o.barato).map((o) => o.tienda);
+        });
         out.innerHTML = parsed.items.map((p, i) => {
           if (Array.isArray(p.ofertas) && p.ofertas.length) {
-            const cards = p.ofertas.map(tarjetaTienda).join("");
-            const baratos = Array.isArray(p.mas_barato) && p.mas_barato.length
-              ? p.mas_barato
-              : p.ofertas.filter((o) => o.barato).map((o) => o.tienda);
-            const tam = p.tamano ? " · " + esc(p.tamano) : "";
-            const cuando = j.leido_texto ? "Leído el " + esc(j.leido_texto) + ". " : "";
+            const cards = p.ofertas.map((o) => tarjetaTienda(o, p.nombre)).join("");
+            const tam = p.tamano ? "<p class=\"pres\">" + esc(p.tamano) + "</p>" : "";
             return "<article class=\"product\">" +
-              (p.marca ? "<p class=\"brand\">" + esc(p.marca) + "</p>" : "") +
               "<h3>" + esc(p.nombre || "Sin nombre") + "</h3>" +
-              "<p class=\"pres\">" + cuando + "Más barato por lo que se paga hoy: " + esc(quienes(baratos)) + tam + ".</p>" +
+              tam +
               "<div class=\"store-cards\">" + cards + "</div>" +
-              "<span class=\"badge\">Mismo producto</span>" +
               botonGuardar(p, i) +
             "</article>";
           }
           if (p.tienda) {
-            const link = p.url
-              ? "<p class=\"pres\"><a class=\"ext\" href=\"" + esc(p.url) + "\" rel=\"noopener noreferrer\">Ver en " + esc(p.tienda) + "</a></p>"
-              : "<p class=\"pres\"></p>";
-            return "<article class=\"product\">" +
-              "<p class=\"brand\">" + esc(p.marca || p.tienda) + "</p>" +
-              "<h3>" + esc(p.nombre || "Sin nombre") + "</h3>" +
-              link +
-              "<div class=\"prices\">" +
-                "<div><span>Precio en " + esc(p.tienda) + "</span><strong>" + esc(money(p.precio)) + "</strong></div>" +
-              "</div>" +
-              "<span class=\"badge\">" + esc(badgeCadena(p)) + "</span>" +
-              botonGuardar(p, i) +
-            "</article>";
+            return "<article class=\"product\">" + tarjetaTienda(p, p.nombre) + botonGuardar(p, i) + "</article>";
           }
           const nombre = p.nombre || p.descripcion || p.id || "Sin nombre";
           const marca = p.marca || "";
@@ -1094,44 +1179,69 @@
           "</article>";
         }).join("");
       } catch (err) {
-        setState("error", "No pudimos leer Precios Claros.", "Falló la conexión con este servidor. No hay un precio de relleno. Reintentá.");
+        setState("error", "No pude leer los precios.", "Se cortó la conexión. Probá de nuevo. No inventé un número.");
       } finally {
         go.disabled = false;
+        refrescarCuenta().catch(() => {});
       }
     });
 
 
-    function tarjetaTienda(o) {
-      const barato = o.barato ? " barato" : "";
-      const pum = (typeof o.pum === "number" && o.pum > 0 && o.pum_unidad)
-        ? "<span class=\"store-pum\">" + esc(money(o.pum)) + "/" + esc(o.pum_unidad) + "</span>"
-        : "";
-      const lista = (typeof o.precio_lista === "number" && o.precio_lista > o.precio)
-        ? "<s class=\"store-lista\">" + esc(money(o.precio_lista)) + "</s>"
-        : "";
-      const badge = (typeof o.descuento_tienda === "number" && o.descuento_tienda > 0)
-        ? "<span class=\"store-badge\">" + esc(String(o.descuento_tienda)) + "% en la tienda</span>"
-        : "";
-      let promo = "";
-      if (o.promo && o.promo.aplicada) {
-        promo = "<p class=\"store-promo\">Promo de hoy, aparte: " + esc(o.promo.banco || "") + " " + esc(o.promo.descuento || "") +
-          (o.promo.tope ? ". Tope " + esc(o.promo.tope) : "") +
-          ". Con esa promo, " + esc(money(o.promo.total)) + ".</p>";
-      } else if (o.promo && o.promo.aplicada === false && o.promo.motivo) {
-        promo = "<p class=\"store-promo off\">No se restó. " + esc(o.promo.motivo) + "</p>";
+    function precioQueSePaga(o) {
+      const n = Number(o && o.precio);
+      return Number.isFinite(n) && n > 0 ? n : null;
+    }
+    function marcarPorPrecio(ofertas) {
+      const nums = ofertas.map(precioQueSePaga).filter((n) => n != null);
+      const piso = nums.length ? Math.min.apply(null, nums) : null;
+      return ofertas.map((o) => Object.assign({}, o, {
+        barato: piso != null && precioQueSePaga(o) === piso
+      })).sort((a, b) => (precioQueSePaga(a) == null ? 1 : precioQueSePaga(a)) - (precioQueSePaga(b) == null ? 1 : precioQueSePaga(b)));
+    }
+    function promoAplicada(o) {
+      const promo = o && o.promo;
+      if (!promo || promo.aplicada !== true || promo.motivo) return null;
+      const total = Number(promo.total);
+      const precio = precioQueSePaga(o);
+      if (!Number.isFinite(total) || precio == null || !(total < precio)) return null;
+      return promo;
+    }
+    function tarjetaTienda(o, nombreGrupo) {
+      const promo = o.promo || null;
+      const aplicada = promoAplicada(o);
+      const bits = [];
+      if (typeof o.precio_lista === "number" && o.precio_lista > o.precio) {
+        bits.push("<s>" + esc(money(o.precio_lista)) + "</s>");
+      }
+      if (typeof o.pum === "number" && o.pum > 0 && o.pum_unidad) {
+        bits.push(esc(money(o.pum)) + "/" + esc(o.pum_unidad));
+      }
+      if (aplicada) {
+        const banco = [aplicada.banco, aplicada.descuento].filter(Boolean).join(" ");
+        bits.push(esc(banco ? banco + ", " + money(aplicada.total) : money(aplicada.total)));
+      } else if (promo && promo.banco) {
+        bits.push(esc(promo.banco));
+      }
+      const extra = bits.length ? "<p class=\"store-extra\">" + bits.join(" · ") + "</p>" : "";
+      let legal = "";
+      if (promo && !aplicada && promo.motivo) {
+        legal = "<details class=\"store-legal\"><summary>Letra de la promo</summary><p>" + esc(promo.motivo) + "</p></details>";
+      } else if (aplicada && aplicada.tope) {
+        legal = "<details class=\"store-legal\"><summary>Letra de la promo</summary><p>Tope " + esc(aplicada.tope) + ".</p></details>";
       }
       const link = o.url
-        ? "<span class=\"store-link\">Ver precio</span>"
-        : "<span class=\"store-link mute\">Sin link público</span>";
-      const inner =
-        "<span class=\"store-name\">" + esc(o.tienda || "Tienda") + (o.barato ? " · más barato" : "") + "</span>" +
-        "<span class=\"store-price\">" + esc(money(o.precio)) + "</span>" +
-        "<span class=\"store-extra\">" + lista + badge + "</span>" +
-        pum + promo + link;
-      if (o.url) {
-        return "<a class=\"store-card" + barato + "\" href=\"" + esc(o.url) + "\" rel=\"noopener noreferrer\">" + inner + "</a>";
-      }
-      return "<div class=\"store-card" + barato + "\">" + inner + "</div>";
+        ? "<a class=\"store-link\" href=\"" + esc(o.url) + "\" rel=\"noopener noreferrer\">Ver precio</a>"
+        : "";
+      const nombre = o.nombre || nombreGrupo || "";
+      return "<div class=\"store-card" + (o.barato ? " barato" : "") + "\">" +
+        "<div class=\"store-top\">" +
+          "<p class=\"store-name\">" + esc(o.tienda || "Tienda") + "</p>" +
+          (o.barato ? "<p class=\"store-mark\">La más barata</p>" : "") +
+        "</div>" +
+        (nombre ? "<p class=\"store-product\">" + esc(nombre) + "</p>" : "") +
+        "<p class=\"store-price\">" + esc(money(o.precio)) + "</p>" +
+        extra + link + legal +
+      "</div>";
     }
 
     function promoCard(c) {
@@ -1162,8 +1272,9 @@
         if (!items.length) return "";
         const titulo = promoVista === "banco" ? (g.banco || "") : (g.dia || "");
         const marca = g.hoy ? " <span class=\"hoy\">hoy</span>" : "";
-        return "<div class=\"promo-group\"><h3>" + esc(titulo) + marca + "</h3><div class=\"promo-grid\">" +
-          items.map(promoCard).join("") + "</div></div>";
+        const abierto = g.hoy ? " open" : "";
+        return "<details class=\"promo-group\"" + abierto + "><summary><h3>" + esc(titulo) + marca + "</h3></summary><div class=\"promo-grid\">" +
+          items.map(promoCard).join("") + "</div></details>";
       }).join("") || "<p class=\"pres\">No hay tarjetas vigentes para mostrar.</p>";
       if (notas) {
         notas.innerHTML = (promoData.notas || []).map((n) => "<li>" + esc(n) + "</li>").join("");
@@ -1191,8 +1302,6 @@
       });
     });
 
-    const espera = document.getElementById("espera");
-    const listaMsg = document.getElementById("lista-msg");
     document.getElementById("out").addEventListener("click", async (e) => {
       const btn = e.target.closest(".guardar");
       if (!btn) return;
@@ -1201,8 +1310,10 @@
       const msg = document.getElementById("mi-lista-msg");
       const email = mailLista();
       if (!email) {
-        msg.textContent = "Escribí un mail arriba. Esto es local y no es un login.";
-        document.getElementById("lista-email").focus();
+        const det = document.getElementById("mi-lista");
+        if (det) det.open = true;
+        if (msg) msg.textContent = "Escribí un mail en la lista.";
+        document.getElementById("lista-email")?.focus();
         return;
       }
       if (!p) return;
@@ -1239,7 +1350,9 @@
       const msg = document.getElementById("mi-lista-msg");
       const email = mailLista();
       if (!email) {
-        msg.textContent = "Escribí un mail arriba. Esto es local y no es un login.";
+        const det = document.getElementById("mi-lista");
+        if (det) det.open = true;
+        if (msg) msg.textContent = "Escribí un mail en la lista.";
         return;
       }
       msg.textContent = "Releyendo precios… no se manda ningún mail.";
@@ -1266,31 +1379,101 @@
       cargarLista().catch(() => {});
     }
 
-    espera.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const plan = document.getElementById("plan").value;
-      listaMsg.textContent = "Anotando…";
-      try {
-        const r = await fetch("/api/lista-espera", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ email, plan })
-        });
-        let j = null;
-        try { j = await r.json(); } catch (_) { j = null; }
-        if (!r.ok) {
-          listaMsg.textContent = (j && j.error) || "No se pudo anotar. Revisá el mail.";
+    const cuentaForm = document.getElementById("cuenta-form");
+    const cuentaMsg = document.getElementById("cuenta-msg");
+    if (cuentaForm) {
+      cuentaForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = document.getElementById("cuenta-email").value.trim();
+        const password = document.getElementById("cuenta-pass").value;
+        if (cuentaMsg) cuentaMsg.textContent = "Entrando…";
+        try {
+          const res = await authPost("/auth/v1/token?grant_type=password", { email: email, password: password });
+          if (!res.ok || !guardarSesion(res.j)) {
+            if (cuentaMsg) cuentaMsg.textContent = msgAuth(res.j);
+            return;
+          }
+          if (cuentaMsg) cuentaMsg.textContent = "";
+          await refrescarCuenta();
+        } catch (_) {
+          if (cuentaMsg) cuentaMsg.textContent = "No se pudo entrar.";
+        }
+      });
+      document.getElementById("cuenta-crear").addEventListener("click", async () => {
+        const email = document.getElementById("cuenta-email").value.trim();
+        const password = document.getElementById("cuenta-pass").value;
+        if (!email || password.length < 6) {
+          if (cuentaMsg) cuentaMsg.textContent = "Hace falta un mail y una contraseña de al menos 6 caracteres.";
           return;
         }
-        listaMsg.textContent = j && j.nuevo === false
-          ? "Ese mail ya estaba. Actualizamos qué plan te interesa. Sigue sin haber cobro."
-          : "Quedó anotado en este servidor. No te vamos a cobrar ni a mandar un mail de confirmación.";
-        if (j && j.nuevo !== false) espera.reset();
-      } catch (err) {
-        listaMsg.textContent = "No se pudo anotar. Este servidor no respondió.";
-      }
-    });
+        if (cuentaMsg) cuentaMsg.textContent = "Creando la cuenta…";
+        try {
+          const res = await authPost("/auth/v1/signup", { email: email, password: password });
+          if (res.j && res.j.access_token && guardarSesion(res.j)) {
+            if (cuentaMsg) cuentaMsg.textContent = "";
+            await refrescarCuenta();
+            return;
+          }
+          if (res.ok) {
+            if (cuentaMsg) cuentaMsg.textContent = "Cuenta creada. Si hace falta confirmar el mail, el enlace tiene que llegar antes de entrar. Todavía no hay sesión.";
+            return;
+          }
+          if (cuentaMsg) cuentaMsg.textContent = msgAuth(res.j);
+        } catch (_) {
+          if (cuentaMsg) cuentaMsg.textContent = "No se pudo crear la cuenta.";
+        }
+      });
+    }
+    const salir = document.getElementById("cuenta-salir");
+    if (salir) {
+      salir.addEventListener("click", async () => {
+        const t = await tokenFresco();
+        borrarSesion();
+        if (t && CUENTA.on) {
+          try { await authPost("/auth/v1/logout", {}); } catch (_) {}
+        }
+        if (cuentaMsg) cuentaMsg.textContent = "";
+        await refrescarCuenta();
+      });
+    }
+    const busquedasList = document.getElementById("busquedas-list");
+    if (busquedasList) {
+      busquedasList.addEventListener("click", (e) => {
+        const b = e.target.closest("button");
+        if (!b) return;
+        qInput.value = b.textContent || "";
+        delete qInput.dataset.autofill;
+        form.requestSubmit();
+      });
+    }
+    const pagarPlan = document.getElementById("pagar-plan");
+    if (pagarPlan) {
+      pagarPlan.addEventListener("click", async () => {
+        if (!(await tokenFresco())) {
+          if (cuentaMsg) cuentaMsg.textContent = "Entrá con tu cuenta antes de pagar.";
+          return;
+        }
+        pagarPlan.disabled = true;
+        try {
+          const r = await fetch("/api/cuenta/checkout", { method: "POST", headers: await headersAuth({ "Content-Type": "application/json" }), body: "{}" });
+          let j = null;
+          try { j = await r.json(); } catch (_) { j = null; }
+          if (j && j.init_point) {
+            window.location.href = j.init_point;
+            return;
+          }
+          if (cuentaMsg) cuentaMsg.textContent = (j && j.error) || "El cobro todavía no está activo.";
+        } catch (_) {
+          if (cuentaMsg) cuentaMsg.textContent = "No se pudo abrir el cobro. No se marcó ningún pago.";
+        } finally {
+          pagarPlan.disabled = false;
+        }
+      });
+    }
+    if (new URLSearchParams(location.search).get("mp")) {
+      if (cuentaMsg) cuentaMsg.textContent = "Volviste de Mercado Pago. Eso no confirma el pago. El cupo se abre cuando el aviso llega al servidor.";
+    }
+    refrescarCuenta().catch(() => {});
   </script>
 </body>
 </html>

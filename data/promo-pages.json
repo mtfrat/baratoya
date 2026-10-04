@@ -1,0 +1,138 @@
+{
+  "checked_at": "2026-10-03T22:18:00-03:00",
+  "method": "public HTTPS GET (curl) and WebSearch; no browser, proxy, or paid scraper",
+  "note": "promo_text_in_html true means day/percent/bank strings are in the HTTP 200 body (markup or embedded CMS JSON). false means the URL is live but those strings are not in the body and only appear after client JS. examples are copied from that body, not from search snippets.",
+  "chains": [
+    {
+      "chain": "Día",
+      "url": "https://diaonline.supermercadosdia.com.ar/medios-de-pago-y-promociones",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": true,
+      "where": "In the initial HTML, inside VTEX content JSON (daysToShow, availableOn, terms). Not a second request. Stripping script/template tags leaves only the day-filter buttons (Lunes…Domingo), not the card text.",
+      "examples": [
+        "Cuenta DNI 10% — daysToShow monday, availableOn store (not online). Terms: PROMOCIÓN VÁLIDA LOS LUNES DE OCTUBRE DEL 2026 … BONIFICACIÓN DEL 10%. SIN TOPE DE REINTEGRO.",
+        "Mercado Pago 15% — miércoles, online y sucursal."
+      ]
+    },
+    {
+      "chain": "Carrefour",
+      "url": "https://www.carrefour.com.ar/descuentos-bancarios",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": false,
+      "where": "Route exists and returns 200, but the bank-tab container (render-store.custom#tabs-banks-descuentos) is empty. Day/bank/percent cards load only after JS. The only bank percent string in this document is a header CMS line, not a weekday calendar.",
+      "examples": [
+        "Hoy con Cuenta Digital Carrefour Banco 10% de descuento ACUMULABLE"
+      ],
+      "also_checked": [
+        "https://www.carrefour.com.ar/promociones-bancarias returns 200 but is a VTEX fulltext search fallback (og:url …?map=ft), not the promo calendar."
+      ]
+    },
+    {
+      "chain": "Jumbo",
+      "url": "https://www.jumbo.com.ar/descuentos-del-dia",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": false,
+      "where": "HTML has the shell only: buttons Por día, Por banco, Cenco Pay, Planes de Financiación, and Lunes–Sábado. No bank name plus percent in the body. FAQ links this page (and /descuentos, which is a search fallback ?map=ft).",
+      "examples": []
+    },
+    {
+      "chain": "Disco",
+      "url": "https://www.disco.com.ar/descuentos-del-dia",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": false,
+      "where": "Same Cencosud shell as Jumbo: day and Por banco buttons in the HTML, offer rows only after JS. https://www.disco.com.ar/descuentos is not the calendar.",
+      "examples": []
+    },
+    {
+      "chain": "Vea",
+      "url": "https://www.vea.com.ar/descuentos-del-dia",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": false,
+      "where": "Same Cencosud shell. FAQ points at https://www.vea.com.ar/descuentos-del-dia?type=por-banco (same document, query ignored by the server). Offer rows only after JS.",
+      "examples": []
+    },
+    {
+      "chain": "Cordiez",
+      "url": "https://www.cordiez.com.ar/institucionales/medios-de-pago",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": true,
+      "where": "In the initial HTML, both as visible paragraphs and as promoTitle fields in the page JSON.",
+      "examples": [
+        "Lunes - 20% de ahorro Banco Ciudad",
+        "10% de reintegro con tope de $10.000 solamente los días jueves."
+      ]
+    },
+    {
+      "chain": "Toledo",
+      "url": "https://www.toledodigital.com.ar/promociones-bancarias",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": true,
+      "where": "In the initial HTML (gzip). Day tabs Lunes–Domingos are markup. Card copy is CMS props (titulo/subTitulo/isVisible) in the same document, not a later XHR. Some cards are isVisible:false.",
+      "examples": [
+        "25% de reintegro — Cartera Payroll, abonando con MODO. Tope $15.000.- Por Martes, por usuario. (isVisible true)",
+        "15% de reintegro — Pagando con Modo desde la app. (isVisible true)"
+      ]
+    },
+    {
+      "chain": "Josimar",
+      "url": "https://www.josimar.com.ar/institucional/medios-de-pago",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": true,
+      "where": "HTTP 200 body contains the lines inside a sitewide messages-slider JSON, but every bank line has showMessage:false (not rendered). Visible HTML of /institucional/medios-de-pago is only institutional nav. The single showMessage:true line is free shipping. https://www.josimar.com.ar/promociones is the same pattern.",
+      "examples": [
+        "LUNES 10% DE DESCUENTO A TRAVÉS DE MERCADO PAGO - NO ACUMULABE CON OTRAS OFERTAS (showMessage false)",
+        "TODOS LOS VIERNES 20% DE DTO ABONANDO ATRAVES DE MODO CON BANCOS SELECCIONADOS (showMessage false)"
+      ]
+    },
+    {
+      "chain": "Coto",
+      "url": "https://www.coto.com.ar/descuentos",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": false,
+      "where": "200 is the Angular shell (same small document for /descuentos, /legales is separate, /promo/promotions.jsp and /terminos-descuentos also serve the shell). No day/percent/bank text in the HTML; only after JS. Legacy calendars are not 200: https://static.cotodigital3.com.ar/sitios/cdigi/promo/promotions.jsp is 403; https://digitalv1.coto.com.ar/sitios/cdigi/promo/promotions.jsp is 503.",
+      "examples": []
+    },
+    {
+      "chain": "La Anónima",
+      "url": "https://super.laanonima.com.ar/empresa/promociones-y-descuentos",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": true,
+      "where": "In visible HTML (headings and paragraphs), not only after JS.",
+      "examples": [
+        "Martes 25% de Descuento con Banco Hipotecario MODO",
+        "Todos los martes, 25% de descuento con Banco Hipotecario pagando con tarjeta de débito a través de MODO. Tope de reintegro $10.000 segmento masivo…"
+      ]
+    },
+    {
+      "chain": "Libertad",
+      "url": null,
+      "http_status": null,
+      "live": false,
+      "promo_text_in_html": false,
+      "where": "none found. https://www.hiperlibertad.com.ar/ returns 200 but is a short landing (online shopping notice) with no day/percent/bank calendar.",
+      "examples": []
+    },
+    {
+      "chain": "Makro",
+      "url": "https://makro.com.ar/beneficios-bancarios/",
+      "http_status": 200,
+      "live": true,
+      "promo_text_in_html": true,
+      "where": "In visible HTML, with weekday headings (Lunes, Martes, Miércoles, …).",
+      "examples": [
+        "Martes y Jueves — 25% DE DESCUENTO CON TOPE DE REINTEGRO $20.000 Pagando con tarjeta Cencopay crédito.",
+        "Promoción válida los miércoles desde el 01/10/26 hasta el 31/10/26 … Banco Comafi. 20% de ahorro abonando a través de MODO."
+      ]
+    }
+  ]
+}

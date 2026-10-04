@@ -2,8 +2,9 @@
 
 El precio comparable es el de venta (el que se paga ahora). Una promo
 solo se resta si la tarjeta de hoy está visible, vigente, sin fechas
-contradictorias, con tope conocido, canal online y sin excluir el producto.
-Cuotas no son un porcentaje. America/Buenos_Aires es UTC−3 todo el año.
+contradictorias, con un tope en pesos, canal online y sin excluir el producto.
+"Sin tope" no se resta. Si la letra dice que no acumula con otros descuentos,
+tampoco. Cuotas no son un porcentaje. America/Buenos_Aires es UTC−3 todo el año.
 """
 from __future__ import annotations
 
@@ -1015,7 +1016,21 @@ def _producto_excluido(rec: dict[str, Any], nombre: str) -> str:
     return ""
 
 
-def puede_restar(rec: dict[str, Any], nombre: str, precio: float, hoy: date) -> tuple[bool, str, float]:
+
+def _no_acumula(rec: dict[str, Any]) -> bool:
+    """La letra dice que no se suma a otro descuento. Incluye el typo "acumable"."""
+    blob = _fold(" ".join(str(rec.get(k) or "") for k in ("legal", "texto", "exclusion")))
+    return re.search(r"no\s+acum(?:ul)?able|no\s+acumula\b|no\s+es\s+acumulable", blob) is not None
+
+
+def puede_restar(
+    rec: dict[str, Any],
+    nombre: str,
+    precio: float,
+    hoy: date,
+    *,
+    ya_descuento: bool = False,
+) -> tuple[bool, str, float]:
     ok, motivo = _vigente(rec, hoy)
     if not ok:
         return False, motivo, precio
@@ -1027,8 +1042,18 @@ def puede_restar(rec: dict[str, Any], nombre: str, precio: float, hoy: date) -> 
         return False, "La tarjeta no publica un porcentaje.", precio
     if rec.get("canal") not in {"online", "online y sucursal"}:
         return False, "Vale en sucursal, no en el precio online.", precio
-    if not rec.get("cap_conocido"):
+    # Sin un tope en pesos no se resta. "Sin tope" queda mostrado aparte
+    # hasta que esa regla esté explícita (hoy no lo está).
+    if rec.get("sin_tope") or not rec.get("cap"):
+        if rec.get("sin_tope"):
+            return False, "Dice sin tope. No se resta.", precio
         return False, "El tope no está publicado.", precio
+    # Caso real: Playadito 1 kg en Mas Online se paga $3.969 (el 25% de la
+    # tienda ya está adentro). Columbia dice que no acumula: no se resta el 20%.
+    if _no_acumula(rec):
+        if ya_descuento:
+            return False, "La letra dice que no acumula y este precio ya tiene un descuento de la tienda.", precio
+        return False, "La letra dice que no acumula con otros descuentos.", precio
     exclu = _producto_excluido(rec, nombre)
     if exclu:
         return False, exclu, precio
@@ -1044,7 +1069,14 @@ def puede_restar(rec: dict[str, Any], nombre: str, precio: float, hoy: date) -> 
     return True, "", total
 
 
-def aplicar_oferta(tienda_id: str, nombre: str, precio: float, hoy: date | None = None) -> dict[str, Any]:
+def aplicar_oferta(
+    tienda_id: str,
+    nombre: str,
+    precio: float,
+    hoy: date | None = None,
+    *,
+    ya_descuento: bool = False,
+) -> dict[str, Any]:
     hoy = hoy or hoy_art()
     candidatos = []
     for rec in cargar():
@@ -1053,7 +1085,7 @@ def aplicar_oferta(tienda_id: str, nombre: str, precio: float, hoy: date | None 
         if rec.get("days") and hoy.weekday() not in rec["days"]:
             if not (rec.get("fechas_especificas") and hoy in rec["fechas_especificas"]):
                 continue
-        ok, motivo, total = puede_restar(rec, nombre, precio, hoy)
+        ok, motivo, total = puede_restar(rec, nombre, precio, hoy, ya_descuento=ya_descuento)
         candidatos.append((ok, total, motivo, rec))
     aplicados = [c for c in candidatos if c[0]]
     promo = None
@@ -1072,8 +1104,12 @@ def aplicar_oferta(tienda_id: str, nombre: str, precio: float, hoy: date | None 
         }
         promos.append(promo)
     elif candidatos:
-        # Preferir un porcentaje rechazado antes que una cuota.
-        candidatos.sort(key=lambda c: (0 if c[3].get("percent") else 1, c[2]))
+        # La tarjeta de hoy que no se restó, antes que una que todavía no corre.
+        def _orden(c):
+            rec = c[3]
+            vigente = _vigente(rec, hoy)[0]
+            return (0 if vigente else 1, 0 if rec.get("percent") else 1, c[2])
+        candidatos.sort(key=_orden)
         _ok, _total, motivo, rec = candidatos[0]
         promo = {
             "aplicada": False,
