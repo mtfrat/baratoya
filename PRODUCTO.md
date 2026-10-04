@@ -17,7 +17,7 @@ No sabés cuánto sale un producto en los comercios de CABA hasta que estás en 
 Textos que están en `templates/index.html`:
 
 - Headline (único H1): «El precio del súper, antes de salir.»
-- Sub: la búsqueda es gratis y sin tope. La lista y el chequeo de baja existen en este servidor, sin cobro y sin mail. El mail que se escribe no es un login.
+- Sub: antes de salir, el mismo producto (marca, variante y tamaño) en Día, Carrefour, Mas Online y las otras cadenas con precio público, con el precio por kilo o por litro, y te quedás con el más barato.
 - CTA principal: «Buscar un precio» (envía la búsqueda a `/api/buscar`, no pide mail).
 - CTA secundario: «Ver la lista local» (no es un checkout).
 

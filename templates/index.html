@@ -262,6 +262,21 @@
       letter-spacing: -0.015em;
       font-variant-numeric: tabular-nums;
     }
+    .prices .pum {
+      color: var(--color-slate);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+    .prices .barato span,
+    .prices .barato strong { color: var(--color-spruce); }
+    .promos {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--color-slate);
+      font-size: 14px;
+    }
+    .promos li { margin: 0 0 4px; }
     .badge {
       display: inline-block;
       padding: 8px 12px;
@@ -406,7 +421,7 @@
       form.search input[type="text"] { flex: 1; }
       form.search .btn.lime { width: auto; }
       .btn-row { flex-direction: row; align-items: center; gap: 16px; }
-      .prices { grid-template-columns: repeat(3, 1fr); }
+      .prices { grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); }
       .split { grid-template-columns: repeat(3, 1fr); gap: 32px; }
       .plans { grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
       .section { padding: 80px 0; }
@@ -431,7 +446,7 @@
       <div class="wrap">
         <p class="eyebrow">Precios Claros · zona CABA {% if paid_scrapers %}<span class="badge paid-on">ENABLE_PAID_SCRAPERS=on</span>{% endif %}</p>
         <h1>El precio del súper, antes de salir.</h1>
-        <p class="sub">No sabés cuánto sale un producto en los comercios de CABA hasta que estás en la góndola. Buscá y vas a ver el mínimo, el máximo y en cuántas sucursales lo publica Precios Claros. Eso es gratis y no tiene tope. La lista y el chequeo de baja existen en este servidor, sin cobro y sin mail: el mail que escribís no es un login.</p>
+        <p class="sub">Antes de salir, ves el mismo producto (marca, variante y tamaño) en Día, Carrefour, Mas Online y las otras cadenas con precio público, con el precio por kilo o por litro, y te quedás con el más barato.</p>
 
         <div class="modes" role="group" aria-label="Qué comparar">
           <button type="button" class="btn outline on" id="mode-super" data-mode="super">Súper</button>
@@ -447,6 +462,7 @@
 
         <p id="meta" class="meta"></p>
         <p id="aviso" class="warn-flag" role="status"></p>
+        <ul id="promos" class="promos" hidden></ul>
         <div id="estado" class="state">
           <p class="state-title">Todavía no buscaste.</p>
           <p>Escribí un producto. Los números aparecen cuando Precios Claros responde. En esta página no hay precios de muestra.</p>
@@ -574,7 +590,7 @@
 
   <footer>
     <div class="wrap">
-      <p>BaratoYa lee la API pública de Precios Claros para CABA (lat {{ lat }}, lng {{ lng }}). En súper también muestra el precio del catálogo público de Mas Online (ex Chango Más), Día y Carrefour, etiquetados aparte. No es un organismo oficial y no agrega un precio propio.</p>
+      <p>BaratoYa lee la API pública de Precios Claros para CABA (lat {{ lat }}, lng {{ lng }}). En súper también muestra el precio del catálogo público de Día, Carrefour, Mas Online (ex Chango Más), Jumbo, Disco, Vea, Cordiez, Toledo y Josimar, si esa cadena devuelve un precio. No es un organismo oficial y no agrega un precio propio.</p>
       <p>Electro compara Fravega, Cetrogar, Naldo y On City por el catálogo VTEX público, sin scraper pago. Mercado Libre: no disponible desde este servidor. Cobro (Mercado Pago o Stripe): sin implementar. La lista y la marca de baja viven en la misma SQLite local que la lista de espera. No hay login ni envío de mail.</p>
       <p><a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
@@ -586,6 +602,7 @@
     const meta = document.getElementById("meta");
     const estado = document.getElementById("estado");
     const aviso = document.getElementById("aviso");
+    const promosEl = document.getElementById("promos");
     const go = document.getElementById("go");
     const qInput = document.getElementById("q");
     let mode = "super";
@@ -610,7 +627,25 @@
       if (!(p.nombre || p.id)) return "";
       return "<button type=\"button\" class=\"btn outline guardar\" data-i=\"" + i + "\">Guardar en mi lista</button>";
     }
+    function ofertaLista(p) {
+      if (p && Array.isArray(p.ofertas) && p.ofertas.length) {
+        return p.ofertas.find((o) => o.barato) || p.ofertas[0];
+      }
+      return null;
+    }
     function payloadLista(p) {
+      const o = ofertaLista(p);
+      if (o) {
+        const url = o.url || "";
+        return {
+          nombre: p.nombre || o.nombre || "",
+          tienda: o.tienda,
+          precio: o.precio,
+          url: url,
+          fuente: o.fuente === "precios_claros" ? "precios_claros" : "vtex",
+          product_key: o.product_key || (url ? ("url:" + url) : ((o.tienda_id || o.tienda) + ":" + (p.nombre || "")))
+        };
+      }
       if (p.tienda) {
         const url = p.url || "";
         return {
@@ -737,7 +772,7 @@
         bits.push("Precios Claros no trajo precios para «" + q + "». Coincidió con «" + pc + "».");
       }
       if (mo && !mismaConsulta(mo, q)) {
-        bits.push("Mas Online, Día y Carrefour no aceptaron «" + q + "». Coincidió con «" + mo + "».");
+        bits.push("Las cadenas no aceptaron «" + q + "». Coincidió con «" + mo + "».");
       }
       return bits.join(" ");
     }
@@ -795,7 +830,8 @@
       aviso.className = "warn-flag";
       aviso.textContent = "";
       meta.textContent = "";
-      setState("loading", mode === "electro" ? "Buscando en tiendas de electro…" : "Buscando en Precios Claros, Mas Online, Día y Carrefour…", "Sin precios inventados mientras tanto.");
+      if (promosEl) { promosEl.hidden = true; promosEl.innerHTML = ""; }
+      setState("loading", mode === "electro" ? "Buscando en tiendas de electro…" : "Buscando el mismo producto en los catálogos públicos…", "Sin precios inventados mientras tanto.");
       go.disabled = true;
       try {
         if (mode === "electro") {
@@ -831,8 +867,26 @@
         const fuente = j.fuente === "snapshot"
           ? "snapshot local de Precios Claros"
           : (j.fuente === "mas_online" ? "Precios Claros no respondió" : "Precios Claros en vivo");
-        const totalTxt = parsed.total != null ? " Total informado por Precios Claros: " + parsed.total + "." : "";
-        meta.textContent = "Fuente: " + fuente + "." + (cadenaTxt ? " " + cadenaTxt + "." : "") + " Resultados en esta página: " + parsed.items.length + "." + totalTxt;
+        const totalTxt = "";
+        const leidoTxt = j.leido_texto ? "Precios leídos el " + j.leido_texto + ". " : "";
+        meta.textContent = leidoTxt + "Fuente: " + fuente + "." + (cadenaTxt ? " " + cadenaTxt + "." : "") + " Resultados: " + parsed.items.length + "." + totalTxt;
+        if (promosEl) {
+          const bloques = Array.isArray(j.promos) ? j.promos : [];
+          const lis = [];
+          bloques.forEach((b) => {
+            const items = Array.isArray(b.items) ? b.items : [];
+            items.forEach((it) => {
+              lis.push("<li>" + esc(b.tienda) + ": " + esc(it.dia) + ", " + esc(it.banco) + ", " + esc(it.descuento) + ". No está restado del precio.</li>");
+            });
+            if (!items.length && b.nota) {
+              lis.push("<li>" + esc(b.tienda) + ": " + esc(b.nota) + "</li>");
+            } else if (b.nota) {
+              lis.push("<li>" + esc(b.tienda) + ": " + esc(b.nota) + "</li>");
+            }
+          });
+          promosEl.innerHTML = lis.join("");
+          promosEl.hidden = !lis.length;
+        }
         const nota = notaCoincidencia(j, q);
         if (nota) {
           meta.textContent = nota + " " + meta.textContent;
@@ -844,14 +898,50 @@
           aviso.textContent = aviso.textContent ? (j.aviso + " " + aviso.textContent) : j.aviso;
         }
         if (!parsed.items.length) {
-          setState("empty", "Nada para «" + q + "» en esta zona.", "Precios Claros, Mas Online, Día y Carrefour no devolvieron productos con precio. Probá con otra palabra. La zona de Precios Claros está fija en CABA.");
+          setState("empty", "Nada para «" + q + "» en esta zona.", "Ninguna cadena con catálogo público devolvió ese producto con precio. Probá con otra palabra. La zona de Precios Claros está fija en CABA.");
           return;
         }
         estado.hidden = true;
         estado.innerHTML = "";
         const badge = j.fuente === "snapshot" ? "Precios Claros · snapshot" : "Precios Claros";
         lastItems = parsed.items;
+        function quienes(nombres) {
+          if (!nombres || !nombres.length) return "";
+          if (nombres.length === 1) return nombres[0];
+          if (nombres.length === 2) return nombres[0] + " y " + nombres[1];
+          return nombres.slice(0, -1).join(", ") + " y " + nombres[nombres.length - 1];
+        }
         out.innerHTML = parsed.items.map((p, i) => {
+          if (Array.isArray(p.ofertas) && p.ofertas.length) {
+            const precios = p.ofertas.map((o) => {
+              const tag = o.barato ? " · más barato" : "";
+              const pum = (typeof o.pum === "number" && o.pum > 0 && o.pum_unidad)
+                ? "<span class=\"pum\">" + esc(money(o.pum)) + " por " + esc(o.pum_unidad) + "</span>"
+                : "";
+              return "<div class=\"" + (o.barato ? "barato" : "") + "\">" +
+                "<span>" + esc(o.tienda) + tag + "</span>" +
+                "<strong>" + esc(money(o.precio)) + "</strong>" +
+                pum +
+              "</div>";
+            }).join("");
+            const links = p.ofertas.filter((o) => o.url).map((o) =>
+              "<a class=\"ext\" href=\"" + esc(o.url) + "\" rel=\"noopener noreferrer\">Ver en " + esc(o.tienda) + "</a>"
+            ).join(" · ");
+            const baratos = Array.isArray(p.mas_barato) && p.mas_barato.length
+              ? p.mas_barato
+              : p.ofertas.filter((o) => o.barato).map((o) => o.tienda);
+            const tam = p.tamano ? " · " + esc(p.tamano) : "";
+            const cuando = j.leido_texto ? "Leído el " + esc(j.leido_texto) + ". " : "";
+            return "<article class=\"product\">" +
+              (p.marca ? "<p class=\"brand\">" + esc(p.marca) + "</p>" : "") +
+              "<h3>" + esc(p.nombre || "Sin nombre") + "</h3>" +
+              "<p class=\"pres\">" + cuando + "Más barato: " + esc(quienes(baratos)) + tam + ".</p>" +
+              "<div class=\"prices\">" + precios + "</div>" +
+              (links ? "<p class=\"pres\">" + links + "</p>" : "") +
+              "<span class=\"badge\">Mismo producto</span>" +
+              botonGuardar(p, i) +
+            "</article>";
+          }
           if (p.tienda) {
             const link = p.url
               ? "<p class=\"pres\"><a class=\"ext\" href=\"" + esc(p.url) + "\" rel=\"noopener noreferrer\">Ver en " + esc(p.tienda) + "</a></p>"

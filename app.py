@@ -23,12 +23,16 @@ try:
     from baratoya.super_cadenas import STORES as SUPER_STORES
     from baratoya.super_cadenas import UA as VTEX_UA
     from baratoya.super_cadenas import _precio as _precio_oferta
+    from baratoya.super_cadenas import agrupar_mismo_producto
+    from baratoya.super_cadenas import buscar_promos
     from baratoya.super_cadenas import buscar_super
 except ImportError:
     from electro import buscar_electro
     from super_cadenas import STORES as SUPER_STORES
     from super_cadenas import UA as VTEX_UA
     from super_cadenas import _precio as _precio_oferta
+    from super_cadenas import agrupar_mismo_producto
+    from super_cadenas import buscar_promos
     from super_cadenas import buscar_super
 
 BASE = os.getenv("PRECIOS_CLAROS_BASE", "https://d3e6htiiul5ek9.cloudfront.net/prod").rstrip("/")
@@ -449,6 +453,31 @@ def _pc_tiene(data: Any) -> bool:
     return isinstance(data, dict) and isinstance(data.get("productos"), list) and bool(data["productos"])
 
 
+_MESES = "ene feb mar abr may jun jul ago sep oct nov dic".split()
+
+
+def _leido_ahora() -> tuple[str, str]:
+    """Hora de esta lectura. No es un precio ni una promo."""
+    dt = datetime.now().astimezone()
+    texto = f"{dt.day} {_MESES[dt.month - 1]} {dt.year}, {dt:%H:%M} ART"
+    return dt.isoformat(timespec="seconds"), texto
+
+
+def _presentar_super(q: str, data: Any, leido: str) -> Any:
+    """Un resultado por producto exacto, con un precio por tienda."""
+    if not isinstance(data, dict):
+        data = {"productos": []}
+    else:
+        data = dict(data)
+    productos = data.get("productos")
+    if not isinstance(productos, list):
+        productos = []
+    grupos = agrupar_mismo_producto(q, productos, leido)
+    data["productos"] = grupos
+    data["total"] = len(grupos)
+    return data
+
+
 def _unwrap_snapshot(body: Any) -> Any:
     """last_ok.json guarda {q, lat, lng, data}. La UI espera productos en data."""
     if isinstance(body, dict) and "productos" not in body and isinstance(body.get("data"), dict):
@@ -508,6 +537,7 @@ async def buscar(
     q = _limpia_q(q)
     consultas = consultas_busqueda(q)
     cadenas_task = asyncio.create_task(buscar_super(q, consultas))
+    promos_task = asyncio.create_task(buscar_promos())
     code, data = await pc_get(
         "/productos",
         {"string": q, "lat": lat, "lng": lng, "offset": offset, "limit": limit},
@@ -535,32 +565,47 @@ async def buscar(
             ],
         }
     q_mo = cadenas.get("q_usada") or q
+    try:
+        promos = await promos_task
+    except Exception as e:
+        promos = [{"tienda": "promos", "ok": False, "nota": str(e), "items": [], "url": "", "http": 0}]
+    leido, leido_texto = _leido_ahora()
 
-    def _consulta() -> dict[str, str]:
-        return {"q": q, "q_precios_claros": q_pc, "q_mas_online": q_mo}
+    def _consulta() -> dict[str, Any]:
+        return {
+            "q": q,
+            "q_precios_claros": q_pc,
+            "q_mas_online": q_mo,
+            "leido": leido,
+            "leido_texto": leido_texto,
+            "promos": promos,
+        }
 
     if code != 200:
-        # fallback snapshot si existe. El snapshot sigue siendo solo Precios Claros.
-        snap = SNAPSHOT_DIR / "last_ok.json"
-        if snap.exists():
-            body = _unwrap_snapshot(json.loads(snap.read_text()))
-            body = _merge_cadenas(body, cadenas)
-            return {
-                "http": code,
-                "fuente": "snapshot",
-                "aviso": "Live Precios Claros falló; mostrando último snapshot local. Mas Online, Día y Carrefour, si respondieron, van etiquetados aparte.",
-                "cadenas": cadenas.get("fuentes") or [],
-                "data": body,
-                **_consulta(),
-            }
+        # El snapshot es una lectura vieja: no se mezcla con precios de esta request.
         if cadenas.get("productos"):
             return {
                 "http": 200,
                 "fuente": "mas_online",
-                "aviso": "Precios Claros no respondió. Solo precios de Mas Online, Día y Carrefour, leídos del catálogo público.",
+                "aviso": "Precios Claros no respondió. Solo precios leídos ahora del catálogo público de las cadenas que respondieron.",
                 "cadenas": cadenas.get("fuentes") or [],
-                "data": {"productos": cadenas["productos"], "total": len(cadenas["productos"])},
+                "data": _presentar_super(q, {"productos": cadenas["productos"]}, leido),
                 **_consulta(),
+            }
+        snap = SNAPSHOT_DIR / "last_ok.json"
+        if snap.exists():
+            body = _unwrap_snapshot(json.loads(snap.read_text()))
+            body = _presentar_super(q, body, "")
+            consulta = _consulta()
+            consulta["leido"] = ""
+            consulta["leido_texto"] = ""
+            return {
+                "http": code,
+                "fuente": "snapshot",
+                "aviso": "Live Precios Claros falló y las cadenas no trajeron precio. Mostrando el último snapshot local, que no es de esta lectura.",
+                "cadenas": cadenas.get("fuentes") or [],
+                "data": body,
+                **consulta,
             }
         return JSONResponse(
             {
@@ -589,7 +634,7 @@ async def buscar(
         )
         data = dict(data)
         data["productos"] = productos
-    data = _merge_cadenas(data, cadenas)
+    data = _presentar_super(q, _merge_cadenas(data, cadenas), leido)
     return {
         "http": code,
         "fuente": "precios_claros_live",
