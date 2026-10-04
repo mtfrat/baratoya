@@ -1,0 +1,920 @@
+{
+  "source": "https://diaonline.supermercadosdia.com.ar/medios-de-pago-y-promociones",
+  "fetchedAt": "2026-10-03T22:20:00-03:00",
+  "method": "HTTPS GET of the page; promos are the VTEX CMS content.cards array inside the store.custom#medios-de-pago JSON script (landing-medios-pago). props.cards is an older duplicate and was not used.",
+  "publishedCount": 24,
+  "inactiveCount": 2,
+  "dayLegend": "L=lunes Ma=martes Mi=miércoles J=jueves V=viernes S=sábado D=domingo",
+  "cards": [
+    {
+      "cmsIndex": 0,
+      "active": false,
+      "editorTitle": "Banco Ciudad Modo",
+      "associatedBanks": [
+        "Modo"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/dd05e363-5aeb-4860-84ea-ad691b646028___efe87e94e97d5f973143846f34646893.jpg",
+      "terms": "PROMOCIÓN OFRECIDA POR EL BANCO DE LA CIUDAD DE BUENOS AIRES, CUIT 30-99903208-3 (BANCO CIUDAD), VÁLIDA DESDE EL 20/07/2026 HASTA EL 31/10/2026, TODOS LOS LUNES, EN COMERCIOS ADHERIDOS TANTO EN SUS TIENDAS FÍSICAS COMO ONLINE, PAGANDO EXCLUSIVAMENTE CON QR MODO A TRAVÉS DE APP CIUDAD O BUEPP CON TARJETAS DE CRÉDITO MASTERCARD BANCO CIUDAD. SE OTORGARÁ UN 35% (TREINTA Y CINCO POR CIENTO) DE DESCUENTO SOBRE EL IMPORTE DE LA COMPRA, CON UN TOPE DE HASTA $20.000 (VEINTE MIL) MENSUAL POR CLIENTE. EL BENEFICIO PODRÁ VISUALIZARSE VÍA REINTEGRO, EL CUAL SERÁ ACREDITADO EN LA CUENTA DEL CLIENTE DENTRO DE LOS 15 DÍAS HÁBILES POSTERIORES A LA FECHA DE REALIZADA LA COMPRA. LA PRESENTE PROMOCIÓN ES VÁLIDA SÓLO PARA CONSUMOS DE TIPO FAMILIAR. CONFORME RES. 51-E/2017, 240-E/2017 Y 12/24 DE LA SECRETARÍA DE COMERCIO. T.N.A., T.E.A. Y C.F.T.N.A. (IVA INCLUIDO): 0,00% FIJO. T.N.A.: TASA NOMINAL ANUAL; T.E.A.: TASA EFECTIVA ANUAL; C.F.T.N.A.: COSTO FINANCIERO TOTAL EXPRESADO EN FORMA DE TASA NOMINAL ANUAL CON IVA. EL PRODUCTO OFRECIDO CORRESPONDE A LA CARTERA DE CONSUMO. PARA MÁS INFORMACIÓN CONSULTE EN WWW.BANCOCIUDAD.COM.AR",
+      "bank": "Banco Ciudad (MODO)",
+      "offer": "35% de descuento",
+      "days_active": [
+        "L"
+      ],
+      "tope": "Hasta $20.000 mensual por cliente",
+      "minimum": null,
+      "validity": "20/07/2026 al 31/10/2026",
+      "condition": "Todos los lunes, tiendas físicas y online, pagando con QR MODO a través de App Ciudad o Buepp con Mastercard crédito Banco Ciudad.",
+      "exclusion": "Solo consumo familiar. Exclusivo QR MODO vía App Ciudad o Buepp con Mastercard crédito Banco Ciudad.",
+      "percent_source": "legal"
+    },
+    {
+      "cmsIndex": 1,
+      "active": true,
+      "editorTitle": "Prex 05-10",
+      "associatedBanks": [
+        "Prex"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": false
+      },
+      "channel": "online",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/0e50a2e9-d22c-405b-8562-d60230b63cd2___0675f5f56225707511001ac4ac7001b8.jpg",
+      "terms": "BENEFICIO: 30% (TREINTA POR CIENTO) DE REINTEGRO EN COMPRAS REALIZADAS CON TARJETAS MASTERCARD PREX EMITIDAS EN LA REPÚBLICA ARGENTINA EL DÍA LUNES 05/10/2026 A TRAVÉS DE WWW.DIAONLINE.SUPERMERCADOSDIA.COM.AR Y APP DIA. EL REINTEGRO APLICARÁ ÚNICAMENTE A LA PRIMERA TRANSACCIÓN DEL DÍA PROMOCIONADO, Y TENDRÁ UN TOPE DE $20.000.- (PESOS VEINTE MIL). VÁLIDO 1 (UNA) VEZ POR USUARIO. EL REINTEGRO SE VERÁ REFLEJADO EN EL ESTADO DE CUENTA DENTRO DE LOS (5) CINCO DÍAS HÁBILES SIGUIENTES A LA FECHA DE COMPRA. EL BENEFICIO ES VÁLIDO EXCLUSIVAMENTE PARA CONSUMOS DE TIPO FAMILIAR, Y APLICARÁ A COMPRAS CON ENVÍO EXPRESS, CON ENVÍO PROGRAMADO Y CON RETIRO EN TIENDA. SERÁ CONDICIÓN PARA LA APLICACIÓN DEL REINTEGRO QUE, AL MOMENTO DEL PAGO CON LA TARJETA MASTERCARD PREX EN EL SITIO WEB, EL USUARIO ELIJA “TARJETA DE DÉBITO” COMO FORMA DE PAGO DE SU COMPRA. PREX NO ES RESPONSABLE DE MANERA ALGUNA POR LOS PRODUCTOS O SERVICIOS A LOS CUALES SE ACCEDE A TRAVÉS DE LA PROMOCIÓN. COMO ASÍ, TAMPOCO ES RESPONSABLE POR LA DEMORA DE ENTREGA DE LOS PRODUCTOS Y/O SERVICIOS. LA MERA PARTICIPACIÓN EN LA PROMOCIÓN IMPLICA CONOCIMIENTO Y ACEPTACIÓN DE ESTAS BASES Y CONDICIONES. EN CONSECUENCIA, PREX NO SERÁ RESPONSABLE, EN NINGÚN CASO, DE RECLAMOS QUE TUVIERE COMO FUNDAMENTO LA FALTA DE INFORMACIÓN O EL MANEJO DE INFORMACIÓN DESACTUALIZADA. TODOS LOS RECLAMOS RELEVANTES A LA PROMOCIÓN DEBEN REALIZARSE CON EL TICKET DE LA OPERACIÓN, PROPORCIONADO POR EL COMERCIO.",
+      "bank": "Prex",
+      "offer": "30% de reintegro",
+      "days_active": [
+        "L"
+      ],
+      "channel_note": null,
+      "tope": "Tope por usuario por única vez en la primera compra: $20.000",
+      "minimum": null,
+      "validity": "Lunes 5 de octubre",
+      "condition": "Aplica pagando con Tarjeta Prepaga. Exclusivo Día online y App Día.",
+      "exclusion": "Solo consumo familiar y la primera transacción del día. Aplica a envío express, programado y retiro en tienda."
+    },
+    {
+      "cmsIndex": 2,
+      "active": true,
+      "editorTitle": " Personal Pay",
+      "associatedBanks": [
+        "Personal Pay"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/ecd67f30-d6f6-4c61-aa1c-fd02da272edd___b725b04a0de6cbab59e88fa69039bbb1.jpg",
+      "terms": "BENEFICIO DE ALCANCE NACIONAL, VÁLIDO LOS DÍAS JUEVES COMPRENDIDOS DESDE EL 01/10/2026 HASTA EL 31/10/2026. LA PROMOCIÓN CONSISTE EN UN 15% (QUINCE POR CIENTO) DE REINTEGRO PAGANDO CON TARJETA PREPAGA VISA DE PERSONAL PAY (FÍSICA O VIRTUAL), CÓDIGO QR, NFC Y/O CUALQUIER OTRO MEDIO DE PAGO HABILITADO POR PERSONAL PAY EN LA BILLETERA DIGITAL, SIN TOPE DE REINTEGRO, CON UN MÍNIMO DE COMPRA DE $20.000 (PESOS VEINTE MIL), MÁXIMO UNA TRANSACCIÓN POR JUEVES POR USUARIO. EL REINTEGRO SERÁ APLICADO EN LA BILLETERA DENTRO DE LAS 72HS DE REALIZADA LA OPERACIÓN. EXCLUSIVO EN TIENDAS FÍSICAS Y EL SITIO WEB WWW.DIAONLINE.COM.AR . PARA MÁS INFORMACIÓN Y CONDICIONES O LIMITACIONES APLICABLES, CONSULTE EN HTTPS://WWW.PERSONALPAY.COM.AR/. MICRO SISTEMAS S.A SE LIMITA A OFRECER SERVICIOS DE PAGO Y NO SE ENCUENTRA AUTORIZADA A OPERAR COMO ENTIDAD FINANCIERA POR EL BANCO CENTRAL DE LA REPÚBLICA ARGENTINA. LOS FONDOS DEPOSITADOS EN CUENTAS DE PAGO NO CONSTITUYEN DEPÓSITOS EN UNA ENTIDAD FINANCIERA, NI CUENTAN CON NINGUNA DE LAS GARANTÍAS QUE TALES DEPÓSITOS PUEDEN GOZAR DE ACUERDO CON LA LEGISLACIÓN Y REGLAMENTACIÓN APLICABLES EN MATERIA DE DEPÓSITOS EN ENTIDADES FINANCIERAS. A DIA ARGENTINA S.A., JUAN FRANCISCO SEGUÍ 4646 DE LA CIUDAD AUTÓNOMA DE BUENOS AIRES , REPÚBLICA ARGENTINA, CUIT N° 30-68584975-1. MICRO SISTEMAS S.A., GENERAL HORNOS 690 CABA, CUIT: 30-57297583-1.",
+      "bank": "Personal Pay",
+      "offer": "15% de reintegro",
+      "days_active": [
+        "J"
+      ],
+      "tope": "Sin tope",
+      "minimum": "$20.000",
+      "validity": "Del 1 de octubre al 31 de octubre",
+      "condition": "Aplica pagando con Visa Personal Pay NFC o QR.",
+      "exclusion": "Exclusivo en tiendas físicas y www.diaonline.com.ar. Máximo una transacción por jueves por usuario."
+    },
+    {
+      "cmsIndex": 3,
+      "active": true,
+      "editorTitle": "20% - MODO",
+      "associatedBanks": [
+        "Modo"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": true,
+        "saturday": true,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/0a2235e6-4f85-465f-8f56-26f07efea38c___5154323b9915c50b41d84695a79ed343.jpg",
+      "terms": "ESTE BENEFICIO ES ACUMULABLE CON OTRAS PROMOCIONES QUE APLIQUEN PAGANDO CON MODO. \nTOPE DE REINTEGRO $20.000 POR BANCO POR MES PARA COMPRAS MAYOR O IGUALES A $35.000. EL REINTEGRO SE ACREDITARÁ ÚNICAMENTE A AQUELLOS USUARIOS QUE SEAN TITULARES DE UNA CUENTA BANCARIA EN LA ENTIDAD EMISORA DE LA TARJETA CON LA QUE REALIZA EL PAGO. NO OLVIDES ASOCIARLA SI USAS LA APP MODO. VÁLIDO PARA ARGENTINA LOS VIERNES Y SÁBADOS DEL 1/10/2026 AL 31/10/2026. APLICA PARA BANCOS Y COMERCIOS ADHERIDOS. MODO CONTACTLESS (NFC) DISPONIBLE SÓLO EN DISPOSITIVOS ANDROID. PLAY DIGITAL S.A. (MODO), CUIT 30-71682943-6, LA PAMPA 1445, PISO 13°, CABA. PARA MÁS INFORMACIÓN Y CONDICIONES O LIMITACIONES APLICABLES, CONSULTE EN WWW.MODO.COM.AR/PROMOS.  \n1.\tCONDICIONES GENERALES\nPROMOCIÓN ORGANIZADA POR PLAY DIGITAL S.A., CUIT 30-71682943-6, CON DOMICILIO EN LA PAMPA 1445, PISO 13°, CABA (“PDSA”). SERÁN IGUALMENTE DE APLICACIÓN A ESTA PROMOCIÓN LOS TÉRMINOS Y CONDICIONES DE LA APP MODO DISPONIBLES EN HTTPS://WWW.MODO.COM.AR/TERMINOS-Y-CONDICIONES-APP-MODO.\n2.\tVIGENCIA \nDESDE LAS 00:00  HORAS DEL DÍA 01 DE OCTUBRE DE 2026  HASTA LAS 23:59 HORAS DEL DÍA 31 DE OCTUBRE DE 2026,AMBAS FECHAS INCLUSIVE O HASTA ALCANZAR LA SUMA DE $2.872.000.000  (PESOS DOS MIL OCHOCIENTOS SETENTA Y DOS MILLONES ) EN CONCEPTO DE REINTEGROS OTORGADOS A LOS USUARIOS (LO QUE OCURRA PRIMERO).\n3.\tELEGIBILIDAD\nAPLICABLE A TODAS LAS PERSONAS HUMANAS QUE CUMPLAN CON LA TOTALIDAD DE LOS SIGUIENTES REQUISITOS: \n3.1 REALICEN UN PAGO POR UN MONTO MAYOR O IGUAL A $35.000 (TREINTA Y CINCO MIL PESOS) LOS DÍAS VIERNES Y SÁBADOS EN LOS COMERCIOS ADHERIDOS (VER LISTADO EN WWW.MODO.COM.AR/PROMOS) (LOS “COMERCIOS ADHERIDOS”) A TRAVÉS DE LA APP MODO DE PLAY DIGITAL S.A., O SUS INTEGRACIONES EN APLICACIONES BANCARIAS HABILITADAS, SEGÚN DISPONIBILIDAD DE CADA BANCO  (CONJUNTAMENTE, “MODO”). EL PAGO DEBERÁ SER REALIZADO EXCLUSIVAMENTE ESCANEANDO UN CÓDIGO QR QUE PERMITA PAGAR CON TARJETAS A TRAVÉS DE MODO, MEDIANTE EL BOTÓN DE PAGO DE MODO QUE PERMITA PAGAR CON TARJETAS A TRAVÉS DE MODO, O MEDIANTE MODO CONTACTLESS (TECNOLOGÍA NFC) EN LOS COMERCIOS ADHERIDOS.  \n3.2   QUE DICHO PAGO SEA REALIZADO CON TARJETAS DE CRÉDITO, DÉBITO O PREPAGAS EMITIDAS EN LA REPÚBLICA ARGENTINA POR ALGUNA DE LAS ENTIDADES ADHERIDAS A ESTA PROMOCIÓN (VER LISTADO DE ENTIDADES EN EL PUNTO 7) (EN ADELANTE, “ENTIDADES ADHERIDAS”) NO APLICA PARA PAGOS CON TRANSFERENCIA DESDE CUENTA BANCARIA; \n3.3 QUE TENGAN UNA CUENTA ABIERTA EN LA ENTIDAD ADHERIDA EMISORA DE LA TARJETA CON LA QUE REALICEN EL PAGO, Y QUE DICHA CUENTA SE ENCUENTRE ASOCIADA A MODO DENTRO DE LOS QUINCE DÍAS DE REALIZADO EL PAGO; Y \n3.4 NO REGISTREN DEUDA O MORA EN NINGÚN PRODUCTO DE LA ENTIDAD ADHERIDA CON LA QUE REALICE EL PAGO\n3.5 MODO CONTACTLESS ESTÁ DISPONIBLE ÚNICAMENTE EN DISPOSITIVOS ANDROID. (CONJUNTAMENTE, EL “PARTICIPANTE”)  \n\n4.\tBONIFICACIÓN. \n\nA LOS PARTICIPANTES SE LES OTORGARÁ UN 20% (VEINTE POR CIENTO) DE REINTEGRO SOBRE EL MONTO TOTAL BRUTO DEL PAGO REALIZADO EN LOS COMERCIOS ADHERIDOS, CON UN TOPE DE REINTEGRO DE $20.000 (VEINTE MIL PESOS) POR BANCO POR MES (LA “BONIFICACIÓN”). LA PROMOCIÓN NO APLICA EN LOS CASOS EN LOS QUE SE DETECTE CUALQUIER ACTIVIDAD REALIZADA POR LOS PARTICIPANTES A FIN DE ALTERAR LA MECÁNICA Y FINALIDAD DE LA PROMOCIÓN.  PDSA SE RESERVA EL DERECHO A LIMITAR, PROHIBIR LA PARTICIPACIÓN O SUSPENDER LA CUENTA DE CUALQUIER PARTICIPANTE EN CASO DE PRESUMIR LA EXISTENCIA DE TRAMPAS, ENGAÑOS, FRAUDE O ALTERACIÓN EN LA MECÁNICA DE PARTICIPACIÓN DESTINADA A OBTENER BENEFICIOS FORMA ILEGÍTIMA, ALTERANDO EL ESPÍRITU DE LA PROMOCIÓN, SIN ASUMIR RESPONSABILIDAD ALGUNA. \nLA BONIFICACIÓN SERÁ ACUMULABLE CON OTROS DESCUENTOS VIGENTES QUE APLIQUEN PAGANDO CON MODO.\n\n\n5.\tPLAZO Y FORMA DE ACREDITACIÓN: \n\nDENTRO DE LOS 30 DÍAS LUEGO DE OCURRIDA LA TRANSACCIÓN.\nEL MONTO DE CADA BONIFICACIÓN SERÁ DEPOSITADO EN LA CUENTA DEL PARTICIPANTE REFERIDA EN EL PUNTO 3.3. \n\n\n6.\tIMPUESTOS. RESPONSABILIDAD. \n\nTODO IMPUESTO Y/O GASTO APLICABLE A LA BONIFICACIÓN SERÁ A EXCLUSIVO CARGO DE LOS PARTICIPANTES. PDSA SE RESERVA EL DERECHO A LIMITAR O PROHIBIR LA PARTICIPACIÓN DE CUALQUIER PERSONA O USUARIO EN LA BONIFICACIÓN EN CASO DE PRESUMIR LA EXISTENCIA DE FRAUDE O ALTERACIÓN EN LA MECÁNICA DE PARTICIPACIÓN SIN ASUMIR RESPONSABILIDAD ALGUNA FRENTE A TALES PERSONAS, USUARIOS O TERCEROS. PDSA SE LIMITA A ACREDITAR LA BONIFICACIÓN RESPECTO DE LOS PAGOS REALIZADOS EN LOS COMERCIOS ADHERIDOS Y SIEMPRE QUE SE CUMPLAN LOS REQUISITOS ESTABLECIDOS EN ESTOS TÉRMINOS. TODAS LAS CONSULTAS O RECLAMOS POR ENVÍOS, CANCELACIONES O RESPONSABILIDAD DE PRODUCTO DEBERÁN SER GESTIONADAS Y DIRIGIDAS EXCLUSIVAMENTE A TRAVÉS DEL COMERCIO ADHERIDO. PDSA NO SE RESPONSABILIZARÁ NI OTORGARÁ INDEMNIZACIÓN ALGUNA, CONTRACTUAL Y/O EXTRACONTRACTUAL, BAJO NINGÚN CONCEPTO QUE EXCEDA SU RESPONSABILIDAD SOBRE LA BONIFICACIÓN. \n\n7.\tENTIDADES ADHERIDAS\n\nPARA PAGOS CON QR: \n\nBANCO NACIÓN \nBANCO SANTANDER \nBANCO BBVA\nBANCO GALICIA\nBANCO SANTA FE\nBANCO ENTRE RIOS\nBANCO SAN JUAN\nBANCO SANTA CRUZ\nBANCO CREDICOOP\nBANCO SUPERVIELLE \nBANCO COMAFI\nBANCO COLUMBIA (SÓLO EN APP BANCARIA)\nBANCO ICBC\nBILLETERA YOY\nBANCO MACRO \nBANCO CIUDAD \nBILLETERA BUEPP\nBANCO BANCOR \n\nPARA PAGOS CON MODO CONTACTLESS (EXCLUSIVAMENTE):\n\nBANCO NACIÓN (VISA Y MASTERCARD)\nBANCO SANTANDER (VISA Y MASTERCARD)\nBANCO BBVA (VISA Y MASTERCARD)\nBANCO SANTA FE (SÓLO VISA)\nBANCO ENTRE RÍOS (SÓLO VISA)\nBANCO SAN JUAN (SÓLO VISA)\nBANCO SANTA CRUZ (SÓLO VISA)\nBANCO CREDICOOP (SÓLO VISA)\nBANCO SUPERVIELLE  (VISA Y MASTERCARD)\nBANCO COMAFI  (SÓLO VISA)\nBANCO ICBC (VISA Y MASTERCARD)\nBILLETERA YOY (VISA Y MASTERCARD)\nBANCO MACRO (VISA Y MASTERCARD) \nBANCO CIUDAD (VISA Y MASTERCARD)\nBANCO BANCOR (VISA Y MASTERCARD)\n\n8.\tSUSPENSIÓN, MODIFICACIONES, CANCELACIÓN.\nPDSA PODRÁ MODIFICAR LA VIGENCIA DE LA PROMOCIÓN. CUANDO CIRCUNSTANCIAS NO IMPUTABLES A PDSA O NO PREVISTAS EN ESTOS TÉRMINOS Y CONDICIONES O QUE CONSTITUYAN CASO FORTUITO O FUERZA MAYOR LO JUSTIFIQUEN, PDSA PODRÁ SUSPENDER, CANCELAR O MODIFICAR LA PROMOCIÓN. \n",
+      "bank": "MODO",
+      "offer": "20% de reintegro",
+      "days_active": [
+        "V",
+        "S"
+      ],
+      "tope": "Tope mensual de $20.000 por banco",
+      "minimum": "$35.000",
+      "validity": "Del 1 de junio al 31 de octubre (texto de la tarjeta; legales: 01/10/2026 al 31/10/2026)",
+      "condition": "Aplica pagando con tarjeta de débito y crédito de entidades adheridas.",
+      "exclusion": "No aplica a pagos por transferencia desde cuenta bancaria. MODO contactless solo en Android."
+    },
+    {
+      "cmsIndex": 4,
+      "active": true,
+      "editorTitle": "Mercado Pago 15%",
+      "associatedBanks": [
+        "Mercado Pago"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": true,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/430f9231-e9da-4e73-b507-68a0ae34788f___c2110f77cdf0d31aabc6ac7771b3634c.jpg",
+      "terms": "QR:\n\nBENEFICIO VÁLIDO EN MERCADO PAGO DE ARGENTINA (I) DEL 01/10/2026 00:00 AL 31/10/2026 23:59, INCLUYENDO AMBAS FECHAS; O (II) MIENTRAS DURE EL STOCK DE CUPONES; O (III) HASTA ALCANZAR LA CANTIDAD DE $ 800000000 EN DESCUENTOS CONCEDIDOS A LOS USUARIOS, LO QUE SUCEDA PRIMERO, PARA PAGOS REALIZADOS A TRAVÉS DEL SERVICIO DE GESTIÓN DE PAGOS DE MERCADO PAGO, OPERADO POR MERCADOPAGO.COM REPRESENTACIONES LTDA. (“MERCADO PAGO”) EN LAS APPS DE MERCADO PAGO. EL BENEFICIO CONSISTE EN 15% EN PRODUCTOS O SERVICIOS SELECCIONADOS, EL LÍMITE DE DESCUENTO DEL BENEFICIO ES DE $ 9999999 POR USUARIO DE MERCADO PAGO, CON UN PAGO MÍNIMO DE COMPRA DE $ 20000. ESTA CAMPAÑA NO SE APLICA A PRODUCTOS 1P (VENDIDOS POR MERCADO LIBRE). DESCUENTO NO CUMULATIVO CON OTRAS PROMOCIONES Y/O BENEFICIOS VIGENTES EN LOS COMERCIOS. MERCADO PAGO NO ES UNA INSTITUCIÓN FINANCIERA. LOS FONDOS EN CUENTAS DE PAGO NO SON INGRESOS GARANTIZADOS. MERCADOLIBRE S.R.L. ARIAS 3751 PISO 7MO, 1430 CIUDAD AUTÓNOMA DE BUENOS AIRES, ARGENTINA.\n\nOP (ONLINE):\nBENEFICIO VÁLIDO EN MERCADO PAGO DE ARGENTINA (I) DEL 01/10/2026 00:00 AL 31/10/2026 23:59, INCLUYENDO AMBAS FECHAS; O (II) MIENTRAS DURE EL STOCK DE CUPONES; O (III) HASTA ALCANZAR LA CANTIDAD DE $ 20000000 EN DESCUENTOS CONCEDIDOS A LOS USUARIOS, LO QUE SUCEDA PRIMERO, PARA PAGOS REALIZADOS A TRAVÉS DEL SERVICIO DE GESTIÓN DE PAGOS DE MERCADO PAGO, OPERADO POR MERCADOPAGO.COM REPRESENTACIONES LTDA. (“MERCADO PAGO”) EN LAS APPS DE MERCADO PAGO. EL BENEFICIO CONSISTE EN 15% EN PRODUCTOS O SERVICIOS SELECCIONADOS, EL LÍMITE DE DESCUENTO DEL BENEFICIO ES DE $ 9999999 POR USUARIO DE MERCADO PAGO, CON UN PAGO MÍNIMO DE $ 20000. ESTA CAMPAÑA NO SE APLICA A PRODUCTOS 1P (VENDIDOS POR MERCADO LIBRE). DESCUENTO NO CUMULATIVO CON OTRAS PROMOCIONES Y/O BENEFICIOS VIGENTES EN LOS COMERCIOS. MERCADO PAGO NO ES UNA INSTITUCIÓN FINANCIERA. LOS FONDOS EN CUENTAS DE PAGO NO SON INGRESOS GARANTIZADOS. MERCADOLIBRE S.R.L. ARIAS 3751 PISO 7MO, 1430 CIUDAD AUTÓNOMA DE BUENOS AIRES, ARGENTINA.\n",
+      "bank": "Mercado Pago",
+      "offer": "15% de reintegro",
+      "days_active": [
+        "Mi"
+      ],
+      "tope": "Sin tope (tarjeta). Legales: límite de descuento $9.999.999 por usuario",
+      "minimum": "$20.000",
+      "validity": "Del 1 de septiembre al 31 de octubre (tarjeta). Legales: 01/10/2026 al 31/10/2026",
+      "condition": "Aplica pagando con dinero en cuenta (tarjeta). Legales: pagos por Mercado Pago (QR y online).",
+      "exclusion": "No aplica a productos 1P (vendidos por Mercado Libre)."
+    },
+    {
+      "cmsIndex": 5,
+      "active": true,
+      "editorTitle": "Banco Credicoop",
+      "associatedBanks": [],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": true,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/7f92d03b-ce19-4469-a08c-8ea2283bde5d___d478a8c62aef0e25a672f3e3c73ee10f.jpg",
+      "terms": "CARTERA DE CONSUMO. PROMOCIÓN VÁLIDA PARA COMPRAS REALIZADAS DE MANERA PRESENCIAL O VIRTUAL, ESCANEANDO EL QR DE MODO Y ABONANDO A TRAVÉS DE LA APP BANCA CREDICOOP O MODO CON TARJETAS CABAL CREDICOOP (EXCEPTO AGROCABAL, CABAL MAYORISTA Y CABAL EMPRESAS). APLICA A CONSUMO DE TIPO FAMILIAR Y EFECTUADO EN UN PAGO. VIGENTE LOS MIÉRCOLES DE OCTUBRE, NOVIEMBRE Y DICIEMBRE DE 2026. EJEMPLO: EN UN CONSUMO DE $60.000 RECIBIRÁ UN REINTEGRO DE $15.000 (TOPE MÁXIMO POR USUARIO POR MIÉRCOLES). EL REINTEGRO SE VERÁ REFLEJADO DENTRO DE LOS 30 DÍAS POSTERIORES AL CONSUMO EN LA CUENTA DEL BANCO, PARA LO CUAL SERÁ REQUISITO QUE ESTA SEA DE TÍTULO PERSONAL Y SE ENCUENTRE ADHERIDA A MODO. SERÁ CONDICIÓN ESENCIAL PARA PARTICIPAR DE LA MISMA QUE AL MOMENTO DE EFECTUAR EL REINTEGRO, LA TARJETA SE ENCUENTRE VIGENTE Y EN ESTADO DE CUMPLIMIENTO NORMAL. DICHA PROMOCIÓN NO ES ACUMULABLE CON OTRAS PROMOCIONES VIGENTES. NO PARTICIPAN LOS CONSUMOS REALIZADOS A TRAVÉS DE BILLETERAS VIRTUALES (EXCEPTO MODO), POS MÓVILES, PLATAFORMAS DE PAGO Y/O PORTALES DE PAGO ONLINE. MODO ES MARCA REGISTRADA POR PLAY DIGITAL S.A., CUIT 30-71682943-6. BANCO CREDICOOP SOLO ES EL MEDIO DE PAGO PARA LA ADQUISICIÓN DEL PRODUCTO/SERVICIO. PARA MÁS INFORMACIÓN Y CONDICIONES O LIMITACIONES APLICABLES CONSULTAR EN WWW.BENEFICIOS.BANCOCREDICOOP.COOP.",
+      "bank": "Banco Credicoop MODO",
+      "offer": "25% de reintegro",
+      "days_active": [
+        "Mi"
+      ],
+      "tope": "Tope de $15.000 semanal (tarjeta). Legales: tope $15.000 por usuario por miércoles",
+      "minimum": null,
+      "validity": "Del 1 de agosto al 30 de septiembre (tarjeta, texto vencido). Legales: miércoles de octubre, noviembre y diciembre de 2026",
+      "condition": "Tarjetas Cabal Credicoop a través de la App Banca Credicoop o MODO.",
+      "exclusion": "Excepto Agrocabal, Cabal Mayorista y Cabal Empresas. No participan billeteras virtuales (excepto MODO), POS móviles ni portales de pago online. No acumulable."
+    },
+    {
+      "cmsIndex": 6,
+      "active": true,
+      "editorTitle": "Columbia 20% de reintegro",
+      "associatedBanks": [
+        "Banco Columbia"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": true,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/88fc13c6-13f3-490a-905e-f821f75b5a89___94926386f0aceae7c3f8d2a007d33fda.jpg",
+      "terms": "CARTERA DE CONSUMO.VIGENCIA DESDE EL 01/10/2026 HASTA EL 31/03/2027 AMBAS FECHAS INCLUSIVE. PARA COMPRAS REALIZADAS ÚNICAMENTE LOS DIAS LUNES Y VIERNES EN LAS SUCURSALES DE SUPERMERCADOS DIA UBICADAS EN EL TERRITORIO DE LA REPÚBLICA ARGENTINA CON LAS TARJETAS DE CREDITO VISA Y MASTERCARD EMITIDAS POR BANCO COLUMBIA. 20% DE AHORRO EN COMPRAS EN UN PAGO, TOPE DE REINTEGRO $10.000 (DIEZ MIL PESOS) POR TRANSACCION. EJEMPLO: COMPRA REALIZADA EN 1 PAGO DE $1000 RECIBIRÁ UN REINTEGRO DE $200. LA BONIFICACIONES SE VERÁN REFLEJADAS HASTA EN LOS 2 RESÚMENES SIGUIENTES AL QUE REFLEJE LA/S TRANSACCIÓN/ES. BANCO COLUMBIA S.A. NO SE RESPONSABILIZA POR LAS TRANSACCIONES PRESENTADAS FUERA DE TÉRMINO POR LOS ESTABLECIMIENTOS ADHERIDOS. BANCO COLUMBIA S.A. NO SE RESPONSABILIZA POR LA CALIDAD Y FUNCIONAMIENTO DE PRODUCTOS PUBLICADOS. LOS BENEFICIOS DE LAS PROMOCIONES SE OTORGARÁN SIEMPRE QUE LAS TARJETAS DE CRÉDITO SE ENCUENTREN HABILITADAS, Y LA CUENTA NO SE ENCUENTRE EN MORA Y/O BLOQUEADA POR MOTIVOS ADMINISTRATIVOS.",
+      "bank": "Banco Columbia",
+      "offer": "20% de reintegro",
+      "days_active": [
+        "L",
+        "V"
+      ],
+      "tope": "Tope de $10.000 por transacción",
+      "minimum": null,
+      "validity": "Del 1 de octubre al 31 de marzo",
+      "condition": "Tarjeta de crédito Visa o Mastercard Banco Columbia (solo beneficiarios), en un pago.",
+      "exclusion": "El legal no lista rubros excluidos. Solo compras en un pago con Visa o Mastercard crédito de Banco Columbia."
+    },
+    {
+      "cmsIndex": 7,
+      "active": true,
+      "editorTitle": "Banco del Sol",
+      "associatedBanks": [
+        "Banco del Sol"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/72db3362-ef79-483b-a41d-78287b9ed711___de18844b469905bb4ab12a965373d19f.jpg",
+      "terms": "CARTERA DE CONSUMO. LA PRESENTE ACCIÓN PROMOCIONAL ES ORGANIZADA POR BANCO DEL SOL S.A., CUIT N° 30-67793756-0, CON DOMICILIO EN AV. LEANDRO N. ALEM 1058, PB, CIUDAD AUTÓNOMA DE BUENOS AIRES (EN ADELANTE, EL \"BANCO\" O \"BDS\", INDISTINTAMENTE). PROMOCIÓN VÁLIDA PARA CLIENTES DE BDS QUE SE ENCUENTREN REGISTRADOS EN LA APLICACIÓN DEL BANCO Y QUE REALICEN COMPRAS CON LA TARJETA DE DÉBITO VISA EMITIDA POR EL BANCO. VÁLIDA TODOS LOS MARTES, DESDE EL 01/10/2026 HASTA EL 30/11/2026, AMBAS FECHAS INCLUSIVE (EN ADELANTE, EL “PLAZO”). APLICABLE EXCLUSIVAMENTE EN TODAS LAS SUCURSALES DE SUPERMERCADO DIA DE LA REPÚBLICA ARGENTINA, ASÍ COMO TAMBIÉN EN SU TIENDA ONLINE: DIAONLINE.SUPERMERCADOSDIA.COM.AR. EL BENEFICIO CONSISTIRÁ EN UN 25% (VEINTICINCO POR CIENTO) DE REINTEGRO, CON UN TOPE DE $10.000 (PESOS DIEZ MIL) POR CLIENTE POR MES CALENDARIO, SOBRE EL MONTO DE LAS COMPRAS EFECTUADAS. EL REINTEGRO SERÁ ACREDITADO DENTRO DE LOS 10 (DIEZ) DÍAS CORRIDOS POSTERIORES A LA FECHA DE LA COMPRA EN LA CUENTA ASOCIADA. EJEMPLO: PARA UNA COMPRA DE $40.000 (PESOS CUARENTA MIL), EL CLIENTE RECIBIRÁ UN REINTEGRO DE $10.000 (PESOS DIEZ MIL). LA PROMOCIÓN NO ES ACUMULABLE CON OTROS BENEFICIOS Y/O PROMOCIONES VIGENTES. NO APLICA SOBRE PRODUCTOS INCLUIDOS EN PROGRAMAS GUBERNAMENTALES. QUEDAN EXCLUIDOS LOS CLIENTES CUYAS CUENTAS SE ENCUENTREN EN MORA Y/O BLOQUEADAS POR CUALQUIER MOTIVO AL MOMENTO DE LA TRANSACCIÓN. LA PROMOCIÓN NO APLICA A PAGOS REALIZADOS A TRAVÉS DE BILLETERAS VIRTUALES, PLATAFORMAS O PORTALES DE PAGO ONLINE. ANTE CONSULTAS O RECLAMOS, LOS CLIENTES PODRÁN COMUNICARSE A TRAVÉS DE LOS CANALES DE ATENCIÓN DISPONIBLES DEL BANCO. LOS PRESENTES TÉRMINOS Y CONDICIONES SE ENCUENTRAN DISPONIBLES EN HTTPS://WWW.BANCODELSOL.COM",
+      "bank": "Banco del Sol",
+      "offer": "25% de reintegro",
+      "days_active": [
+        "Ma"
+      ],
+      "tope": "Tope de $10.000 por mes",
+      "minimum": null,
+      "validity": "Del 1 de octubre al 30 de noviembre",
+      "condition": "Tarjeta de débito Visa Banco del Sol.",
+      "exclusion": "No aplica a productos de programas gubernamentales ni a pagos por billeteras virtuales o portales de pago online. Excluye cuentas en mora o bloqueadas."
+    },
+    {
+      "cmsIndex": 8,
+      "active": true,
+      "editorTitle": "3CSI TC",
+      "associatedBanks": [
+        "Visa",
+        "Master Card",
+        "Cabal",
+        "American Express"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/c2fdfc6f-04fd-4b81-8876-2309797e8000___6c299c6c4ab12d26fff54360021362ae.jpg",
+      "terms": "CARTERA DE CONSUMO. PROMOCIÓN VÁLIDA PARA TODOS LOS DÍAS SÁBADO DEL 01/01/2026 AL 31/10/2026 EN TODAS LAS TIENDAS DIA Y WWW.DIAONLINE.COM.AR. PLAN 3 CUOTAS SIN INTERÉS CON LAS TARJETAS VISA, MASTERCARD, AMERICAN EXPRESS Y CABAL EMITIDAS EN LA REPÚBLICA ARGENTINA. EXCLUYE TARJETAS MASTERCARD CENCOSUD. VÁLIDO PARA COMPRAS CON TARJETA FÍSICA. DIA ARGENTINA S.A., DOMICILIO AV. RIVADAVIA 8875 1° PISO, CIUDAD AUTÓNOMA DE BUENOS AIRES, CUIT: 30-68584975-1.  TEM: 0,00% - TNA: 0,00% - TEA: 0,00% - CFTNA: 0,00%",
+      "bank": "Visa / Mastercard / American Express / Cabal",
+      "offer": "3 cuotas sin interés",
+      "days_active": [
+        "S"
+      ],
+      "tope": null,
+      "minimum": null,
+      "validity": "Del 1 de enero al 31 de octubre",
+      "condition": "VISA, Mastercard, American Express o Cabal. Excluye Mastercard Cencosud. Tarjeta física. TEM/TNA/TEA/CFTNA 0%.",
+      "exclusion": "Excluye tarjetas Mastercard Cencosud. Solo tarjeta física."
+    },
+    {
+      "cmsIndex": 9,
+      "active": true,
+      "editorTitle": "3CI - Naranja",
+      "associatedBanks": [
+        "Naranja"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/bb8b64dc-33d7-4b6d-a523-abe96a049b3a___c385d7c05bf0019157fbf5804b887efb.jpg",
+      "terms": "PLAN Z CERO INTERÉS COSTO FINANCIERO TOTAL (CFT) 0% TASA EFECTIVA ANUAL (TEA) 0% TASA NOMINAL ANUAL (TNA) 0%. BENEFICIO VÁLIDO PARA TITULARES Y ADICIONALES DE TARJETA DE CRÉDITO NARANJA X DE TODO EL PAÍS QUE COMPREN EN PLAN Z CERO INTERÉS: COSTO FINANCIERO TOTAL (CFT) 0% TASA EFECTIVA ANUAL (TEA) 0% TASA NOMINAL ANUAL (TNA) 0%",
+      "bank": "Naranja X",
+      "offer": "3 cuotas sin interés (Plan Z)",
+      "days_active": [
+        "L",
+        "Ma",
+        "Mi",
+        "J",
+        "V",
+        "S",
+        "D"
+      ],
+      "tope": null,
+      "minimum": null,
+      "validity": "Del 1 de enero al 31 de diciembre",
+      "condition": "Pagando con Naranja Plan Z. CFT/TEA/TNA 0%.",
+      "exclusion": "El legal no trae una exclusión de rubros. Es Plan Z de tarjeta de crédito Naranja X (CFT, TEA y TNA 0%)."
+    },
+    {
+      "cmsIndex": 10,
+      "active": true,
+      "editorTitle": "Naranja 20%",
+      "associatedBanks": [
+        "Naranja"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/9b8880ae-79cf-422f-9e99-5f46a520e6ff___c4ff7711c3323429b6df6055bcab7dff.jpg",
+      "terms": "PROMOCIÓN VÁLIDA LOS MARTES DEL MES DE OCTUBRE DE 2026, O HASTA AGOTAR UN STOCK TOTAL DE 80.000 REINTEGROS, LO QUE OCURRA PRIMERO. EL BENEFICIO CONSISTE EN UN REINTEGRO (CASHBACK) PARA LAS COMPRAS REALIZADAS CON TARJETA DE CRÉDITO NARANJAX Y TARJETA DE DÉBITO VISA NARANJAX EN TODOS LOS COMERCIOS ADHERIDOS A LA ¨PROMO SUPERMERCADO NX”; APLICANDO EL SIGUIENTE DESCUENTO Y TOPE SEGÚN EL PLAN DEL USUARIO: (1) PLAN INICIAL: 20% DE DESCUENTO CON TOPE DE $3.000 POR SEMANA. (2) PLAN TURBO: 25% DE DESCUENTO CON TOPE DE $9.500 POR SEMANA. (3) PLAN ÉPICO: 30% DE DESCUENTO CON TOPE DE $12.000 POR SEMANA. EL MONTO REINTEGRADO SE ACREDITARÁ ÚNICAMENTE EN TU CUENTA NARANJA X DENTRO DE LOS 10 DÍAS POSTERIORES A LA FECHA DE LA COMPRA. ESTA PROMOCIÓN ES VÁLIDA SOLO EN LOS COMERCIOS ADHERIDOS Y NO APLICA PARA COMPRAS REALIZADAS CON NARANJA VISA, NARANJA MASTERCARD, NARANJA AMEX, NI PARA TRANSACCIONES EFECTUADAS EN AGRUPADORES Y BILLETERAS VIRTUALES QUE NO SEAN NARANJA X. NARANJA X SE RESERVA EL DERECHO DE SUSPENDER O MODIFICAR LA PROMOCIÓN POR CAUSAS DE FUERZA MAYOR, NOTIFICÁNDOLO A TRAVÉS DE LA APLICACIÓN NARANJA X. LA CUENTA NARANJA X ES ADMINISTRADA POR NARANJA DIGITAL COMPAÑÍA FINANCIERA S.A.U., CUIT 30-71663964-5, TTE. GRAL. JUAN D. PERÓN 430, PISO 19, CABA. LA TARJETA DE CRÉDITO NARANJA X ES EMITIDA POR TARJETA NARANJA S.A.U., CUIT 30-68537634-9, LA TABLADA 451, CIUDAD DE CÓRDOBA.",
+      "bank": "Naranja X",
+      "offer": "20% de reintegro",
+      "days_active": [
+        "Ma"
+      ],
+      "tope": "Tope de $3.000 por semana",
+      "minimum": null,
+      "validity": "Del 1 de agosto al 31 de octubre (tarjeta). Legales: martes de octubre 2026 o hasta 80.000 reintegros",
+      "condition": "Tarjeta Naranja X y débito Visa Naranja X (plan inicial).",
+      "exclusion": "No aplica con Naranja Visa, Naranja Mastercard ni Naranja Amex, ni en agrupadores o billeteras que no sean Naranja X."
+    },
+    {
+      "cmsIndex": 11,
+      "active": true,
+      "editorTitle": "Naranja 25%",
+      "associatedBanks": [
+        "Naranja"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/a9f29660-a2eb-4220-8d8a-99e0fb78e6d5___1ca22d3b8e0d58d27c6c581441d79419.jpg",
+      "terms": "PROMOCIÓN VÁLIDA LOS MARTES DEL MES DE OCTUBRE DE 2026, O HASTA AGOTAR UN STOCK TOTAL DE 80.000 REINTEGROS, LO QUE OCURRA PRIMERO. EL BENEFICIO CONSISTE EN UN REINTEGRO (CASHBACK) PARA LAS COMPRAS REALIZADAS CON TARJETA DE CRÉDITO NARANJAX Y TARJETA DE DÉBITO VISA NARANJAX EN TODOS LOS COMERCIOS ADHERIDOS A LA ¨PROMO SUPERMERCADO NX”; APLICANDO EL SIGUIENTE DESCUENTO Y TOPE SEGÚN EL PLAN DEL USUARIO: (1) PLAN INICIAL: 20% DE DESCUENTO CON TOPE DE $3.000 POR SEMANA. (2) PLAN TURBO: 25% DE DESCUENTO CON TOPE DE $9.500 POR SEMANA. (3) PLAN ÉPICO: 30% DE DESCUENTO CON TOPE DE $12.000 POR SEMANA. EL MONTO REINTEGRADO SE ACREDITARÁ ÚNICAMENTE EN TU CUENTA NARANJA X DENTRO DE LOS 10 DÍAS POSTERIORES A LA FECHA DE LA COMPRA. ESTA PROMOCIÓN ES VÁLIDA SOLO EN LOS COMERCIOS ADHERIDOS Y NO APLICA PARA COMPRAS REALIZADAS CON NARANJA VISA, NARANJA MASTERCARD, NARANJA AMEX, NI PARA TRANSACCIONES EFECTUADAS EN AGRUPADORES Y BILLETERAS VIRTUALES QUE NO SEAN NARANJA X. NARANJA X SE RESERVA EL DERECHO DE SUSPENDER O MODIFICAR LA PROMOCIÓN POR CAUSAS DE FUERZA MAYOR, NOTIFICÁNDOLO A TRAVÉS DE LA APLICACIÓN NARANJA X. LA CUENTA NARANJA X ES ADMINISTRADA POR NARANJA DIGITAL COMPAÑÍA FINANCIERA S.A.U., CUIT 30-71663964-5, TTE. GRAL. JUAN D. PERÓN 430, PISO 19, CABA. LA TARJETA DE CRÉDITO NARANJA X ES EMITIDA POR TARJETA NARANJA S.A.U., CUIT 30-68537634-9, LA TABLADA 451, CIUDAD DE CÓRDOBA.",
+      "bank": "Naranja X",
+      "offer": "25% de reintegro",
+      "days_active": [
+        "Ma"
+      ],
+      "tope": "Tope de $9.500 por semana",
+      "minimum": null,
+      "validity": "Del 1 de agosto al 31 de octubre (tarjeta). Legales: martes de octubre 2026 o hasta 80.000 reintegros",
+      "condition": "Tarjeta Naranja X y débito Visa Naranja X (plan turbo).",
+      "exclusion": "No aplica con Naranja Visa, Naranja Mastercard ni Naranja Amex, ni en agrupadores o billeteras que no sean Naranja X."
+    },
+    {
+      "cmsIndex": 12,
+      "active": true,
+      "editorTitle": "Naranja 30%",
+      "associatedBanks": [
+        "Naranja"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/75a43673-bfd8-4407-9616-47c80f4adcaa___96847600917eb4fb46084fed7a53b309.jpg",
+      "terms": "PROMOCIÓN VÁLIDA LOS MARTES DEL MES DE OCTUBRE DE 2026, O HASTA AGOTAR UN STOCK TOTAL DE 80.000 REINTEGROS, LO QUE OCURRA PRIMERO. EL BENEFICIO CONSISTE EN UN REINTEGRO (CASHBACK) PARA LAS COMPRAS REALIZADAS CON TARJETA DE CRÉDITO NARANJAX Y TARJETA DE DÉBITO VISA NARANJAX EN TODOS LOS COMERCIOS ADHERIDOS A LA ¨PROMO SUPERMERCADO NX”; APLICANDO EL SIGUIENTE DESCUENTO Y TOPE SEGÚN EL PLAN DEL USUARIO: (1) PLAN INICIAL: 20% DE DESCUENTO CON TOPE DE $3.000 POR SEMANA. (2) PLAN TURBO: 25% DE DESCUENTO CON TOPE DE $9.500 POR SEMANA. (3) PLAN ÉPICO: 30% DE DESCUENTO CON TOPE DE $12.000 POR SEMANA. EL MONTO REINTEGRADO SE ACREDITARÁ ÚNICAMENTE EN TU CUENTA NARANJA X DENTRO DE LOS 10 DÍAS POSTERIORES A LA FECHA DE LA COMPRA. ESTA PROMOCIÓN ES VÁLIDA SOLO EN LOS COMERCIOS ADHERIDOS Y NO APLICA PARA COMPRAS REALIZADAS CON NARANJA VISA, NARANJA MASTERCARD, NARANJA AMEX, NI PARA TRANSACCIONES EFECTUADAS EN AGRUPADORES Y BILLETERAS VIRTUALES QUE NO SEAN NARANJA X. NARANJA X SE RESERVA EL DERECHO DE SUSPENDER O MODIFICAR LA PROMOCIÓN POR CAUSAS DE FUERZA MAYOR, NOTIFICÁNDOLO A TRAVÉS DE LA APLICACIÓN NARANJA X. LA CUENTA NARANJA X ES ADMINISTRADA POR NARANJA DIGITAL COMPAÑÍA FINANCIERA S.A.U., CUIT 30-71663964-5, TTE. GRAL. JUAN D. PERÓN 430, PISO 19, CABA. LA TARJETA DE CRÉDITO NARANJA X ES EMITIDA POR TARJETA NARANJA S.A.U., CUIT 30-68537634-9, LA TABLADA 451, CIUDAD DE CÓRDOBA.",
+      "bank": "Naranja X",
+      "offer": "30% de reintegro",
+      "days_active": [
+        "Ma"
+      ],
+      "tope": "Tope de $12.000 por semana",
+      "minimum": null,
+      "validity": "Del 1 de agosto al 31 de octubre (tarjeta). Legales: martes de octubre 2026 o hasta 80.000 reintegros",
+      "condition": "Tarjeta Naranja X y débito Visa Naranja X (plan épico).",
+      "exclusion": "No aplica con Naranja Visa, Naranja Mastercard ni Naranja Amex, ni en agrupadores o billeteras que no sean Naranja X."
+    },
+    {
+      "cmsIndex": 13,
+      "active": false,
+      "editorTitle": "BNA + MODO",
+      "associatedBanks": [
+        "BNA"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": true,
+        "saturday": true,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/f1e4cd86-f2c2-432a-abc6-c9bf8499ddb3___7d54e0a5ef86e99b37f6bfbda8493401.jpg",
+      "terms": "PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA DESDE EL 01/07/2026 AL 31/07/2026, AMBAS FECHAS INCLUSIVE, PARA COMPRAS CON TARJETAS DE CRÉDITO VISA Y MASTERCARD Y TARJETAS DE DÉBITO MASTERCARD DEL BANCO NACIÓN PAGANDO EXCLUSIVAMENTE CON BNA+ MODO ESCANEANDO QR MODO EN SUPERMERCADOS ADHERIDOS. PARA COMPRAS MÍNIMAS DE $35.000 CON TOPE DE DEVOLUCIÓN: HASTA $5.000.- POR CLIENTE POR MES (SE CONSIDERA CLIENTE PARA EL BNA EL CUIT Y SE CONSIDERA MES PARA EL BNA DEL PRIMERO AL ÚLTIMO DÍA DE CADA MES CALENDARIO), DURANTE LA VIGENCIA DE LA PROMOCIÓN. EL DESCUENTO SE VERÁ REFLEJADO EN LA CUENTA MONETARIA ASOCIADA A BNA+ DE LA PERSONA QUE REALIZÓ LA COMPRA DENTRO DE LOS 30 DÍAS HÁBILES DE OCURRIDA LA TRANSACCIÓN. LOS ADICIONALES DE TARJETAS DE CRÉDITO DEBERÁN CONTAR CON UNA CUENTA MONETARIA EN EL BNA PARA QUE APLIQUE EL REINTEGRO. EL BENEFICIO NO APLICA A TRAVÉS DE OTRAS BILLETERAS O PLATAFORMAS DE PAGO, COMO TAMPOCO PARA PAGOS REALIZADOS MEDIANTE SALDO EN CUENTA. EXCLUSIVO CARTERA DE CONSUMO. NO ACUMULABLE CON OTROS BENEFICIOS Y/O PROMOCIONES EN EL COMERCIO. BANCO DE LA NACIÓN ARGENTINA - BARTOLOMÉ MITRE 326, CABA - CUIT 30-50001091-2.",
+      "bank": "BNA+ MODO",
+      "offer": "reintegro (el legal no escribe el porcentaje)",
+      "days_active": [
+        "V",
+        "S"
+      ],
+      "tope": "Hasta $5.000 por cliente por mes",
+      "minimum": "$35.000",
+      "validity": "01/07/2026 al 31/07/2026 (vencida; card active=false)",
+      "condition": "Tarjetas de crédito Visa y Mastercard y débito Mastercard del Banco Nación, pagando con BNA+ MODO (QR) en supermercados adheridos.",
+      "exclusion": "No aplica por otras billeteras ni con saldo en cuenta. No acumulable. Exclusivo cartera de consumo.",
+      "image_conflict": "La imagen de la card muestra 20% + 10% adicional BNA+, tope $20.000 por banco y vigencia 1 de junio al 31 de julio. El legal de esta card no escribe un porcentaje y fija tope $5.000 del 01/07/2026 al 31/07/2026. No se usa la imagen como porcentaje."
+    },
+    {
+      "cmsIndex": 14,
+      "active": true,
+      "editorTitle": "Mercado Pago 3 CSI",
+      "associatedBanks": [
+        "Mercado Pago"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/b13c712f-6f36-49f6-a0d6-5fb9b463c740___184dc71c9717d10e5c9dc60bf8eaff22.jpg",
+      "terms": "*VÁLIDO EN COMPRAS DESDE $50.000 HASTA 2 CUOTAS SIN INTERÉS, Y $150.000 HASTA 3 CUOTAS SIN INTERÉS PAGANDO CON QR DE MERCADO PAGO.\nCFTNA: 0%. TASA FIJA NOMINAL Y EFECTIVA ANUAL 0%. PARA MÁS INFORMACIÓN SOBRE CONDICIONES O LIMITACIONES APLICABLES, CONSULTÁ EN HTTPS://WWW.MERCADOPAGO.COM.AR/TARJETA-DE-CREDITO.\n",
+      "bank": "Mercado Pago",
+      "offer": "Hasta 3 cuotas sin interés",
+      "days_active": [
+        "L",
+        "Ma",
+        "Mi",
+        "J",
+        "V",
+        "S",
+        "D"
+      ],
+      "tope": null,
+      "minimum": "2 cuotas desde $50.000; 3 cuotas desde $150.000",
+      "validity": "Del 1 de julio al 31 de octubre (tarjeta). Legales no repiten las fechas",
+      "condition": "Tarjeta de crédito Mercado Pago (tarjeta). Legales: pagando con QR de Mercado Pago. CFTNA 0%.",
+      "exclusion": "El legal no lista rubros excluidos. 2 cuotas desde $50.000 y 3 cuotas desde $150.000 pagando con QR de Mercado Pago."
+    },
+    {
+      "cmsIndex": 15,
+      "active": true,
+      "editorTitle": "BNA + MODO",
+      "associatedBanks": [
+        "BNA"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": true,
+        "saturday": true,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": true,
+        "store": true
+      },
+      "channel": "online y tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/91ba2a98-330a-446a-81ea-58f7ddb0b2e9___691ee5b2b4f9a8e34858cb7bb2b5f1d8.jpg",
+      "terms": "PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA TODOS LOS DÍAS VIERNES Y SÁBADOS DESDE EL 01/10/2026 AL 31/12/2026, AMBAS FECHAS INCLUSIVE, PARA COMPRAS CON TARJETAS DE CRÉDITO MASTERCARD DEL BANCO NACIÓN PAGANDO EXCLUSIVAMENTE CON BNA+ MODO ESCANEANDO QR MODO EN COMERCIOS ADHERIDOS DE LOS SUPERMERCADOS DÍA. TOPE DE DEVOLUCIÓN: HASTA $ 7.500 POR CLIENTE (SE CONSIDERA CLIENTE PARA EL BNA EL CUIT) POR MES (SE CONSIDERA MES PARA EL BNA DEL PRIMERO AL ÚLTIMO DÍA DE CADA MES CALENDARIO) DURANTE LA VIGENCIA DE LA PROMOCIÓN. MÍNIMO DE COMPRA: $ 35.000. EL DESCUENTO SE VERÁ REFLEJADO EN EN LA CUENTA MONETARIA ASOCIADA A BNA+ DE LA PERSONA QUE REALIZÓ LA COMPRA DENTRO DE LOS 30 DÍAS HÁBILES DE OCURRIDA LA TRANSACCIÓN. LOS ADICIONALES DE TARJETAS DE CRÉDITO DEBERÁN CONTAR CON UNA CUENTA MONETARIA EN EL BNA PARA QUE APLIQUE EL REINTEGRO. EL BENEFICIO NO APLICA A TRAVÉS DE OTRAS BILLETERAS O PLATAFORMAS DE PAGO, COMO TAMPOCO PARA PAGOS REALIZADOS MEDIANTE SALDO EN CUENTA. EXCLUSIVO CARTERA DE CONSUMO. BANCO DE LA NACIÓN ARGENTINA - BARTOLOMÉ MITRE 326, CABA - CUIT 30-50001091-2. PARA MÁS INFORMACIÓN Y CONDICIONES O LIMITACIONES APLICABLES, CONSULTÁ EN WWW.SEMANANACION.COM.AR",
+      "bank": "BNA+ MODO",
+      "offer": "10% de reintegro",
+      "days_active": [
+        "V",
+        "S"
+      ],
+      "tope": "Tope mensual de $7.500 por cliente",
+      "minimum": "$35.000",
+      "validity": "Del 1 de octubre al 31 de diciembre",
+      "condition": "Tarjeta de crédito Mastercard Banco Nación pagando con BNA+ escaneando QR MODO (tarjeta dice débito y crédito de entidades adheridas).",
+      "exclusion": "No aplica por otras billeteras ni con saldo en cuenta. Exclusivo cartera de consumo."
+    },
+    {
+      "cmsIndex": 16,
+      "active": true,
+      "editorTitle": "Cuenta Dni  Visa",
+      "associatedBanks": [
+        "Cuenta DNI"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/a39068cd-e0c2-45da-9f88-f02fc45f5f08___14aec92f63f34e22ec986d5a957331c2.jpg",
+      "terms": "PROMOCIÓN VÁLIDA TODOS LOS LUNES COMPRENDIDOS ENTRE EL 1 DE OCTUBRE Y EL 31 DE DICIEMBRE DE 2026, AMBAS FECHAS INCLUSIVE. 20% DE REINTEGRO, SIN TOPE, PARA LAS COMPRAS REALIZADAS DE MANERA PRESENCIAL A TRAVÉS DE CUENTA DNI CON TECNOLOGÍA SIN CONTACTO (NFC) UTILIZANDO TARJETAS VISA, EN LOCALES ADHERIDOS DE “SUPERMERCADOS DÍA%”. LA MODALIDAD DE PAGO MEDIANTE TECNOLOGÍA SIN CONTACTO (NFC) SERÁ VÁLIDA\nÚNICAMENTE PARA TARJETAS VISA CRÉDITO HABILITADAS EN CUENTA DNI Y DISPONIBLES EN DISPOSITIVOS CON SISTEMA OPERATIVO ANDROID. LOS LOCALES ADHERIDOS PARTICIPANTES PODRÁN CONSULTARSE EN WWW.BANCOPROVINCIA.COM.AR. VÁLIDO ÚNICAMENTE PARA CONSUMO FAMILIAR. EL REINTEGRO SE VERÁ\nREFLEJADO COMO BONIFICACIÓN HASTA EN EL RESUMEN SIGUIENTE A AQUEL EN EL QUE INGRESE EL CONSUMO. NO ACUMULABLE CON OTRAS PROMOCIONES Y/O DESCUENTOS VIGENTES SOBRE LA MISMA COMPRA. EJEMPLO REPRESENTATIVO: QUIEN REALICE UNA COMPRA CON CUENTA DNI NFC DE $50.000 RECIBIRÁ UN REINTEGRO DE $10.000.\nPARA MÁS INFORMACIÓN COMUNÍQUESE AL 0810-666-2364. BANCO DE LA PROVINCIA DE BUENOS AIRES. CUIT 33-99924210-9. CALLE 7 N° 726, LA PLATA, PROVINCIA DE BUENOS AIRES. WWW.BANCOPROVINCIA.COM.AR. CARTERA DE CONSUMO.\n",
+      "bank": "Cuenta DNI Visa",
+      "offer": "20% de reintegro",
+      "days_active": [
+        "L"
+      ],
+      "tope": "Sin tope",
+      "minimum": "Sin mínimo",
+      "validity": "Del 7 de octubre al 31 de diciembre (tarjeta). Legales: lunes del 1 de octubre al 31 de diciembre de 2026",
+      "condition": "Tarjetas de crédito Visa vinculadas a la app, opción Pagar con NFC. Solo tiendas. Android.",
+      "exclusion": "No acumulable con otras promociones sobre la misma compra. Solo presencial, NFC, Visa crédito, Android."
+    },
+    {
+      "cmsIndex": 17,
+      "active": true,
+      "editorTitle": "Cuenta DNI 10%",
+      "associatedBanks": [
+        "Cuenta DNI"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/84f7a575-3816-4791-876c-1e633d2d7486___ceae7262455cbfe93e9909c3d1e51bfa.jpg",
+      "terms": "PROMOCIÓN VÁLIDA LOS LUNES DE OCTUBRE DEL 2026 PARA COMPRAS REALIZADAS A TRAVÉS DE LA FUNCIONALIDAD\n“PAGO CLAVE DNI”; DE LA APLICACIÓN CUENTA DNI EN LOS COMERCIOS ADHERIDOS BAJO EL NOMBRE DE “DIA” ADHERIDOS. LA NÓMINA DE ADHERIDOS SE PODRÁ CONSULTAR EN WWW.BANCOPROVINCIA.COM.AR. BONIFICACIÓN DEL 10%. SIN TOPE DE REINTEGRO. SE DARÁ UN REINTEGRO QUE SE VERÁ REFLEJADO EN LOS MOVIMIENTOS DE LA CUENTA VINCULADA A CUENTA DNI AL MOMENTO DEL CONSUMO, DENTRO DE LOS 10 DÍAS HÁBILES SIGUIENTES DE REALIZADA LA COMPRA. EL BENEFICIO NO APLICA A CLIENTES QUE REGISTRAN ATRASO EN EL PAGO DE SUS OBLIGACIONES CON EL BANCO. VÁLIDA ÚNICAMENTE PARA VENTA MINORISTA. LA PROMOCIÓN NO APLICA A COMPRAS REALIZADAS CON CUENTA DNI MEDIANTE LA LECTURA DEL CÓDIGO QR DE MERCADO PAGO U OTRAS BILLETERAS DIGITALES, NI LAS ABONADAS CON TARJETA DE CRÉDITO VISA Y/O MASTERCARD Y/O VISA DÉBITO O TRANSFERENCIAS A TRAVÉS DE LA APLICACIÓN. EL DESCUENTO PROMOCIONADO APLICARÁ SOBRE EL PRECIO CONTADO EN CONCORDANCIA CON RESOLUCIÓN 51 Y 240 /2017 MINISTERIO DE PRODUCCIÓN DE LA NACIÓN SECRETARÍA DE COMERCIO. EJEMPLOS REPRESENTATIVOS: (1) QUIEN REALICE UNA COMPRA DE $30.000.- RECIBIRÁ UN REINTEGRO DE $3.000.- (2) QUIEN REALICE UNA COMPRA DE $90.000.- RECIBIRÁ UN REINTEGRO DE $9.000.- PARA MÁS INFORMACIÓN COMUNÍQUESE AL 0810 666 2364. BANCO DE LA PROVINCIA DE BUENOS AIRES. CUIT 33-99924210-9 CALLE 7 N°726. LA PLATA. BUENOS AIRES. WWW.BANCOPROVINCIA.COM.AR.\n",
+      "bank": "Cuenta DNI",
+      "offer": "10% de reintegro",
+      "days_active": [
+        "L"
+      ],
+      "tope": "Sin tope",
+      "minimum": "Sin mínimo",
+      "validity": "Del 1 de abril al 31 de octubre (tarjeta). Legales: lunes de octubre de 2026",
+      "condition": "Dinero en cuenta en la app con Clave DNI. Solo tiendas.",
+      "exclusion": "No aplica con QR de Mercado Pago u otras billeteras, ni con Visa/Mastercard crédito, Visa débito o transferencias. No aplica a clientes en mora."
+    },
+    {
+      "cmsIndex": 18,
+      "active": true,
+      "editorTitle": "Cuenta DNI 5%",
+      "associatedBanks": [
+        "Cuenta DNI"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/7e51e050-3039-4996-bf24-df81a6f5a132___ee20835710f648cbeed0dab6aa4f130c.jpg",
+      "terms": "PROMOCIÓN VÁLIDA LOS LUNES DE OCTUBRE DEL 2026 EN LOCALES “DÍA%” ADHERIDOS. BENEFICIO EXCLUSIVO PARA JUBILADOS QUE HAYAN PERCIBIDO SU HABER ENTRE EL 1° Y EL 30 DE SEPTIEMBRE DEL 2026 EN BANCO PROVINCIA. SE OTORGARÁ UN 5% DE REINTEGRO ADICIONAL SOBRE EL VALOR DEL TICKET, CON UN TOPE DE REINTEGRO UNIFICADO DE $5.000 POR PERSONA Y POR SEMANA. “UNIFICADO” SIGNIFICA QUE EL TOPE APLICARÁ CONSIDERANDO EL TOTAL DE COMPRAS REALIZADAS POR CUENTA EN TODOS LOS LOCALES PARTICIPANTES. EL REINTEGRO SE ACREDITARÁ EN LA CUENTA VINCULADA A CUENTA DNI DENTRO DE LOS 10 DÍAS HÁBILES POSTERIORES A LA COMPRA. VÁLIDO ÚNICAMENTE PARA VENTAS MINORISTAS. ACUMULABLE CON OTRAS PROMOCIONES Y/O DESCUENTOS VIGENTES. EL BENEFICIO NO APLICA A CLIENTES QUE REGISTREN ATRASO EN EL PAGO DE SUS OBLIGACIONES CON EL BANCO. LA PROMOCIÓN NO APLICA A COMPRAS REALIZADAS CON CUENTA DNI MEDIANTE TARJETA DE CRÉDITO VISA Y/O MASTERCARD, VISA DÉBITO, TRANSFERENCIAS REALIZADAS A TRAVÉS DE LA APLICACIÓN, NI MEDIANTE LA LECTURA DEL CÓDIGO QR DE MERCADO PAGO U OTRAS BILLETERAS DIGITALES. EL DESCUENTO PROMOCIONADO SE APLICARÁ SOBRE EL PRECIO CONTADO, CONFORME A LO DISPUESTO POR LAS RESOLUCIONES N° 51 Y 240/2017 DEL MINISTERIO DE PRODUCCIÓN DE LA NACIÓN, SECRETARÍA DE COMERCIO. EJEMPLOS REPRESENTATIVOS: (1) QUIEN REALICE UNA COMPRA DE $2.000 RECIBIRÁ UN REINTEGRO DE $100; (2) QUIEN REALICE COMPRAS POR $120.000 EN LA SEMANA RECIBIRÁ UN REINTEGRO DE $5.000. PARA MÁS INFORMACIÓN COMUNÍQUESE AL 0810-666-2364 O INGRESE EN WWW.BANCOPROVINCIA.COM.AR. BANCO DE LA PROVINCIA DE BUENOS AIRES. CUIT 33-99924210-9. CALLE 7 N° 726, LA PLATA, BUENOS AIRES. CARTERA DE CONSUMO.",
+      "bank": "Cuenta DNI",
+      "offer": "5% de reintegro adicional jubilados",
+      "days_active": [
+        "L"
+      ],
+      "tope": "Tope de $5.000 por semana (unificado por persona)",
+      "minimum": null,
+      "validity": "Del 1 de abril al 31 de octubre (tarjeta). Legales: lunes de octubre de 2026",
+      "condition": "Jubilados que cobraron el haber en Banco Provincia entre el 1 y el 30 de septiembre de 2026. Dinero en cuenta con Clave DNI. Solo tiendas.",
+      "exclusion": "Exclusivo jubilados que cobraron el haber en Banco Provincia entre el 1 y el 30 de septiembre de 2026. No aplica con tarjetas Visa/Mastercard, Visa débito, transferencias ni QR de otras billeteras."
+    },
+    {
+      "cmsIndex": 19,
+      "active": true,
+      "editorTitle": "5% BNA MODO",
+      "associatedBanks": [
+        "Modo",
+        "BNA"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/e07b32b5-2c4c-4593-8aeb-6fc8b8523bf9___3ed6ce90271737dd903a896e7fe0a187.jpg",
+      "terms": "PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA TODOS LOS DÍAS LUNES, MARTES, MIÉRCOLES, JUEVES Y VIERNES DESDE EL 01/01/2026 HASTA EL 30/09/2026 PARA COMPRAS CON TARJETAS DE CRÉDITO VISA Y MASTERCARD Y TARJETAS DE DÉBITO MASTERCARD DÉBITO DEL BANCO NACIÓN PAGANDO EXCLUSIVAMENTE CON MODO BNA+ ESCANEANDO QR MODO EN COMERCIOS ADHERIDOS. TOPE DE DEVOLUCIÓN: HASTA $ 5.000 POR CLIENTE (SE CONSIDERA CLIENTE PARA EL BNA EL CUIT) POR CADA SEMANA (SE CONSIDERA SEMANA PARA EL BNA DE LUNES A DOMINGOS), DURANTE LA VIGENCIA DE LA PROMO, TOPE MÁXIMO DE DEVOLUCIÓN POR MES (SE CONSIDERA MES DEL PRIMERO AL ÚLTIMO DÍA DE CADA MES CALENDARIO) HASTA $ 20.000. EL BENEFICIO APLICA ÚNICAMENTE PARA EL CLIENTE SELECCIONADO QUE COBRE SUS HABERES JUBILATORIOS DE ANSES MEDIANTE UNA CUENTA MONETARIA DEL BNA. EL BENEFICIO NO ES TRANSFERIBLE. EL DESCUENTO SE VERÁ REFLEJADO EN EN LA CUENTA MONETARIA ASOCIADA A BNA+ DE LA PERSONA QUE REALIZÓ LA COMPRA DENTRO DE LOS 30 DÍAS HÁBILES DE OCURRIDA LA TRANSACCIÓN, LA CUAL DEBE ESTAR ASOCIADA A MODO BNA+ PREVIO A REALIZAR LA OPERACIÓN. EL BENEFICIO NO APLICA A PAGOS REALIZADOS A TRAVÉS DE OTRAS BILLETERAS O PLATAFORMAS DE PAGO, COMO TAMPOCO PARA PAGOS REALIZADOS MEDIANTE SALDO EN CUENTA. EXCLUSIVO CARTERA DE CONSUMO. BANCO DE LA NACIÓN ARGENTINA - BARTOLOMÉ MITRE 326, CABA - CUIT 30-50001091-2.",
+      "bank": "BNA+ MODO",
+      "offer": "5% de reintegro",
+      "days_active": [
+        "L",
+        "Ma",
+        "Mi",
+        "J",
+        "V"
+      ],
+      "tope": "Tope de $5.000 por semana y $20.000 por mes",
+      "minimum": null,
+      "validity": "Del 1 de enero al 30 de septiembre (tarjeta y legales; vigencia ya vencida al 3/10/2026 pero la card sigue active)",
+      "condition": "BNA+ Jubilados que cobran ANSES en cuenta BNA, vía QR MODO. Solo tiendas.",
+      "exclusion": "No aplica por otras billeteras ni con saldo en cuenta. Solo el cliente que cobra haberes jubilatorios de ANSES en una cuenta del BNA. El 5% está en el título de la card, no en el párrafo legal."
+    },
+    {
+      "cmsIndex": 20,
+      "active": true,
+      "editorTitle": "Anses",
+      "associatedBanks": [
+        "Anses"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/5781d88c-21c3-4ce0-b76e-18a573e3d3ab___32a5890844fd3155af0307cdc541b9a0.jpg",
+      "terms": "\"VALIDA PARA TODAS LAS TIENDAS DIA DEL PAÍS EXCEPTO LAS FRANQUICIAS TRADICIONALES (*). PROMOCIÓN ACUMULABLE CON LOS DESCUENTO DE FIDELIZACIÓN. EL DESCUENTO NO SE REALIZA EN LA LÍNEA DE CAJAS SINO QUE SE REINTEGRARÁ EN LA TARJETA DENTRO DE LOS 10 DÍAS HÁBILES DESDE LA FECHA DE COMPRA. ANSES LIMITARÁ SU RESPONSABILIDAD EXCLUSIVAMENTE A LA PROMOCIÓN, PUBLICIDAD Y DIFUSIÓN DE PRODUCTOS Y/O SERVICIOS OFERTADOS POR LOS COMERCIOS ADHERIDOS AL PROGRAMA DE BENEFICIOS ANSES. ANSES NO ES INTERMEDIARIO DE LA OFERTA Y NO SERÁ RESPONSABLE POR LOS DAÑOS Y PERJUICIOS QUE PUDIERAN SUFRIR LOS BENEFICIARIOS DEL PROGRAMA. ANSES PONDRÁ A DISPOSICIÓN DEL COMERCIO ADHERIDO UNA HERRAMIENTA EXCLUSIVAMENTE PROMOCIONAL PARA LA PROMOCIÓN DE SUS PRODUCTOS Y/O SERVICIOS; Y PARA LA VALIDACIÓN DE SUS CLIENTES COMO BENEFICIARIOS DEL PROGRAMA. ANSES NO SERÁ RESPONSABLE POR LA APLICACIÓN DE LOS DESCUENTOS PROMOCIONADOS. DICHA RESPONSABILIDAD SERÁ EXCLUSIVA DE LAS ADMINISTRADORAS DE MEDIOS DE PAGO ELECTRÓNICO Y/O BANCOSG, SEGÚN LA MODALIDAD DE DESCUENTO EN LA QUE LOS COMERCIOS ADHERIDOS SE HUBIESEN ADHERIDO AL PROGRAMA. DIA ARGENTINA S.A., AV. RIVADAVIA 8875 1° PISO - CABA.\n(*) FRANQUICIAS TRADICIONALES NO INCLUIDAS: SAN MARTIN 399 - CALLE 158 N° 589/91 ENTRE 7 Y 8 - SAN PABLO 670 - MINISTRO SOJO 3228 - MANUEL BELGRANO 110 - URUGUAY 125.\n(**) EXCLUSIONES: PRESTACIONES DE PAGO ÚNICO, A SABER:  SUCESIONES MAYORES A $1000 O HABERES DEVENGADOS POR SUCESIÓN (HABERES DEPOSITADOS CORRESPONDIENTES AL ACERVO HEREDITARIO DEL TITULAR FALLECIDO); ;RVP ANEXO III (AQUELLAS CUENTAS DE CAPITALIZACIÓN CUYOS BENEFICIARIOS HAYAN OPTADO POR LA RENTA VITALICIA PREVISIONAL; ;CAPRECOM (PRESTACIÓN COMPLEMENTARIA PERSONAL DE COMUNICACIONES CN N° 07/99) ; ; AAFF 614/13 (ASIGNACIONES FAMILIARES DERIVADAS POR OFICIO JUDICIAL; ;SUBSIDIO DE CONTENCIÓN FAMILIAR I (COBRO DE SUBSIDIO POR FALLECIMIENTO DEL TITULAR POR TERCEROS) ; ;SUBSIDIO DE CONTENCIÓN FAMILIAR II (COBRO DE SUBSIDIO POR FALLECIMIENTO DEL TITULAR POR TERCEROS); ;IAF PROVINCIAS NO TRANSFERIDAS ( BENEFICIOS CORRESPONDIENTES A PROVINCIAS CON RÉGIMEN PREVISIONAL PROVINCIAL)\"\n\n",
+      "bank": "ANSES",
+      "offer": "10% de reintegro",
+      "days_active": [
+        "L"
+      ],
+      "tope": "Tope de $2.000 por transacción",
+      "minimum": null,
+      "validity": "Del 1 de enero al 31 de octubre (tarjeta). Legales no fijan el 10% ni el tope",
+      "condition": "Tarjeta de débito, solo beneficiarios. Todas las tiendas Día salvo franquicias tradicionales listadas. Reintegro en la tarjeta dentro de 10 días hábiles.",
+      "exclusion": "Excluye franquicias tradicionales: San Martín 399, Calle 158 N° 589/91 entre 7 y 8, San Pablo 670, Ministro Sojo 3228, Manuel Belgrano 110, Uruguay 125. También prestaciones de pago único (sucesiones, RVP anexo III, Caprecom, asignaciones por oficio, subsidios por fallecimiento). El 10% y el tope de $2.000 están en la imagen, no en el legal."
+    },
+    {
+      "cmsIndex": 21,
+      "active": true,
+      "editorTitle": "Sidecreer BLACK",
+      "associatedBanks": [
+        "Sidecreer"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": true
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/35980a07-2775-45a4-85c0-2aca48a32699___ac6108506b09bff6881416b430c04dfa.jpg",
+      "terms": "PROMOCIÓN PRODUCTO SIDECREER BLACK - DOMINGOS EN “TIENDAS DÍA” DE LA PROVINCIA DE ENTRE RÍOS – DE 2 A 3 CUOTAS SIN INTERÉS, MÁS 25% DE DESCUENTO (CON TOPE DE $5.000,00).\nSÓLO PARA CLIENTES QUE AL MOMENTO DE OPERAR SE ENCUENTREN AL DÍA CON SUS PRODUCTOS, SIN MOROSIDAD, CON LÍMITE DE COMPRA SUFICIENTE, EN TANTO SU SITUACIÓN DE REVISTA LABORAL/ADMINISTRATIVA RESULTE ADECUADA AL RESTO DE LAS CONDICIONES DE LA OPERATORIA. CARTERA: CONSUMO FAMILIAR. VIGENCIA Y CONDICIONES: ÚNICAMENTE LOS DÍAS “DOMINGO” QUE TRANSCURRAN DEL 01/07/2026 AL 30/11/2026, AMBAS FECHAS INCLUSIVE; EN PROVINCIA DE ENTRE RÍOS, REPÚBLICA ARGENTINA; EMPLEANDO TARJETAS SIDECREER BLACK COMO MEDIOS DE PAGO. TIPO DE PLAN ADMITIDO: PLAN 9. CANTIDAD DE CUOTAS ACEPTADAS: SOLO 2 O 3. ALCANCE Y MODALIDAD DEL DESCUENTO. TOPE: 25% SOBRE EL MONTO TOTAL DE LA AUTORIZACIÓN, VÍA REINTEGRO, QUE SE REFLEJARÁ EN LOS RESÚMENES QUE CONTENGAN LAS CUOTAS EN QUE SE HUBIERA PACTADO LA OPERACIÓN, EN RELACIÓN AL VALOR DE CADA CUOTA LIQUIDADA, CON UN TOPE DE PESOS CINCO MIL ($5.000,00) POR TRANSACCIÓN. EL DESCUENTO SERÁ ACUMULABLE CON OTRAS PROMOCIONES Y/O DESCUENTOS QUE OFREZCA POR SU CUENTA Y CARGO DIA ARGENTINA S.A., Y SERÁ ABIERTO PARA TODOS LOS PRODUCTOS OFRECIDOS EN SUS TIENDAS, SEGÚN SU EXCLUSIVO CRITERIO. TIENDAS DÍA ADHERIDAS: SOLO LAS LOCALIZADAS EN LA PROVINCIA DE ENTRE RÍOS. EXCLUSIONES: LAS OPERACIONES REALIZADAS CON TARJETAS SIDECREER CLÁSICA/COMÚN, SIDECREER VERDE, SIDECREER PLATINUM, SIDECREER CABAL (BIN 604216) Y DISCOVER (BIN 650272); LAS OPERACIONES REALIZADAS CON TARJETAS SIDECREER (BIN 504962) VINCULADAS A PROGRAMAS SOCIO ASISTENCIALES ADMINISTRADOS POR EL MINISTERIO DE DESARROLLO HUMANO DE ENTRE RÍOS; LAS OPERACIONES REALIZADAS A TRAVÉS DE BILLETERAS VIRTUALES Y/O PLATAFORMAS DE PAGO ONLINE; Y LAS COMPRAS EFECTUADAS EN HTTPS://DIAONLINE.SUPERMERCADOSDIA.COM.AR/ . NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES APLICABLES POR SI.DE.CRE.E.R. S.A. PLAN 7: T.N.A.: 0,00%. T.E.A.: 0,00%. C.F.T.: 0,00%.\n",
+      "bank": "Sidecreer",
+      "offer": "25% de reintegro + 3 cuotas sin interés",
+      "days_active": [
+        "D"
+      ],
+      "tope": "Tope de $5.000 por transacción",
+      "minimum": null,
+      "validity": "Del 1 de julio al 30 de noviembre",
+      "condition": "Tarjeta de crédito Sidecreer BLACK en tiendas de Entre Ríos. Legales: de 2 a 3 cuotas sin interés más 25% (tope $5.000).",
+      "exclusion": "Excluye Sidecreer clásica/común, verde, platinum, Cabal (BIN 604216) y Discover (BIN 650272), y tarjetas de programas socioasistenciales. No acumulable con otras promos de Sidecreer. Solo tiendas Día de Entre Ríos."
+    },
+    {
+      "cmsIndex": 22,
+      "active": true,
+      "editorTitle": "Sidecreer PLATINUM",
+      "associatedBanks": [
+        "Sidecreer"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": true
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/298397fc-d922-4612-8a7b-7575a9a07078___d0c77eef6d95097a15c5589813ebfe46.jpg",
+      "terms": "SIDECREER PLATINUM\n\nPROMOCIÓN PRODUCTO SIDECREER PLATINUM - DOMINGOS EN “TIENDAS DÍA” DE LA PROVINCIA DE ENTRE RÍOS – DE 2 A 3 CUOTAS SIN INTERÉS, MÁS 20% DE DESCUENTO (CON TOPE DE $3.000,00).\nSÓLO PARA CLIENTES QUE AL MOMENTO DE OPERAR SE ENCUENTREN AL DÍA CON SUS PRODUCTOS, SIN MOROSIDAD, CON LÍMITE DE COMPRA SUFICIENTE, EN TANTO SU SITUACIÓN DE REVISTA LABORAL/ADMINISTRATIVA RESULTE ADECUADA AL RESTO DE LAS CONDICIONES DE LA OPERATORIA. CARTERA: CONSUMO FAMILIAR. VIGENCIA Y CONDICIONES: ÚNICAMENTE LOS DÍAS “DOMINGO” QUE TRANSCURRAN DEL 01/07/2026 AL 30/11/2026, AMBAS FECHAS INCLUSIVE; EN PROVINCIA DE ENTRE RÍOS, REPÚBLICA ARGENTINA; EMPLEANDO TARJETAS SIDECREER PLATINUM COMO MEDIOS DE PAGO. TIPO DE PLAN ADMITIDO: PLAN 9. CANTIDAD DE CUOTAS ACEPTADAS: SOLO 2 O 3. ALCANCE Y MODALIDAD DEL DESCUENTO. TOPE: 20% SOBRE EL MONTO TOTAL DE LA AUTORIZACIÓN, VÍA REINTEGRO, QUE SE REFLEJARÁ EN LOS RESÚMENES QUE CONTENGAN LAS CUOTAS EN QUE SE HUBIERA PACTADO LA OPERACIÓN, EN RELACIÓN AL VALOR DE CADA CUOTA LIQUIDADA, CON UN TOPE DE PESOS TRES MIL ($3.000,00) POR TRANSACCIÓN. EL DESCUENTO SERÁ ACUMULABLE CON OTRAS PROMOCIONES Y/O DESCUENTOS QUE OFREZCA POR SU CUENTA Y CARGO DIA ARGENTINA S.A., Y SERÁ ABIERTO PARA TODOS LOS PRODUCTOS OFRECIDOS EN SUS TIENDAS, SEGÚN SU EXCLUSIVO CRITERIO. TIENDAS DÍA ADHERIDAS: SOLO LAS LOCALIZADAS EN LA PROVINCIA DE ENTRE RÍOS. EXCLUSIONES: LAS OPERACIONES REALIZADAS CON TARJETAS SIDECREER CLÁSICA/COMÚN, SIDECREER VERDE, SIDECREER CABAL (BIN 604216) Y DISCOVER (BIN 650272); LAS OPERACIONES REALIZADAS CON TARJETAS SIDECREER (BIN 504962) VINCULADAS A PROGRAMAS SOCIO ASISTENCIALES ADMINISTRADOS POR EL MINISTERIO DE DESARROLLO HUMANO DE ENTRE RÍOS; LAS OPERACIONES REALIZADAS A TRAVÉS DE BILLETERAS VIRTUALES Y/O PLATAFORMAS DE PAGO ONLINE;  Y LAS COMPRAS EFECTUADAS EN HTTPS://DIAONLINE.SUPERMERCADOSDIA.COM.AR/ . NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES APLICABLES POR SI.DE.CRE.E.R. S.A. PLAN 7: T.N.A.: 0,00%. T.E.A.: 0,00%. C.F.T.: 0,00%.\n",
+      "bank": "Sidecreer",
+      "offer": "20% de reintegro + 3 cuotas sin interés",
+      "days_active": [
+        "D"
+      ],
+      "tope": "Tope de $3.000 por transacción",
+      "minimum": null,
+      "validity": "Del 1 de julio al 30 de noviembre",
+      "condition": "Tarjeta de crédito Sidecreer PLATINUM en tiendas de Entre Ríos. Legales: de 2 a 3 cuotas sin interés más 20% (tope $3.000).",
+      "exclusion": "Excluye Sidecreer clásica/común, verde, Cabal y Discover, y tarjetas de programas socioasistenciales. No acumulable con otras promos de Sidecreer. Solo tiendas Día de Entre Ríos."
+    },
+    {
+      "cmsIndex": 23,
+      "active": true,
+      "editorTitle": "Sidecreer 10% VERDE",
+      "associatedBanks": [
+        "Sidecreer"
+      ],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": true
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/0eabe3e2-2d70-4e67-816d-0f19337bffba___d4e98ee3c128fc27fd7651f1ecd9aece.jpg",
+      "terms": "SIDECREER VERDE\n\nPROMOCIÓN PRODUCTOS SIDECREER VERDE Y SIDECREER COMÚN/CLÁSICA - DOMINGOS EN “TIENDAS DÍA” DE LA PROVINCIA DE ENTRE RÍOS – DE 2 A 3 CUOTAS SIN INTERÉS, MÁS 10% DE DESCUENTO (CON TOPE DE $2.000,00).\nSÓLO PARA CLIENTES QUE AL MOMENTO DE OPERAR SE ENCUENTREN AL DÍA CON SUS PRODUCTOS, SIN MOROSIDAD, CON LÍMITE DE COMPRA SUFICIENTE, EN TANTO SU SITUACIÓN DE REVISTA LABORAL/ADMINISTRATIVA RESULTE ADECUADA AL RESTO DE LAS CONDICIONES DE LA OPERATORIA. CARTERA: CONSUMO FAMILIAR. VIGENCIA Y CONDICIONES: ÚNICAMENTE LOS DÍAS “DOMINGO” QUE TRANSCURRAN DEL 01/07/2026 AL 30/11/2026, AMBAS FECHAS INCLUSIVE; EN PROVINCIA DE ENTRE RÍOS, REPÚBLICA ARGENTINA; EMPLEANDO TARJETAS SIDECREER COMUNES/CLÁSICAS Y SIDECREER VERDE. TIPO DE PLAN ADMITIDO: PLAN 9. CANTIDAD DE CUOTAS ACEPTADAS: SOLO 2 O 3. ALCANCE Y MODALIDAD DEL DESCUENTO. TOPE: 10% SOBRE EL MONTO TOTAL DE LA AUTORIZACIÓN, VÍA REINTEGRO, QUE SE REFLEJARÁ EN LOS RESÚMENES QUE CONTENGAN LAS CUOTAS EN QUE SE HUBIERA PACTADO LA OPERACIÓN, EN RELACIÓN AL VALOR DE CADA CUOTA LIQUIDADA, CON UN TOPE DE PESOS DOS MIL ($2.000,00) POR TRANSACCIÓN. EL DESCUENTO SERÁ ACUMULABLE CON OTRAS PROMOCIONES Y/O DESCUENTOS QUE OFREZCA POR SU CUENTA Y CARGO DIA ARGENTINA S.A., Y SERÁ ABIERTO PARA TODOS LOS PRODUCTOS OFRECIDOS EN SUS TIENDAS, SEGÚN SU EXCLUSIVO CRITERIO. TIENDAS DÍA ADHERIDAS: SOLO LAS LOCALIZADAS EN LA PROVINCIA DE ENTRE RÍOS. EXCLUSIONES: LAS OPERACIONES REALIZADAS CON TARJETAS SIDECREER CABAL (BIN 604216), LAS OPERACIONES REALIZADAS CON TARJETAS DISCOVER (BIN 650272), LAS OPERACIONES REALIZADAS CON TARJETAS SIDECREER (BIN 504962) VINCULADAS A PROGRAMAS SOCIO ASISTENCIALES ADMINISTRADOS POR EL MINISTERIO DE DESARROLLO HUMANO DE ENTRE RÍOS, LAS OPERACIONES REALIZADAS A TRAVÉS DE BILLETERAS VIRTUALES Y/O PLATAFORMAS DE PAGO ONLINE, Y LAS COMPRAS EFECTUADAS EN HTTPS://DIAONLINE.SUPERMERCADOSDIA.COM.AR/ . NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES APLICABLES POR SI.DE.CRE.E.R. S.A. PLAN 7: T.N.A.: 0,00%. T.E.A.: 0,00%. C.F.T.: 0,00%.\n",
+      "bank": "Sidecreer",
+      "offer": "10% de reintegro + 3 cuotas sin interés",
+      "days_active": [
+        "D"
+      ],
+      "tope": "Tope de $2.000 por transacción",
+      "minimum": null,
+      "validity": "Del 1 de julio al 30 de noviembre",
+      "condition": "Tarjeta de crédito Sidecreer VERDE (y común/clásica según legales) en tiendas de Entre Ríos. Legales: de 2 a 3 cuotas sin interés más 10% (tope $2.000).",
+      "exclusion": "Excluye Sidecreer Cabal y Discover, y tarjetas de programas socioasistenciales. No acumulable con otras promos de Sidecreer. Solo tiendas Día de Entre Ríos."
+    },
+    {
+      "cmsIndex": 24,
+      "active": true,
+      "editorTitle": "Ciudadania Portena",
+      "associatedBanks": [
+        "Tarjeta BA"
+      ],
+      "daysToShow": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/e1e65106-e986-4efb-83ad-b8621673529e___541f94eb82f20b23f0e3c61e159b281e.jpg",
+      "terms": "PROMOCIÓN VIGENTE DESDE EL 01/01/2026 AL 30/09/2026 INCLUSIVE EN LOS SUPERMERCADOS DIA DE LA CIUDAD AUTONÓMA DE BUENOS AIRES PARA COMPRAS REALIZADAS LOS DÍAS LUNES Y JUEVES. VÁLIDA PARA TARJETA PRECARGADA SOCIAL PERTENECIENTE AL PROGRAMA CIUDADANÍA PORTEÑA DEL GOBIERNO DE LA CIUDAD DE BUENOS AIRES. SE OTORGARÁ 15% DE REINTEGRO POR EL TOTAL DE LA COMPRA SIN TOPE DE REINTEGRO. EL REINTEGRO SE REALIZARÁ EN LA TARJETA DENTRO DE LOS SIGUIENTES 10 DÍAS HÁBILES. SERÁ CONDICIÓN ESENCIAL, AL MOMENTO DE EFECTUAR EL REINTEGRO, QUE LA TARJETA SE ENCUENTRE VIGENTE Y EN ESTADO DE CUMPLIMIENTO NORMAL. LA PRESENTE PROMOCIÓN ES ACUMULABLE CON OTRAS OFERTAS VIGENTES, INCLUYE TODOS LOS PRODUCTOS PERMITIDOS POR EL PROGRAMA CIUDADANÍA PORTEÑA. NO APLICA PARA PAGOS REALIZADOS POR VÍA QR. PROMOCIÓN CORRESPONDIENTE A LA CARTERA DE CONSUMO.",
+      "bank": "Ciudadanía Porteña",
+      "offer": "15% de reintegro",
+      "days_active": [
+        "L",
+        "J"
+      ],
+      "tope": "Sin tope",
+      "minimum": "Sin mínimo",
+      "validity": "Del 1 de enero al 31 de octubre (tarjeta). Legales: 01/01/2026 al 30/09/2026",
+      "condition": "Tarjeta precargada social Ciudadanía Porteña. Solo tiendas de CABA. No aplica pago por QR.",
+      "exclusion": "No aplica a pagos por QR. Solo supermercados Día de CABA y productos permitidos por el programa."
+    },
+    {
+      "cmsIndex": 25,
+      "active": true,
+      "editorTitle": "Banco Corrientes",
+      "associatedBanks": [],
+      "daysToShow": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": true,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "availableOn": {
+        "online": false,
+        "store": true
+      },
+      "channel": "tiendas",
+      "cardImage": "https://diaio.vtexassets.com/assets/vtex.file-manager-graphql/images/0d4dba75-bd3e-4513-bef9-bd2c6bbd5b4f___68af0bfcc0c662912890bcf489ecb14f.png",
+      "terms": "PROMOCIÓN VIGENTE DESDE EL 01/01/2026 AL 31/12/2026 PARA COMPRAS CON TARJETAS DE CREDITO VISA Y MASTERCARD Y VISA DEBITO DEL BANCO DE CORRIENTES, LOS DIAS MIERCOLES Y JUEVES, SE BONIFICARÁ EL 5% (CINCO PORCIENTO) (VER COMERCIOS) SOBRE EL MONTO TOTAL DE LA COMPRA, EN HASTA 3 CUOTAS SIN INTERES SIN TOPE DE REINTEGRO. ADICIONALMENTE ABONANDO EXCLUSIVAMENTE DESDE MAS BANCO EN COMERCIOS ADHERIDOS, SE BONIFICARÁ EL 30% CON TOPE DE REINTEGRO DE $20.000 POR MES Y POR CUENTA. PARA QUE LA BONIFICACIÓN IMPACTE CORRECTAMENTE, EL CLIENTE DEBE TENER ELEGIDA UNA CUENTA FAVORITA DEL BANCO DE CORRIENTES QUE PERMITA RECIBIR CRÉDITOS.\n CFTEA: 0%.  \nCOSTO FINANCIERO TOTAL EFECTIVA ANUAL. TASA NOMINAL ANUAL 0,00%. TASA EFECTIVA ANUAL: 0,00%  \nEN TODOS LOS CASOS, LA BONIFICACIÓN SE VERA REFLEJADA COMO UN CRÉDITO EN EL PRIMER O SEGUNDO RESUMEN DE CUENTA (DE TARJETA DE CRÉDITO) QUE SE EMITA CON POSTERIORIDAD A LA FECHA DE COMPRA. EL 30% RESTANTE SE REINTEGRA DENTRO DE LOS 30 DIAS DE REALIZADA LA COMPRA EN LA CUENTA DEL BCSA ELEGIDA COMO FAVORITA.\nPROMOCIÓN NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES. PROMOCION SOLO VALIDA EN COMERCIOS ADHERIDOS A LA MISMA. NO APLICA A PAGOS A TRAVÉS DE BILLETERAS VIRTUALES Y/O PLATAFORMAS DE PAGO ONLINE (POR EJEMPLO, ZOCO, TODO PAGO, MERCADO PAGO, UALÁ, ETC.). NO APLICA PROMOCION PARA VENTAS REALIZAS EN PLANES NACIONALES.\n",
+      "bank": "Banco de Corrientes (MásBanCo MODO)",
+      "offer": "30% de reintegro + 3 cuotas sin interés + 5% extra sin tope",
+      "days_active": [
+        "Mi",
+        "J"
+      ],
+      "tope": "Tope $20.000 mensual por cuenta (sobre el 30%)",
+      "minimum": null,
+      "validity": "Válido hasta el 31 de diciembre (tarjeta). Legales: 01/01/2026 al 31/12/2026",
+      "condition": "5% sin tope en hasta 3 cuotas sin interés con Visa/Mastercard crédito y Visa débito; más 30% (tope $20.000/mes/cuenta) pagando desde Más Banco. Solo tiendas de Corrientes. No billeteras virtuales.",
+      "exclusion": "No acumulable. No aplica a billeteras virtuales ni plataformas de pago online (Zoco, Todo Pago, Mercado Pago, Ualá, etc.) ni a ventas en planes nacionales."
+    }
+  ],
+  "gap_fill": "2026-10-03T22:28:00-03:00: se completaron las cards inactive 0 (Banco Ciudad Modo) y 13 (BNA+ MODO), que no tenían bank/offer/tope/minimum/validity/condition, y se agregó exclusion en las 26 sin pisar offer/tope/validity ya cargados."
+}

@@ -415,6 +415,136 @@
     #mi-lista-msg { margin: 12px 0; min-height: 1.5em; color: var(--color-forest-ink); }
     .drop { color: var(--color-alarm-red); font-weight: 700; }
     .ok-flag { color: var(--color-spruce); font-weight: 600; }
+
+    .store-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 0 0 16px;
+    }
+    .store-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 16px 14px;
+      background: var(--color-paper);
+      border-radius: var(--radius-cards);
+      box-shadow: var(--shadow-subtle);
+      color: inherit;
+      text-decoration: none;
+    }
+    a.store-card:hover { background: var(--color-linen-mist); }
+    .store-card.barato {
+      background: var(--color-linen-mist);
+      box-shadow: 0 0 0 2px var(--color-spruce);
+    }
+    .store-name {
+      color: var(--color-slate);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .store-card.barato .store-name { color: var(--color-spruce); }
+    .store-price {
+      color: var(--color-forest-ink);
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+    .store-extra {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: baseline;
+      min-height: 0;
+    }
+    .store-extra:empty { display: none; }
+    .store-lista {
+      color: var(--color-pebble);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .store-badge {
+      color: var(--color-spruce);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .store-pum {
+      color: var(--color-charcoal);
+      font-size: 14px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .store-promo {
+      margin: 6px 0 0;
+      color: var(--color-charcoal);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .store-promo.off { color: var(--color-slate); }
+    .store-link {
+      margin-top: 6px;
+      color: var(--color-forest-ink);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .store-link.mute { color: var(--color-pebble); font-weight: 500; }
+    .promo-browser { display: flex; flex-direction: column; gap: 28px; }
+    .promo-group h3 {
+      margin: 0 0 10px;
+      color: var(--color-forest-ink);
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .promo-group h3 .hoy {
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: var(--radius-buttons);
+      background: var(--color-lime-voltage);
+      color: var(--color-forest-ink);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0;
+      vertical-align: 2px;
+    }
+    .promo-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .promo-card {
+      background: var(--color-paper);
+      border-radius: var(--radius-cards);
+      padding: 16px;
+      box-shadow: var(--shadow-subtle);
+    }
+    .promo-card h4 {
+      margin: 0 0 4px;
+      color: var(--color-obsidian);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .promo-offer {
+      margin: 0 0 8px;
+      color: var(--color-forest-ink);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .promo-meta {
+      margin: 0;
+      color: var(--color-slate);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .promo-notas {
+      margin: 24px 0 0;
+      padding-left: 18px;
+      color: var(--color-slate);
+      font-size: 14px;
+    }
+    .promo-notas li { margin: 0 0 6px; }
     @media (min-width: 720px) {
       .hero { padding: 64px 0 24px; }
       form.search { flex-direction: row; align-items: center; }
@@ -422,6 +552,8 @@
       form.search .btn.lime { width: auto; }
       .btn-row { flex-direction: row; align-items: center; gap: 16px; }
       .prices { grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); }
+      .store-cards { grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr)); }
+      .promo-grid { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
       .split { grid-template-columns: repeat(3, 1fr); gap: 32px; }
       .plans { grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
       .section { padding: 80px 0; }
@@ -434,6 +566,7 @@
     <a class="logo" href="/">BaratoYa</a>
     <nav class="nav-links" aria-label="Secciones">
       <a href="#buscar">Buscar</a>
+      <a href="#promos-bancarias">Promos</a>
       <a href="#mi-lista">Mi lista</a>
       <a href="#por-que-pagar">Por qué pagar</a>
       <a href="#planes">Planes</a>
@@ -446,7 +579,7 @@
       <div class="wrap">
         <p class="eyebrow">Precios Claros · zona CABA {% if paid_scrapers %}<span class="badge paid-on">ENABLE_PAID_SCRAPERS=on</span>{% endif %}</p>
         <h1>El precio del súper, antes de salir.</h1>
-        <p class="sub">Antes de salir, ves el mismo producto (marca, variante y tamaño) en Día, Carrefour, Mas Online y las otras cadenas con precio público, con el precio por kilo o por litro, y te quedás con el más barato.</p>
+        <p class="sub">El número grande es el precio de ahora, el que se paga. Si la tienda tacha otro, queda al lado y no se compara. La promo de banco de hoy va aparte, y solo se resta cuando la letra lo permite.</p>
 
         <div class="modes" role="group" aria-label="Qué comparar">
           <button type="button" class="btn outline on" id="mode-super" data-mode="super">Súper</button>
@@ -468,6 +601,20 @@
           <p>Escribí un producto. Los números aparecen cuando Precios Claros responde. En esta página no hay precios de muestra.</p>
         </div>
         <div id="out" class="results" aria-live="polite"></div>
+      </div>
+    </section>
+
+
+    <section class="section" id="promos-bancarias">
+      <div class="wrap">
+        <h2 class="sec">Promos de banco, juntas.</h2>
+        <p class="lead" id="promos-lead">Las mismas tarjetas, cortadas por día o por banco. No entran las ocultas, las vencidas ni las que publican dos fechas distintas.</p>
+        <div class="modes" role="group" aria-label="Cómo ver las promos">
+          <button type="button" class="btn outline on" id="promo-por-dia">Por día</button>
+          <button type="button" class="btn outline" id="promo-por-banco">Por banco</button>
+        </div>
+        <div id="promo-browser" class="promo-browser" aria-live="polite"></div>
+        <ul id="promo-notas" class="promo-notas"></ul>
       </div>
     </section>
 
@@ -590,7 +737,7 @@
 
   <footer>
     <div class="wrap">
-      <p>BaratoYa lee la API pública de Precios Claros para CABA (lat {{ lat }}, lng {{ lng }}). En súper también muestra el precio del catálogo público de Día, Carrefour, Mas Online (ex Chango Más), Jumbo, Disco, Vea, Cordiez, Toledo y Josimar, si esa cadena devuelve un precio. No es un organismo oficial y no agrega un precio propio.</p>
+      <p>BaratoYa lee la API pública de Precios Claros para CABA (lat {{ lat }}, lng {{ lng }}). En súper también muestra el precio de venta del catálogo público de Día, Carrefour, Mas Online (ex Chango Más), Jumbo, Disco, Vea, Cordiez, Toledo, Josimar, El Abastecedor, Comodín, La Anónima y Super Mami, cuando esa cadena devuelve un precio. Coto Digital no entra si el listado responde bloqueado. Makro no tiene precio de producto. No es un organismo oficial y no agrega un precio propio.</p>
       <p>Electro compara Fravega, Cetrogar, Naldo y On City por el catálogo VTEX público, sin scraper pago. Mercado Libre: no disponible desde este servidor. Cobro (Mercado Pago o Stripe): sin implementar. La lista y la marca de baja viven en la misma SQLite local que la lista de espera. No hay login ni envío de mail.</p>
       <p><a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
@@ -871,21 +1018,8 @@
         const leidoTxt = j.leido_texto ? "Precios leídos el " + j.leido_texto + ". " : "";
         meta.textContent = leidoTxt + "Fuente: " + fuente + "." + (cadenaTxt ? " " + cadenaTxt + "." : "") + " Resultados: " + parsed.items.length + "." + totalTxt;
         if (promosEl) {
-          const bloques = Array.isArray(j.promos) ? j.promos : [];
-          const lis = [];
-          bloques.forEach((b) => {
-            const items = Array.isArray(b.items) ? b.items : [];
-            items.forEach((it) => {
-              lis.push("<li>" + esc(b.tienda) + ": " + esc(it.dia) + ", " + esc(it.banco) + ", " + esc(it.descuento) + ". No está restado del precio.</li>");
-            });
-            if (!items.length && b.nota) {
-              lis.push("<li>" + esc(b.tienda) + ": " + esc(b.nota) + "</li>");
-            } else if (b.nota) {
-              lis.push("<li>" + esc(b.tienda) + ": " + esc(b.nota) + "</li>");
-            }
-          });
-          promosEl.innerHTML = lis.join("");
-          promosEl.hidden = !lis.length;
+          promosEl.hidden = true;
+          promosEl.innerHTML = "";
         }
         const nota = notaCoincidencia(j, q);
         if (nota) {
@@ -913,20 +1047,7 @@
         }
         out.innerHTML = parsed.items.map((p, i) => {
           if (Array.isArray(p.ofertas) && p.ofertas.length) {
-            const precios = p.ofertas.map((o) => {
-              const tag = o.barato ? " · más barato" : "";
-              const pum = (typeof o.pum === "number" && o.pum > 0 && o.pum_unidad)
-                ? "<span class=\"pum\">" + esc(money(o.pum)) + " por " + esc(o.pum_unidad) + "</span>"
-                : "";
-              return "<div class=\"" + (o.barato ? "barato" : "") + "\">" +
-                "<span>" + esc(o.tienda) + tag + "</span>" +
-                "<strong>" + esc(money(o.precio)) + "</strong>" +
-                pum +
-              "</div>";
-            }).join("");
-            const links = p.ofertas.filter((o) => o.url).map((o) =>
-              "<a class=\"ext\" href=\"" + esc(o.url) + "\" rel=\"noopener noreferrer\">Ver en " + esc(o.tienda) + "</a>"
-            ).join(" · ");
+            const cards = p.ofertas.map(tarjetaTienda).join("");
             const baratos = Array.isArray(p.mas_barato) && p.mas_barato.length
               ? p.mas_barato
               : p.ofertas.filter((o) => o.barato).map((o) => o.tienda);
@@ -935,9 +1056,8 @@
             return "<article class=\"product\">" +
               (p.marca ? "<p class=\"brand\">" + esc(p.marca) + "</p>" : "") +
               "<h3>" + esc(p.nombre || "Sin nombre") + "</h3>" +
-              "<p class=\"pres\">" + cuando + "Más barato: " + esc(quienes(baratos)) + tam + ".</p>" +
-              "<div class=\"prices\">" + precios + "</div>" +
-              (links ? "<p class=\"pres\">" + links + "</p>" : "") +
+              "<p class=\"pres\">" + cuando + "Más barato por lo que se paga hoy: " + esc(quienes(baratos)) + tam + ".</p>" +
+              "<div class=\"store-cards\">" + cards + "</div>" +
               "<span class=\"badge\">Mismo producto</span>" +
               botonGuardar(p, i) +
             "</article>";
@@ -979,6 +1099,90 @@
         go.disabled = false;
       }
     });
+
+
+    function tarjetaTienda(o) {
+      const barato = o.barato ? " barato" : "";
+      const pum = (typeof o.pum === "number" && o.pum > 0 && o.pum_unidad)
+        ? "<span class=\"store-pum\">" + esc(money(o.pum)) + "/" + esc(o.pum_unidad) + "</span>"
+        : "";
+      const lista = (typeof o.precio_lista === "number" && o.precio_lista > o.precio)
+        ? "<s class=\"store-lista\">" + esc(money(o.precio_lista)) + "</s>"
+        : "";
+      const badge = (typeof o.descuento_tienda === "number" && o.descuento_tienda > 0)
+        ? "<span class=\"store-badge\">" + esc(String(o.descuento_tienda)) + "% en la tienda</span>"
+        : "";
+      let promo = "";
+      if (o.promo && o.promo.aplicada) {
+        promo = "<p class=\"store-promo\">Promo de hoy, aparte: " + esc(o.promo.banco || "") + " " + esc(o.promo.descuento || "") +
+          (o.promo.tope ? ". Tope " + esc(o.promo.tope) : "") +
+          ". Con esa promo, " + esc(money(o.promo.total)) + ".</p>";
+      } else if (o.promo && o.promo.aplicada === false && o.promo.motivo) {
+        promo = "<p class=\"store-promo off\">No se restó. " + esc(o.promo.motivo) + "</p>";
+      }
+      const link = o.url
+        ? "<span class=\"store-link\">Ver precio</span>"
+        : "<span class=\"store-link mute\">Sin link público</span>";
+      const inner =
+        "<span class=\"store-name\">" + esc(o.tienda || "Tienda") + (o.barato ? " · más barato" : "") + "</span>" +
+        "<span class=\"store-price\">" + esc(money(o.precio)) + "</span>" +
+        "<span class=\"store-extra\">" + lista + badge + "</span>" +
+        pum + promo + link;
+      if (o.url) {
+        return "<a class=\"store-card" + barato + "\" href=\"" + esc(o.url) + "\" rel=\"noopener noreferrer\">" + inner + "</a>";
+      }
+      return "<div class=\"store-card" + barato + "\">" + inner + "</div>";
+    }
+
+    function promoCard(c) {
+      return "<article class=\"promo-card\">" +
+        "<p class=\"brand\">" + esc(c.cadena || "") + "</p>" +
+        "<h4>" + esc(c.banco || "Sin banco") + "</h4>" +
+        "<p class=\"promo-offer\">" + esc(c.oferta || "") + "</p>" +
+        "<p class=\"promo-meta\">" + esc(c.dias || "") + " · " + esc(c.canal || "") +
+          "<br>Tope: " + esc(c.tope || "") + " · Mínimo: " + esc(c.minimo || "") +
+          "<br>" + esc(c.vigencia || "") + "</p>" +
+      "</article>";
+    }
+
+    let promoData = null;
+    let promoVista = "dia";
+    function pintarPromos() {
+      const box = document.getElementById("promo-browser");
+      const notas = document.getElementById("promo-notas");
+      const lead = document.getElementById("promos-lead");
+      if (!box || !promoData) return;
+      if (lead) {
+        lead.textContent = "Hoy es " + (promoData.dia || "") + ". " + (promoData.n || 0) +
+          " tarjetas vigentes, las mismas en las dos vistas. No entran ocultas, vencidas ni fechas en conflicto.";
+      }
+      const grupos = promoVista === "banco" ? (promoData.por_banco || []) : (promoData.por_dia || []);
+      box.innerHTML = grupos.map((g) => {
+        const items = Array.isArray(g.items) ? g.items : [];
+        if (!items.length) return "";
+        const titulo = promoVista === "banco" ? (g.banco || "") : (g.dia || "");
+        const marca = g.hoy ? " <span class=\"hoy\">hoy</span>" : "";
+        return "<div class=\"promo-group\"><h3>" + esc(titulo) + marca + "</h3><div class=\"promo-grid\">" +
+          items.map(promoCard).join("") + "</div></div>";
+      }).join("") || "<p class=\"pres\">No hay tarjetas vigentes para mostrar.</p>";
+      if (notas) {
+        notas.innerHTML = (promoData.notas || []).map((n) => "<li>" + esc(n) + "</li>").join("");
+      }
+    }
+    function vistaPromos(vista) {
+      promoVista = vista;
+      const dia = document.getElementById("promo-por-dia");
+      const banco = document.getElementById("promo-por-banco");
+      if (dia) dia.classList.toggle("on", vista === "dia");
+      if (banco) banco.classList.toggle("on", vista === "banco");
+      pintarPromos();
+    }
+    document.getElementById("promo-por-dia").addEventListener("click", () => vistaPromos("dia"));
+    document.getElementById("promo-por-banco").addEventListener("click", () => vistaPromos("banco"));
+    fetch("/api/promos", { headers: { "Accept": "application/json" } })
+      .then((r) => r.ok ? r.json() : null)
+      .then((j) => { promoData = j; pintarPromos(); })
+      .catch(() => {});
 
     document.querySelectorAll("[data-plan]").forEach((a) => {
       a.addEventListener("click", () => {

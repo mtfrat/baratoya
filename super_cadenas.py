@@ -1,8 +1,8 @@
 """Súper: catálogos VTEX públicos. $0.
 
-Solo entra un producto si el JSON trae commertialOffer.Price numérico > 0.
-No hay scrapers pagos, proxies, Coto ni Mercado Libre.
-No se calcula un descuento de banco, un envío ni un código postal.
+Solo entra un producto si hay un precio de venta numérico > 0 (VTEX Price,
+el número de ahora). ListPrice o el tachado es contexto, no el precio que se compara.
+No hay scrapers pagos ni proxies. Makro, Mercado Libre y Maxiconsumo no entran como precio.
 """
 from __future__ import annotations
 
@@ -15,6 +15,8 @@ from typing import Any
 from urllib.parse import quote
 
 import httpx
+
+from promos_hoy import aplicar_oferta
 
 # Verificado 2026-10-03 ~21:56 ART desde este servidor (Price numérico > 0, sin proxy):
 # Mas Online, Día, Carrefour, Jumbo, Disco, Vea, Cordiez, Toledo y Josimar.
@@ -74,6 +76,18 @@ STORES: list[dict[str, str]] = [
         "origin": "https://www.josimar.com.ar",
         "fuente": "josimar_vtex",
     },
+    {
+        "id": "abastecedor",
+        "nombre": "El Abastecedor",
+        "origin": "https://www.abastecedor.com.ar",
+        "fuente": "abastecedor_vtex",
+    },
+    {
+        "id": "comodin",
+        "nombre": "Comodín",
+        "origin": "https://www.comodinencasa.com.ar",
+        "fuente": "comodin_vtex",
+    },
 ]
 
 VTEX_PATH = "/api/catalog_system/pub/products/search"
@@ -90,6 +104,9 @@ _STOP_NOMBRE = {
 }
 _TIENDA_ORDEN = {s["id"]: i for i, s in enumerate(STORES)}
 _TIENDA_ORDEN["precios_claros"] = len(_TIENDA_ORDEN)
+_TIENDA_ORDEN["laanonima"] = len(_TIENDA_ORDEN)
+_TIENDA_ORDEN["supermami"] = len(_TIENDA_ORDEN)
+_TIENDA_ORDEN["cotodigital"] = len(_TIENDA_ORDEN)
 
 _PUNCT = re.compile(r"[^\w\s]", re.UNICODE)
 _SIZE_RE = re.compile(
@@ -111,7 +128,40 @@ def _precio(product: dict[str, Any]) -> tuple[float | None, bool]:
         return None, False
     if price <= 0:
         return None, False
-    return float(price), bool(offer.get("IsAvailable"))
+    # Sin stock no es el precio que se paga ahora. Jumbo publica Price en ítems con cantidad 0.
+    qty = offer.get("AvailableQuantity")
+    flag = offer.get("IsAvailable")
+    if flag is False or qty == 0:
+        return float(price), False
+    return float(price), True
+
+
+def _lista_y_badge(precio: float, lista: float | None) -> tuple[float | None, int | None]:
+    """El tachado y el % de la tienda son contexto. No reemplazan el precio de venta."""
+    if lista is None or lista <= precio:
+        return None, None
+    # Cencosud a veces manda un ListPrice de cientos de miles junto a un Price real.
+    # Eso no es el tachado de la góndola: no se muestra ni se usa para ordenar.
+    if lista > precio * 3:
+        return None, None
+    pct = (1 - precio / lista) * 100
+    redondo = int(round(pct))
+    badge = redondo if redondo > 0 and abs(pct - redondo) <= 0.45 else None
+    return float(lista), badge
+
+
+def _lista_vtex(product: dict[str, Any], precio: float) -> tuple[float | None, int | None]:
+    items = product.get("items") or []
+    if not items or not isinstance(items[0], dict):
+        return None, None
+    sellers = items[0].get("sellers") or []
+    if not sellers or not isinstance(sellers[0], dict):
+        return None, None
+    offer = sellers[0].get("commertialOffer") or {}
+    lista = offer.get("ListPrice")
+    if isinstance(lista, bool) or not isinstance(lista, (int, float)):
+        return None, None
+    return _lista_y_badge(precio, float(lista))
 
 
 def _ean_item(product: dict[str, Any]) -> str:
@@ -131,11 +181,12 @@ def _parse(store: dict[str, str], body: Any) -> list[dict[str, Any]]:
         if not isinstance(product, dict):
             continue
         price, available = _precio(product)
-        if price is None:
+        if price is None or not available:
             continue
         name = product.get("productName") or product.get("productTitle")
         if not name:
             continue
+        lista, badge = _lista_vtex(product, price)
         out.append(
             {
                 "tienda": store["nombre"],
@@ -143,6 +194,8 @@ def _parse(store: dict[str, str], body: Any) -> list[dict[str, Any]]:
                 "nombre": name,
                 "marca": product.get("brand") or "",
                 "precio": price,
+                "precio_lista": lista,
+                "descuento_tienda": badge,
                 "url": product.get("link") or "",
                 "disponible": available,
                 "fuente_item": store["fuente"],
@@ -225,6 +278,279 @@ async def _one(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict
     return row
 
 
+
+def _dinero_txt(raw: str) -> float | None:
+    s = (raw or "").strip().replace("$", "").replace(" ", "")
+    if not s:
+        return None
+    if "," in s and "." in s:
+        if s.rfind(",") > s.rfind("."):
+            s = s.replace(".", "").replace(",", ".")
+        else:
+            s = s.replace(",", "")
+    elif "," in s:
+        s = s.replace(".", "").replace(",", ".")
+    elif re.fullmatch(r"\d{1,3}(?:\.\d{3})+", s):
+        s = s.replace(".", "")
+    try:
+        n = float(s)
+    except ValueError:
+        return None
+    return n if n > 0 else None
+
+
+def _row_vacio(store: dict[str, str], http: int, error: str, q: str) -> dict[str, Any]:
+    return {
+        "tienda": store["nombre"],
+        "tienda_id": store["id"],
+        "http": http,
+        "ok": False,
+        "error": error,
+        "productos": [],
+        "q_usada": q,
+    }
+
+
+def _parse_la_anonima(html: str) -> list[dict[str, Any]]:
+    """Precio de ahora en data-precio. El código interno no es un EAN.
+
+    La categoría trae un '>' adentro del atributo, así que no se puede cortar el tag con [^>].
+    """
+    out = []
+    vistos = set()
+    for m in re.finditer(r'href="([^"]*?/art_\d+/)"', html or ""):
+        href = m.group(1)
+        if href in vistos:
+            continue
+        ventana = (html or "")[m.start(): m.start() + 1600]
+        nombre_m = re.search(r'data-nombre\s*=\s*"([^"]+)"', ventana)
+        marca_m = re.search(r'data-marca\s*=\s*"([^"]*)"', ventana)
+        precio_m = re.search(r'data-precio\s*=\s*"([\d.]+)"', ventana)
+        if not nombre_m or not precio_m:
+            continue
+        nombre = nombre_m.group(1)
+        marca = marca_m.group(1) if marca_m else ""
+        raw = precio_m.group(1)
+        try:
+            precio = float(raw)
+        except ValueError:
+            continue
+        if precio <= 0:
+            continue
+        vistos.add(href)
+        anterior = None
+        ant = re.search(r'data-precio_anterior\s*=\s*"([\d.]+)"', ventana)
+        if ant:
+            try:
+                anterior = float(ant.group(1))
+            except ValueError:
+                anterior = None
+        lista, badge = _lista_y_badge(precio, anterior)
+        url = href if href.startswith("http") else "https://www.laanonima.com.ar" + href
+        out.append(
+            {
+                "tienda": "La Anónima",
+                "tienda_id": "laanonima",
+                "nombre": nombre,
+                "marca": "" if marca in {"", "NA"} else marca,
+                "precio": precio,
+                "precio_lista": lista,
+                "descuento_tienda": badge,
+                "url": url,
+                "disponible": True,
+                "fuente_item": "la_anonima_html",
+                "ean": "",
+            }
+        )
+    return out
+
+
+def _parse_super_mami(html: str) -> list[dict[str, Any]]:
+    out = []
+    partes = (html or "").split('class="precio-unidad"')
+    for parte in partes[1:]:
+        precio_m = re.search(r"\$\s*([\d.,]+)", parte[:500])
+        titulo_m = re.search(r'title="([^"]+)"', parte[:1500])
+        if not precio_m or not titulo_m:
+            continue
+        precio = _dinero_txt(precio_m.group(1))
+        if not precio:
+            continue
+        # el link del producto está antes de este precio
+        out.append(
+            {
+                "tienda": "Super Mami",
+                "tienda_id": "supermami",
+                "nombre": titulo_m.group(1),
+                "marca": "",
+                "precio": precio,
+                "precio_lista": None,
+                "descuento_tienda": None,
+                "url": "",
+                "disponible": True,
+                "fuente_item": "super_mami_html",
+                "ean": "",
+                "_bloque": parte,
+            }
+        )
+    # links: cada tile trae /super/producto/ antes del precio. Rebuscar en el html completo por título.
+    limpio = []
+    for item in out:
+        item.pop("_bloque", None)
+        titulo = item["nombre"]
+        pos = (html or "").find(titulo)
+        href = ""
+        if pos > 0:
+            ventana = html[max(0, pos - 2500):pos]
+            links = re.findall(r'href="(/super/producto/[^"]+)"', ventana)
+            if links:
+                href = "https://www.supermami.com.ar" + links[-1].split(";")[0]
+        item["url"] = href
+        limpio.append(item)
+    # dedupe
+    vistos = set()
+    final = []
+    for item in limpio:
+        if item["nombre"] in vistos:
+            continue
+        vistos.add(item["nombre"])
+        final.append(item)
+    return final
+
+
+def _parse_coto(html: str) -> list[dict[str, Any]]:
+    """HTML de static.cotodigital3. El shell de www.coto.com.ar no trae precio."""
+    if not html or "app-root" in html[:2000] and "cotodigital3" not in html[:500]:
+        return []
+    out = []
+    # nombre (codigo) y un precio $3.349,00 cercano
+    for m in re.finditer(
+        r"([A-Za-zÁÉÍÓÚáéíóúÑñ0-9][^<\n]{8,80}?)\s*\((\d{5,8})\)[\s\S]{0,240}?\$\s*([\d.]+,\d{2})",
+        html,
+    ):
+        nombre = " ".join(m.group(1).split())
+        if len(nombre) < 8 or "Precio" in nombre:
+            continue
+        precio = _dinero_txt(m.group(3))
+        if not precio:
+            continue
+        out.append(
+            {
+                "tienda": "Coto Digital",
+                "tienda_id": "cotodigital",
+                "nombre": nombre,
+                "marca": "",
+                "precio": precio,
+                "precio_lista": None,
+                "descuento_tienda": None,
+                "url": "",
+                "disponible": True,
+                "fuente_item": "coto_digital_html",
+                "ean": "",
+            }
+        )
+        if len(out) >= 24:
+            break
+    return out
+
+
+_LA_ANONIMA = {
+    "id": "laanonima",
+    "nombre": "La Anónima",
+    "fuente": "la_anonima_html",
+}
+_SUPER_MAMI = {
+    "id": "supermami",
+    "nombre": "Super Mami",
+    "fuente": "super_mami_html",
+}
+_COTO = {
+    "id": "cotodigital",
+    "nombre": "Coto Digital",
+    "fuente": "coto_digital_html",
+}
+
+
+async def _fetch_la_anonima(client: httpx.AsyncClient, q: str) -> dict[str, Any]:
+    url = "https://www.laanonima.com.ar/buscar/" + quote(q, safe="")
+    try:
+        r = await client.get(url, headers={"Accept": "text/html", "User-Agent": UA})
+    except Exception as e:
+        return _row_vacio(_LA_ANONIMA, 0, str(e), q)
+    productos = _parse_la_anonima(r.text or "") if r.status_code == 200 else []
+    row = {
+        "tienda": "La Anónima",
+        "tienda_id": "laanonima",
+        "http": r.status_code,
+        "ok": bool(productos),
+        "productos": productos,
+        "q_usada": q,
+    }
+    if r.status_code != 200:
+        row["error"] = f"HTTP {r.status_code}"
+    elif not productos:
+        row["error"] = "HTTP 200 sin precio en el listado"
+    return row
+
+
+async def _fetch_super_mami(client: httpx.AsyncClient, q: str) -> dict[str, Any]:
+    url = (
+        "https://www.supermami.com.ar/super/categoria?_dyncharset=utf-8&Dy=1&Nty=1&Ntk=All&No=0&Ntt="
+        + quote(q, safe="")
+    )
+    try:
+        r = await client.get(url, headers={"Accept": "text/html", "User-Agent": UA})
+    except Exception as e:
+        return _row_vacio(_SUPER_MAMI, 0, str(e), q)
+    productos = _parse_super_mami(r.text or "") if r.status_code == 200 else []
+    row = {
+        "tienda": "Super Mami",
+        "tienda_id": "supermami",
+        "http": r.status_code,
+        "ok": bool(productos),
+        "productos": productos,
+        "q_usada": q,
+    }
+    if r.status_code != 200:
+        row["error"] = f"HTTP {r.status_code}"
+    elif not productos:
+        row["error"] = "HTTP 200 sin precio"
+    return row
+
+
+async def _fetch_coto(client: httpx.AsyncClient, q: str) -> dict[str, Any]:
+    # Sin seguir el 301 a www.coto.com.ar: esa página es el shell y no trae precio.
+    url = (
+        "https://static.cotodigital3.com.ar/sitios/cdigi/browse?_dyncharset=utf-8&Dy=1&Ntt="
+        + quote(q, safe="")
+        + "&Nty=1&Ntk=All&Nrpp=12"
+    )
+    try:
+        r = await client.get(
+            url,
+            headers={"Accept": "text/html", "User-Agent": UA},
+            follow_redirects=False,
+        )
+    except Exception as e:
+        return _row_vacio(_COTO, 0, str(e), q)
+    if r.status_code in {301, 302, 303, 307, 308}:
+        return _row_vacio(_COTO, r.status_code, "Redirige al shell sin precio", q)
+    productos = _parse_coto(r.text or "") if r.status_code == 200 else []
+    row = {
+        "tienda": "Coto Digital",
+        "tienda_id": "cotodigital",
+        "http": r.status_code,
+        "ok": bool(productos),
+        "productos": productos,
+        "q_usada": q,
+    }
+    if r.status_code != 200:
+        row["error"] = f"HTTP {r.status_code}"
+    elif not productos:
+        row["error"] = "HTTP 200 sin precio"
+    return row
+
+
 async def buscar_super(q: str, consultas: list[str] | None = None) -> dict[str, Any]:
     """Catálogos públicos ya verificados. Si la frase no trae un precio, prueba una más corta.
 
@@ -243,7 +569,12 @@ async def buscar_super(q: str, consultas: list[str] | None = None) -> dict[str, 
     q_usada = intentos[0]
     async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
         for intento in intentos:
-            rows = await asyncio.gather(*[_one(client, store, intento) for store in STORES])
+            rows = await asyncio.gather(
+                *[_one(client, store, intento) for store in STORES],
+                _fetch_la_anonima(client, intento),
+                _fetch_super_mami(client, intento),
+                _fetch_coto(client, intento),
+            )
             fuentes = []
             productos = []
             for row in rows:
@@ -536,14 +867,12 @@ def _tienda(p: dict[str, Any]) -> tuple[str, str]:
 
 
 def _clave(p: dict[str, Any], size: tuple[str, int | float] | None) -> tuple:
+    """Mismo código de barras si los dos lo traen. Sin código, no se finge el mismo producto."""
     ean = _ean_of(p)
     if ean:
         return ("ean", ean)
-    marca = tuple(sorted(set(_tokens(str(p.get("marca") or "")))))
-    nombre = _tokens(str(p.get("nombre") or ""))
-    brand = set(marca)
-    variant = tuple(t for t in nombre if t not in brand and not re.fullmatch(r"\d+(?:g|kg|ml|l)", t))
-    return ("sig", marca, size, variant)
+    tienda, tienda_id = _tienda(p)
+    return ("sin_ean", tienda_id or tienda, str(p.get("url") or ""), str(p.get("nombre") or ""))
 
 
 def _product_key(tienda_id: str, url: str, nombre: str, ean: str) -> str:
@@ -652,12 +981,18 @@ def agrupar_mismo_producto(
             nombre = str(m.get("nombre") or "")
             url = str(m.get("url") or "")
             ean = _ean_of(m) or (g["clave"][1] if g["clave"][0] == "ean" else "")
+            promo = aplicar_oferta(tienda_id or "", nombre, precio)
             row = {
                 "tienda": tienda,
                 "tienda_id": tienda_id or "precios_claros",
                 "nombre": nombre,
                 "marca": m.get("marca") or "",
                 "precio": precio,
+                "precio_lista": m.get("precio_lista"),
+                "descuento_tienda": m.get("descuento_tienda"),
+                "total": promo["total"],
+                "promo": promo["promo"],
+                "promos": promo["promos"],
                 "pum": pum,
                 "pum_unidad": pum_unidad,
                 "url": url,
@@ -675,10 +1010,11 @@ def agrupar_mismo_producto(
         ofertas = list(by_store.values())
         if not ofertas:
             continue
-        piso = min(o["precio"] for o in ofertas)
+        # El comparable es el precio de venta. El total honesto solo baja si una promo de hoy sí se resta.
+        piso = min(o.get("total") or o["precio"] for o in ofertas)
         for o in ofertas:
-            o["barato"] = o["precio"] == piso
-        ofertas.sort(key=lambda o: (_TIENDA_ORDEN.get(o["tienda_id"], 50), o["tienda"]))
+            o["barato"] = (o.get("total") or o["precio"]) == piso
+        ofertas.sort(key=lambda o: (o.get("total") or o["precio"], o["precio"], _TIENDA_ORDEN.get(o["tienda_id"], 50), o["tienda"]))
         baratos = [o["tienda"] for o in ofertas if o["barato"]]
         elegido = next(o for o in ofertas if o["barato"])
         best = g["best"]

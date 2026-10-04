@@ -26,6 +26,7 @@ try:
     from baratoya.super_cadenas import agrupar_mismo_producto
     from baratoya.super_cadenas import buscar_promos
     from baratoya.super_cadenas import buscar_super
+    from baratoya.promos_hoy import catalogo as catalogo_promos
 except ImportError:
     from electro import buscar_electro
     from super_cadenas import STORES as SUPER_STORES
@@ -34,6 +35,7 @@ except ImportError:
     from super_cadenas import agrupar_mismo_producto
     from super_cadenas import buscar_promos
     from super_cadenas import buscar_super
+    from promos_hoy import catalogo as catalogo_promos
 
 BASE = os.getenv("PRECIOS_CLAROS_BASE", "https://d3e6htiiul5ek9.cloudfront.net/prod").rstrip("/")
 API_KEY = os.getenv("PRECIOS_CLAROS_API_KEY", "").strip()
@@ -521,6 +523,13 @@ async def sucursales(
 ):
     code, data = await pc_get("/sucursales", {"lat": lat, "lng": lng, "limit": limit})
     return JSONResponse({"http": code, "fuente": "precios_claros", "data": data}, status_code=200 if code else 502)
+
+
+
+@app.get("/api/promos")
+async def promos_bancarias():
+    """Tarjetas vigentes, por día y por banco. Sin ocultas, vencidas ni fechas en conflicto."""
+    return catalogo_promos()
 
 
 @app.get("/api/buscar")

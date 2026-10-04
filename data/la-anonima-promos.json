@@ -1,0 +1,806 @@
+{
+  "chain": "La Anónima",
+  "source_url": "https://super.laanonima.com.ar/empresa/promociones-y-descuentos",
+  "fetched_at": "2026-10-03T22:28:00-03:00",
+  "method": "HTTPS GET; every div.promo-card in the HTML, deduped (the block is repeated). Day chips are the visible day buttons. Bank filter ids are not named in the HTML.",
+  "day_code_legend": {
+    "1": "lunes",
+    "2": "martes",
+    "3": "miércoles",
+    "4": "jueves",
+    "5": "viernes",
+    "6": "sábado",
+    "7": "domingo"
+  },
+  "count": 35,
+  "bank_count": 31,
+  "promos": [
+    {
+      "bank": "Todos los días, tenés 4 Cuotas sin interés con BANCOR.",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "4 Cuotas sin interés",
+        "4 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|6|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/08/2026 al 31/10/2026",
+      "exclusion": null,
+      "legal": "Todos los días 4 cuotas sin interés en toda tu compra pagando con tarjetas Visa y Mastercard. Promoción válida en todas las sucursales físicas en Laboulaye, Morteros, Arroyito, Marcos Juárez, Lugones, Rivera Indarte, Jacinto Rios y Ruta 9. Promoción válida desde el 01/08/2026 hasta el 31/10/2026.",
+      "image_alt": "Todos los días, tenés 4 Cuotas sin interés con BANCOR."
+    },
+    {
+      "bank": "Martes 25% de Descuento con Banco Hipotecario MODO",
+      "kind": "banco",
+      "percent": [
+        "25%"
+      ],
+      "installments": null,
+      "days": [
+        "Martes"
+      ],
+      "day_codes": "|2|",
+      "bank_codes": "|5|9|",
+      "channel": "sucursal",
+      "tope": "Tope de reintegro $10.000 segmento masivo, $30.000 para segmento Búho One, Búho Sueldo, Jubilados y Emprendedor; topes por mes y por cuenta",
+      "minimum_purchase": null,
+      "validity": "01/09/26 al 30/11/2026",
+      "exclusion": null,
+      "legal": "Todos los martes, 25% de descuento con Banco Hipotecario pagando con tarjeta de débito a través de MODO. Tope de reintegro $10.000 segmento masivo, $30.000 para segmento Búho One, Búho Sueldo, Jubilados y Emprendedor; ambos topes por mes y por cuenta. Promoción válida en todas las sucursales físicas desde el 01/09/26 hasta el 30/11/2026.",
+      "image_alt": "Martes 25% de Descuento con Banco Hipotecario MODO"
+    },
+    {
+      "bank": "Jueves 20% de reintegro con ICBC MODO",
+      "kind": "banco",
+      "percent": [
+        "20%"
+      ],
+      "installments": null,
+      "days": [
+        "Jueves"
+      ],
+      "day_codes": "|4|",
+      "bank_codes": "|1|5|",
+      "channel": "sucursal",
+      "tope": "Tope de reintegro $15.000 semanal",
+      "minimum_purchase": null,
+      "validity": "01/10/26 al 31/12/2026",
+      "exclusion": null,
+      "legal": "Todos los jueves obtené un 20% de reintegro pagando con tarjeta Visa débito, a través de MODO. Tope de reintegro $15.000 semanal. Promoción válida en todas las sucursales físicas sólo para Rio Gallegos, Laboulaye, Rafaela, Sunchales, Gral Pico, Venado Tuerto, Bariloche, San Martin de los andes, Comodoro Rivadavia, Usuhaia. Lugones, Rivera Indarte , Jacinto Rios, Ruta 9, Rosario y Rafaela. Promoción válida desde el 01/10/26 hasta el 31/12/2026.",
+      "image_alt": "Jueves 20% de reintegro con ICBC MODO"
+    },
+    {
+      "bank": "Todos los viernes y sábados 30% de reintegro con Banco Santa Cruz MODO",
+      "kind": "banco",
+      "percent": [
+        "30%"
+      ],
+      "installments": null,
+      "days": [
+        "Viernes",
+        "Sábado"
+      ],
+      "day_codes": "|5|6|",
+      "bank_codes": "|4|5|",
+      "channel": "sucursal",
+      "tope": "Tope de $ 18.000 por mes y por cuenta",
+      "minimum_purchase": "Mínimo de compra $ 50.000",
+      "validity": "01/09/26 al 31/10/2026",
+      "exclusion": null,
+      "legal": "Promoción válida para los días viernes y sábados. Tenés 30% de reintegro para compras realizadas en un pago con tarjetas de crédito Visa y MasterCard del Banco Santa Cruz (a través de MODO). Tope de $ 18.000 por mes y por cuenta. Mínimo de compra $ 50.000. Promoción válida en todas las sucursales físicas de la provincia de Santa Cruz desde el 01/09/26 hasta el 31/10/2026.",
+      "image_alt": "Todos los viernes y sábados 30% de reintegro con Banco Santa Cruz MODO"
+    },
+    {
+      "bank": "Los viernes y sábados tenés 30% de descuento con Banco Santa Fe MODO",
+      "kind": "banco",
+      "percent": [
+        "30%"
+      ],
+      "installments": null,
+      "days": [
+        "Viernes",
+        "Sábado"
+      ],
+      "day_codes": "|5|6|",
+      "bank_codes": "|12|5|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": "Minimo de compra $ 50.000 Promoción válida en sucursales fí",
+      "validity": "31/10/2026",
+      "exclusion": null,
+      "legal": "Disfrutá de 30% de descuento los días viernes y sábados, abonando en un pago, con Tarjeta de crédito desde la App del banco o APP MODO. Tenés $ 18.000 de reintegro por mes y por cuenta. Minimo de compra $ 50.000 Promoción válida en sucursales físicas de la Pcia de Santa Fe hasta el 31/10/2026.",
+      "image_alt": "Los viernes y sábados tenés 30% de descuento con Banco Santa Fe MODO"
+    },
+    {
+      "bank": "3 Cuotas SIN Interés con Galicia de Jueves a Domingos",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 Cuotas SIN Interés",
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|4|5|6|7|",
+      "bank_codes": "|0|",
+      "channel": null,
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "03/09/2026 al 30/11/26",
+      "exclusion": null,
+      "legal": "Hasta 3 cuotas sin interés, de jueves a domingo, pagando con las Tarjeta de crédito Visa y Master (Tarjetas físicas-App Galicia-Modo). Promoción válida en todas las sucursáles físicas del 03/09/2026 hasta el 30/11/26.",
+      "image_alt": "3 Cuotas SIN Interés con Galicia de Jueves a Domingos"
+    },
+    {
+      "bank": "Todos los días 3 cuotas sin interés con Mutualcard CABAL",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|23|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/07/26 al 31/12/2026",
+      "exclusion": null,
+      "legal": "Todos los días tenés 3 cuotas sin interés pagando con la tarjeta Mutualcard del banco CABAL. Promoción válida en todas las sucursales en las provincias de Junin y Venado Tuerto del 01/07/26 al 31/12/2026.",
+      "image_alt": "Todos los días 3 cuotas sin interés con Mutualcard CABAL"
+    },
+    {
+      "bank": "Todos los días 3 cuotas sin interés con Elebar",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7",
+      "bank_codes": "|11|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/05/26 al 31/12/2026",
+      "exclusion": null,
+      "legal": "Disfrutá de hasta 3 cuotas sin interés, todos los días con tarjeta Elebar. Ciudades participantes: 9 de Julio, Azul, Bragado, Carlos Casares, Chivilcoy, General Villegas, Lincoln, Pehuajó y Trenque Lauquen. Promoción válida en todas las sucursales físicas desde el 01/05/26 hasta el 31/12/2026.",
+      "image_alt": "Todos los días 3 cuotas sin interés con Elebar"
+    },
+    {
+      "bank": "Los jueves hasta 30% de descuento con Banco Patagonia",
+      "kind": "banco",
+      "percent": [
+        "30%",
+        "20%",
+        "15%"
+      ],
+      "installments": null,
+      "days": [
+        "Jueves"
+      ],
+      "day_codes": "|4|",
+      "bank_codes": "|2|",
+      "channel": "sucursal",
+      "tope": "tope de reintegro $20.000 mensual), Patagonia Plus 20% en 1 pago (tope de reintegro $15.000 mensual), Patagonia C; tope de reintegro $10.000 mensual)",
+      "minimum_purchase": null,
+      "validity": "01/10/2026 al 31/03/2027",
+      "exclusion": null,
+      "legal": "Todos los jueves, pagando con tarjeta de crédito del banco Patagonia, tenés descuentos: Patagonia Singular 30% en 1 pago (tope de reintegro $20.000 mensual), Patagonia Plus 20% en 1 pago (tope de reintegro $15.000 mensual), Patagonia Clásica 15% en 1 pago (tope de reintegro $10.000 mensual). Promoción válida en todas las sucursales físicas en Rio Negro, desde el 01/10/2026 al 31/03/2027.",
+      "image_alt": "Los jueves hasta 30% de descuento con Banco Patagonia"
+    },
+    {
+      "bank": "Todos los días tenés 3 cuotas sin interés pagando con Mercado Pago",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|15|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": "compra mínima de $50.000 para 2 CSI y en compra mínima d",
+      "validity": "01/09/2026 al 30/11/2026",
+      "exclusion": "\"No acumulable con otros descuentos ni promociones\".",
+      "legal": "Todos los días tenés HASTA 3 cuotas sin interés pagando con Tarjeta de crédito Mercado Pago Pagando con QR. Válido en compra mínima de $50.000 para 2 CSI y en compra mínima de $ 150.000 para 3 CSI. Promoción válida en todas las sucursales físicas del país desde el 01/09/2026 hasta el 30/11/2026. \"No acumulable con otros descuentos ni promociones\".",
+      "image_alt": "Todos los días tenés 3 cuotas sin interés pagando con Mercado Pago"
+    },
+    {
+      "bank": "Los lunes tenés 15% de descuento pagando con Mercado Pago",
+      "kind": "banco",
+      "percent": [
+        "15%"
+      ],
+      "installments": null,
+      "days": [
+        "Lunes"
+      ],
+      "day_codes": "|1|",
+      "bank_codes": "|15|",
+      "channel": "sucursal",
+      "tope": "SIN TOPE",
+      "minimum_purchase": null,
+      "validity": "01/09/2026 al 30/11/2026",
+      "exclusion": "Excluye Electro.",
+      "legal": "Tenés 15% de descuento en tu compra SIN TOPE, pagando a tráves del QR con Mercado con todos los medios de pago 1 cupón por persona. Excluye Electro. No acumulable con otras promociones. Promoción válida en todas las sucursales físicas en las regiones: La pampa- Buenos aires - Santa fe - Corrientes- Cordoba - Chaco - (Excluye Carmen de Patagones) - Incluye todas las sucursales Libertad. Desde el 01/09/2026 hasta el 30/11/2026.",
+      "image_alt": "Los lunes tenés 15% de descuento pagando con Mercado Pago"
+    },
+    {
+      "bank": "Lunes con 10% de descuento pagando con tarjetas FinanYa",
+      "kind": "banco",
+      "percent": [
+        "10%"
+      ],
+      "installments": null,
+      "days": [
+        "Lunes"
+      ],
+      "day_codes": "|1|",
+      "bank_codes": "|19|",
+      "channel": "sucursal",
+      "tope": "Tope de reintegro $20.000 semanal",
+      "minimum_purchase": null,
+      "validity": "01/08/2026 al 31/10/2026",
+      "exclusion": null,
+      "legal": "Tenés 10% de descuento en tu compra pagando con tarjetas FinanYa en 1 pago. Tope de reintegro $20.000 semanal. Promoción válida en todas las sucursales físicas en las regiones: Rafaela, Esperanza, Sunchales y Rafaela (Libertad) desde el 01/08/2026 hasta el 31/10/2026.",
+      "image_alt": "Lunes con 10% de descuento pagando con tarjetas FinanYa"
+    },
+    {
+      "bank": "3 CSI en toda tu compra con tarjetas Favacard",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|16|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/08/26 al 31/10/2026",
+      "exclusion": "Todos los días tenés 3 CSI en toda tu compra, pagando con tarjeta Facavard (excepto Favacard Cabal).",
+      "legal": "Todos los días tenés 3 CSI en toda tu compra, pagando con tarjeta Facavard (excepto Favacard Cabal). Promoción válida en todas las sucursales físicas en: Trenque Lauquen - América - Azul - 9 de Julio - Pehuajó - Carlos Casares. Promoción válida desde 01/08/26 el hasta el 31/10/2026.",
+      "image_alt": "3 CSI en toda tu compra con tarjetas Favacard"
+    },
+    {
+      "bank": "Martes 20% de descuento con Banco Columbia",
+      "kind": "banco",
+      "percent": [
+        "20%"
+      ],
+      "installments": null,
+      "days": [
+        "Martes"
+      ],
+      "day_codes": "|2|",
+      "bank_codes": "|20|",
+      "channel": "sucursal",
+      "tope": "tope $ 15.000 por cuenta",
+      "minimum_purchase": null,
+      "validity": "01/10/2026 al 31/03/2027",
+      "exclusion": null,
+      "legal": "Todos los martes tenés 20% de descuento en tu compra pagando con tarjeta de crédito Visa y Mastercard, tope $ 15.000 por cuenta. Promoción válida en todas las sucursales físicas en del país, desde el 01/10/2026 hasta el 31/03/2027.",
+      "image_alt": "Martes 20% de descuento con Banco Columbia"
+    },
+    {
+      "bank": "Viernes y sábados tenés 10% de reintegro BNA+MODO",
+      "kind": "banco",
+      "percent": [
+        "10%"
+      ],
+      "installments": null,
+      "days": [
+        "Viernes",
+        "Sábado"
+      ],
+      "day_codes": "|5|6|",
+      "bank_codes": "|7|5|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/10/26 al 31/12/26",
+      "exclusion": null,
+      "legal": "Viernes y sábados 10% de reintegro abonando en 1 pago con BNA+MODO. Tarjeta de crédito mastercard y tarjeta de débito mastercard débito. Promoción válida para tarjetas de crédito Visa y Master emitidas por BNA. Promoción válida en sucursales físicas desde el 01/10/26 hasta el 31/12/26.",
+      "image_alt": "Viernes y sábados tenés 10% de reintegro BNA+MODO"
+    },
+    {
+      "bank": "20% de reintegro pagando con MODO",
+      "kind": "banco",
+      "percent": [
+        "20%"
+      ],
+      "installments": null,
+      "days": [
+        "Viernes",
+        "Sábado"
+      ],
+      "day_codes": "|5|6|",
+      "bank_codes": "|5|",
+      "channel": "sucursal",
+      "tope": "Tope de reintegro: $15.000 mensuales por banco",
+      "minimum_purchase": "Compra mínima $ 50.000",
+      "validity": "01/09/26 al 31/10/2026",
+      "exclusion": null,
+      "legal": "Todos los viernes y sábados 20% de reintegro pagando con MODO. Tope de reintegro: $15.000 mensuales por banco. Compra mínima $ 50.000. Promoción válida en todas las sucursales del pais. Válida desde el 01/09/26 hasta el 31/10/2026.",
+      "image_alt": "20% de reintegro pagando con MODO"
+    },
+    {
+      "bank": "Miércoles 20% de descuento con Patagonia 365 del Banco Chubut.",
+      "kind": "banco",
+      "percent": [
+        "20%"
+      ],
+      "installments": null,
+      "days": [
+        "Miércoles"
+      ],
+      "day_codes": "|3|",
+      "bank_codes": "|3|",
+      "channel": null,
+      "tope": "Tope $10.000 por mes",
+      "minimum_purchase": null,
+      "validity": "31/10/26",
+      "exclusion": null,
+      "legal": "Miércoles 20% de descuento en compras de 1 pago con tarjetas de crédito (Patagonia 365) del Banco Chubut. Tope $10.000 por mes. Consultar comercios adheridos. Promoción válida del 01/08 al 31/10/26.",
+      "image_alt": "Miércoles 20% de descuento con Patagonia 365 del Banco Chubut."
+    },
+    {
+      "bank": "Lunes 30% de descuento con Banco Patagonia.",
+      "kind": "banco",
+      "percent": [
+        "30%"
+      ],
+      "installments": null,
+      "days": [
+        "Lunes"
+      ],
+      "day_codes": "|1|",
+      "bank_codes": "|2|",
+      "channel": null,
+      "tope": "Tope $ 20.000 por cliente por mes",
+      "minimum_purchase": null,
+      "validity": "31/12/2026",
+      "exclusion": "Todos los lunes tenés 30% de descuento con Tarjeta de crédito VISA exclusivo NFC.",
+      "legal": "Todos los lunes tenés 30% de descuento con Tarjeta de crédito VISA exclusivo NFC. Tope $ 20.000 por cliente por mes. Promoción válida del 07/09 al 31/12/2026.",
+      "image_alt": "Lunes 30% de descuento con Banco Patagonia."
+    },
+    {
+      "bank": "Todos los días 3 cuotas sin interés en tu compra con Tarjeta La Anónima",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "4 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|32|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/09/2026 al 30/11/2026",
+      "exclusion": null,
+      "legal": "Comprando con tu Tarjeta La Anónima, tenés hasta 4 cuotas sin interés todos los días. Exlusivo clientes Plus, desde el 01/09/2026 hasta el 30/11/2026. Válido solo en las siguientes sucursales físicas: Buenos Aires, Chubut, La Pampa, Neuquen, Río Negro, Santa Cruz, Santa Fe y Tierra del Fuego.",
+      "image_alt": "Todos los días 3 cuotas sin interés en tu compra con Tarjeta La Anónima"
+    },
+    {
+      "bank": "Todos los días tenés 3 cuotas sin interés con Banco de Tierra de Fuego",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|26|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/10/2026 al 31/10/2026",
+      "exclusion": null,
+      "legal": "Todos los días tenés 3 cuotas sin interés con Tarjeta de crédito Fueguina Visa y Fueguina Master. Promoción Válida solo en las sucursales de Tierra del fuego, Rio Gallego, Calafate, Buenos Aires del 01/10/2026 al 31/10/2026.",
+      "image_alt": "Todos los días tenés 3 cuotas sin interés con Banco de Tierra de Fuego"
+    },
+    {
+      "bank": "Los miércoles tenés 10% de descuento con cuenta DNI",
+      "kind": "banco",
+      "percent": [
+        "10%"
+      ],
+      "installments": null,
+      "days": [
+        "Miércoles"
+      ],
+      "day_codes": "|3|",
+      "bank_codes": "|27|",
+      "channel": null,
+      "tope": "Tope de reintegro $ 5000 por semana por persona",
+      "minimum_purchase": "Compra mínima $ 25.000",
+      "validity": "01/10/2026 al 31/10/2026",
+      "exclusion": null,
+      "legal": "10% de descuento los días miércoles con cuenta DNI. Tope de reintegro $ 5000 por semana por persona. Compra mínima $ 25.000. Válido sólo en provincia de BsAs desde el 01/10/2026 al 31/10/2026",
+      "image_alt": "Los miércoles tenés 10% de descuento con cuenta DNI"
+    },
+    {
+      "bank": "Los Miércoles con cuenta DNI tenés 5% de descuento adicional para jubilados",
+      "kind": "banco",
+      "percent": [
+        "5%"
+      ],
+      "installments": null,
+      "days": [
+        "Miércoles"
+      ],
+      "day_codes": "|3|",
+      "bank_codes": "|27|",
+      "channel": null,
+      "tope": "tope de reintegro unificado: $5.000 de acuerdo a la vigencia de cada promoción y por persona",
+      "minimum_purchase": null,
+      "validity": "01/10/2026 al 31/10/2026",
+      "exclusion": null,
+      "legal": "Con cuenta DNI, tenés tope de reintegro unificado: $5.000 de acuerdo a la vigencia de cada promoción y por persona. Beneficio acumulable con la promo Cta Dni. Con QR Cuenta DNI, Clave DNI, Cuenta DNI Comercios y QR interoperable. Sólo provincia de BsAs desde 01/10/2026 al 31/10/2026",
+      "image_alt": "Los Miércoles con cuenta DNI tenés 5% de descuento adicional para jubilados"
+    },
+    {
+      "bank": "Todos los días 4 cuotas sin interés en tu compra con Tarjeta La Anónima",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "4 cuotas sin interés",
+        "4 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|32|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/09/2026 al 30/11/2026",
+      "exclusion": null,
+      "legal": "Comprando con tu Tarjeta La Anónima, tenés hasta 4 cuotas sin interés todos los días. Exlusivo clientes Plus, desde el 01/09/2026 hasta el 30/11/2026. Válido solo en las siguientes sucursales físicas: Goya, Bella Vista, Resistencia, Lugones, Rivera Indarte, Jacinto Ríos, Ruta 9, Laboulaye, Morteros, Arroyito, Marcos Juárez, San Juan, Tucumán I, Tucumán II, Salta, Santiago, Posadas, Rosario, Rafaela Libertad, Rafaela Centro, Rafaela Max I y Rafaela Max II.",
+      "image_alt": "Todos los días 4 cuotas sin interés en tu compra con Tarjeta La Anónima"
+    },
+    {
+      "bank": "Todos los días 4 cuotas sin interés en tu compra con Naranja X.",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "4 cuotas sin interés",
+        "4 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|31|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/09/2026 al 31/10/2026",
+      "exclusion": null,
+      "legal": "Abonando con Naranja X, tenés hasta 4 cuotas sin interés todos los días. Válido desde el 01/09/2026 hasta el 31/10/2026 sólo en las siguientes sucursales físicas: Goya, Bella Vista, Resistencia, Lugones, Rivera Indarte, Jacinto Ríos, Ruta 9, Laboulaye, Morteros, Arroyito, Marcos Juárez, San Juan, Tucumán I, Tucumán II, Salta, Santiago, Posadas, Rosario, Rafaela Libertad, Rafaela Centro, Rafaela Max I y Rafaela Max II.",
+      "image_alt": "Todos los días 4 cuotas sin interés en tu compra con Naranja X."
+    },
+    {
+      "bank": "20% de reintegro + 4 cuotas sin interés con Tarjeta Sol, los Jueves",
+      "kind": "banco",
+      "percent": [
+        "20%"
+      ],
+      "installments": [
+        "4 cuotas sin interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "day_codes": "|4|",
+      "bank_codes": "|29|",
+      "channel": "sucursal",
+      "tope": "Tope $10.000 por transacción",
+      "minimum_purchase": null,
+      "validity": "01/10/2026 al 31/10/26",
+      "exclusion": null,
+      "legal": "Promoción válida todos los jueves desde el 01/10/2026 al 31/10/26, abonando con Tarjeta Sol en las sucursales Físicas: Libertad Tucumán, Salta, Santiago del Estero y Córdoba (todas las de la anonima y Libertad). Tope $10.000 por transacción.",
+      "image_alt": "20% de reintegro + 4 cuotas sin interés con Tarjeta Sol, los Jueves"
+    },
+    {
+      "bank": "Ahorrá 30% con Banco de San Juan y MODO",
+      "kind": "banco",
+      "percent": [
+        "30%"
+      ],
+      "installments": null,
+      "days": [
+        "Viernes",
+        "Sábado"
+      ],
+      "day_codes": "|5|6|",
+      "bank_codes": "|30|5|",
+      "channel": "sucursal",
+      "tope": "tope de ahorro $18.000 por mes y por cuenta",
+      "minimum_purchase": "Mínimo de compra $50.000, y tope de ahorro $18.000 por mes y p",
+      "validity": "Válido sólo para las sucursales de San Juan",
+      "exclusion": null,
+      "legal": "Los viernes y sábados pagando en 1 pago con la tarjeta de crédito del Banco de San Juan desde la app del banco o desde app MODO, tenés 30% de ahorro en tu compra. Mínimo de compra $50.000, y tope de ahorro $18.000 por mes y por cuenta. Válido sólo para las sucursales de San Juan.",
+      "image_alt": "Ahorrá 30% con Banco de San Juan y MODO"
+    },
+    {
+      "bank": "Todos los días, tenés 4 Cuotas sin interés con Tarjeta Sucrédito.",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "4 Cuotas sin interés",
+        "4 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|33|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/09/26 al 30/11/26",
+      "exclusion": null,
+      "legal": "Todos los días, tenés 4 cuotas sin interés comprando con Tarjeta SuCrédito en las sucursales ubicadas en: Córdoba (La anónima y Libertad), Salta, Santiago del estero y Tucumán. Válido desde 01/09/26 hasta el 30/11/26.",
+      "image_alt": "Todos los días, tenés 4 Cuotas sin interés con Tarjeta Sucrédito."
+    },
+    {
+      "bank": "Todos los días 3 cuotas sin interés con Tarjeta Titanio",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|34|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/09/26 al 30/11/26",
+      "exclusion": null,
+      "legal": "Todos los días, tenés 3 cuotas sin interés comprando con Tarjeta Titanio en la sucursal física ubicada en: Tucumán. Válido desde 01/09/26 hasta el 30/11/26.",
+      "image_alt": "Todos los días 3 cuotas sin interés con Tarjeta Titanio"
+    },
+    {
+      "bank": "Todos los días hatas 3 cuotas sin interés con Credimas",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|35|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/09/26 al 30/11/26",
+      "exclusion": null,
+      "legal": "Todos los días, tenés hasta 3 cuotas sin interés comprando con Tarjeta Credimas en las sucursales físicas ubicada en: Salta, Tucumán, Santiago del Estero. Válido desde 01/09/26 hasta el 30/11/26.",
+      "image_alt": "Todos los días hatas 3 cuotas sin interés con Credimas"
+    },
+    {
+      "bank": "Todos los días 3 cuotas sin interés con Tarjeta única",
+      "kind": "banco",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 cuotas sin interés"
+      ],
+      "days": [
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+        "Domingo"
+      ],
+      "day_codes": "|1|2|3|4|5|6|7|",
+      "bank_codes": "|36|",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "01/09/26 al 30/11/26",
+      "exclusion": null,
+      "legal": "Todos los días, tenés 3 cuotas sin interés comprando con Tarjeta Única en la sucursal física ubicada en: Santiago del Estero. Válido desde 01/09/26 hasta el 30/11/26.",
+      "image_alt": "Todos los días 3 cuotas sin interés con Tarjeta única"
+    },
+    {
+      "bank": "25% de reintegro con Banco del Sol los Martes",
+      "kind": "banco",
+      "percent": [
+        "25%"
+      ],
+      "installments": null,
+      "days": [
+        "Martes"
+      ],
+      "day_codes": "|2|",
+      "bank_codes": "|28|",
+      "channel": "sucursal",
+      "tope": "Tope de reintegro $20.000",
+      "minimum_purchase": null,
+      "validity": "01/10/2026 al 31/10/2026",
+      "exclusion": null,
+      "legal": "Todos los martes tenés 25% de reintegro en tus compras realizadas con la tarjeta de débito Visa del Banco del Sol. Tope de reintegro $20.000. Promoción Válida en todas las sucursales físicas del país desde el 01/10/2026 al 31/10/2026",
+      "image_alt": "25% de reintegro con Banco del Sol los Martes"
+    },
+    {
+      "bank": "Promo Colgate",
+      "kind": "otras",
+      "percent": null,
+      "installments": null,
+      "days": null,
+      "day_codes": null,
+      "bank_codes": null,
+      "channel": null,
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "02/10/2026 al 02/11/2026",
+      "exclusion": null,
+      "legal": "Desde 02/10/2026 hasta 02/11/2026",
+      "image_alt": "Promo Colgate"
+    },
+    {
+      "bank": "Promo Aniversario LAOL / Raspadita Aniversario",
+      "kind": "otras",
+      "percent": null,
+      "installments": null,
+      "days": null,
+      "day_codes": null,
+      "bank_codes": null,
+      "channel": null,
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "02/10/2026 al 11/10/2026",
+      "exclusion": null,
+      "legal": "Desde 02/10/2026 hasta 11/10/2026",
+      "image_alt": "Promo Aniversario LAOL / Raspadita Aniversario"
+    },
+    {
+      "bank": "Promo Mascotas",
+      "kind": "otras",
+      "percent": null,
+      "installments": null,
+      "days": null,
+      "day_codes": null,
+      "bank_codes": null,
+      "channel": null,
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "15/07/2026 al 15/08/2026",
+      "exclusion": null,
+      "legal": "Desde 15/07/2026 hasta 15/08/2026",
+      "image_alt": "Promo Mascotas"
+    },
+    {
+      "bank": "Promo Aniversario 118",
+      "kind": "otras",
+      "percent": null,
+      "installments": null,
+      "days": null,
+      "day_codes": null,
+      "bank_codes": null,
+      "channel": null,
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "02/07/2026 al 12/07/2026",
+      "exclusion": null,
+      "legal": "Desde 02/07/2026 hasta 12/07/2026",
+      "image_alt": "Promo Aniversario 118"
+    }
+  ]
+}

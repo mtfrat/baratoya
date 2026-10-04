@@ -1,0 +1,122 @@
+{
+  "chain": "Josimar",
+  "source_url": "https://www.josimar.com.ar/institucional/medios-de-pago",
+  "fetched_at": "2026-10-03T22:28:00-03:00",
+  "method": "HTTPS GET; sitewide messages-slider in VTEX __RUNTIME__. Bank lines have showMessage false (slider hidden). No other fields exist on the card.",
+  "count": 7,
+  "bank_count": 6,
+  "promos": [
+    {
+      "bank": "LUNES 10% DE DESCUENTO A TRAVÉS DE MERCADO PAGO - NO ACUMULABE CON OTRAS OFERTAS",
+      "show_message": false,
+      "kind": "banco",
+      "percent": "10%",
+      "installments": null,
+      "days": [
+        "LUNES"
+      ],
+      "channel": "no indicado en la línea",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "NO ACUMULABE CON OTRAS OFERTAS",
+      "text": "LUNES 10% DE DESCUENTO A TRAVÉS DE MERCADO PAGO - NO ACUMULABE CON OTRAS OFERTAS"
+    },
+    {
+      "bank": "LUNES Y MARTES 15% DE DESCUENTO VISA CREDITO - NO ACUMULABLE CON OTRAS OFERTAS -",
+      "show_message": false,
+      "kind": "banco",
+      "percent": "15%",
+      "installments": null,
+      "days": [
+        "LUNES",
+        "MARTES"
+      ],
+      "channel": "no indicado en la línea",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "NO ACUMULABLE CON OTRAS OFERTAS",
+      "text": "LUNES Y MARTES 15% DE DESCUENTO VISA CREDITO - NO ACUMULABLE CON OTRAS OFERTAS -"
+    },
+    {
+      "bank": "ENVIO GRATIS EN COMPRAS SUPERIORES A $100.000,00 PESOS -",
+      "show_message": true,
+      "kind": "envio",
+      "percent": null,
+      "installments": null,
+      "days": null,
+      "channel": "no indicado en la línea",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": null,
+      "text": "ENVIO GRATIS EN COMPRAS SUPERIORES A $100.000,00 PESOS -"
+    },
+    {
+      "bank": "HOY MIERCOLES 15% DE DESCUENTO CON PERSONAL PAY - TOPE DE REINTEGRO $6,000 X PERSONA X SEMANA",
+      "show_message": false,
+      "kind": "banco",
+      "percent": "15%",
+      "installments": null,
+      "days": [
+        "MIERCOLES"
+      ],
+      "channel": "no indicado en la línea",
+      "tope": "TOPE DE REINTEGRO $6,000 X PERSONA X SEMANA",
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": null,
+      "text": "HOY MIERCOLES 15% DE DESCUENTO CON PERSONAL PAY - TOPE DE REINTEGRO $6,000 X PERSONA X SEMANA"
+    },
+    {
+      "bank": "TODOS LOS JUEVES 15% DE DESCUENTO ABONANDO CON TARJETA DE DEBITO BANCARIA - SIN TOPE - NO ACUMULABLE CON OTRAS PROMOCIONES",
+      "show_message": false,
+      "kind": "banco",
+      "percent": "15%",
+      "installments": null,
+      "days": [
+        "JUEVES"
+      ],
+      "channel": "no indicado en la línea",
+      "tope": "sin tope",
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "NO ACUMULABLE CON OTRAS PROMOCIONES",
+      "text": "TODOS LOS JUEVES 15% DE DESCUENTO ABONANDO CON TARJETA DE DEBITO BANCARIA - SIN TOPE - NO ACUMULABLE CON OTRAS PROMOCIONES"
+    },
+    {
+      "bank": "TODOS LOS VIERNES 20% DE DTO ABONANDO ATRAVES DE MODO CON BANCOS SELECCIONADOS - TOPE $8.000 MIL",
+      "show_message": false,
+      "kind": "banco",
+      "percent": "20%",
+      "installments": null,
+      "days": [
+        "VIERNES"
+      ],
+      "channel": "no indicado en la línea",
+      "tope": "TOPE $8.000",
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": null,
+      "text": "TODOS LOS VIERNES 20% DE DTO ABONANDO ATRAVES DE MODO CON BANCOS SELECCIONADOS - TOPE $8.000 MIL"
+    },
+    {
+      "bank": "VIERNES Y SABADOS 15% DE DESCUENTO MASTERCARD Y AMERICAN EXPRES CREDITO - NO ACUMULABLE CON OFERTAS",
+      "show_message": false,
+      "kind": "banco",
+      "percent": "15%",
+      "installments": null,
+      "days": [
+        "VIERNES",
+        "SABADOS"
+      ],
+      "channel": "no indicado en la línea",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "NO ACUMULABLE CON OFERTAS",
+      "text": "VIERNES Y SABADOS 15% DE DESCUENTO MASTERCARD Y AMERICAN EXPRES CREDITO - NO ACUMULABLE CON OFERTAS"
+    }
+  ]
+}

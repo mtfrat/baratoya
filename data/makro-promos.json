@@ -1,0 +1,400 @@
+{
+  "chain": "Makro",
+  "source_url": "https://makro.com.ar/beneficios-bancarios/",
+  "fetched_at": "2026-10-03T22:28:00-03:00",
+  "method": "HTTPS GET; every Divi et_pb_blurb on the page whose text has a percent, cuota, reintegro or descuento.",
+  "count": 17,
+  "promos": [
+    {
+      "day_heading": "Jueves",
+      "bank": "20% por banco por mes.",
+      "headline": "20% por banco por mes.",
+      "percent": [
+        "20%"
+      ],
+      "installments": null,
+      "days": "Jueves",
+      "channel": "sucursal",
+      "tope": "Tope de reintegro $20.000 * Este beneficio es acumulable con otras promociones vigentes que apliquen pagando c; Tope de reintegro $20.000 por banco por mes",
+      "minimum_purchase": null,
+      "validity": "01/10/2026 al 31/10/2026",
+      "exclusion": "No válido en autopagos, ni pagos online.",
+      "lines": [
+        "20% por banco por mes.",
+        "Tope de reintegro $20.000",
+        "* Este beneficio es acumulable con otras promociones vigentes que apliquen pagando con MODO.",
+        "Tope de reintegro $20.000 por banco por mes. Aplica únicamente a aquellos usuarios que sean titulares de una cuenta bancaria en la entidad emisora de la tarjeta con la que realiza el pago. No olvides asociarla si usas la app MODO. Promoción válida para Argentina los días jueves del 01/10/2026 al 31/10/2026. Aplica para bancos y comercios adheridos. Entidades Adheridas: Banco Santander ( Solo con VISA), Banco Nación, Banco Galicia, Banco BBVA, Banco Macro, Banco Santa Fe, Banco Entre Rios, Banco San Juan, Banco Santa Cruz, Banco ICBC, Billetera YOY, Banco Supervielle, Banco Credicoop, Banco Ciudad, Billetera BUEPP, Banco Bancor, Banco Comafi, Banco Columbia. PARA MÁS INFORMACIÓN Y CONDICIONES O LIMITACIONES APLICABLES, CONSULTE EN www.modo.com.ar/promos . No válido en autopagos, ni pagos online. Play Digital S.A. (MODO), CUIT 30-71682943-6, Av. del Libertador 7208 3°, CABA."
+      ]
+    },
+    {
+      "day_heading": "Martes",
+      "bank": "Pagando con tarjeta Débito a través de MODO Banco Hipotecario Clientes Búho One, jubilados y emprendedores",
+      "headline": "Pagando con tarjeta Débito a través de MODO Banco Hipotecario Clientes Búho One, jubilados y emprendedores",
+      "percent": [
+        "25%"
+      ],
+      "installments": null,
+      "days": "Martes",
+      "channel": "sucursal",
+      "tope": "TOPE DE REINTEGRO $30.000; TOPE MENSUAL POR CUENTA (CONSIDERANDO LA SUMA DE LOS CONSUMOS REALIZADOS POR EL CLIENTE, DURANTE EL ME; TOPES DE REINTERO: PARA TODOS LOS CLIENTES: $10.000, PARA LOS CLIENTES BÚHO ONE, BÚHO SUELDO, BÚH",
+      "minimum_purchase": null,
+      "validity": "01/10/2026 HASTA EL 31/10/2026",
+      "exclusion": "NO APLICA PARA LOS CONSUMOS EFECTUADOS A TRAVÉS DE LA PLATAFORMA MERCADO PAGO.",
+      "lines": [
+        "Pagando con tarjeta Débito a través de MODO Banco Hipotecario Clientes Búho One, jubilados y emprendedores",
+        "TOPE DE REINTEGRO $30.000.- POR CUENTA POR MES",
+        "PUBLICIDAD CARTERA CONSUMO. PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA EN TIENDAS PRESENCIALES DE SUPERMERCADOS MAYORISTAS MAKRO DESDE EL 01/10/2026 HASTA EL 31/10/2026, AMBOS INCLUSIVE, PARA CONSUMOS EFECTUADOS CON TARJETA DE DÉBITO VISA EMITIDA POR ESTE BANCO HIPOTECARIO SA QUE NO REGISTRE MORA MEDIANTE LA MODALIDAD DE PAGO CON “QR” A TRAVÉS DE “MODO” DESDE APP BH O APP MODO. SE OTORGARÁ UN DESCUENTO VÍA REINTEGRO DEL 25% CON TOPE MENSUAL POR CUENTA (CONSIDERANDO LA SUMA DE LOS CONSUMOS REALIZADOS POR EL CLIENTE, DURANTE EL MES). TOPES DE REINTERO: PARA TODOS LOS CLIENTES: $10.000, PARA LOS CLIENTES BÚHO ONE, BÚHO SUELDO, BÚHO EMPRENDEDOR Y BÚHO JUBILADO TOPE DE $30.000. NO ACUMULABLE CON OTRAS PROMOCIONES, NI CARTERA DE CLIENTES QUE ACREDITEN PLANES SOCIALES. NO APLICA A LAS OPERACIONES DE EXTRACCIÓN DE DINERO EN EFECTIVO REALIZADAS A TRAVÉS DE EXTRA, CASH. NO APLICA PARA LOS CONSUMOS EFECTUADOS A TRAVÉS DE LA PLATAFORMA MERCADO PAGO. NO APLICA A LOS PAGOS REALIZADOS POR LA PLATAFORMA DE PAGOS MÓVILES (POS MÓVIL, BOTÓN DE PAGO Y BILLETERA ELECTRÓNICA). REINTEGRO: DENTRO DE LOS 30 DÍAS DE REALIZADO EL PAGO SE ACREDITARÁ EN LA CAJA DE AHORRO DE BANCO HIPOTECARIO SA ASOCIADA A MODO. CONSULTE EL AHORRO APLICABLE Y VIGENTE EN CADA COMERCIO ANTES DE EFECTUAR LA COMPRA. CONSULTE EL AHORRO APLICABLE Y VIGENTE EN CADA COMERCIO ANTES DE EFECTUAR LA COMPRA. BANCO HIPOTECARIO S.A. RECONQUISTA 151 (1003) CABA. CUIT 30-50001107-2."
+      ]
+    },
+    {
+      "day_heading": "Viernes 2 y Sábado 3",
+      "bank": "EXCLUSIVAMENTE CON DINERO EN CUENTA",
+      "headline": "EXCLUSIVAMENTE CON DINERO EN CUENTA",
+      "percent": [
+        "10%"
+      ],
+      "installments": null,
+      "days": "Viernes 2 y Sábado 3",
+      "channel": "no indicado",
+      "tope": "SIN TOPE",
+      "minimum_purchase": null,
+      "validity": "Viernes 2 y Sábado 3",
+      "exclusion": "(“MERCADO PAGO”) EN LAS APPS DE MERCADO PAGO, EXCLUSIVO PAGANDO CON DIENRO EN CUENTA.",
+      "lines": [
+        "EXCLUSIVAMENTE CON DINERO EN CUENTA",
+        "SIN TOPE",
+        "BENEFICIO VÁLIDO ABONANDO CON MERCADO PAGO DE ARGENTINA VIERNES 2 Y SABADO 3 DE OCTUBRE DEL 2026 PARA COMPRAS REALIZADAS EN TIENDAS MAKRO DE ARGENTINA, A TRAVÉS DEL SERVICIO DE GESTIÓN DE PAGOS DE MERCADO PAGO OPERADO POR MERCADOPAGO.COM REPRESENTACIONES LTDA. (“MERCADO PAGO”) EN LAS APPS DE MERCADO PAGO, EXCLUSIVO PAGANDO CON DIENRO EN CUENTA.",
+        "EL BENEFICIO CONSISTE EN 10% DE DESCUENTO EN EL TOTAL DE LA COMPRA EXCLUYENDO Y NO ACUMULANDO CON OTRAS PROMOCIONES, BENEFICIOS Y/U OFERTAS VIGENTES. SE EXCLUYEN DE LA PROMOCIÓN PRODUCTOS DE LAS CATEGORÍAS ACHURAS Y EMBUTIDOS, AVES, CARNES, CERDOS, CARNE ENVASADA AL VACÍO, CARNE PRE-EMPAQUETADA, CARNE VACUNA FRESCA. SE EXCLUYEN DE LA PROMOCIÓN LAS OPERACIONES FACTURADAS EN LAS OFICINAS DE VENTAS DE LAS TIENDAS. MERCADO PAGO NO ES UNA INSTITUCIÓN FINANCIERA. LOS FONDOS EN CUENTAS DE PAGO NO SON INGRESOS GARANTIZADOS. MERCADOLIBRE S.R.L., CUIT:30-70308853-4, ARIAS 3751 PISO 7MO, 1430 CIUDAD AUTÓNOMA DE BUENOS AIRES, ARGENTINA."
+      ]
+    },
+    {
+      "day_heading": "Martes y Jueves",
+      "bank": "25% DE DESCUENTO CON TOPE DE REINTEGRO $20.000 Pagando con tarjeta Cencopay crédito.",
+      "headline": "25% DE DESCUENTO CON TOPE DE REINTEGRO $20.000 Pagando con tarjeta Cencopay crédito.",
+      "percent": [
+        "25%",
+        "25%"
+      ],
+      "installments": null,
+      "days": "Martes y Jueves",
+      "channel": "sucursal",
+      "tope": "TOPE DE REINTEGRO $20.000 Pagando con tarjeta Cencopay crédito; TOPE DE REINTEGRO MENSUAL: $20.000 (VEINTE MIL PESOS ARGENTINOS)",
+      "minimum_purchase": null,
+      "validity": "01/10/2026 A 31/10/2026",
+      "exclusion": "ESTA PROMOCION NO APLICA PARA CLIENTES EN MORA O INHABILITADOS.",
+      "lines": [
+        "25% DE DESCUENTO CON TOPE DE REINTEGRO $20.000 Pagando con tarjeta Cencopay crédito.",
+        "PROMOCIÓN VÁLIDA CON LA TARJETA DE CRÉDITO FÍSICA CENCOPAY TODOS LOS MARTES Y JUEVES DESDE 01/10/2026 A 31/10/2026 (1) PROMOCIÓN VÁLIDA EN LOS LOCALES HABILITADOS DE MAKRO, OBTENIENDO UN 25% DE DESCUENTO EN TODA LA COMPRA. TOPE DE REINTEGRO MENSUAL: $20.000 (VEINTE MIL PESOS ARGENTINOS). EL DESCUENTO SE HARÁ EFECTIVO EN EL PRIMER O SEGUNDO RESUMEN DE CUENTA QUE SE EMITA LUEGO DE REALIZADA LA COMPRA. ESTA PROMOCION NO APLICA PARA CLIENTES EN MORA O INHABILITADOS. SISTEMA FRANCÉS DE AMORTIZACIÓN MENSUAL EL COSTO FINANCIERO TOTAL SE EXPRESA COMO TASA NOMINAL ANUAL CORRESPONDIENTE AL FLUJO DE FONDOS CONSIDERADO. EL COSTO FINANCIERO TOTAL NOMINAL ANUAL NO INCLUYE LA COMISIÓN MENSUAL DE ADMINISTRACIÓN DE CUENTA NI COSTOS ASOCIADOS AL MANTENIMIENTO DE LA TARJETA. CONSULTE COMISIONES Y CARGOS VIGENTES ASOCIADOS A SU CUENTA AL 0810-9999-627 O EN CENCOPAY.AR/. CENCOSUD S.A. CUIT 30-59036076-3, SUIPACHA 1111, PISO 18, CABA (DOM. NO COMERCIAL). CONSULTE LOCALES ADHERIDOS EN CENCOPAY.AR/."
+      ]
+    },
+    {
+      "day_heading": "Miércoles",
+      "bank": "Pagando con tarjeta de credito Visa y Mastercard a trevés de MODO",
+      "headline": "Pagando con tarjeta de credito Visa y Mastercard a trevés de MODO",
+      "percent": [
+        "20%"
+      ],
+      "installments": null,
+      "days": "Miércoles",
+      "channel": "no indicado",
+      "tope": "TOPE DE REINTEGRO $15.000; Tope de reintegro semanal de $15.000",
+      "minimum_purchase": null,
+      "validity": "01/10/26 hasta el 31/10/26",
+      "exclusion": "Quedan excluidas aquellas tarjetas de crédito Credial, Business y Corporativas emitidas en Argentina por Banco Comafi .",
+      "lines": [
+        "Pagando con tarjeta de credito Visa y Mastercard a trevés de MODO",
+        "TOPE DE REINTEGRO $15.000.- POR CUENTA POR MES",
+        "Oferta exclusiva para la cartera de consumo. Promoción válida los miércoles desde el 01/10/26 hasta el 31/10/26 abonando con tarjetas de crédito Visa y Mastercard, Visa débito emitidas por Banco Comafi . 20% de ahorro abonando a través de MODO. Quedan excluidas aquellas tarjetas de crédito Credial, Business y Corporativas emitidas en Argentina por Banco Comafi . Tope de reintegro semanal de $15.000. Los descuentos se realizan sobre precio de lista, son automáticos y se acreditarán hasta los 30 días en la cuenta del banco utilizado en el pago. No acumulable con otras promociones ni entre sí. Sólo válido para aquellos clientes que se encuentren al día en sus productos y sean titulares de una caja de ahorro en pesos en Banco Comafi . Para compras realizadas por adicionales con tarjeta de débito y/o crédito de Banco Comafi , el reintegro siempre se acreditará en la caja de ahorro en pesos que el titular principal de la tarjeta de débito y/o crédito tenga en Banco Comafi . El beneficio no será aplicado en aquellas compras realizadas a través de MercadoPago. Consultar locales adheridos y medios de pago habilitados en www.tevabien.com . Banco Comafi no se responsabiliza por los cupones presentados por los establecimientos fuera de término, así como tampoco promociona ni garantiza los comercios, los productos y/o servicios o la calidad de los mismos. El beneficio no será aplicado para aquellas compras realizadas con Plan Gobierno. Banco Comafi S.A. con domicilio en Av. Roque Sáenz Peña 660, piso 3, CUIT 30-604731018."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "5% DE DESCUENTO PARA JUBILADOS",
+      "headline": "5% DE DESCUENTO PARA JUBILADOS",
+      "percent": [
+        "5%",
+        "5%"
+      ],
+      "installments": null,
+      "days": "Todo OCTUBRE",
+      "channel": "no indicado",
+      "tope": "SIN TOPE DE REINTEGRO",
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": "Todo OCTUBRE 5% DE DESCUENTO PARA JUBILADOS SIN TOPE DE REINTEGRO ACCEDÉ A UN 5% DE DESCUENTO EN CATEGORÍAS SELECCIONADAS (*).",
+      "lines": [
+        "5% DE DESCUENTO PARA JUBILADOS",
+        "SIN TOPE DE REINTEGRO",
+        "ACCEDÉ A UN 5% DE DESCUENTO EN CATEGORÍAS SELECCIONADAS (*). SÓLO TENÉS QUE INGRESAR EN https://clubmassimple.buenosaires.gob.ar/navigator/content/1705 Y TOCAR EN «PARTICIPAR». LUEGO EL EQUIPO DE CLUB +SIMPLE TE ENVIARÁ UN CORREO ELECTRÓNICO PARA AVISARTE QUE TU DESCUENTO ESTÁ ACTIVO.",
+        "(*) CATEGORÍAS SELECCIONADAS:",
+        "-ALIMENTOS: FIDEOS, DERIVADOS DE TOMATE (TRITURADO, EXTRACTO, PURÉ, PULPA Y SALSAS LISTAS).",
+        "-CARNES: CARNE FRESCA EN BANDEJA, CARNE ENVASADA AL VACÍO Y POLLOS EN GENERAL.",
+        "-CUIDADO PERSONAL: SHAMPOO, ACONDICIONADOR, TRATAMIENTO CAPILAR, CREMAS DE PEINAR, FIJADORES Y TINTURAS CAPILARES; CREMAS CORPORALES, FACIALES Y PARA MANOS; DESODORANTE PARA PIES Y TALCOS; CREMAS DE AFEITAR Y DERIVADOS; COLONIAS; PRODUCTOS DEPILATORIOS; DEMAQUILLANTES Y QUITAEMALTES; TALCOS, FÉCULAS Y OLEOS PARA BEBÉS.",
+        "-LIMPIEZA: JABÓN PARA LA ROPA EN PAN, LÍQUIDO Y EN POLVO."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "5% DE DESCUENTO PARA FAMILIA MILITAR",
+      "headline": "5% DE DESCUENTO PARA FAMILIA MILITAR",
+      "percent": [
+        "5%",
+        "5%"
+      ],
+      "installments": null,
+      "days": "Todo OCTUBRE",
+      "channel": "no indicado",
+      "tope": "SIN TOPE DE REINTEGRO",
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": "Todo OCTUBRE 5% DE DESCUENTO PARA FAMILIA MILITAR SIN TOPE DE REINTEGRO ACCEDÉ A UN 5% DE DESCUENTO EN CATEGORÍAS SELECCIONADAS (*).",
+      "lines": [
+        "5% DE DESCUENTO PARA FAMILIA MILITAR",
+        "SIN TOPE DE REINTEGRO",
+        "ACCEDÉ A UN 5% DE DESCUENTO EN CATEGORÍAS SELECCIONADAS (*).",
+        "SÓLO TENÉS QUE INGRESAR EN https://forms.office.com/pages/responsepage.aspx?id=TZNy8XRmN0qzFRf7C1wscBFv-rcqjTZImkY0BIbfO1tUMVNMM0xERUVQMVQ4V05JNjQzTkQwTlRXMi4u&route=shorturl Y COMPLETAR EL FOMULARIO CON TUS DATOS.",
+        "El proceso de alta alta puede demorar hasta 72hs hábiles y una vez generada el alta correcatmente se te enviara un correo de confirmación desde beneficiosespeciales@makro.com.ar",
+        "(*) CATEGORÍAS SELECCIONADAS:",
+        "-ALIMENTOS: FIDEOS, DERIVADOS DE TOMATE (TRITURADO, EXTRACTO, PURÉ, PULPA Y SALSAS LISTAS).",
+        "-CARNES: CARNE FRESCA EN BANDEJA, CARNE ENVASADA AL VACÍO Y POLLOS EN GENERAL.",
+        "-CUIDADO PERSONAL: SHAMPOO, ACONDICIONADOR, TRATAMIENTO CAPILAR, CREMAS DE PEINAR, FIJADORES Y TINTURAS CAPILARES; CREMAS CORPORALES, FACIALES Y PARA MANOS; DESODORANTE PARA PIES Y TALCOS; CREMAS DE AFEITAR Y DERIVADOS; COLONIAS; PRODUCTOS DEPILATORIOS; DEMAQUILLANTES Y QUITAEMALTES; TALCOS, FÉCULAS Y OLEOS PARA BEBÉS.",
+        "-LIMPIEZA: JABÓN PARA LA ROPA EN PAN, LÍQUIDO Y EN POLVO."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "PLAN Z 3 CUOTAS SIN INTERÉS Y 4 CUOTAS SIN INTERES APLICA PARA TODAS LAS TIENDAS.",
+      "headline": "PLAN Z 3 CUOTAS SIN INTERÉS Y 4 CUOTAS SIN INTERES APLICA PARA TODAS LAS TIENDAS.",
+      "percent": null,
+      "installments": [
+        "3 CUOTAS SIN INTERÉS",
+        "4 CUOTAS SIN INTERES",
+        "3 y 4 CUOTAS"
+      ],
+      "days": "Todo OCTUBRE",
+      "channel": "no indicado",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": "NO APLICA A VENTAS MEDIANTE TODO PAGO, MERCADO PAGO Y NPOS.",
+      "lines": [
+        "PLAN Z 3 CUOTAS SIN INTERÉS Y 4 CUOTAS SIN INTERES APLICA PARA TODAS LAS TIENDAS.",
+        "PLAN Z – 3 y 4 CUOTAS CERO INTERÉS: COSTO FINANCIERO TOTAL (CFT) 0,00% TASA EFECTIVA ANUAL (TEA) 0,00% TASA NOMINAL ANUAL (TNA) 0,00%. BENEFICIO VÁLIDO PARA TITULARES Y ADICIONALES DE TARJETA NARANJAX DE TODO EL PAÍS QUE COMPREN CON NARANJAX TARJETA DE CRÉDITO. QUEDAN EXCLUIDAS TARJETAS NARANJA VISA, NARANJA MASTERCARD Y NARANJA AMERICAN EXPRESS. VÁLIDO PARA TODOS LOS PRODUCTOS, TODOS LOS DÍAS DESDE 01/10/2026 AL 31/10/2026. NO APLICA A VENTAS MEDIANTE TODO PAGO, MERCADO PAGO Y NPOS. CONSULTAR COMERCIOS PARTICIPANTES EN NARANJAX.COM."
+      ]
+    },
+    {
+      "day_heading": "De Lunes a Viernes en OCTUBRE",
+      "bank": "Cuotas sin interés en TODA LA COMPRA. Pagando con tarjeta de crédito cencopay",
+      "headline": "Cuotas sin interés en TODA LA COMPRA. Pagando con tarjeta de crédito cencopay",
+      "percent": null,
+      "installments": null,
+      "days": "De Lunes a Viernes en OCTUBRE",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "De Lunes a Viernes",
+      "exclusion": "ESTA PROMOCIÓN NO APLICA PARA CLIENTES EN MORA O INHABILITADOS.",
+      "lines": [
+        "Cuotas sin interés en TODA LA COMPRA. Pagando con tarjeta de crédito cencopay",
+        "PROMOCIÓN VÁLIDA CON LA TARJETA DE CRÉDITO FÍSICA CENCOPAY TODOS LOS LUNES, MARTES, MIÉRCOLES, JUEVES Y VIERNES DESDE 01/10/2026 AL 31/10/2026 EN LOS LOCALES HABILITADOS DE MAKRO. ESTA PROMOCIÓN NO APLICA PARA CLIENTES EN MORA O INHABILITADOS. CONSULTE LOCALES ADHERIDOS EN CENCOPAY.AR."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "Pagando con tarjeta de credito Comafi.",
+      "headline": "Pagando con tarjeta de credito Comafi.",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interes",
+        "3 CUOTAS SIN INTERÉS"
+      ],
+      "days": "Todo OCTUBRE",
+      "channel": "no indicado",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": "3 cuotas sin interes en toda la compra OFERTA EXCLUSIVA PARA LA CARTERA DE CONSUMO.",
+      "lines": [
+        "Pagando con tarjeta de credito Comafi.",
+        "3 cuotas sin interes en toda la compra",
+        "OFERTA EXCLUSIVA PARA LA CARTERA DE CONSUMO. PROMOCIÓN VÁLIDA TODOS LOS DÍAS DESDE EL 01/10/2026 HASTA EL 31/10/2026 ABONANDO CON TARJETAS DE CRÉDITO PERTENECIENTES A SERVICIOS DE CUENTA GLOBAL, CLASSIC, PREMIUM Y ÚNICO EMITIDOS POR BANCO COMAFI. HASTA 3 CUOTAS SIN INTERÉS EN TODOS LOS MAKRO DEL PAÍS."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "PAGANDO CON TARJETA DE CRÉDITO FÍSICA CENCOPAY",
+      "headline": "PAGANDO CON TARJETA DE CRÉDITO FÍSICA CENCOPAY",
+      "percent": [
+        "50%"
+      ],
+      "installments": [
+        "3 cuotas sin interés",
+        "3 y 6 cuotas sin interés",
+        "3, 6 y 12 cuotas sin interés",
+        "3-6 cuotas sin interés",
+        "3,6,12,18 y 24 cuotas sin interés",
+        "3-6-9-12-18 cuotas sin interés"
+      ],
+      "days": "Todo OCTUBRE",
+      "channel": "sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": "ESTA PROMOCION NO APLICA PARA CLIENTES EN MORA O INHABILITADOS.",
+      "lines": [
+        "PAGANDO CON TARJETA DE CRÉDITO FÍSICA CENCOPAY",
+        "3 cuotas sin interés en vajilla (platos, bowls, tazas); carros de ferretería.",
+        "3 y 6 cuotas sin interés en sillas y muebles; herramientas eléctricas; artículos de cama; electro calefacción.",
+        "3, 6 y 12 cuotas sin interés en rodados, electro portátil, electro cocinas y hornos, aires acondicionados, refrigeradores y congeladoras, parrillas y fogoneros.",
+        "3-6 cuotas sin interés + 50% DESCUENTO en Electro CALEFACCIÓN seleccionada.",
+        "3,6,12,18 y 24 cuotas sin interés en Articulos seleccionados: CORTADORA 220 MORETTI; CORTADORA TRECENTO MORETTI; BATIDORA PLANETARIA MIX MORETTI; HORNO DELI 4N / DELI 4 MORETTI; MESA GASTRONOMICA MORETTI 1,20 MT; COCINA DE ACERO USMAN 600 PV; COCINA CARLIPLANCHA USMAN 4+1R.A; COCINA CARLIPLANCHA USMAN 4+1R.F; COCINA DOBLE USMAN 4 +1 P.V; HORNO PIZZERO USMAN 6 MOLDES; HORNO PIZZERO USMAN 12 MOLDES; EXHIBIDORA VERTICAL INELRO MT14; EXHIBIDORA VERTICAL INELRO MT17; FREEZER INVERTER INELRO GRI 280L; FREEZER INVERTER INELRO BLA280L; FREEZER EXHIBIDOR INELRO 280L; FOGON 80P ÑUKE",
+        "3-6-9-12-18 cuotas sin interés en TELEVISORES seleccionados.",
+        "PROMOCIÓN VÁLIDA CON LA TARJETA DE CRÉDITO FÍSICA CENCOPAY TODOS LOS DÍAS DESDE 01/10/2026 A 31/10/2026 EN LOS LOCALES HABILITADOS DE MAKRO, OBTENIENDO SOLO 3, 6 O 12 CUOTAS SIN INTERÉS EN PRODUCTOS SELECCIONADOS. ESTA PROMOCION NO APLICA PARA CLIENTES EN MORA O INHABILITADOS. CONSULTE LOCALES ADHERIDOS EN CENCOPAY.AR/."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "PAGANDO CON TARJETA FÍSICA DE CRÉDITO NACIÓN.",
+      "headline": "PAGANDO CON TARJETA FÍSICA DE CRÉDITO NACIÓN.",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 y 6 cuotas sin interés",
+        "3, 6 y 12 cuotas sin interés",
+        "12 CUOTAS SIN INTERES"
+      ],
+      "days": "Todo OCTUBRE",
+      "channel": "no indicado",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": null,
+      "lines": [
+        "PAGANDO CON TARJETA FÍSICA DE CRÉDITO NACIÓN.",
+        "3 cuotas sin interés en vajilla (platos, bowls, tazas); carros de ferretería.",
+        "3 y 6 cuotas sin interés en silla y muebles; herramientas eléctricas; artículos de cama; electro calefacción.",
+        "3, 6 y 12 cuotas sin interés en televisores, rodados, electro portátil, electro cocinas y hornos, aires acondicionados, refrigeradores y congeladoras, parrillas y fogoneros.",
+        "PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA PARA COMPRAS ABONADAS CON TARJETAS DE CRÉDITO VISA Y MASTERCARD DEL BNA EN COMERCIOS ADHERIDOS EN ARTICULOS SELECCIONADOS BIENES DURABLES EN 3/6/12 CUOTAS SIN INTERES. LA PARTICIPACIÓN DE COMERCIOS ADHERIDOS ESTÁ SUJETA A MODIFICACIONES, INDEPENDIENTE DE LA FECHA DE INICIO Y FIN DE LA PROMOCIÓN. CARTERA DE CONSUMO. EL BNA NO SE RESPONSABILIZA POR LA CALIDAD DE LOS PRODUCTOS ADQUIRIDOS. TASA NOMINAL ANUAL (TNA) FIJA 0,00%. TASA EFECTIVA ANUAL (TEA) FIJA 0,00%. COSTO FINANCIERO TOTAL EXPRESADO EN TEA 0,00%. BANCO DE LA NACIÓN ARGENTINA – BARTOLOMÉ MITRE 326, CABA – CUIT 30-50001091-2."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "Pagando con tarjeta física de crédito Galicia",
+      "headline": "Pagando con tarjeta física de crédito Galicia",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 y 6 cuotas sin interés",
+        "3, 6 y 12 cuotas sin interés",
+        "3 CUOTAS",
+        "3 cuotas sin interés",
+        "3 cuotas"
+      ],
+      "days": "Todo OCTUBRE",
+      "channel": "no indicado",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": "No aplica para Tarjetas de Crédito Visa Business, Visa Rural, ni tarjetas de débito emitidas por ANSES para AUH o Progresar, ni a pagos realizados mediante billeteras virtuales.",
+      "lines": [
+        "Pagando con tarjeta física de crédito Galicia",
+        "3 cuotas sin interés en vajilla (platos, bowls, tazas); carros de ferretería.",
+        "3 y 6 cuotas sin interés en silla y muebles; herramientas eléctricas; artículos de cama; electro calefacción.",
+        "3, 6 y 12 cuotas sin interés en televisores, rodados, electro portátil, electro cocinas y hornos, aires acondicionados, refrigeradores y congeladoras, parrillas y fogoneros.",
+        "3 CUOTAS CARTERA DE CONSUMO. Tasa Nominal Anual (TNA): 0,00%, Tasa Efectiva Anual (TEA): 0,00%, Costo Financiero Total Efectivo Anual (CFTEA): 0,00%, CFTEA + IVA: 0,00%. Promoción de hasta 3 cuotas sin interés, exclusiva para productos seleccionados no comestibles vendidos por Mayorista MAKRO, en compras realizadas en el país, válida todos los días del 01/09/2026 al 30/09/2026, para pagos con Tarjetas Visa, Mastercard y American Express, únicamente en comercios adheridos, no acumulable con otras promociones. Ejemplo: compra de $1.000 en 3 cuotas de $333,33. No aplica para Tarjetas de Crédito Visa Business, Visa Rural, ni tarjetas de débito emitidas por ANSES para AUH o Progresar, ni a pagos realizados mediante billeteras virtuales. Banco Galicia actúa únicamente como medio de pago para la adquisición del producto/servicio. 6 CUOTAS CARTERA DE CONSUMO. Tasa Nominal Anual (TNA): 0,00%, Tasa Efectiva Anual (TEA): 0,00%, Costo Financiero Total Efectivo Anual (CFTEA): 0,00%, CFTEA + IVA: 0,00%. Promoción de hasta 6 cuotas sin interés, exclusiva para productos seleccionados no comestibles vendidos por Mayorista MAKRO, en compras realizadas en el país, válida todos los días del 01/09/2026 al 30/09/2026, para pagos con Tarjetas Visa, Mastercard y American Express, únicamente en comercios adheridos, no acumulable con otras promociones. No aplica para Tarjetas de Crédito Visa Business, Visa Rural, ni tarjetas de débito emitidas por ANSES para-AUH o Progresar, ni a pagos realizados mediante billeteras virtuales. Banco Galicia actúa únicamente como medio de pago para la adquisición del producto/servicio. 12 CUOTAS CARTERA DE CONSUMO. Tasa Nominal Anual (TNA): 0,00%, Tasa Efectiva Anual (TEA): 0,00%, Costo Financiero Total Efectivo Anual (CFTEA): 0,00%, CFTEA + IVA: 0,00%. Promoción de hasta 12 cuotas sin interés, exclusiva para productos seleccionados no comestibles vendidos por Mayorista MAKRO, en compras realizadas en el país, válida todos los días del 01/10/2026 al 31/10/2026, para pagos con Tarjetas Visa, Mastercard y American Express, únicamente en comercios adheridos, no acumulable con otras promociones. No aplica para Tarjetas de Crédito Visa Business, Visa Rural, ni tarjetas de débito emitidas por ANSES para AUH o Progresar, ni a pagos realizados mediante billeteras virtuales. Banco Galicia actúa únicamente como medio de pago para la adquisición del producto/servicio."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "Pagando con tarjetas de crédito físicas Visa y Mastercard emitidas por Banco Comafi",
+      "headline": "Pagando con tarjetas de crédito físicas Visa y Mastercard emitidas por Banco Comafi",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 y 6 cuotas sin interés",
+        "3, 6 y 12 cuotas sin interés",
+        "3, 6 y 12 cuotas sin interés"
+      ],
+      "days": "Todo OCTUBRE",
+      "channel": "no indicado",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": "Oferta exclusiva para la cartera de consumo.",
+      "lines": [
+        "Pagando con tarjetas de crédito físicas Visa y Mastercard emitidas por Banco Comafi",
+        "3 cuotas sin interés en vajilla (platos, bowls, tazas); carros de ferretería.",
+        "3 y 6 cuotas sin interés en sillas y muebes; herramientas eléctricas; artículos de cama; electro calefacción.",
+        "3, 6 y 12 cuotas sin interés en televisores, rodados, electro portátil, electro cocinas y hornos, aires acondicionados, refrigeradores y congeladoras, parrillas y fogoneros.",
+        "Oferta exclusiva para la cartera de consumo. Promoción válida todos los días desde el 01/10/26 hasta el 31/10/26 abonando con tarjetas de crédito Visa y Mastercard emitidas por Banco Comafi. 3, 6 y 12 cuotas sin interés en productos seleccionados non food. Quedan excluidas aquellas tarjetas de crédito Credial, Business y Corporativas emitidas en Argentina por Banco Comafi. No acumulable con otras promociones ni entre sí. Sólo válido para aquellos clientes que se encuentren al día en sus productos. El beneficio no será aplicado en aquellas compras realizadas a través de MercadoPago. Consultar locales adheridos y medios de pago habilitados en www.tevabien.com. Banco Comafi no se responsabiliza por los cupones presentados por los establecimientos fuera de término, así como tampoco promociona ni garantiza los comercios, los productos y/o servicios o la calidad de los mismos. El beneficio no será aplicado para aquellas compras realizadas con Plan Gobierno. Banco Comafi S.A. con domicilio en Av. Roque Sáenz Peña 660, piso 1, CUIT 30-60473101-8.*CFT: 0,0% Costo Financiero Total Efectivo Anual. TNA: 0,0% Tasa Nominal Anual. TEA: 0,0% Tasa Efectiva Anual."
+      ]
+    },
+    {
+      "day_heading": "Todo OCTUBRE",
+      "bank": "Pagando con tarjetas de crédito física Visa y Mastercard emitidas por Banco Macro",
+      "headline": "Pagando con tarjetas de crédito física Visa y Mastercard emitidas por Banco Macro",
+      "percent": null,
+      "installments": [
+        "3 cuotas sin interés",
+        "3 y 6 cuotas sin interés",
+        "3, 6 y 12 cuotas sin interés",
+        "3, 6 y 12 cuotas sin interés"
+      ],
+      "days": "Todo OCTUBRE",
+      "channel": "no indicado",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Todo OCTUBRE",
+      "exclusion": "Oferta exclusiva para la cartera de consumo.",
+      "lines": [
+        "Pagando con tarjetas de crédito física Visa y Mastercard emitidas por Banco Macro",
+        "3 cuotas sin interés en vajilla (platos, bowls, tazas); carros de ferretería.",
+        "3 y 6 cuotas sin interés en sillas y muebles; herramientas eléctricas; artículos de cama; electro calefacción.",
+        "3, 6 y 12 cuotas sin interés en televisores, rodados, electro portátil, electro cocinas y hornos, aires acondicionados, refrigeradores y congeladoras, parrillas y fogoneros.",
+        "Oferta exclusiva para la cartera de consumo. Promoción válida todos los días desde el 01/10/26 hasta el 31/10/26 abonando con tarjetas de crédito Visa y Mastercard emitidas por Banco Macro. 3, 6 y 12 cuotas sin interés en productos seleccionados non food. Quedan excluidas aquellas tarjetas de crédito Credial, Business y Corporativas emitidas en Argentina por Banco Macro. No acumulable con otras promociones ni entre sí. Sólo válido para aquellos clientes que se encuentren al día en sus productos. El beneficio no será aplicado en aquellas compras realizadas a través de MercadoPago. Consultar locales adheridos y medios de pago habilitados en www.tevabien.com. Banco Macro no se responsabiliza por los cupones presentados por los establecimientos fuera de término, así como tampoco promociona ni garantiza los comercios, los productos y/o servicios o la calidad de los mismos. El beneficio no será aplicado para aquellas compras realizadas con Plan Gobierno. Banco Macro S.A. con domicilio en Av. Roque Sáenz Peña 660, piso 1, CUIT 30-60473101-8.*CFT: 0,0% Costo Financiero Total Efectivo Anual. TNA: 0,0% Tasa Nominal Anual. TEA: 0,0% Tasa Efectiva Anual."
+      ]
+    },
+    {
+      "day_heading": "Sábado 3",
+      "bank": "30% por banco por mes.",
+      "headline": "30% por banco por mes.",
+      "percent": [
+        "30%"
+      ],
+      "installments": null,
+      "days": "Sábado 3",
+      "channel": "sucursal",
+      "tope": "Tope de reintegro $30.000; Tope de reintegro $30.000 por banco por mes",
+      "minimum_purchase": "Comprá mínima $100.000 * Este beneficio es acu",
+      "validity": null,
+      "exclusion": "No válido en autopagos, ni pagos online.",
+      "lines": [
+        "30% por banco por mes.",
+        "Tope de reintegro $30.000. Comprá mínima $100.000",
+        "* Este beneficio es acumulable con otras promociones vigentes que apliquen pagando con MODO.",
+        "Tope de reintegro $30.000 por banco por mes. Aplica únicamente a aquellos usuarios que sean titulares de una cuenta bancaria en la entidad emisora de la tarjeta con la que realiza el pago. No olvides asociarla si usas la app MODO. Promoción válida para Argentina el día Sábado 3 de octubre del 2026. Aplica para bancos y comercios adheridos. Entidades Adheridas: Banco Santander ( Solo con VISA), Banco Nación, Banco Galicia, Banco BBVA, Banco Macro, Banco Santa Fe, Banco Entre Rios, Banco San Juan, Banco Santa Cruz, Banco ICBC, Billetera YOY, Banco Supervielle, Banco Credicoop, Banco Ciudad, Billetera BUEPP, Banco Bancor, Banco Comafi, Banco Columbia. PARA MÁS INFORMACIÓN Y CONDICIONES O LIMITACIONES APLICABLES, CONSULTE EN www.modo.com.ar/promos . No válido en autopagos, ni pagos online. Play Digital S.A. (MODO), CUIT 30-71682943-6, Av. del Libertador 7208 3°, CABA."
+      ]
+    },
+    {
+      "day_heading": "Viernes 2 , Sábado 3 y Domingo 4",
+      "bank": "15% DE DESCUENTO SIN TOPE Pagando con tarjeta Cencopay crédito.",
+      "headline": "15% DE DESCUENTO SIN TOPE Pagando con tarjeta Cencopay crédito.",
+      "percent": [
+        "15%",
+        "15%"
+      ],
+      "installments": null,
+      "days": "Viernes 2 , Sábado 3 y Domingo 4",
+      "channel": "no indicado",
+      "tope": "SIN TOPE",
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "SE EXCLUYEN DE LA PROMOCIÓN LAS OPERACIONES FACTURADAS EN LAS OFICINAS DE VENTAS DE LAS TIENDAS.",
+      "lines": [
+        "15% DE DESCUENTO SIN TOPE Pagando con tarjeta Cencopay crédito.",
+        "BENEFICIO VÁLIDO ABONANDO CON TARJETA FÍSICA DE CREDITO CENCOPAY DEL 2 AL 4 DE OCTUBRE DEL 2026 PARA COMPRAS REALIZADAS EN TIENDAS MAKRO DE ARGENTINA.",
+        "EL BENEFICIO CONSISTE EN 15% DE DESCUENTO EN EL TOTAL DE LA COMPRA EXCLUYENDO Y NO ACUMULANDO CON OTRAS PROMOCIONES, BENEFICIOS Y/U OFERTAS VIGENTES. SE EXCLUYEN DE LA PROMOCIÓN PRODUCTOS DE LAS CATEGORÍAS ACHURAS Y EMBUTIDOS, AVES, CARNES, CERDOS, CARNE ENVASADA AL VACÍO, CARNE PRE-EMPAQUETADA, CARNE VACUNA FRESCA. SE EXCLUYEN DE LA PROMOCIÓN LAS OPERACIONES FACTURADAS EN LAS OFICINAS DE VENTAS DE LAS TIENDAS."
+      ]
+    }
+  ]
+}

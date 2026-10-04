@@ -1,0 +1,1687 @@
+{
+  "chain": "Cordiez",
+  "source_url": "https://www.cordiez.com.ar/institucionales/medios-de-pago",
+  "fetched_at": "2026-10-03T22:28:00-03:00",
+  "method": "HTTPS GET; cards from VTEX __RUNTIME__ content.days (por día) and content.items of the Bancos block. props.days is the older theme copy and was not used as the card list.",
+  "page_legal_store_only": "* Las siguientes marcas, solo operan en tienda Física: CrediCash, CMR, Premium Edenred, Blancard, Carta Personal, Única, CentroCard, Pase Libre, Única Las Varillas, Platino, Verde, Primera Ciudad.",
+  "note_props_only_card": "En el props del theme (no en el content que renderiza la página) el miércoles incluye además 'Beneficio Miércoles' 30% reintegro exclusivo QR Modo Visa/Master, vigencia hasta 31/07/2026, tope $12.000. No está en el CMS content ni en el HTML servido del día por defecto.",
+  "count_por_dia": 63,
+  "count_tab_bancos": 4,
+  "count": 67,
+  "promos": [
+    {
+      "section": "por_dia",
+      "day": "Lunes",
+      "bank": "Banco Ciudad",
+      "percent_or_installments": [
+        "20% — Reintegro Exclusivo QR Modo (Visa y Master) 1 Pago"
+      ],
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Lunes"
+      ],
+      "channel": "online y sucursal",
+      "tope": "Tope $20.000 Mensual Aplican restricciones",
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026 - Tope $20.000 Mensual",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "20%",
+          "label": "Reintegro Exclusivo QR Modo (Visa y Master) 1 Pago"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Lunes",
+      "bank": "Naranja",
+      "percent_or_installments": [
+        "25% — Suscriptos Plan Turbo",
+        "30% — Suscriptos Plan Épico"
+      ],
+      "installments": null,
+      "days": [
+        "Lunes"
+      ],
+      "channel": "online y sucursal",
+      "tope": "tope semanal por cliente",
+      "minimum_purchase": null,
+      "validity": "Hasta 30/09/2026",
+      "exclusion": "Plan Z Hasta 30/09/2026 Planes Turbo y Épico tiene valides todos los martes de Septiembre, con tope semanal por cliente.",
+      "highlights": [
+        {
+          "value": "25%",
+          "label": "Suscriptos Plan Turbo"
+        },
+        {
+          "value": "30%",
+          "label": "Suscriptos Plan Épico"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Lunes",
+      "bank": "Tarjeta Sol - 3 Cuotas",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Lunes"
+      ],
+      "channel": "online y sucursal",
+      "tope": "tope de $10.000 solamente los días jueves",
+      "minimum_purchase": null,
+      "validity": "Vigencia 31/10/2026",
+      "exclusion": "10% de reintegro con tope de $10.000 solamente los días jueves.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Lunes",
+      "bank": "Cordobesa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés",
+        "4 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Lunes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 30/04/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "4",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Lunes",
+      "bank": "Visa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Lunes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Lunes",
+      "bank": "Mastercard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Lunes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "Naranja",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "Plan Z",
+          "label": "Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "Tarjeta Sol - 3 Cuotas",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Vigencia 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "Cordobesa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés",
+        "4 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 30/04/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "4",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "Visa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "Mastercard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "CentroCard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "Platino",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "Verde",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Martes",
+      "bank": "Primera Ciudad",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Martes"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Cabal (Banco Credicoop)",
+      "percent_or_installments": [
+        "20% — Reintegro 10% (Tope $3000) - Adicional 10% con MODO (Tope $3000)"
+      ],
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "online y sucursal",
+      "tope": "Tope $3000) - Adicional 10% con MODO (Tope $3000)",
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "20%",
+          "label": "Reintegro 10% (Tope $3000) - Adicional 10% con MODO (Tope $3000)"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Naranja",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "Plan Z",
+          "label": "Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Tarjeta Sol - 3 Cuotas",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Vigencia 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Cordobesa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés",
+        "4 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 30/04/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "4",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Visa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Mastercard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "CentroCard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Platino",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Verde",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Miercoles",
+      "bank": "Primera Ciudad",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Miercoles"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Naranja",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "Plan Z",
+          "label": "Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Tarjeta Sol - 3 Cuotas",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Vigencia 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Tarjeta Sol",
+      "percent_or_installments": [
+        "10% — Reintegro - Tarjeta Sol 3 Pagos"
+      ],
+      "installments": null,
+      "days": [
+        "Jueves"
+      ],
+      "channel": "online y sucursal",
+      "tope": "Tope $10.000 Aplican restricciones",
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026 Tope $10.000",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "10%",
+          "label": "Reintegro - Tarjeta Sol 3 Pagos"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Cordobesa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés",
+        "4 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 30/04/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "4",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Visa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Mastercard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "CentroCard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Platino",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Verde",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Jueves",
+      "bank": "Primera Ciudad",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Jueves"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "Naranja",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "Plan Z",
+          "label": "Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "Tarjeta Sol - 3 Cuotas",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Vigencia 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "Cordobesa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés",
+        "4 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 30/04/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "4",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "Visa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "Mastercard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "CentroCard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "Platino",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "Verde",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Viernes",
+      "bank": "Primera Ciudad",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Viernes"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Banco Comafi",
+      "percent_or_installments": [
+        "25% — Dto QR con Visa y Master Crédito y Debito 1 Pago - Tope $6.000"
+      ],
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "online y sucursal",
+      "tope": "Tope Reintegro $6.000 - Hasta 31/07/2026 Aplican restricciones; Tope $6.000",
+      "minimum_purchase": null,
+      "validity": "Tope Reintegro $6.000 - Hasta 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "25%",
+          "label": "Dto QR con Visa y Master Crédito y Debito 1 Pago - Tope $6.000"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Naranja",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "Plan Z",
+          "label": "Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Tarjeta Sol - 3 Cuotas",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Vigencia 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Cordobesa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés",
+        "4 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 30/04/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "4",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Visa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Mastercard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "CentroCard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Platino",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Verde",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Sabado",
+      "bank": "Primera Ciudad",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Sabado"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "Naranja",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "Plan Z",
+          "label": "Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "Tarjeta Sol - 3 Cuotas",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Vigencia 31/07/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "Cordobesa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés",
+        "4 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": "Hasta 30/04/2026",
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        },
+        {
+          "value": "4",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "Visa",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "Mastercard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "online y sucursal",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "CentroCard",
+      "percent_or_installments": null,
+      "installments": [
+        "1 Cuota Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "1",
+          "label": "Cuota Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "Platino",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "Verde",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "por_dia",
+      "day": "Domingo",
+      "bank": "Primera Ciudad",
+      "percent_or_installments": null,
+      "installments": [
+        "3 Cuotas Sin Interés"
+      ],
+      "days": [
+        "Domingo"
+      ],
+      "channel": "solo sucursal (legal de la página)",
+      "tope": null,
+      "minimum_purchase": null,
+      "validity": null,
+      "exclusion": "Aplican restricciones.",
+      "highlights": [
+        {
+          "value": "3",
+          "label": "Cuotas Sin Interés"
+        }
+      ],
+      "terms_url": "/institucionales/terminos-y-condiciones"
+    },
+    {
+      "section": "tab_bancos",
+      "bank": "Banco Ciudad - Online y Sucursales",
+      "title": "Lunes - 20% de ahorro Banco Ciudad",
+      "percent_or_installments": [
+        "20%"
+      ],
+      "installments": null,
+      "days": [
+        "Lunes"
+      ],
+      "channel": "online y sucursal",
+      "tope": "Tope: $10.000 Mensual",
+      "minimum_purchase": null,
+      "validity": "Hasta 31/12/2026",
+      "exclusion": "Con Visa y Mastercard crédito - Exclusivo QR MODO - Hasta 31/12/2026",
+      "description": "Con Visa y Mastercard crédito - Exclusivo QR MODO - Hasta 31/12/2026"
+    },
+    {
+      "section": "tab_bancos",
+      "bank": "Banco Credicoop - Online y Sucursales",
+      "title": "Miércoles - 20% de descuento Cabal - 1er Compra",
+      "percent_or_installments": [
+        "20%",
+        "10%",
+        "10%"
+      ],
+      "installments": null,
+      "days": [
+        "Miércoles",
+        "miércoles"
+      ],
+      "channel": "online y sucursal",
+      "tope": "tope $3000); Tope $3000) Hasta 31/12/2026 Tope: $3000",
+      "minimum_purchase": null,
+      "validity": "Hasta 31/12/2026",
+      "exclusion": "El texto de la card no trae una línea de rubros excluidos.",
+      "description": "10% reintegro pagando con QR de MODO con Tarjeta de crédito y débito, primera compra, los miércoles. (tope $3000). Adicional 10% con MODO (Tope $3000) Hasta 31/12/2026"
+    },
+    {
+      "section": "tab_bancos",
+      "bank": "Banco Comafi - Online y Sucursales",
+      "title": "Sábados - 25% Descuento Banco Comafi",
+      "percent_or_installments": [
+        "25%"
+      ],
+      "installments": null,
+      "days": [
+        "Sábados"
+      ],
+      "channel": "online y sucursal",
+      "tope": "Tope $6.000 - Hasta 31/10/2026 Tope: $6.000",
+      "minimum_purchase": null,
+      "validity": "Hasta 31/10/2026",
+      "exclusion": "El texto de la card no trae una línea de rubros excluidos.",
+      "description": "QR Modo con Tarjetas Visa y Mastercard Crédito en 1 Pago Visa Debito. Tope $6.000 - Hasta 31/10/2026"
+    },
+    {
+      "section": "tab_bancos",
+      "bank": "Banco Santiago del Estero - Tarjeta Sol - Online y Sucursales",
+      "title": "Todos los días - 3 cuotas sin interés / Jueves - 10% Reintegro Tarjeta Sol",
+      "percent_or_installments": [
+        "3 cuotas",
+        "10%",
+        "3 Cuotas",
+        "10%"
+      ],
+      "installments": null,
+      "days": [
+        "Todos los días",
+        "Jueves",
+        "jueves"
+      ],
+      "channel": "online y sucursal",
+      "tope": "Tope: $10.000",
+      "minimum_purchase": null,
+      "validity": "Hasta 31/10/2026",
+      "exclusion": "El texto de la card no trae una línea de rubros excluidos.",
+      "description": "3 Cuotas sin interés y 10% de reintegro los jueves- Hasta 31/10/2026"
+    }
+  ]
+}

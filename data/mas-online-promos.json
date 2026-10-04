@@ -1,0 +1,1930 @@
+{
+  "source_url": "https://www.masonline.com.ar/api/dataentities/BP/search?_fields=express_ecommerce_all%2Cid%2Ctitle%2Csub_title%2Cdiscount_percentage%2Cdiscounts_amount_installments%2Cdiscounts_text_installments%2Cdiscount_text_info%2Cimg%2Cimg_card%2Corder%2Cactive_from%2Cactive_to%2Cactive%2CvalidText%2Chyper%2Cmarket%2Cecommerce%2Cexpress%2Cmaxi%2Clegal%2Cvalid%2Cmonday%2Ctuesday%2Cwednesday%2Cthursday%2Cfriday%2Csaturday%2Csunday%2CidBank%2CidCard%2CisMasClub&_where=active%3Dtrue+AND+%28%28active_from+%3C+2026-10-03T22%3A16%3A16%29+AND+%28active_to+%3E+2026-10-03T22%3A16%3A16%29%29&_sort=order+ASC",
+  "method": "GET",
+  "account": "masonlineprod",
+  "entity": "BP",
+  "schema": "mdv1",
+  "fetched_at": "2026-10-03T22:16:16-03:00",
+  "filter": "active=true AND ((active_from < 2026-10-03T22:16:16) AND (active_to > 2026-10-03T22:16:16))",
+  "note": "Same rows the storefront loads via GraphQL documents(acronym: BP) in valtech.gdn-banks-promotions@0.1.7-beta3. Public REST search is a GET and returns typed fields. Day tabs filter client-side on monday..sunday. Card logos use hyper/market/ecommerce/express/maxi/express_ecommerce_all. ecommerce (Más Online logo) is false on every current row; sucursal vs Más Online wording, when present, is inside title/subtitle/legal, not a flag. Banks come from entity FB; cards from FC (none of these promos set idCard).",
+  "related_gets": {
+    "banks": "https://www.masonline.com.ar/api/dataentities/FB/search?_fields=id,image,name,showInPdp&_sort=name%20ASC",
+    "cards": "https://www.masonline.com.ar/api/dataentities/FC/search?_fields=id,image,name,showInPdp&_sort=name%20ASC"
+  },
+  "count": 36,
+  "promos": [
+    {
+      "id": "146b6061-e761-4a77-aef4-2efc3edc13c4",
+      "order": 0,
+      "days_label": "Todos los Miércoles y Jueves - MasGo",
+      "days": [
+        "miércoles",
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": true,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Exclusivo MasGo ¡SIN TOPE!",
+      "subtitle": "Promoción exclusiva para socios de masclub. No acumulable con otras promociones.  Consulte detalles y legales en Masclub.com.ar (MC)*",
+      "tope_lines": [
+        "Exclusivo MasGo ¡SIN TOPE!"
+      ],
+      "bank": {
+        "id": "8fab960f-8b29-11ef-b37f-98380ffd16cd",
+        "name": "MasClub",
+        "image": "MasClub Logo Pequeno Id1.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": true,
+      "active_from": "2026-08-01T00:00:00+00:00",
+      "active_to": "2026-12-31T00:00:00+00:00",
+      "legal": "Promoción exclusiva para todos los socios de MâsClub. Válida del 01/04/2026 al 31/12/2026 únicamente para compras realizadas los días Miércoles y Jueves. No acumulable con otras promociones. Sin tope de descuento. Exclusivo para consumidores finales. EXCLUIDOS-NO INCLUYE: CARNICERIA, GRANJA, Elaborados, Embutidos, Quesos: (Quesos Blandos, Quesos Duros, Quesos Feteados, Quesos Rallados, Quesos Semiduros), Frutas Y Verduras, Huevos. Aceites Comestibles, Harinas, Leches Fluidas, Leches frescas, Azúcares. Bebidas Blancas, Vinos, Fernet, Cervezas Y Gaseosas De “Cerveceria Y Malteria Quilmes” (Stella Artois, Budweiser, Corona, Quilmes, Brahma, Michelob, Patagonia, Eazy, Goose Island, Andes, Temple, Pepsi, Seven Up, Paso De Los Toros, Gatorade, Glaciar, Eco De Los Andes, H20, Aguas Nestlé, Awafrut, Mirinda, Red Bull, Rockstar), Línea Coca Cola (Original, Light, Zero Sin Azucar, Sabor Liviano), Fanta, Sprite (Original, Sin Azúcar), Schweppes, Powerade, Cepita, Ades, Aquarius, Benedictino, Bonaqua, Smart Water, Monster, Crush. Electrodomésticos Y Electrónicos, Rodados, Informática, Celulares Y Climatización, Línea Blanca, Medicamentos. NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES Y/O PRODUCTOS EN LIQUIDACIÓN. SOLO PARA CONSUMO FAMILIAR..",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/146b6061-e761-4a77-aef4-2efc3edc13c4/img_card/attachments/masclubmasgo2.png"
+      }
+    },
+    {
+      "id": "248970a3-8b2a-11ef-b37f-e25d0cbe8412",
+      "order": 0,
+      "days_label": "Todos los Miércoles y Jueves",
+      "days": [
+        "miércoles",
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": true,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 15,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Presencial y online ¡SIN TOPE!",
+      "subtitle": "Promoción exclusiva para socios de masclub. No acumulable con otras promociones. Consulta detalles y legales en Masclub.com.ar (MC)*",
+      "tope_lines": [
+        "Presencial y online ¡SIN TOPE!"
+      ],
+      "bank": {
+        "id": "8fab960f-8b29-11ef-b37f-98380ffd16cd",
+        "name": "MasClub",
+        "image": "MasClub Logo Pequeno Id1.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": true,
+      "active_from": "2025-12-25T00:00:00+00:00",
+      "active_to": "2026-12-31T00:00:00+00:00",
+      "legal": "Promoción exclusiva para todos los socios de MâsClub. Válida del 01/04/2026 al 31/12/2026 únicamente para compras realizadas los días Miércoles y Jueves. No acumulable con otras promociones. Sin tope de descuento. Exclusivo para consumidores finales. EXCLUIDOS-NO INCLUYE: CARNICERIA, GRANJA, Elaborados, Embutidos, Quesos: (Quesos Blandos, Quesos Duros, Quesos Feteados, Quesos Rallados, Quesos Semiduros), Frutas Y Verduras, Huevos. Aceites Comestibles, Harinas, Leches Fluidas, Leches frescas, Azúcares. Bebidas Blancas, Vinos, Fernet, Cervezas Y Gaseosas De “Cerveceria Y Malteria Quilmes” (Stella Artois, Budweiser, Corona, Quilmes, Brahma, Michelob, Patagonia, Eazy, Goose Island, Andes, Temple, Pepsi, Seven Up, Paso De Los Toros, Gatorade, Glaciar, Eco De Los Andes, H20, Aguas Nestlé, Awafrut, Mirinda, Red Bull, Rockstar), Línea Coca Cola (Original, Light, Zero Sin Azucar, Sabor Liviano), Fanta, Sprite (Original, Sin Azúcar), Schweppes, Powerade, Cepita, Ades, Aquarius, Benedictino, Bonaqua, Smart Water, Monster, Crush. Electrodomésticos Y Electrónicos, Rodados, Informática, Celulares Y Climatización, Línea Blanca, Medicamentos. NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES Y/O PRODUCTOS EN LIQUIDACIÓN. SOLO PARA CONSUMO FAMILIAR..",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/248970a3-8b2a-11ef-b37f-e25d0cbe8412/img_card/attachments/MasClub_grande.png"
+      }
+    },
+    {
+      "id": "f5296ce0-dffe-11ef-b37f-87fa2b74005f",
+      "order": 0,
+      "days_label": "Todos los Martes",
+      "days": [
+        "martes"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 15,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "SIN TOPE DE REINTEGRO",
+      "subtitle": "Pagando con QR. No acumulable con otras promociones.  Aplican exclusiones. (MP)*",
+      "tope_lines": [
+        "SIN TOPE DE REINTEGRO"
+      ],
+      "bank": {
+        "id": "8ccbdf0d-905d-11ee-8452-0eb8fa5466a5",
+        "name": "Mercado Pago",
+        "image": "Mercado-Pago-Logo 2.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2025-12-02T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PARA PAGOS REALIZADOS LOS DIAS VIERNES, SABADOS Y DOMINGOS DE OCTUBRE 2026 A TRAVÉS DEL SERVICIO DE PROCESAMIENTO DE PAGOS DE MERCADO PAGO OPERADO POR MERCADOLIBRE S.R.L. (“MERCADO PAGO.”) MEDIANTE EL ESCANEO DEL CÓDIGO QR CON LA APP DE MERCADO PAGO (LA “APP”) EL BENEFICIO CONSISTE EN UN 15% DE DESCUENTO SIN TOPE, COMPRANDO EN TODAS LAS SUCURSALES DE HIPERCHANGOMAS, CHANGOMAS Y MASGO, DE FORMA PRESENCIAL Y A TRAVÉS DE MASONLINE ÚNICAMENTE ELIGIENDO LA OPCIÓN PAGO ONLINE, APLICA PARA TIENDAS. EL BENEFICIO ESTARÁ A CARGO DE DORINKA S.R.L. Y SE REALIZARÁ SOBRE EL PRECIO DE CONTADO. MERCADO PAGO NO ES UNA ENTIDAD FINANCIERA. LOS FONDOS EN CUENTAS DE PAGO NO SON DEPÓSITOS GARANTIZADOS. MERCADOLIBRE S.R.L. CUIT 30-70308853-4, CASEROS 3039, PISO 2º, CABA”. EXCLUIDOS- CARNICERIA, GRANJA, ELABORADOS, EMBUTIDOS, QUESOS: (QUESOS BLANDOS, QUESOS DUROS, QUESOS FETEADOS, QUESOS RALLADOS, QUESOS SEMIDUROS), FRUTAS Y VERDURAS, HUEVOS. ACEITES COMESTIBLES, HARINAS, LECHES FLUIDAS, AZÚCARES. BEBIDAS BLANCAS, VINOS, FERNET, CERVEZAS Y GASEOSAS DE “CERVECERIA Y MALTERIA QUILMES” (STELLA ARTOIS, BUDWEISER, CORONA, QUILMES, BRAHMA, MICHELOB, PATAGONIA, EAZY, GOOSE ISLAND, ANDES, TEMPLE, PEPSI, SEVEN UP, PASO DE LOS TOROS, GATORADE, GLACIAR, ECO DE LOS ANDES, H20, AGUAS NESTLÉ, AWAFRUT, MIRINDA, RED BULL, ROCKSTAR), LÍNEA COCA COLA (ORIGINAL, LIGHT, ZERO SIN AZUCAR, SABOR LIVIANO), FANTA, SPRITE (ORIGINAL, SIN AZÚCAR), SCHWEPPES, POWERADE, CEPITA, ADES, AQUARIUS, BENEDICTINO, BONAQUA, SMART WATER, MONSTER, CRUSH, FIGURITAS Y ÁLBUM MUNDIAL 2026. ELECTRODOMÉSTICOS Y ELECTRÓNICOS, RODADOS, INFORMÁTICA, CELULARES Y CLIMATIZACIÓN, LÍNEA BLANCA, MEDICAMENTOS DE FARMACIA, SERVICIOS DE AUTOCENTER, BATERÍAS Y NEUMÁTICOS. NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES Y/O PRODUCTOS EN LIQUIDACIÓN. SOLO PARA CONSUMO FAMILIAR.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/f5296ce0-dffe-11ef-b37f-87fa2b74005f/img_card/attachments/logo%20mercado%20pago%20valido.png"
+      }
+    },
+    {
+      "id": "f72bdebb-262f-11f0-b37f-a7f7ce43e163",
+      "order": 0,
+      "days_label": "Viernes, Sábados y Domingos",
+      "days": [
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": 15,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "SIN TOPE DE REINTEGRO",
+      "subtitle": "Pagando con QR de todas las billeteras virtuales. No acumulable con otras promociones. Aplican exclusiones. (BV)",
+      "tope_lines": [
+        "SIN TOPE DE REINTEGRO"
+      ],
+      "bank": {
+        "id": "15ff1c4e-2630-11f0-b37f-93b1d8eaa315",
+        "name": "Billeteras Virtuales",
+        "image": "04_BilleterasVirtuales_chico 7.webp"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2025-12-06T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PARA PAGOS REALIZADOS LOS DIAS\nVIERNES, SABADOS Y DOMINGOS DE OCTUBRE 2026 A TRAVÉS DEL SERVICIO DE\nPROCESAMIENTO DE PAGOS DE MERCADO PAGO OPERADO POR MERCADOLIBRE S.R.L.\n(“MERCADO PAGO.”) MEDIANTE EL ESCANEO DEL CÓDIGO QR CON LA APP DE MERCADO PAGO\n(LA “APP”) EL BENEFICIO CONSISTE EN UN 15% DE DESCUENTO SIN TOPE, COMPRANDO EN\nTODAS LAS SUCURSALES DE HIPERCHANGOMAS, CHANGOMAS Y MASGO, DE FORMA PRESENCIAL\nY A TRAVÉS DE MASONLINE ÚNICAMENTE ELIGIENDO LA OPCIÓN PAGO ONLINE, APLICA PARA\nTIENDAS. EL BENEFICIO ESTARÁ A CARGO DE DORINKA S.R.L. Y SE REALIZARÁ SOBRE EL\nPRECIO DE CONTADO. MERCADO PAGO NO ES UNA ENTIDAD FINANCIERA. LOS FONDOS EN\nCUENTAS DE PAGO NO SON DEPÓSITOS GARANTIZADOS. MERCADOLIBRE S.R.L. CUIT\n30-70308853-4, CASEROS 3039, PISO 2º, CABA”. EXCLUIDOS- CARNICERIA, GRANJA,\nELABORADOS, EMBUTIDOS, QUESOS: (QUESOS BLANDOS, QUESOS DUROS, QUESOS FETEADOS,\nQUESOS RALLADOS, QUESOS SEMIDUROS), FRUTAS Y VERDURAS, HUEVOS. ACEITES\nCOMESTIBLES, HARINAS, LECHES FLUIDAS, AZÚCARES. BEBIDAS BLANCAS, VINOS, FERNET,\nCERVEZAS Y GASEOSAS DE “CERVECERIA Y MALTERIA QUILMES” (STELLA ARTOIS,\nBUDWEISER, CORONA, QUILMES, BRAHMA, MICHELOB, PATAGONIA, EAZY, GOOSE ISLAND,\nANDES, TEMPLE, PEPSI, SEVEN UP, PASO DE LOS TOROS, GATORADE, GLACIAR, ECO DE\nLOS ANDES, H20, AGUAS NESTLÉ, AWAFRUT, MIRINDA, RED BULL, ROCKSTAR), LÍNEA COCA\nCOLA (ORIGINAL, LIGHT, ZERO SIN AZUCAR, SABOR LIVIANO), FANTA, SPRITE\n(ORIGINAL, SIN AZÚCAR), SCHWEPPES, POWERADE, CEPITA, ADES, AQUARIUS,\nBENEDICTINO, BONAQUA, SMART WATER, MONSTER, CRUSH, FIGURITAS Y ÁLBUM MUNDIAL",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/f72bdebb-262f-11f0-b37f-a7f7ce43e163/img_card/attachments/04_BilleterasVirtuales_grande%208.webp"
+      }
+    },
+    {
+      "id": "1d9b9763-f05e-4372-856d-689223036472",
+      "order": 1,
+      "days_label": "Todos los sábados",
+      "days": [
+        "sábado"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": false
+      },
+      "percent": 30,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con Singular Crédito Visa y MasterCard",
+      "subtitle": "Tope: $15.000 mensual. (P3)*",
+      "tope_lines": [
+        "Tope: $15.000 mensual. (P3)*"
+      ],
+      "bank": {
+        "id": "fdfcc594-907a-11ed-83ab-0ab135d7cee1",
+        "name": "Banco Patagonia",
+        "image": "1BancoPatagonia.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-01-01T00:00:00+00:00",
+      "active_to": "2026-12-31T00:00:00+00:00",
+      "legal": "PROMOCIÓN VALIDA EN LA REPÚBLICA ARGENTINA LOS DÍAS SABADO DESDE EL 01/06/2026 AL 31/12/2026. APLICA A COMPRAS REALIZADAS EN 1 PAGO EN LOS SUPERMERCADOS CHANGOMAS LOS DÍAS JUEVES; O PAGANDO CON MODO EL DÍA DE LA PROMOCIÓN Y COORDINANDO EL RETIRO Y/O ENVÍO A DOMICILIO PARA CUALQUIER DÍA. (1) LOS CLIENTES ASOCIADOS A LOS PRODUCTOS CLÁSICA Y PLUS RECIBIRÁN UN 15% DE DESCUENTO POR COMPRAS EFECTUADAS CON LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA. TOPE POR CUENTA Y POR MES $10.000.LOS CLIENTES ASOCIADOS A LOS PRODUCTOS PLUS RECIBIRÁN UN 20% DE DESCUENTO POR COMPRAS EFECTUADAS CON LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA. TOPE POR CUENTA Y POR MES $10.000.LOS CLIENTES ASOCIADOS A LOS PRODUCTOS SINGULAR ABONADO CON TODAS LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA RECIBIRÁN UN 25% DE DESCUENTO CON TOPE POR CUENTA Y POR MES DE DE $15000. PARA ACCEDER Y OPERAR EN PATAGONIA MÓVIL, DEBERÁ ENCONTRARSE PREVIAMENTE ADHERIDO AL SERVICIO PATAGONIA EBANK PERSONAS. EL USO DE PATAGONIA MÓVIL REQUIERE UN TELÉFONO CELULAR CON SISTEMA OPERATIVO ANDROID O IOS (IPHONE) CON ACCESO A INTERNET Y SERVICIO DE DATOS. PARA UTILIZAR DICHO SERVICIO DEBERÁ ACEPTAR PREVIAMENTE SUS TÉRMINOS Y CONDICIONES, LOS CUALES PODRÁN SER CONSULTADOS EN WWW.BANCOPATAGONIA.COM.AR O EN CUALQUIERA DE NUESTRAS SUCURSALES. SIEMPRE DESCARGUE LA APLICACIÓN PATAGONIA MÓVIL DE TIENDAS OFICIALES, NO ACCEDA DESDE LINKS QUE PROVENGAN DE MAILS O SMS. LOS COSTOS DE LA DESCARGA, DE LA UTILIZACIÓN DE LA APLICACIÓN Y EL DE LA NAVEGACIÓN, SERÁN LOS QUE COBRE LA EMPRESA DE TELEFONÍA CELULAR UTILIZADA POR EL CLIENTE Y SERÁN A SU EXCLUSIVO CARGO. BANCO PATAGONIA S.A. NO SERÁ RESPONSABLE POR LOS ERRORES EN EL SOFTWARE DE LA APLICACIÓN, NI POR LA SUSPENSIÓN, INTERRUPCIÓN O FALLA DEL SERVICIO PROVENIENTE DE UNA MEDIDA UNILATERAL DE LA EMPRESA DE TELEFONÍA CELULAR. PARA MÁS INFORMACIÓN SOBRE EL SERVICIO DE MODO INGRESE A WWW.MODO.COM.AR. PARA TODAS LAS PROMOCIONES ABONADAS CON LAS TARJETAS DE CRÉDITO, EL PORCENTAJE DE BONIFICACIÓN SERÁ ACREDITADO EN EL MISMO RESUMEN EN QUE INGRESE EL CONSUMO, O EN EL INMEDIATO POSTERIOR. NO ACUMULABLES CON OTRAS PROMOCIONES Y NO VÁLIDAS PARA TARJETAS CORPORATIVAS. BANCO PATAGONIA NO SE RESPONSABILIZA POR LOS CUPONES PRESENTADOS FUERA DE LAS FECHAS DE VIGENCIA DE LAS PROMOCIONES. LAS CUENTAS NO DEBERÁN REGISTRAR MORA. LOS ACCIONISTAS DE BANCO PATAGONIA S.A. LIMITAN SU RESPONSABILIDAD A LA INTEGRACIÓN DE LAS ACCIONES SUSCRIPTAS. EN VIRTUD DE ELLO, NI LOS ACCIONISTAS MAYORITARIOS DE CAPITAL EXTRANJERO NI LOS ACCIONISTAS LOCALES O EXTRANJEROS, RESPONDEN EN EXCESO DE LA CITADA INTEGRACIÓN ACCIONARIA POR LAS OBLIGACIONES EMERGENTES DE LAS OPERACIONES CONCERTADAS POR LA ENTIDAD FINANCIERA. NO APLICA PARA AQUELLOS PAGOS Y/O CONSUMOS ABONADOS CON TARJETAS DE DÉBITO Y CRÉDITO EMITIDAS POR BANCO PATAGONIA S.A. A TRAVÉS DE BILLETERAS VIRTUALES A EXCEPCIÓN DE MODO.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/1d9b9763-f05e-4372-856d-689223036472/img_card/attachments/Banco_Patagonia_grande.png"
+      }
+    },
+    {
+      "id": "98f3f842-8ea7-441a-9a2f-551f9a350f7d",
+      "order": 1,
+      "days_label": "Todos los Miércoles",
+      "days": [
+        "miércoles"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": true,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 35,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con Crédito visa y mastercard",
+      "subtitle": "Tope: $15.000 semanal. No acumulable con otras promociones. Aplican exclusiones. (N1)*",
+      "tope_lines": [
+        "Tope: $15.000 semanal. No acumulable con otras promociones. Aplican exclusiones. (N1)*"
+      ],
+      "bank": {
+        "id": "e9570b46-44c8-11ed-83ab-0a7e73da0665",
+        "name": "Banco Nación BNA",
+        "image": "Banco nacion_chico.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-04-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA TODOS LOS MIÉRCOLES DE OCTUBRE 2026 EN COMERCIOS HIPERCHANGOMAS, CHANGOMAS Y MASGO DE LA REPÚBLICA ARGENTINA ADHERIDOS. PARA COMPRAS PRESENCIALES ABONADAS CON TARJETAS DE CRÉDITO VISA Y MASTERCARD DEL BNA EXCLUSIVAMENTE, APLICA PAGANDO A TRAVÉS DE MODO BNA+, ESCANEANDO EL QR DE MODO Y SELECCIONANDO COMO MEDIO DE PAGO LAS TARJETAS PARTICIPANTES, TARJETAS DE CRÉDITO FÍSICAS DEL BNA. NO APLICA PARA PAGOS CON SALDO EN CUENTA Y TAMPOCO APLICA PAGANDO CON LA MODALIDAD NFC. TOPE DE DESCUENTO SEMANAL: $15.000 POR CLIENTE. EL BENEFICIO ESTARÁ A CARGO DE DORINKA S.R.L. Y SE REALIZARÁ SOBRE EL PRECIO DE CONTADO. DESCUENTO DIRECTO Y REINTEGRADO EN BOCA DE CAJA EXCLUIDOS-NO INCLUYE: CARNICERIA, GRANJA, ELABORADOS, EMBUTIDOS, QUESOS: (QUESOS BLANDOS, QUESOS DUROS, QUESOS FETEADOS, QUESOS RALLADOS, QUESOS SEMIDUROS), FRUTAS Y VERDURAS, HUEVOS. ACEITES COMESTIBLES, HARINAS, LECHES FLUIDAS, AZÚCARES. BEBIDAS BLANCAS, VINOS, FERNET, CERVEZAS Y GASEOSAS DE “CERVECERIA Y MALTERIA QUILMES” (STELLA ARTOIS, BUDWEISER, CORONA, QUILMES, BRAHMA, MICHELOB, PATAGONIA, EAZY, GOOSE ISLAND, ANDES, TEMPLE, PEPSI, SEVEN UP, PASO DE LOS TOROS, GATORADE, GLACIAR, ECO DE LOS ANDES, H20, AGUAS NESTLÉ, AWAFRUT, MIRINDA, RED BULL, ROCKSTAR), LÍNEA COCA COLA (ORIGINAL, LIGHT, ZERO SIN AZUCAR, SABOR LIVIANO), FANTA, SPRITE (ORIGINAL, SIN AZÚCAR), SCHWEPPES, POWERADE, CEPITA, ADES, AQUARIUS, BENEDICTINO, BONAQUA, SMART WATER, MONSTER, CRUSH, FIGURITAS Y ÁLBUM MUNDIAL 2026. ELECTRODOMÉSTICOS Y ELECTRÓNICOS, RODADOS, INFORMÁTICA, CELULARES Y CLIMATIZACIÓN, LÍNEA BLANCA, MEDICAMENTOS DE FARMACIA, SERVICIOS DE AUTOCENTER, BATERÍAS Y NEUMÁTICOS. NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES Y/O PRODUCTOS EN LIQUIDACIÓN. SOLO PARA CONSUMO FAMILIAR. NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES Y/O PRODUCTOS EN LIQUIDACIÓN. SOLO PARA CONSUMO FAMILIAR. EL BNA NO SE RESPONSABILIZA POR LA CALIDAD DE LOS PRODUCTOS ADQUIRIDOS. BANCO DE LA NACIÓN ARGENTINA – BARTOLOMÉ MITRE 326, CABA – CUIT 30-50001091-2.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/98f3f842-8ea7-441a-9a2f-551f9a350f7d/img_card/attachments/LOGO_OK_MODOBNA-57.png"
+      }
+    },
+    {
+      "id": "a3c07fac-a4f8-4a49-8fc4-8e814dcc10df",
+      "order": 1,
+      "days_label": "Todos los jueves en MasGO",
+      "days": [
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 35,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjeta de crédito Mastercard a través de Buepp y App Ciudad",
+      "subtitle": "Tope: $20.000 mensual. Promocióne exclusiva en las tiendas de MasGO. (BC-MG)*",
+      "tope_lines": [
+        "Tope: $20.000 mensual. Promocióne exclusiva en las tiendas de MasGO. (BC-MG)*"
+      ],
+      "bank": {
+        "id": "6db380e1-bb9d-4ed9-82ef-15a799aec451",
+        "name": "Buepp Banco Ciudad",
+        "image": "Buepp Banco Ciudad Masgo_chico.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-09-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN OFRECIDA POR EL BANCO DE LA CIUDAD DE BUENOS AIRES, CUIT 30-99903208-3 (BANCO CIUDAD) CON DOMICILIO EN LA CALLE FLORIDA 302, CABA. VÁLIDA DESDE EL 27/08/2026 HASTA EL 31/12/2026 INCLUSIVE, TODOS LOS JUEVES, EN COMERCIOS FÍSICOS ADHERIDOS. PAGANDO EXCLUSIVAMENTE CON QR MODO A TRAVÉS DE APP CIUDAD O BUEPP CON TARJETAS DE CRÉDITO MASTERCARD BANCO CIUDAD. SE OTORGARÁ UN 35% (TREINTA Y CINCO POR CIENTO) DE DESCUENTO SOBRE EL IMPORTE DE LA COMPRA, CON UN TOPE DE HASTA $20.000 (PESOS VEINTE MIL) MENSUAL POR CLIENTE. EL BENEFICIO PODRÁ VISUALIZARSE VÍA REINTEGRO, EL CUAL SERÁ ACREDITADO EN LA CUENTA DEL CLIENTE DENTRO DE LOS 15 DÍAS HÁBILES POSTERIORES A LA FECHA DE REALIZADA LA COMPRA. PARA COMPRAS REALIZADAS POR TITULARES DE TARJETAS ADICIONALES, EL TARJETAHABIENTE ADICIONAL DEBERÁ POSEER UNA CAJA DE AHORRO DEL BANCO CIUDAD ASOCIADA A MODO. LA PRESENTE PROMOCIÓN ES VÁLIDA SÓLO PARA CONSUMOS DE TIPO FAMILIAR. CONFORME RES. 51-E/2017, 240-E/2017 Y 12/24 DE LA SECRETARÍA DE COMERCIO. T.N.A., T.E.A. Y C.F.T.N.A. (IVA INCLUIDO): 0,00% FIJO. T.N.A.: TASA NOMINAL ANUAL; T.E.A.: TASA EFECTIVA ANUAL; C.F.T.N.A.: COSTO FINANCIERO TOTAL EXPRESADO EN FORMA DE TASA NOMINAL ANUAL CON IVA. EL PRODUCTO OFRECIDO CORRESPONDE A LA CARTERA DE CONSUMO. PARA MÁS INFORMACIÓN CONSULTE EN WWW.BANCOCIUDAD.COM.AR",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/a3c07fac-a4f8-4a49-8fc4-8e814dcc10df/img_card/attachments/Buepp%20Banco%20Ciudad%20Masgo_grande.png"
+      }
+    },
+    {
+      "id": "73461e9f-0eb1-4ef1-a1f4-1a72f8f3dcb4",
+      "order": 1,
+      "days_label": "Sábado 24 de octubre",
+      "days": [
+        "sábado"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": false
+      },
+      "percent": 30,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjeta de Crédito Cabal",
+      "subtitle": "Tope: $13.500 semanal (C2)*",
+      "tope_lines": [
+        "Tope: $13.500 semanal (C2)*"
+      ],
+      "bank": {
+        "id": "0956bf6c-983a-11ee-8452-1298279711fd",
+        "name": "Banco Credicoop MODO",
+        "image": "Logo Id - MODO3_Credicoop.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-04-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "Promoción válida únicamente en QR de MODO a través de Credicoop Móvil o MODO seleccionando Tarjetas Cabal Credicoop (excepto Agrocabal, Cabal Mayorista y Cabal Empresa). Aplica a consumos de tipo familiar y efectuados en un pago. Vigente el dia sábado 24/10/26, 28/11/26 y 26/12/26 en consumos presenciales y online los días sábado de promoción. Ejemplo: en un consumo de $80.000 abonando con QR a través de Credicoop Móvil o MODO recibirá un reintegro de $13.500 (tope máximo por usuario/a por sábado). El reintegro se verá reflejado dentro de los 30 días posteriores al consumo en la cuenta del Banco, para lo cual será requisito que sea de título personal y se encuentre adherida a MODO. Será condición esencial para participar de la misma que al momento de efectuar el reintegro, la tarjeta se encuentre vigente y en estado de cumplimiento normal en el caso de crédito, y la cuenta abierta en el caso de débito. No participan los consumos realizados a través de los programas MasCuotasCabal-MiPyme y Cuotas MiPyme Payway, billeteras virtuales (excepto MODO), POS móviles, plataformas de pago y/o portales de pago online. Aplicable a la cartera de consumo. MODO es propiedad de Play Digital SA y se encuentra sujeto a los términos y condiciones de uso disponibles en www.modo.com.ar",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/73461e9f-0eb1-4ef1-a1f4-1a72f8f3dcb4/img_card/attachments/Banco%20Credicoop%20MODO_grande.png"
+      }
+    },
+    {
+      "id": "106ed460-96d5-46f7-b1cd-1b8b6b43a06a",
+      "order": 1,
+      "days_label": "Todos los domingos en MasGO",
+      "days": [
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": true
+      },
+      "percent": 20,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Desde APP MODO o APP de bancos aheridos",
+      "subtitle": "Tope: $20.000 por cliente por mes. Mínmo de compra $30.000. Promoción exlusiva en las tiendas de MASGO. (MODO-MG)",
+      "tope_lines": [
+        "Tope: $20.000 por cliente por mes. Mínmo de compra $30.000. Promoción exlusiva en las tiendas de MASGO. (MODO-MG)"
+      ],
+      "bank": {
+        "id": "6bbbedf1-ab40-11ee-8452-127334bd7427",
+        "name": "Modo",
+        "image": "modo.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-09-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "BENEFICIO EXCLUSIVO PARA COMPRAS REALIZADAS DE MANERA PRESENCIAL EN TIENDAS MASGO ADHERIDAS, LOS DÍAS DOMINGOS COMPRENDIDOS ENTRE EL 16/08/2026 Y EL 31/10/2026, INCLUSIVE. 20% DE REINTEGRO PARA COMPRAS IGUALES O SUPERIORES A $30.000, CON UN TOPE DE REINTEGRO DE $20.000 POR USUARIO, POR BANCO. BENEFICIO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES APLICABLES A PAGOS REALIZADOS CON MODO. APLICA ÚNICAMENTE A USUARIOS TITULARES DE UNA CUENTA BANCARIA EN LA ENTIDAD EMISORA DE LA TARJETA UTILIZADA PARA EFECTUAR EL PAGO. PARA ACCEDER AL BENEFICIO, LA TARJETA DEBERÁ ENCONTRARSE ASOCIADA A MODO. EL REINTEGRO SE ACREDITARÁ DENTRO DE LOS TREINTA (30) DÍAS CORRIDOS POSTERIORES A LA FECHA DE REALIZADA LA COMPRA CAJA DE AHORRO O CUENTA CORRIENTE QUE EL CLIENTE POSEA. PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA Y SUJETA A BANCOS Y TIENDAS MASGO ADHERIDOS. PARA MÁS INFORMACIÓN O LIMITACIONES APLICABLES, CONSULTE EN WWW.MODO.COM.AR/PROMOS. PLAY DIGITAL S.A. (MODO), CUIT 30-71682943-6, AV. DEL LIBERTADOR 7208, 3°, CABA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/106ed460-96d5-46f7-b1cd-1b8b6b43a06a/img_card/attachments/MODO_Masgo_grande.png"
+      }
+    },
+    {
+      "id": "30730e09-4eae-4d96-a0c4-2c77aea0109e",
+      "order": 1,
+      "days_label": "Todos los lunes",
+      "days": [
+        "lunes"
+      ],
+      "day_flags": {
+        "monday": true,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Desde APP MODO o APP de bancos adheridos",
+      "subtitle": "Pagando con tarjetas de crédito y/o débito. No aplica para pagos con transferencia (PCT)  Tope: $25.000 mensual por banco. Mínimo de compra: $75.000. (MD-29)*",
+      "tope_lines": [
+        "Pagando con tarjetas de crédito y/o débito. No aplica para pagos con transferencia (PCT) Tope: $25.000 mensual por banco. Mínimo de compra: $75.000. (MD-29)*"
+      ],
+      "bank": {
+        "id": "6bbbedf1-ab40-11ee-8452-127334bd7427",
+        "name": "Modo",
+        "image": "modo.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-09-08T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA LOS DÍAS LUNES 5, 12, 19 Y 26 DE OCTUBRE DE 2026. EXCLUSIVO PARA COMPRAS REALIZADAS TANTO EN CANAL PRESENCIAL COMO ONLINE, ABONADAS A TRAVÉS DE MODO CON TARJETAS EMITIDAS POR BANCOS ADHERIDOS. BENEFICIO: 20% DE REINTEGRO PARA COMPRAS IGUALES O SUPERIORES A $75.000, CON UN TOPE DE REINTEGRO DE $25.000, POR BANCO, DURANTE TODA LA VIGENCIA DE LA PROMOCIÓN. EL BENEFICIO ES ACUMULABLE CON OTRAS PROMOCIONES VIGENTES APLICABLES A PAGOS REALIZADOS CON MODO. PARA ACCEDER AL BENEFICIO, EL USUARIO DEBERÁ SER TITULAR DE UNA CUENTA BANCARIA EN LA ENTIDAD EMISORA DE LA TARJETA UTILIZADA PARA EFECTUAR EL PAGO Y TENER DICHA TARJETA ASOCIADA A MODO. EL REINTEGRO SE ACREDITARÁ DENTRO DE LOS TREINTA (30) DÍAS CORRIDOS POSTERIORES A LA FECHA DE LA COMPRA EN LA CAJA DE AHORRO O CUENTA CORRIENTE QUE EL CLIENTE POSEA. PROMOCIÓN SUJETA A BANCOS Y COMERCIOS ADHERIDOS. PARA MÁS INFORMACIÓN O LIMITACIONES APLICABLES, CONSULTE EN WWW.MODO.COM.AR/PROMOS. PLAY DIGITAL S.A. (MODO), CUIT 30-71682943-6, AV. DEL LIBERTADOR 7208, 3°, CABA",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/30730e09-4eae-4d96-a0c4-2c77aea0109e/img_card/attachments/MODO.png"
+      }
+    },
+    {
+      "id": "e3f1613c-f3bb-448f-8c55-2ecf8464ac49",
+      "order": 2,
+      "days_label": "Todos los sábados",
+      "days": [
+        "sábado"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con Plus Crédito Visa y MasterCard",
+      "subtitle": "Tope: $10.000 mensual.  (P2)*",
+      "tope_lines": [
+        "Tope: $10.000 mensual. (P2)*"
+      ],
+      "bank": {
+        "id": "fdfcc594-907a-11ed-83ab-0ab135d7cee1",
+        "name": "Banco Patagonia",
+        "image": "1BancoPatagonia.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-01-01T00:00:00+00:00",
+      "active_to": "2026-12-31T00:00:00+00:00",
+      "legal": "PROMOCIÓN VALIDA EN LA REPÚBLICA ARGENTINA LOS DÍAS SABADO DESDE EL 01/06/2026 AL 31/12/2026. APLICA A COMPRAS REALIZADAS EN 1 PAGO EN LOS SUPERMERCADOS CHANGOMAS LOS DÍAS JUEVES; O PAGANDO CON MODO EL DÍA DE LA PROMOCIÓN Y COORDINANDO EL RETIRO Y/O ENVÍO A DOMICILIO PARA CUALQUIER DÍA. (1) LOS CLIENTES ASOCIADOS A LOS PRODUCTOS CLÁSICA Y PLUS RECIBIRÁN UN 15% DE DESCUENTO POR COMPRAS EFECTUADAS CON LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA. TOPE POR CUENTA Y POR MES $10.000.LOS CLIENTES ASOCIADOS A LOS PRODUCTOS PLUS RECIBIRÁN UN 20% DE DESCUENTO POR COMPRAS EFECTUADAS CON LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA. TOPE POR CUENTA Y POR MES $10.000.LOS CLIENTES ASOCIADOS A LOS PRODUCTOS SINGULAR ABONADO CON TODAS LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA RECIBIRÁN UN 25% DE DESCUENTO CON TOPE POR CUENTA Y POR MES DE DE $15000. PARA ACCEDER Y OPERAR EN PATAGONIA MÓVIL, DEBERÁ ENCONTRARSE PREVIAMENTE ADHERIDO AL SERVICIO PATAGONIA EBANK PERSONAS. EL USO DE PATAGONIA MÓVIL REQUIERE UN TELÉFONO CELULAR CON SISTEMA OPERATIVO ANDROID O IOS (IPHONE) CON ACCESO A INTERNET Y SERVICIO DE DATOS. PARA UTILIZAR DICHO SERVICIO DEBERÁ ACEPTAR PREVIAMENTE SUS TÉRMINOS Y CONDICIONES, LOS CUALES PODRÁN SER CONSULTADOS EN WWW.BANCOPATAGONIA.COM.AR O EN CUALQUIERA DE NUESTRAS SUCURSALES. SIEMPRE DESCARGUE LA APLICACIÓN PATAGONIA MÓVIL DE TIENDAS OFICIALES, NO ACCEDA DESDE LINKS QUE PROVENGAN DE MAILS O SMS. LOS COSTOS DE LA DESCARGA, DE LA UTILIZACIÓN DE LA APLICACIÓN Y EL DE LA NAVEGACIÓN, SERÁN LOS QUE COBRE LA EMPRESA DE TELEFONÍA CELULAR UTILIZADA POR EL CLIENTE Y SERÁN A SU EXCLUSIVO CARGO. BANCO PATAGONIA S.A. NO SERÁ RESPONSABLE POR LOS ERRORES EN EL SOFTWARE DE LA APLICACIÓN, NI POR LA SUSPENSIÓN, INTERRUPCIÓN O FALLA DEL SERVICIO PROVENIENTE DE UNA MEDIDA UNILATERAL DE LA EMPRESA DE TELEFONÍA CELULAR. PARA MÁS INFORMACIÓN SOBRE EL SERVICIO DE MODO INGRESE A WWW.MODO.COM.AR. PARA TODAS LAS PROMOCIONES ABONADAS CON LAS TARJETAS DE CRÉDITO, EL PORCENTAJE DE BONIFICACIÓN SERÁ ACREDITADO EN EL MISMO RESUMEN EN QUE INGRESE EL CONSUMO, O EN EL INMEDIATO POSTERIOR. NO ACUMULABLES CON OTRAS PROMOCIONES Y NO VÁLIDAS PARA TARJETAS CORPORATIVAS. BANCO PATAGONIA NO SE RESPONSABILIZA POR LOS CUPONES PRESENTADOS FUERA DE LAS FECHAS DE VIGENCIA DE LAS PROMOCIONES. LAS CUENTAS NO DEBERÁN REGISTRAR MORA. LOS ACCIONISTAS DE BANCO PATAGONIA S.A. LIMITAN SU RESPONSABILIDAD A LA INTEGRACIÓN DE LAS ACCIONES SUSCRIPTAS. EN VIRTUD DE ELLO, NI LOS ACCIONISTAS MAYORITARIOS DE CAPITAL EXTRANJERO NI LOS ACCIONISTAS LOCALES O EXTRANJEROS, RESPONDEN EN EXCESO DE LA CITADA INTEGRACIÓN ACCIONARIA POR LAS OBLIGACIONES EMERGENTES DE LAS OPERACIONES CONCERTADAS POR LA ENTIDAD FINANCIERA. NO APLICA PARA AQUELLOS PAGOS Y/O CONSUMOS ABONADOS CON TARJETAS DE DÉBITO Y CRÉDITO EMITIDAS POR BANCO PATAGONIA S.A. A TRAVÉS DE BILLETERAS VIRTUALES A EXCEPCIÓN DE MODO.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/e3f1613c-f3bb-448f-8c55-2ecf8464ac49/img_card/attachments/Banco_Patagonia_grande.png"
+      }
+    },
+    {
+      "id": "f75d9bb7-25f8-11f0-b37f-f803d3fbf6af",
+      "order": 2,
+      "days_label": "Todos los martes",
+      "days": [
+        "martes"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 25,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjeta Visa débito",
+      "subtitle": "Tope mensual: $10.000 para Cartera General y $30.000 para Búho One, Sueldo, Emprededor y Jubilado. (H)",
+      "tope_lines": [
+        "Tope mensual: $10.000 para Cartera General y $30.000 para Búho One, Sueldo, Emprededor y Jubilado. (H)"
+      ],
+      "bank": {
+        "id": "c40d38d3-1a7a-11ee-83ab-0263dabe290f",
+        "name": "Hipotecario_Modo",
+        "image": "Copia de Logo Id - MODO2_Hipotecario.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2025-04-30T00:00:00+00:00",
+      "active_to": "2026-12-01T00:00:00+00:00",
+      "legal": "CARTERA CONSUMO. PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA COMPRANDO DE FORMA PRESENCIAL LOS MARTES EN CHANGOMÁS, HIPERCHANGOMÁS, MASGO Y EN WWW.MASONLINE.COM.AR CON PAGO ONLINE DESDE EL 01/09/2026 HASTA EL 30/11/2026. APLICA PARA CONSUMOS EFECTUADOS CON TARJETA DE DÉBITO VISA EMITIDA POR ESTE BANCO HIPOTECARIO SA QUE NO REGISTRE MORA MEDIANTE LA MODALIDAD DE PAGO CON “QR” A TRAVÉS DE “MODO” DESDE APP BH O APP MODO. SE OTORGARÁ UN DESCUENTO VÍA REINTEGRO DEL 25% CON TOPE MENSUAL Y POR CLIENTE (CONSIDERANDO LA SUMA DE LOS CONSUMOS REALIZADOS POR EL CLIENTE CON TARJETA DE DÉBITO Y CRÉDITO DURANTE EL MES). TOPES DE REINTEGRO: PARA TODOS LOS CLIENTES: $10.000. CLIENTES BÚHO ONE, BÚHO SUELDO, BÚHO EMPRENDEDOR Y BÚHO JUBILADO TOPE DE $30.000. NO ACUMULABLE CON OTRAS PROMOCIONES, NI CARTERA DE CLIENTES QUE ACREDITEN PLANES SOCIALES. NO APLICA A LAS OPERACIONES DE EXTRACCIÓN DE DINERO EN EFECTIVO REALIZADAS A TRAVÉS DE EXTRA, CASH. NO APLICA PARA LOS CONSUMOS EFECTUADOS A TRAVÉS DE LA PLATAFORMA MERCADO PAGO. NO APLICA A LOS PAGOS REALIZADOS POR LA PLATAFORMA DE PAGOS MÓVILES (POS MÓVIL, BOTÓN DE PAGO Y BILLETERA ELECTRÓNICA). NO APLICA PARA PAGOS CON TRANSFERENCIA. REINTEGRO: DENTRO DE LOS 30 DÍAS CORRIDOS DE REALIZADO EL PAGO SE ACREDITARÁ EN LA CAJA DE AHORRO DE BANCO HIPOTECARIO SA ASOCIADA A MODO. CONSULTE EL AHORRO APLICABLE Y VIGENTE EN CADA COMERCIO ANTES DE EFECTUAR LA COMPRA. BANCO HIPOTECARIO S.A. RECONQUISTA 151 (1003) CABA. CUIT 30-50001107-2.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/f75d9bb7-25f8-11f0-b37f-f803d3fbf6af/img_card/attachments/Logo%20Card%20-%20MODO_Hipotecario.png"
+      }
+    },
+    {
+      "id": "8dac5468-425c-4a45-8210-bbefeacb71c1",
+      "order": 2,
+      "days_label": "Todos los Jueves",
+      "days": [
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 30,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjetas de crédito y débito Cabal",
+      "subtitle": "Tope: $9.000 semanal. (C1)*",
+      "tope_lines": [
+        "Tope: $9.000 semanal. (C1)*"
+      ],
+      "bank": {
+        "id": "0956bf6c-983a-11ee-8452-1298279711fd",
+        "name": "Banco Credicoop MODO",
+        "image": "Logo Id - MODO3_Credicoop.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-04-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN VÁLIDA ÚNICAMENTE PARA CONSUMOS CON QR DE MODO A TRAVÉS DE CREDICOOP MÓVIL O MODO SELECCIONANDO TARJETAS CABAL CREDICOOP (EXCEPTO AGROCABAL, CABAL MAYORISTA Y CABAL EMPRESA). APLICA A CONSUMOS DE TIPO FAMILIAR Y EFECTUADOS EN UN PAGO. VIGENTE DESDE EL 01/10/26 HASTA EL 31/12/26 EN CONSUMOS PRESENCIALES Y ONLINE LOS DÍAS JUEVES. EJEMPLO: EN UN CONSUMO DE $30.000 ABONANDO CON QR A TRAVÉS DE CREDICOOP MÓVIL O MODO RECIBIRÁ UN REINTEGRO DE $9.000 (TOPE MÁXIMO POR USUARIO/A POR SEMANA). EL REINTEGRO SE VERÁ REFLEJADO DENTRO DE LOS 30 DÍAS CORRIDOS POSTERIORES AL CONSUMO EN LA CUENTA DEL BANCO, PARA LO CUAL SERÁ REQUISITO QUE SEA DE TÍTULO PERSONAL Y SE ENCUENTRE ADHERIDA A MODO. SERÁ CONDICIÓN ESENCIAL PARA PARTICIPAR DE LA MISMA QUE AL MOMENTO DE EFECTUAR EL REINTEGRO, LA TARJETA SE ENCUENTRE VIGENTE Y EN ESTADO DE CUMPLIMIENTO NORMAL EN EL CASO DE CRÉDITO, Y LA CUENTA ABIERTA EN EL CASO DE DÉBITO. NO PARTICIPAN LOS CONSUMOS REALIZADOS A TRAVÉS DE LOS PROGRAMAS MASCUOTASCABAL-MIPYME Y CUOTAS MIPYME PAYWAY, BILLETERAS VIRTUALES (EXCEPTO MODO) Y POS MÓVILES. APLICABLE A LA CARTERA DE CONSUMO. MÁS INFORMACIÓN EN WWW.BENEFICIOS.BANCOCREDICOOP.COOP O COMUNICÁNDOSE GRATUITAMENTE A CREDICOOP RESPONDE AL 0800-888-4500. BANCO CREDICOOP C.L., CUIT 30571421352, RECONQUISTA 484, CABA. MODO ES PROPIEDAD DE PLAY DIGITAL SA, Y SE ENCUENTRA SUJETO A LOS TÉRMINOS Y CONDICIONES DE USO DISPONIBLES EN WWW.MODO.COM.AR.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/8dac5468-425c-4a45-8210-bbefeacb71c1/img_card/attachments/Logo%20Card%20-%20MODO_Credicoop.png"
+      }
+    },
+    {
+      "id": "66dc6331-3d38-4a60-8d98-19cce4e385cf",
+      "order": 2,
+      "days_label": "Sábado 24 y Domingo 25 de octubre",
+      "days": [
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": 20,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjetas de Crédito Visa y MasterCard",
+      "subtitle": "Tope: $15.000 semanal. (IC1)*",
+      "tope_lines": [
+        "Tope: $15.000 semanal. (IC1)*"
+      ],
+      "bank": {
+        "id": "06fc4208-78d8-11ee-83ab-0a1649dfa6b1",
+        "name": "ICBC Modo",
+        "image": "Logo Id - MODO3_ICBC.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-07-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "CARTERA DE CONSUMO. PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA PARA EL CUARTO FIN DE SEMANA DE CADA MES DESDE EL 01/07/2026 HASTA EL 31/12/2026. 20% DE AHORRO CON TARJETAS DE CRÉDITO VISA Y MASTERCARD ICBC EN UN SOLO PAGO. PAGANDO A TRAVÉS MODO O SU INTEGRACIÓN EN ICBC MOBILE BANKING, CON PAGO ONLINE REALIZADO EL CUARTO FIN DE SEMANA DE CADA MES Y PROGRAMANDO EL RETIRO O ENVÍO PARA CUALQUIER DÍA. APLICA A COMPRAS PRESENCIALES REALIZADAS EL CUARTO FIN DE SEMANA DE CADA MES. TOPE DE REINTEGRO $15.000 POR CLIENTE POR FIN DE SEMANA. EJEMPLO: POR LA COMPRA DE $1.000 EN PRODUCTOS INCLUIDOS EN LA PROMOCIÓN SE LE REINTEGRAN $200. LOS REINTEGROS SE VERAN ACREDITADOS DENTRO DE LOS 30 DÍAS CORRIDOS POSTERIORES A LA FECHA DE REALIZADA LA COMPRA EN LA CAJA DE AHORRO O CUENTA CORRIENTE QUE EL CLIENTE POSEA EN ICBC. SOLO PODRÁN PARTICIPAR DE LA PROMOCIÓN AQUELLOS CLIENTES QUE SE ENCUENTREN AL DÍA EN SUS PRODUCTOS. NO VÁLIDO PARA COMPRAS EFECTUADAS POR MERCADO PAGO, PAGO INMEDIATO O PAGO ENTRE PERSONAS. NO VÁLIDO PARA COMPRAS MAYORISTAS NI PARA TARJETAS VISA BUSINESS, VISA DISTRIBUTION, VISA PURCHASING, VISA PURCHASING CAMPO, CORPORATE, CORPORATE SIGNATURE, RECARGABLE EMPRESA Y VISA CUENTA CENTRAL. VÁLIDO PARA CLIENTES CON PAQUETE DE PRODUCTOS EN ICBC. NO VALIDO PARA ADICIONALES DE CUENTA SIN CAJA DE AHORRO O CUENTA CORRIENTE EN ICBC. LOS BENEFICIOS NO SE SUPERPONEN NI SON ACUMULATIVOS ENTRE SÍ, NI CON OTROS BENEFICIOS, PROMOCIONES U OFERTAS QUE OFREZCA MASONLINE. QUEDAN EXCLUIDAS LAS SIGUIENTES CATEGORÍAS: ELECTRONICOS, ELECTRODOMESTICOS, CELULARES, TABLETS, CONSOLAS, Y TODOS LOS PRODUCTOS INCLUIDOS EN EL PROGRAMA PRECIOS CUIDADOS. INDUSTRIAL AND COMMERCIAL BANK OF CHINA (ARGENTINA) S.A.U. ES UNA SOCIEDAD ANÓNIMA UNIPERSONAL BAJO LA LEY ARGENTINA. SU ACCIONISTA LIMITA SU RESPONSABILIDAD AL CAPITAL APORTADO. (LEY 25738). CUIT: 30-70944784-6. FLORIDA 99, CABA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/66dc6331-3d38-4a60-8d98-19cce4e385cf/img_card/attachments/ICBC%20MODO_grande.png"
+      }
+    },
+    {
+      "id": "31c0965b-f123-4a5d-a5c5-a9d98fd696e7",
+      "order": 3,
+      "days_label": "Todos los sábados",
+      "days": [
+        "sábado"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": false
+      },
+      "percent": 15,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con Clásica y Plus Crédito Visa y MasterCard",
+      "subtitle": "Tope: $10.000 mensual.  (P1)*",
+      "tope_lines": [
+        "Tope: $10.000 mensual. (P1)*"
+      ],
+      "bank": {
+        "id": "fdfcc594-907a-11ed-83ab-0ab135d7cee1",
+        "name": "Banco Patagonia",
+        "image": "1BancoPatagonia.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-01-01T00:00:00+00:00",
+      "active_to": "2026-12-31T00:00:00+00:00",
+      "legal": "PROMOCIÓN VALIDA EN LA REPÚBLICA ARGENTINA LOS DÍAS SABADO DESDE EL 01/06/2026 AL 31/12/2026. APLICA A COMPRAS REALIZADAS EN 1 PAGO EN LOS SUPERMERCADOS CHANGOMAS LOS DÍAS JUEVES; O PAGANDO CON MODO EL DÍA DE LA PROMOCIÓN Y COORDINANDO EL RETIRO Y/O ENVÍO A DOMICILIO PARA CUALQUIER DÍA. (1) LOS CLIENTES ASOCIADOS A LOS PRODUCTOS CLÁSICA Y PLUS RECIBIRÁN UN 15% DE DESCUENTO POR COMPRAS EFECTUADAS CON LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA. TOPE POR CUENTA Y POR MES $10.000.LOS CLIENTES ASOCIADOS A LOS PRODUCTOS PLUS RECIBIRÁN UN 20% DE DESCUENTO POR COMPRAS EFECTUADAS CON LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA. TOPE POR CUENTA Y POR MES $10.000.LOS CLIENTES ASOCIADOS A LOS PRODUCTOS SINGULAR ABONADO CON TODAS LAS TARJETAS DE CRÉDITO VISA Y MASTERCARD DE BANCO PATAGONIA RECIBIRÁN UN 25% DE DESCUENTO CON TOPE POR CUENTA Y POR MES DE DE $15000. PARA ACCEDER Y OPERAR EN PATAGONIA MÓVIL, DEBERÁ ENCONTRARSE PREVIAMENTE ADHERIDO AL SERVICIO PATAGONIA EBANK PERSONAS. EL USO DE PATAGONIA MÓVIL REQUIERE UN TELÉFONO CELULAR CON SISTEMA OPERATIVO ANDROID O IOS (IPHONE) CON ACCESO A INTERNET Y SERVICIO DE DATOS. PARA UTILIZAR DICHO SERVICIO DEBERÁ ACEPTAR PREVIAMENTE SUS TÉRMINOS Y CONDICIONES, LOS CUALES PODRÁN SER CONSULTADOS EN WWW.BANCOPATAGONIA.COM.AR O EN CUALQUIERA DE NUESTRAS SUCURSALES. SIEMPRE DESCARGUE LA APLICACIÓN PATAGONIA MÓVIL DE TIENDAS OFICIALES, NO ACCEDA DESDE LINKS QUE PROVENGAN DE MAILS O SMS. LOS COSTOS DE LA DESCARGA, DE LA UTILIZACIÓN DE LA APLICACIÓN Y EL DE LA NAVEGACIÓN, SERÁN LOS QUE COBRE LA EMPRESA DE TELEFONÍA CELULAR UTILIZADA POR EL CLIENTE Y SERÁN A SU EXCLUSIVO CARGO. BANCO PATAGONIA S.A. NO SERÁ RESPONSABLE POR LOS ERRORES EN EL SOFTWARE DE LA APLICACIÓN, NI POR LA SUSPENSIÓN, INTERRUPCIÓN O FALLA DEL SERVICIO PROVENIENTE DE UNA MEDIDA UNILATERAL DE LA EMPRESA DE TELEFONÍA CELULAR. PARA MÁS INFORMACIÓN SOBRE EL SERVICIO DE MODO INGRESE A WWW.MODO.COM.AR. PARA TODAS LAS PROMOCIONES ABONADAS CON LAS TARJETAS DE CRÉDITO, EL PORCENTAJE DE BONIFICACIÓN SERÁ ACREDITADO EN EL MISMO RESUMEN EN QUE INGRESE EL CONSUMO, O EN EL INMEDIATO POSTERIOR. NO ACUMULABLES CON OTRAS PROMOCIONES Y NO VÁLIDAS PARA TARJETAS CORPORATIVAS. BANCO PATAGONIA NO SE RESPONSABILIZA POR LOS CUPONES PRESENTADOS FUERA DE LAS FECHAS DE VIGENCIA DE LAS PROMOCIONES. LAS CUENTAS NO DEBERÁN REGISTRAR MORA. LOS ACCIONISTAS DE BANCO PATAGONIA S.A. LIMITAN SU RESPONSABILIDAD A LA INTEGRACIÓN DE LAS ACCIONES SUSCRIPTAS. EN VIRTUD DE ELLO, NI LOS ACCIONISTAS MAYORITARIOS DE CAPITAL EXTRANJERO NI LOS ACCIONISTAS LOCALES O EXTRANJEROS, RESPONDEN EN EXCESO DE LA CITADA INTEGRACIÓN ACCIONARIA POR LAS OBLIGACIONES EMERGENTES DE LAS OPERACIONES CONCERTADAS POR LA ENTIDAD FINANCIERA. NO APLICA PARA AQUELLOS PAGOS Y/O CONSUMOS ABONADOS CON TARJETAS DE DÉBITO Y CRÉDITO EMITIDAS POR BANCO PATAGONIA S.A. A TRAVÉS DE BILLETERAS VIRTUALES A EXCEPCIÓN DE MODO.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/31c0965b-f123-4a5d-a5c5-a9d98fd696e7/img_card/attachments/Banco%20Patagonia%20grande.png"
+      }
+    },
+    {
+      "id": "bb79238e-3556-11ef-8452-0e6280dc0bcd",
+      "order": 3,
+      "days_label": "Todos los Miércoles",
+      "days": [
+        "miércoles"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": true,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjeta de Crédito Patagonia 365",
+      "subtitle": "Tope: $10.000 mensual. (P365)*",
+      "tope_lines": [
+        "Tope: $10.000 mensual. (P365)*"
+      ],
+      "bank": {
+        "id": "c7025517-3067-11ee-83ab-125c839bfdf1",
+        "name": "Patagonia 365",
+        "image": "Patagonia365.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2024-12-30T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN VIGENTE DESDE EL 01/8/2026 AL 31/10/2026. APLICABLE SOLO LOS DIAS MIERCOLES PARA CLIENTES QUE ABONEN CON TARJETA DE CREDITO PATAGONIA 365 EN UN (1) PAGO. EL CLIENTE OBTIENE UN 20% DE DESCUENTO CON UN TOPE DE $10.000 POR CUENTA, POR COMERCIO, POR PERIODO. EL REINTEGRO SE VERÁ REFLEJADO HASTA DENTRO DE LOS DOS (2) RESUMENES DE LA TARJETA MEDIANTE LA CUAL SE EFECTUÓ LA COMPRA. VALIDO SOLO EN SUPERMERCADOS CHANGOMAS Y MASGO. BANCO DEL CHUBUT S.A. CUIT 30-50001299-0. RIVADAVIA 615, RAWSON, PROVINCIA DE CHUBUT.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/bb79238e-3556-11ef-8452-0e6280dc0bcd/img_card/attachments/Banco%20Patagonia%20365%20grande.png"
+      }
+    },
+    {
+      "id": "b1435162-d05c-4d5b-94c8-70274110644a",
+      "order": 3,
+      "days_label": "Todos los Jueves",
+      "days": [
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 30,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjetas de Crédito y débito (Cuenta Sueldo)",
+      "subtitle": "Tope: $15.000 semanal. (ICS)*",
+      "tope_lines": [
+        "Tope: $15.000 semanal. (ICS)*"
+      ],
+      "bank": {
+        "id": "2f59e6b6-b357-430a-9e82-3781b870bc52",
+        "name": "ICBC_Sueldos",
+        "image": "Logo Id - MODOv2_ICBC.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-04-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "PROPUESTA PARA CARTERA DE CONSUMO VÁLIDA EN LA REPÚBLICA ARGENTINA PARA LOS DÍAS JUEVES DESDE EL 01/07/2026 HASTA EL 31/12/2026 (1) 20% DE AHORRO CON TARJETAS DE CRÉDITO VISA Y MASTERCARD ICBC EN UN SOLO PAGO Y TARJETAS ICBC VISA DÉBITO. PAGANDO A TRAVÉS MODO O SU INTEGRACIÓN EN ICBC MOBILE BANKING,CON PAGO ONLINE REALIZADO UN DÍA JUEVES Y PROGRAMANDO EL RETIRO O ENVÍO PARA CUALQUIER DÍA. APLICA A COMPRAS PRESENCIALES REALIZADAS LOS DÍAS JUEVES.TOPE DE REINTEGRO $10.000 POR CLIENTE POR SEMANA  EJEMPLO: POR LA COMPRA DE $1.000 EN PRODUCTOS INCLUIDOS EN LA PROMOCIÓN SE LE REINTEGRAN $200.2) 30% DE AHORRO CON TARJETAS DE CRÉDITO VISA Y MASTERCARD ICBC EN UN SOLO PAGO Y TARJETAS ICBC VISA DÉBITO. PAGANDO A TRAVÉS MODO O SU INTEGRACIÓN EN ICBC MOBILE BANKING, COMPRANDO DE MANERA ONLINE CON PAGO Y RETIRO EN TIENDA PROGRAMADO PARA UN DÍA JUEVES O CON PAGO ONLINE REALIZADO UN DÍA JUEVES Y PROGRAMANDO EL RETIRO O ENVÍO PARA CUALQUIER DÍA. APLICA A COMPRAS PRESENCIALES REALIZADAS LOS DÍAS JUEVES.  EXCLUSIVO PARA CLIENTES QUE DEPOSITEN SU SUELDO EN ICBC. CON ACREDITACIÓN DE HABERES DENTRO LOS 90 DÍAS ANTERIORES A LA FECHA DE COMPRA. TOPE DE REINTEGRO $ $15.000 POR CLIENTE POR SEMANA . EJEMPLO: POR LA COMPRA DE $1.000 EN PRODUCTOS INCLUIDOS EN LA PROMOCIÓN SE LE REINTEGRAN $300.  LOS REINTEGROS SE VERAN ACREDITADOS DENTRO DE LOS 30 DÍAS CORRIDOS POSTERIORES A LA FECHA DE REALIZADA LA COMPRA EN LA CAJA DE AHORRO O CUENTA CORRIENTE QUE EL CLIENTE POSEA EN ICBC. SOLO PODRÁN PARTICIPAR DE LA PROMOCIÓN AQUELLOS CLIENTES QUE SE ENCUENTREN AL DÍA EN SUS PRODUCTOS. NO VÁLIDO PARA COMPRAS EFECTUADAS POR MERCADO PAGO, PAGO INMEDIATO O PAGO ENTRE PERSONAS. NO VÁLIDO PARA COMPRAS MAYORISTAS NI PARA TARJETAS VISA BUSINESS, VISA DISTRIBUTION, VISA PURCHASING, VISA PURCHASING CAMPO, CORPORATE, CORPORATE SIGNATURE, RECARGABLE EMPRESA Y VISA CUENTA CENTRAL. VÁLIDO PARA CLIENTES CON PAQUETE DE PRODUCTOS EN ICBC. NO VALIDO PARA ADICIONALES DE CUENTA SIN CAJA DE AHORRO O CUENTA CORRIENTE EN ICBC.LOS BENEFICIOS NO SE SUPERPONEN NI SON ACUMULATIVOS ENTRE SÍ, NI CON OTROS BENEFICIOS, PROMOCIONES U OFERTAS QUE OFREZCA MASONLINE. QUEDAN EXCLUIDAS LAS SIGUIENTES CATEGORÍAS: ELECTRONICOS, ELECTRODOMESTICOS, CELULARES, TABLETS, CONSOLAS, Y TODOS LOS PRODUCTOS INCLUIDOS EN EL PROGRAMA PRECIOS CUIDADOS. INDUSTRIAL AND COMMERCIAL BANK OF CHINA (ARGENTINA) S.A.U. ES UNA SOCIEDAD ANÓNIMA UNIPERSONAL BAJO LA LEY ARGENTINA. SU ACCIONISTA LIMITA SU RESPONSABILIDAD AL CAPITAL APORTADO. (LEY 25738). CUIT: 30-70944784-6. FLORIDA 99, CABA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/b1435162-d05c-4d5b-94c8-70274110644a/img_card/attachments/ICBC%20Sueldos_chico.png"
+      }
+    },
+    {
+      "id": "9b9876e3-0770-423d-bf5b-19a83a8f64eb",
+      "order": 3,
+      "days_label": "Sábado 24 y domingo 25 de octubre",
+      "days": [
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": 20,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjeta de Crédito MasterCard",
+      "subtitle": "Tope: $15.000 semanal. (Y2)*",
+      "tope_lines": [
+        "Tope: $15.000 semanal. (Y2)*"
+      ],
+      "bank": {
+        "id": "ab6abe23-54fd-11ef-8452-1211a9021aa7",
+        "name": "Yoy_MODO",
+        "image": "Logo Id - MODO3_YOY.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-04-27T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PROPUESTA PARA CARTERA DE CONSUMO VÁLIDA EN LA REPÚBLICA ARGENTINA PARA LOS DÍAS JUEVES DESDE EL 01/07/2026 HASTA EL 31/12/2026. 20% DE AHORRO CON TARJETAS DE CRÉDITO MASTERCARD YOY EN UN SOLO PAGO Y TARJETAS YOY VISA DÉBITO. PAGANDO POR MODO O SU INTEGRACIÓN EN APP YOY, CON PAGO ONLINE REALIZADO UN DÍA JUEVES Y PROGRAMANDO EL RETIRO O ENVÍO PARA CUALQUIER DÍA. APLICA A COMPRAS PRESENCIALES REALIZADAS LOS DÍAS JUEVES. TOPE DE REINTEGRO $10.000 POR CLIENTE POR SEMANA. EJEMPLO: POR LA COMPRA DE $1.000 EN PRODUCTOS INCLUIDOS EN LA PROMOCIÓN SE LE REINTEGRAN $200. LOS REINTEGROS SE VERAN ACREDITADOS DENTRO DE LOS 30 DÍAS CORRIDOS POSTERIORES A LA FECHA DE REALIZADA LA COMPRA EN LA CAJA DE AHORRO O CUENTA CORRIENTE QUE EL CLIENTE POSEA EN ICBC. SOLO PODRÁN PARTICIPAR DE LA PROMOCIÓN AQUELLOS CLIENTES QUE SE ENCUENTREN AL DÍA EN SUS PRODUCTOS. NO VÁLIDO PARA COMPRAS EFECTUADAS POR MERCADO PAGO, PAGO INMEDIATO O PAGO ENTRE PERSONAS. NO VALIDO PARA ADICIONALES DE CUENTA SIN CAJA DE AHORRO O CUENTA CORRIENTE EN ICBC. LOS BENEFICIOS NO SE SUPERPONEN NI SON ACUMULATIVOS ENTRE SÍ, NI CON OTROS BENEFICIOS, PROMOCIONES U OFERTAS QUE OFREZCA MASONLINE. QUEDAN EXCLUIDAS LAS SIGUIENTES CATEGORÍAS: ELECTRONICOS, ELECTRODOMESTICOS, CELULARES, TABLETS, CONSOLAS, Y TODOS LOS PRODUCTOS INCLUIDOS EN EL PROGRAMA PRECIOS CUIDADOS. INDUSTRIAL AND COMMERCIAL BANK OF CHINA (ARGENTINA) S.A.U. ES UNA SOCIEDAD ANÓNIMA UNIPERSONAL BAJO LA LEY ARGENTINA. SU ACCIONISTA LIMITA SU RESPONSABILIDAD AL CAPITAL APORTADO. (LEY 25738). CUIT: 30-70944784-6. FLORIDA 99, CABA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/9b9876e3-0770-423d-bf5b-19a83a8f64eb/img_card/attachments/Yoy-MODO_grande.png"
+      }
+    },
+    {
+      "id": "da08f0a1-15bd-4a42-aad3-4de113832bf4",
+      "order": 4,
+      "days_label": "Todos los Martes",
+      "days": [
+        "martes"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Exclusivo Jubilados - Con Visa débito",
+      "subtitle": "Tope: $25.000 mensual. (S2)*",
+      "tope_lines": [
+        "Tope: $25.000 mensual. (S2)*"
+      ],
+      "bank": {
+        "id": "b7409f62-44f4-11ed-83ab-1600502170e1",
+        "name": "Banco Supervielle",
+        "image": "1Supervielle.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-01-01T00:00:00+00:00",
+      "active_to": "2026-12-01T00:00:00+00:00",
+      "legal": "CARTERA CONSUMO. BANCO SUPERVIELLE S.A., RECONQUISTA 330, C.A.B.A., CUIT 33-50000517-9, INSCRIP. I.G.J. N° 23, F° 502, L. 45, T° A DE ESTATUTOS NAC. (“EL BANCO”). PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA LOS DÍAS MARTES DEL 01/08/2026 AL 30/11/2026 PARA CLIENTES QUE PERCIBAN SU JUBILACIÓN EN EL BANCO Y QUE REALICEN COMPRAS PRESENCIALES EN SUPERMERCADOS CHANGOMÁS, HIPER CHANGOMÁS,MASGO Y/O EN HTTPS://WWW.MASONLINE.COM.AR/CON LA TARJETA DE DÉBITO VISA (“LA TD”) QUE FORME PARTE DE UN PAQUETE DE PARTE DE UN PAQUETE DE PRODUCTOS ACTIVE PREVISIONAL, LIBERTÉ PREVISIONAL, LIBERTÉ GOLD PREVISIONAL E IDENTITÉ PREVISIONAL DEL BANCO. TOPE DE REINTEGRO MENSUAL POR CUENTA (CONSIDERANDO LA SUMA DE LOS CONSUMOS REALIZADOS POR EL CLIENTE, DURANTE EL MES, EN CUALQUIERA DE LOS SUPERMERCADOS ADHERIDOS): $25.000. EJ.: PARA UNA COMPRA DE $40.000, SE REINTEGRARÁ EL 20% DEL PRECIO, ES DECIR, $8.000. EL CONSUMO Y EL REINTEGRO SE VERÁN REFLEJADOS EN LA CUENTA ASOCIADA A LA TD EN LOS 30 DÍAS CORRIDOS POSTERIORES A LA COMPRA. NO APLICA A PAGOS REALIZADOS A TRAVÉS DE BILLETERAS VIRTUALES O 'PROVEEDORES DE SERVICIOS DE PAGO', EXCEPTO MODO. NO ACUMULABLE CON OTROS DESCUENTOS, EXCEPTO LOS PROMOVIDOS POR EL BANCO O MODO PARA PAGOS CON QR. LA MARCA “MODO” ES PROPIEDAD DE PLAY DIGITAL S.A., CUIT 30-71682943-6, DOMICILIO EN AV. DEL LIBERTADOR 7208, TORRE PRINCIPAL, PISO 3, C.A.B.A. EL BANCO NO ES RESPONSABLE POR LOS PRODUCTOS Y/O SERVICIOS COMERCIALIZADOS POR LAS MARCAS Y LOCALES PARTICIPANTES EN LAS PROMOCIONES.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/da08f0a1-15bd-4a42-aad3-4de113832bf4/img_card/attachments/banco%20supervielle%20normal.jpg"
+      }
+    },
+    {
+      "id": "40dae831-a44b-4a23-b175-3e248fffe947",
+      "order": 4,
+      "days_label": "Todos los Jueves",
+      "days": [
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "De reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjetas de crédito y débito",
+      "subtitle": "Tope: $10.000 semanal. (IC3)*",
+      "tope_lines": [
+        "Tope: $10.000 semanal. (IC3)*"
+      ],
+      "bank": {
+        "id": "06fc4208-78d8-11ee-83ab-0a1649dfa6b1",
+        "name": "ICBC Modo",
+        "image": "Logo Id - MODO3_ICBC.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-01-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "CARTERA DE CONSUMO. PROMOCIÓN VÁLIDA EN LA REPÚBLICA ARGENTINA PARA LOS DÍAS JUEVES DESDE EL 01/07/2026 HASTA EL 31/12/2026\n(1) 20% DE AHORRO CON TARJETAS DE CRÉDITO VISA Y MASTERCARD ICBC EN UN SOLO PAGO Y TARJETAS ICBC VISA DÉBITO. PAGANDO A TRAVÉS MODO O SU INTEGRACIÓN EN ICBC MOBILE BANKING, CON PAGO ONLINE REALIZADO UN DÍA JUEVES Y PROGRAMANDO EL RETIRO O ENVÍO PARA CUALQUIER DÍA. APLICA A COMPRAS PRESENCIALES REALIZADAS LOS DÍAS JUEVES. TOPE DE REINTEGRO $10.000 POR CLIENTE POR SEMANA. EJEMPLO: POR LA COMPRA DE $1.000 EN PRODUCTOS INCLUIDOS EN LA PROMOCIÓN SE LE REINTEGRAN $200. (2) 30% DE AHORRO CON TARJETAS DE CRÉDITO VISA Y MASTERCARD ICBC EN UN SOLO PAGO Y TARJETAS ICBC VISA DÉBITO. PAGANDO A TRAVÉS MODO O SU INTEGRACIÓN EN ICBC MOBILE BANKING, COMPRANDO DE MANERA ONLINE CON PAGO Y RETIRO EN TIENDA PROGRAMADO PARA UN DÍA JUEVES O CON PAGO ONLINE REALIZADO UN DÍA JUEVES Y PROGRAMANDO EL RETIRO O ENVÍO PARA CUALQUIER DÍA. APLICA A COMPRAS PRESENCIALES REALIZADAS LOS DÍAS JUEVES.  EXCLUSIVO PARA CLIENTES QUE DEPOSITEN SU SUELDO EN ICBC. CON ACREDITACIÓN DE HABERES DENTRO LOS 90 DÍAS ANTERIORES A LA FECHA DE COMPRA. TOPE DE REINTEGRO $15.000 POR CLIENTE POR SEMANA. EJEMPLO: POR LA COMPRA DE $1.000 EN PRODUCTOS INCLUIDOS EN LA PROMOCIÓN SE LE REINTEGRAN $300. \nLOS REINTEGROS SE VERAN ACREDITADOS DENTRO DE LOS 30 DÍAS CORRIDOS POSTERIORES A LA FECHA DE REALIZADA LA COMPRA EN LA CAJA DE AHORRO O CUENTA CORRIENTE QUE EL CLIENTE POSEA EN ICBC. SOLO PODRÁN PARTICIPAR DE LA PROMOCIÓN AQUELLOS CLIENTES QUE SE ENCUENTREN AL DÍA EN SUS PRODUCTOS. NO VÁLIDO PARA COMPRAS EFECTUADAS POR MERCADO PAGO, PAGO INMEDIATO O PAGO ENTRE PERSONAS. NO VÁLIDO PARA COMPRAS MAYORISTAS NI PARA TARJETAS VISA BUSINESS, VISA DISTRIBUTION, VISA PURCHASING, VISA PURCHASING CAMPO, CORPORATE, CORPORATE SIGNATURE, RECARGABLE EMPRESA Y VISA CUENTA CENTRAL. VÁLIDO PARA CLIENTES CON PAQUETE DE PRODUCTOS EN ICBC. NO VALIDO PARA ADICIONALES DE CUENTA SIN CAJA DE AHORRO O CUENTA CORRIENTE EN ICBC. LOS BENEFICIOS NO SE SUPERPONEN NI SON ACUMULATIVOS ENTRE SÍ, NI CON OTROS BENEFICIOS, PROMOCIONES U OFERTAS QUE OFREZCA MASONLINE. QUEDAN EXCLUIDAS LAS SIGUIENTES CATEGORÍAS: ELECTRONICOS, ELECTRODOMESTICOS, CELULARES, TABLETS, CONSOLAS, Y TODOS LOS PRODUCTOS INCLUIDOS EN EL PROGRAMA PRECIOS CUIDADOS. INDUSTRIAL AND COMMERCIAL BANK OF CHINA (ARGENTINA) S.A.U. ES UNA SOCIEDAD ANÓNIMA UNIPERSONAL BAJO LA LEY ARGENTINA. SU ACCIONISTA LIMITA SU RESPONSABILIDAD AL CAPITAL APORTADO. (LEY 25738). CUIT: 30-70944784-6. FLORIDA 99, CABA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/40dae831-a44b-4a23-b175-3e248fffe947/img_card/attachments/Logo%20Card%20-%20MODO_ICBC.png"
+      }
+    },
+    {
+      "id": "d133f802-3604-4405-95fb-a80348ebef6a",
+      "order": 5,
+      "days_label": "Todos los Martes",
+      "days": [
+        "martes"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Plan Inicial - Con Crédito NaranjaX o débito Visa",
+      "subtitle": "Tope: $3.000 semanal. (NX1)",
+      "tope_lines": [
+        "Tope: $3.000 semanal. (NX1)"
+      ],
+      "bank": {
+        "id": "9a9c3703-2fe8-11ee-83ab-0ecaeb3d03b5",
+        "name": "NaranjaX",
+        "image": "Logo_Naranjax_final.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-01-10T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN VÁLIDA LOS DÍAS MARTES DE MES DE SEPTIEMBRE Y OCTUBRE 2026, O HASTA AGOTAR UN STOCK TOTAL DE 80.000 REINTEGROS, LO QUE OCURRA PRIMERO. EL BENEFICIO CONSISTE EN UN REINTEGRO (CASHBACK) PARA LAS COMPRAS REALIZADAS CON TARJETA DE CRÉDITO NARANJAX Y TARJETA DE DÉBITO VISA NARANJAX EN TODOS LOS COMERCIOS ADHERIDOS A LA PROMO SUPERMERCADO; APLICANDO EL SIGUIENTE DESCUENTO Y TOPE SEGÚN EL PLAN DEL USUARIO: (1) PLAN INICIAL: 20% DE DESCUENTO CON TOPE DE $3.000 POR SEMANA. (2) PLAN TURBO: 25% DE DESCUENTO CON TOPE DE $9.500 POR SEMANA. (3) PLAN ÉPICO: 30% DE DESCUENTO CON TOPE DE $12.000 POR SEMANA. EL MONTO REINTEGRADO SE ACREDITARÁ ÚNICAMENTE EN TU CUENTA NARANJA X DENTRO DE LOS 10 DÍAS POSTERIORES A LA FECHA DE LA COMPRA. ESTA PROMOCIÓN ES VÁLIDA SOLO EN LOS COMERCIOS ADHERIDOS Y NO APLICA PARA COMPRAS REALIZADAS CON NARANJA VISA, NARANJA MASTERCARD, NARANJA AMEX, NI PARA TRANSACCIONES EFECTUADAS EN AGRUPADORES Y BILLETERAS VIRTUALES QUE NO SEAN NARANJA X. NARANJA X SE RESERVA EL DERECHO DE SUSPENDER O MODIFICAR LA PROMOCIÓN POR CAUSAS DE FUERZA MAYOR, NOTIFICÁNDOLO A TRAVÉS DE LA APLICACIÓN NARANJA X. LA CUENTA NARANJA X ES ADMINISTRADA POR NARANJA DIGITAL COMPAÑÍA FINANCIERA S.A.U., CUIT 30-71663964-5, TTE. GRAL. JUAN D. PERÓN 430, PISO 19, CABA. LA TARJETA DE CRÉDITO NARANJA X ES EMITIDA POR TARJETA NARANJA S.A.U., CUIT 30-68537634-9, LA TABLADA 451, CIUDAD DE CÓRDOBA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/d133f802-3604-4405-95fb-a80348ebef6a/img_card/attachments/Banco%20Naranja%20grande.png"
+      }
+    },
+    {
+      "id": "61239502-26b4-4c2a-8bb9-8b41677e63ec",
+      "order": 5,
+      "days_label": "Todos los Jueves",
+      "days": [
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjetas de crédito y débito MasterCard",
+      "subtitle": "Tope: 10.000 semanal. (Y)*",
+      "tope_lines": [
+        "Tope: 10.000 semanal. (Y)*"
+      ],
+      "bank": {
+        "id": "7daf51ea-1f6b-11ef-8452-0e6ca8a392fd",
+        "name": "Yoy",
+        "image": "YOY_Chico.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-01-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "PROPUESTA PARA CARTERA DE CONSUMO VÁLIDA EN LA REPÚBLICA ARGENTINA PARA LOS DÍAS JUEVES DESDE EL 01/07/2026 HASTA EL 31/12/2026. 20% DE AHORRO CON TARJETAS DE CRÉDITO MASTERCARD YOY EN UN SOLO PAGO Y TARJETAS YOY VISA DÉBITO. PAGANDO POR MODO O SU INTEGRACIÓN EN APP YOY, CON PAGO ONLINE REALIZADO UN DÍA JUEVES Y PROGRAMANDO EL RETIRO O ENVÍO PARA CUALQUIER DÍA. APLICA A COMPRAS PRESENCIALES REALIZADAS LOS DÍAS JUEVES. TOPE DE REINTEGRO $10.000 POR CLIENTE POR SEMANA. EJEMPLO: POR LA COMPRA DE $1.000 EN PRODUCTOS INCLUIDOS EN LA PROMOCIÓN SE LE REINTEGRAN $200. LOS REINTEGROS SE VERAN ACREDITADOS DENTRO DE LOS 30 DÍAS CORRIDOS POSTERIORES A LA FECHA DE REALIZADA LA COMPRA EN LA CAJA DE AHORRO O CUENTA CORRIENTE QUE EL CLIENTE POSEA EN ICBC. SOLO PODRÁN PARTICIPAR DE LA PROMOCIÓN AQUELLOS CLIENTES QUE SE ENCUENTREN AL DÍA EN SUS PRODUCTOS. NO VÁLIDO PARA COMPRAS EFECTUADAS POR MERCADO PAGO, PAGO INMEDIATO O PAGO ENTRE PERSONAS. NO VALIDO PARA ADICIONALES DE CUENTA SIN CAJA DE AHORRO O CUENTA CORRIENTE EN ICBC. LOS BENEFICIOS NO SE SUPERPONEN NI SON ACUMULATIVOS ENTRE SÍ, NI CON OTROS BENEFICIOS, PROMOCIONES U OFERTAS QUE OFREZCA MASONLINE. QUEDAN EXCLUIDAS LAS SIGUIENTES CATEGORÍAS: ELECTRONICOS, ELECTRODOMESTICOS, CELULARES, TABLETS, CONSOLAS, Y TODOS LOS PRODUCTOS INCLUIDOS EN EL PROGRAMA PRECIOS CUIDADOS. INDUSTRIAL AND COMMERCIAL BANK OF CHINA (ARGENTINA) S.A.U. ES UNA SOCIEDAD ANÓNIMA UNIPERSONAL BAJO LA LEY ARGENTINA. SU ACCIONISTA LIMITA SU RESPONSABILIDAD AL CAPITAL APORTADO. (LEY 25738). CUIT: 30-70944784-6. FLORIDA 99, CABA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/61239502-26b4-4c2a-8bb9-8b41677e63ec/img_card/attachments/logoyoyogrande268x104.png"
+      }
+    },
+    {
+      "id": "bec58c33-1a9c-4a38-8197-845c2f33deb5",
+      "order": 6,
+      "days_label": "Todos los Martes",
+      "days": [
+        "martes"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "De reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Débito Visa Y Crédito Visa y MasterCard",
+      "subtitle": "Tope: $12.000 semanal para Comafi Ahorro, Global, y/o Classic, Premium y/o Platinum.                   Tope: $15.000 semanal para Comafi Unico Black. (CMF)",
+      "tope_lines": [
+        "Tope: $12.000 semanal para Comafi Ahorro, Global, y/o Classic, Premium y/o Platinum. Tope: $15.000 semanal para Comafi Unico Black. (CMF)"
+      ],
+      "bank": {
+        "id": "a234c39c-7f5a-11ef-b37f-f2e65af65faa",
+        "name": "Banco_Comafi_MODO",
+        "image": "Logo Id - MODO3_Comafi.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-02-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "LEGAL SEGMENTO: AHORRO, GLOBAL Y CLASSIC | PREMIUM Y PLATINUM.\nCARTERA DE CONSUMO. PROMOCIÓN VÁLIDA LOS MARTES DESDE EL 01/08/26 HASTA EL 31/10/26 ABONANDO CON TARJETAS DE CRÉDITO VISA Y MASTERCARD, VISA DÉBITO EMITIDAS POR BANCO COMAFI PERTENECIENTES A TITULARES DE SERVICIOS DE CUENTA COMAFI AHORRO, GLOBAL, Y/O CLASSIC, PREMIUM Y/O PLATINUM. BENEFICIO: 20% DE AHORRO ABONANDO A TRAVÉS DE MODO. QUEDAN EXCLUIDAS AQUELLAS TARJETAS DE CRÉDITO CREDIAL, BUSINESS Y CORPORATIVAS EMITIDAS EN ARGENTINA POR BANCO COMAFI. TOPE DE REINTEGRO SEMANAL DE $12.000. LOS DESCUENTOS SE REALIZAN SOBRE PRECIO DE LISTA, SON AUTOMÁTICOS Y SE ACREDITARÁN HASTA LOS 30 DÍAS EN LA CUENTA DEL BANCO UTILIZADO EN EL PAGO. NO ACUMULABLE CON OTRAS PROMOCIONES NI ENTRE SÍ. SÓLO VÁLIDO PARA AQUELLOS CLIENTES QUE SE ENCUENTREN AL DÍA EN SUS PRODUCTOS Y SEAN TITULARES DE UNA CAJA DE AHORRO EN PESOS EN BANCO COMAFI. PARA COMPRAS REALIZADAS POR ADICIONALES CON TARJETA DE DÉBITO Y/O CRÉDITO DE BANCO COMAFI, EL REINTEGRO SIEMPRE SE ACREDITARÁ EN LA CAJA DE AHORRO EN PESOS QUE EL TITULAR PRINCIPAL DE LA TARJETA DE DÉBITO Y/O CRÉDITO TENGA EN BANCO COMAFI. EL BENEFICIO NO SERÁ APLICADO EN AQUELLAS COMPRAS REALIZADAS A TRAVÉS DE MERCADOPAGO. CONSULTAR LOCALES ADHERIDOS Y MEDIOS DE PAGO HABILITADOS EN WWW.TEVABIEN.COM. BANCO COMAFI NO SE RESPONSABILIZA POR LOS CUPONES PRESENTADOS POR LOS ESTABLECIMIENTOS FUERA DE TÉRMINO, ASÍ COMO TAMPOCO PROMOCIONA NI GARANTIZA LOS COMERCIOS, LOS PRODUCTOS Y/O SERVICIOS O LA CALIDAD DE LOS MISMOS.  EL BENEFICIO NO SERÁ APLICADO PARA AQUELLAS COMPRAS REALIZADAS CON PLAN GOBIERNO. BANCO COMAFI S.A. CON DOMICILIO EN AV. ROQUE SÁENZ PEÑA 660, PISO 3, CUIT 30-60473101-8.\n\nLEGAL SEGMENTO: UNICO BLACK\nCARTERA DE CONSUMO. PROMOCIÓN VÁLIDA LOS MARTES DESDE EL 01/08/26 HASTA EL 31/10/26 ABONANDO CON TARJETAS DE CRÉDITO VISA Y MASTERCARD, VISA DÉBITO ABONANDO CON TARJETAS DE CRÉDITO VISA SIGNATURE Y MASTERCARD BLACK PERTENECIENTES A SERVICIOS DE CUENTA UNICO EMITIDAS POR BANCO COMAFI. BENEFICIO: 20% DE AHORRO ABONANDO A TRAVÉS DE MODO. QUEDAN EXCLUIDAS AQUELLAS TARJETAS DE CRÉDITO CREDIAL, BUSINESS Y CORPORATIVAS EMITIDAS EN ARGENTINA POR BANCO COMAFI. TOPE DE REINTEGRO SEMANAL DE $15.000. LOS DESCUENTOS SE REALIZAN SOBRE PRECIO DE LISTA, SON AUTOMÁTICOS Y SE ACREDITARÁN HASTA LOS 30 DÍAS CORRIDOS EN LA CUENTA DEL BANCO UTILIZADO EN EL PAGO. NO ACUMULABLE CON OTRAS PROMOCIONES NI ENTRE SÍ. SÓLO VÁLIDO PARA AQUELLOS CLIENTES QUE SE ENCUENTREN AL DÍA EN SUS PRODUCTOS Y SEAN TITULARES DE UNA CAJA DE AHORRO EN PESOS EN BANCO COMAFI. PARA COMPRAS REALIZADAS POR ADICIONALES CON TARJETA DE DÉBITO Y/O CRÉDITO DE BANCO COMAFI, EL REINTEGRO SIEMPRE SE ACREDITARÁ EN LA CAJA DE AHORRO EN PESOS QUE EL TITULAR PRINCIPAL DE LA TARJETA DE DÉBITO Y/O CRÉDITO TENGA EN BANCO COMAFI. EL BENEFICIO NO SERÁ APLICADO EN AQUELLAS COMPRAS REALIZADAS A TRAVÉS DE MERCADOPAGO. CONSULTAR LOCALES ADHERIDOS Y MEDIOS DE PAGO HABILITADOS EN WWW.TEVABIEN.COM. BANCO COMAFI NO SE RESPONSABILIZA POR LOS CUPONES PRESENTADOS POR LOS ESTABLECIMIENTOS FUERA DE TÉRMINO, ASÍ COMO TAMPOCO PROMOCIONA NI GARANTIZA LOS COMERCIOS, LOS PRODUCTOS Y/O SERVICIOS O LA CALIDAD DE LOS MISMOS.  EL BENEFICIO NO SERÁ APLICADO PARA AQUELLAS COMPRAS REALIZADAS CON PLAN GOBIERNO. BANCO COMAFI S.A. CON DOMICILIO EN AV. ROQUE SÁENZ PEÑA 660, PISO 3, CUIT 30-604731018.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/bec58c33-1a9c-4a38-8197-845c2f33deb5/img_card/attachments/Comafi_MODO__grande268x104.png"
+      }
+    },
+    {
+      "id": "62be34ea-262e-11f0-b37f-932bc4e434d0",
+      "order": 6,
+      "days_label": "Todos los jueves",
+      "days": [
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "SIN TOPE DE REINTEGRO",
+      "subtitle": "Válido para Buenos Aires, CABA y Viedma. No acumulable con otras promociones bancarias. Aplican exclusiones. (CDNI)",
+      "tope_lines": [
+        "SIN TOPE DE REINTEGRO"
+      ],
+      "bank": {
+        "id": "f9315b48-4f81-11ef-8452-121b3ce95f81",
+        "name": "Banco Provincia - Cuenta DNI",
+        "image": "CuentaDNI_chico.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-03-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "BENEFICIO VÁLIDO EXCLUSIVAMENTE EN LA REPÚBLICA ARGENTINA PARA PAGOS REALIZADOS LOS JUEVES DE OCTUBRE 2026 A TRAVÉS DE CUENTA DNI. EL BENEFICIO CONSISTE EN UN 20% DE DESCUENTO SIN TOPE, COMPRANDO EN SUCURSALES DE HIPER CHANGOMAS, CHANGOMAS Y MASGO DE LAS SIGUIENTES LOCALIDADES: 3 DE FEBRERO, ALTE BROWN, AVELLANEDA, AVELLANEDA (SARANDI), BAHÍA BLANCA, CAMPANA, CASEROS, CLAYPOLE, GONZÁLEZ CATÁN, AV CONSTITUYENTES, HURLINGHAM (AV. VERGARA), HURLINGHAM (AV. VILLEGAS), JOSE C PAZ, JUNÍN, LA PLATA, LA TABLADA, LAFERRERE, LANÚS, LOMAS DE ZAMORA, LUJÁN, MALVINAS ARG, MATADEROS, MORENO, MORENO DERQUI, MORENO SHOPPING, MORÓN, OLAVARRÍA, PERGAMINO, PILAR, QUILMES, SAN FERNANDO, SAN JUSTO, SAN MARTIN, SAN VICENTE, TIGRE, VIEDMA.). INCLUYE TODAS LAS TIENDAS DE MASGO. INCLUYE TIENDA: QUILMES. APLICA UNICAMENTE PARA PAGO EN TIENDA. NO ACUMULABLE CON OTRAS PROMOCIONES. EL BENEFICIO ESTARÁ A CARGO DE CHANGOMAS Y SE REALIZARÁ SOBRE EL PRECIO DE CONTADO EN LÍNEA DE CAJA. BENEFICIO NO VÁLIDO PARA CAJAS DE AUTOCOBRO. EXCLUIDOS: CARNICERIA, GRANJA, ELABORADOS, EMBUTIDOS, QUESOS: (QUESOS BLANDOS, QUESOS DUROS, QUESOS FETEADOS, QUESOS RALLADOS, QUESOS SEMIDUROS), FRUTAS Y VERDURAS, HUEVOS. ACEITES COMESTIBLES, HARINAS, LECHES FLUIDAS, AZÚCARES. BEBIDAS BLANCAS, VINOS, FERNET, CERVEZAS Y GASEOSAS DE “CERVECERIA Y MALTERIA QUILMES” (STELLA ARTOIS, BUDWEISER, CORONA, QUILMES, BRAHMA, MICHELOB, PATAGONIA, EAZY, GOOSE ISLAND, ANDES, TEMPLE, PEPSI, SEVEN UP, PASO DE LOS TOROS, GATORADE, GLACIAR, ECO DE LOS ANDES, H20, AGUAS NESTLÉ, AWAFRUT, MIRINDA, RED BULL, ROCKSTAR), LÍNEA COCA COLA (ORIGINAL, LIGHT, ZERO SIN AZUCAR, SABOR LIVIANO), FANTA, SPRITE (ORIGINAL, SIN AZÚCAR), SCHWEPPES, POWERADE, CEPITA, ADES, AQUARIUS, BENEDICTINO, BONAQUA, SMART WATER, MONSTER, CRUSH, FIGURITAS Y ÁLBUM MUNDIAL 2026. ELECTRODOMÉSTICOS Y ELECTRÓNICOS, RODADOS, INFORMÁTICA, CELULARES Y CLIMATIZACIÓN, LÍNEA BLANCA, MEDICAMENTOS DE FARMACIA, SERVICIOS DE AUTOCENTER, BATERÍAS Y NEUMÁTICOS. NO ACUMULABLE CON OTRAS PROMOCIONES VIGENTES Y/O PRODUCTOS EN LIQUIDACIÓN. SOLO PARA CONSUMO FAMILIAR. BANCO DE LA PROVINCIA DE BUENOS AIRES, CUIT N° 33-99924210-9, CON DOMICILIO EN AVENIDA ING. LUIS MONTEVERDE N° 726 DE LA CIUDAD DE LA PLATA, PROVINCIA DE BUENOS AIRES.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/62be34ea-262e-11f0-b37f-932bc4e434d0/img_card/attachments/Cuenta%20DNI_grande.png"
+      }
+    },
+    {
+      "id": "52b7d9be-f5de-11ef-b37f-cc4efda0d0cc",
+      "order": 7,
+      "days_label": "Todos los Martes y Sábados",
+      "days": [
+        "martes",
+        "sábado"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": true,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Con tarjetas de Crédito Visa y MasterCard",
+      "subtitle": "Tope: $10.000 semanal (BC)*",
+      "tope_lines": [
+        "Tope: $10.000 semanal (BC)*"
+      ],
+      "bank": {
+        "id": "62913526-f5e0-11ef-b37f-940e7c6d2e3e",
+        "name": "Banco Columbia",
+        "image": "LogoId  Banco Columbia.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2025-03-01T00:00:00+00:00",
+      "active_to": "2027-04-01T00:00:00+00:00",
+      "legal": "CARTERA DE CONSUMO.VIGENCIA DESDE EL 01/10/2026 HASTA EL 31/03/2027 AMBAS FECHAS INCLUSIVE. PARA COMPRAS EN UN PAGO REALIZADAS ÚNICAMENTE LOS DIAS MARTES Y SABADOS  EN LAS SUCURSALES Y MAS ON LINE  APLICA EN SUPERMERCADOS CHANGO MAS, AUTOCENTER Y FARMACIA CHANGO MAS UBICADAS EN EL TERRITORIO DE LA REPÚBLICA ARGENTINA ABONANDO CON LAS TARJETAS DE CREDITO VISA Y MASTERCARD EMITIDAS POR BANCO COLUMBIA. 20% DE AHORRO EN COMPRAS EN UN PAGO, TOPE DE REINTEGRO $10.000 POR CUENTA. PROMOCION NO ACUMABLE CON OTROS DESCUENTOS.EJEMPLO: COMPRA REALIZADA EN 1 PAGO DE $100.000 RECIBIRÁ UN REINTEGRO DE $10.000. LA BONIFICACIONES SE VERÁN REFLEJADAS HASTA EN LOS 2 RESÚMENES SIGUIENTES AL QUE REFLEJE LA/S TRANSACCIÓN/ES. BANCO COLUMBIA S.A. NO SE RESPONSABILIZA POR LAS TRANSACCIONES PRESENTADAS FUERA DE TÉRMINO POR LOS ESTABLECIMIENTOS ADHERIDOS. BANCO COLUMBIA S.A. NO SE RESPONSABILIZA POR LA CALIDAD Y FUNCIONAMIENTO DE PRODUCTOS PUBLICADOS. LOS BENEFICIOS DE LAS PROMOCIONES SE OTORGARÁN SIEMPRE QUE LAS TARJETAS DE CRÉDITO SE ENCUENTREN HABILITADAS, Y LA CUENTA NO SE ENCUENTRE EN MORA Y/O BLOQUEADA POR MOTIVOS ADMINISTRATIVOS.BANCO COLUMBIA S.A. CUIT 30-51763749-8 TTE. GRAL. JUAN DOMINGO PERÓN 350 C.A.B.A. INSCRIPCIÓN IGJ Nº 45 Fº 432 L.69 TOMO “A” SOCIEDADES POR ACCIONES",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/52b7d9be-f5de-11ef-b37f-cc4efda0d0cc/img_card/attachments/Banco%20Columbia%20Logo%20Card.png"
+      }
+    },
+    {
+      "id": "13cef3cf-9fed-4b09-ba60-10d74eeb9fc7",
+      "order": 7,
+      "days_label": "Todos los jueves",
+      "days": [
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "de descuento",
+      "installments_amount": "4",
+      "installments_text": "Sin Interés",
+      "title": "Con tarjeta de crédito SOL",
+      "subtitle": "Tope: $10.000 semanal. (SL)*",
+      "tope_lines": [
+        "Tope: $10.000 semanal. (SL)*"
+      ],
+      "bank": {
+        "id": "a58230b6-3575-11ef-8452-0affd045eab9",
+        "name": "Sol",
+        "image": "LogoId  Banco Sol.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-02-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "LEGAL: Valido para todas las operaciones realizadas con TARJETA SOL en las provincias de CORDOBA, SANTIAGO, TUCUMAN, CATAMARCA, SALTA Y JUJUY, en 4 CUOTAS los días JUEVES de OCTUBRE. El reintegro será del 20%  TOPE DE REINTEGRO $10.000. El reintegro se realiza en el resumen del usuario",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/13cef3cf-9fed-4b09-ba60-10d74eeb9fc7/img_card/attachments/Logo%20Banco%20Sol%20Grande.png"
+      }
+    },
+    {
+      "id": "d2e88505-e0f9-49e0-bd3f-de8628f06146",
+      "order": 8,
+      "days_label": "Jueves a Domingos",
+      "days": [
+        "jueves",
+        "viernes",
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": null,
+      "discount_text": null,
+      "installments_amount": "3",
+      "installments_text": "Sin Interés",
+      "title": "EN TODA LA COMPRA",
+      "subtitle": "Exclusivo presencial. Pagando con Tarjetas de Crédito Visa, Mastercard y American Express. (G4)",
+      "tope_lines": [],
+      "bank": {
+        "id": "6167861a-a593-11ee-8452-0af780f66fd5",
+        "name": "Banco Galicia",
+        "image": "GaliciaMini.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-02-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "CARTERA DE CONSUMO. Promoción de hasta 3 cuotas sin interés, en compras realizadas en el País. Válida los días Jueves, Viernes, Sábado y Domingo comprendidos entre el 01/10/2026 y 31/12/2026, para compras realizadas con Tarjeta Visa, Tarjeta Mastercard y Tarjeta American Express. Promoción válida únicamente para compras presenciales. Dicha promoción no es acumulable con otras promociones vigentes. Ejemplo: En una compra de $1000 y se paga en 3 cuotas: el valor de las cuotas será de $333.33 No aplica para compras realizadas con tarjetas de Credito Visa Business, Visa Rural y Tarjetas de Débito emitidas a por Anses para Asignación Universal por hijo ni Progresar. La promoción no aplica a pagos a través de billeteras virtuales (excepto Modo, Google Pay y Apple Pay), mPos y/o plataformas de pago online. MODO es marca registrada por Play Digital S.A., CUIT 30-71682943-6, con domicilio en Av. del Libertador 7208, Torre I, Piso 3, CABA (“PDSA”) y es un Proveedor de Servicios Tecnológicos de Banco de Galicia y Buenos Aires S.A.U. Sólo podrán participar de la promoción aquellos clientes que al momento de comprar se encuentren al día con sus productos. Banco Galicia solo es el medio de pago para la adquisición del producto/servicio. Tasa Nominal Anual “TNA”: 0,00%, Tasa Efectiva Anual “TEA”: 0,00%, Costo Financiero Total Efectivo Anual “CFTEA”: 0,00%.“CFTEA”+IVA: 0,00%",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/d2e88505-e0f9-49e0-bd3f-de8628f06146/img_card/attachments/banco%20galicia%20grande.png"
+      }
+    },
+    {
+      "id": "589fddc2-f1f1-4169-81b5-c8dbd03b33da",
+      "order": 9,
+      "days_label": "Todos los días",
+      "days": [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": 10,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Todos los medios de pago.",
+      "subtitle": "Tope: $12.000 por transacción. No acumulable con otras promociones. Aplican exclusiones.(A)*",
+      "tope_lines": [
+        "Tope: $12.000 por transacción. No acumulable con otras promociones. Aplican exclusiones.(A)*"
+      ],
+      "bank": {
+        "id": "32f07815-982d-11ee-8452-1288a753a239",
+        "name": "Anses",
+        "image": "Anses_chico.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-05-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN EXCLUSIVA PARA BENEFICIARIOS DE ANSES EN COMPRAS PRESENCIALES Y ONLINE EN TODAS LAS TIENDAS DEL PAÍS. 10% DESCUENTO. TOPE DE REINTEGRO $12.000 POR TRANSACCIÓN Y $50.000 TOTAL POR MES. PROMOCIÓN VÁLIDA DE LUNES A DOMINGO DESDE EL 01/10/2026 AL 31/10/2026. ÚNICAMENTE EN LOS PRODUCTOS DETALLADOS A CONTINUACIÓN: CONSERVA DE TOMATES, PASTAS SECAS Y REFRIGERADAS, ARROZ, ADEREZOS, SALCHICHAS, LECHE UAT, CAFÉ, TÉ, ENDULZANTES, ALMACÉN SIN TACC, LECHE FRESCA, LECHES MATERNAS, CONSERVA DE VEGETALES, CACAO, SAL, CEREALES, DULCE DE LECHE, LECHES, VEGETALES, CONSERVAS DE PESCADOS, GALLETITAS DULCES, GALLETITAS SALADAS, HARINAS Y PREMEZCLAS, NUTRICIÓN INFANTIL, LECHE EN POLVO, JUGOS (EXCEPTO REFRIGERADOS), CULINARIOS (CALDOS, SOPAS Y DESHIDRATADOS), SALSAS LISTAS, HORNEABLES Y GELIFICABLES, MANTECA, MARGARINA, SNACKS, AGUAS SABORIZADAS, AMARGOS, GASEOSAS, AGUAS PLENAS, DULCES SÓLIDOS, QUESOS AL PESO (BLANDOS, SEMIDUROS Y DUROS), MILANESAS VEGETALES, PAPAS CONGELADAS, FIAMBRES FETEADOS, FIAMBRES EN MINI PIEZA, GRASA REFRIGERADA, VEGETALES, CONGELADOS, PREFRITOS CONGELADOS, PIZZAS CONGELADAS, LEVADURA, HAMBURGUESAS Y MEDALLONES, TAPAS REFRIGERADAS, LEGUMBRES Y GRANOS SECOS, JABONES DE TOCADOR, DESODORANTES, HIGIENE DEL BEBÉ, CUIDADO DEL CABELLO, CUIDADO ORAL, HIGIENE FEMENINA, PAPELES HIGIÉNICOS, ROLLO DE COCINA, TOALLITAS HÚMEDAS. NO ACUMULA CON OTRAS PROMOCIONES VIGENTES. SOLO DISPONIBLE PARA COMPRAS EN 1 (UN) PAGO. DESCUENTO PERSONAL E INTRANSFERIBLE, PARA VALIDAR EL DESCUENTO Y ACREDITAR QUE EL CLIENTE DEBE PRESENTAR EL DNI, EL MISMO DEBE PRESENTARSE PERSONALMENTE Y EXHIBIR SU DNI.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/589fddc2-f1f1-4169-81b5-c8dbd03b33da/img_card/attachments/Anses_grande.png"
+      }
+    },
+    {
+      "id": "dbd37a0a-66e3-11ef-b37f-89905a2f1760",
+      "order": 10,
+      "days_label": "Todos los días",
+      "days": [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": 10,
+      "discount_text": "de descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Todos los medios de pago",
+      "subtitle": "Tope: $12.000 por transacción. Excluye sucursal Luján. (EM)*",
+      "tope_lines": [
+        "Tope: $12.000 por transacción. Excluye sucursal Luján. (EM)*"
+      ],
+      "bank": {
+        "id": "d247d13c-0881-11ef-8452-0affe9b94723",
+        "name": "Empleados Públicos",
+        "image": "Banco Id Empleados Municipales Publicos_OK-01.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-04-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN EXCLUSIVA PARA EMPLEADOS MUNICIPALES Y PROVINCIALES PARA COMPRAS PRESENCIALES EN TODAS LAS TIENDAS DEL PAÍS (EXCLUYE TIENDAS DE LUJAN). 10% DE DESCUENTO CON TOPE DE REINTEGRO POR TRANSACCIÓN $12.000. TOPE DE TRANSACCIONES POR DÍA: 1 (UNA). PROMOCIÓN VÁLIDA DEL 01/10/2026 AL 31/10/2026 EN LOS PRODUCTOS ALMACÉN SECO, LÁCTEOS, BEBIDA SIN ALCOHOL, GALLETITAS Y GOLOSINAS, PAPELES, TAPAS EMPANADAS Y TARTAS, PASTAS FRESCAS Y SALCHICHA, FIAMBRERÍA, QUESOS, CONGELADOS, PAÑALES Y PERFUMERÍA DEL BEBÉ, FARMACIA VENTA LIBRE (NO INCLUYE RECETADOS) Y PERFUMERÍA. EXCEPTO ELECTRO, CARNES Y PRECIOS JUSTOS. NO ACUMULA CON OTRAS PROMOCIONES VIGENTES. SOLO DISPONIBLE PARA COMPRAS EN 1 (UN) PAGO. DESCUENTO PERSONAL E INTRANSFERIBLE, PARA VALIDAR EL DESCUENTO Y ACREDITAR QUE EL CLIENTE ES EMPLEADO PÚBLICO, EL MISMO DEBE PRESENTARSE PERSONALMENTE Y EXHIBIR SU DNI Y RECIBO DE SUELDO.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/dbd37a0a-66e3-11ef-b37f-89905a2f1760/img_card/attachments/empleados%20pu%CC%81blicos%20municipales%20_grande_ok-01.png"
+      }
+    },
+    {
+      "id": "d44efac1-f04a-4ef0-8353-b338e576e38f",
+      "order": 11,
+      "days_label": "Todos los días",
+      "days": [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": null,
+      "discount_text": null,
+      "installments_amount": "2",
+      "installments_text": "Sin Interés",
+      "title": "Con QR con Tarjeta de Crédito de Mercado Pago",
+      "subtitle": "Exclusivo en sucursales en compras a partir de $50.000 a $149.000. (MP2)",
+      "tope_lines": [],
+      "bank": {
+        "id": "8ccbdf0d-905d-11ee-8452-0eb8fa5466a5",
+        "name": "Mercado Pago",
+        "image": "Mercado-Pago-Logo 2.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-06-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "CUOTAS SIN INTERÉS CON QR DE MERCADO PAGO: VÁLIDO DEL 1/10/2026 AL 31/12/2025 PARA COMPRAS DESDE $50.000 HASTA $149.000 EN 2 CUOTAS SIN INTERES REALIZADAS CON LA TARJETA DE CRÉDITO MERCADO PAGO EN UN QR DE MERCADO PAGO Y PARA COMPRAS MINIMAS DE$150.000 EN 3 CUOTAS SIN INTERES REALIZADAS CON LA TARJETA DE CRÉDITO MERCADO PAGO EN UN QR DE MERCADO PAGO . APLICA SOLO SI SE CUMPLEN TODAS LAS CONDICIONES: (I) PAGO CON QR CON LA TARJETA DE CRÉDITO DE MERCADO PAGO (II) EN QR DE MERCADO PAGO, (III) COMPRA MÍNIMA DE $50.000 EN 2 CUOTAS SIN INTERES Y COMPRA MINIMA DE $150.000 EN 3 CUOTAS SIN INTERES. MERCADOLIBRE S.R.L. CUIT 30-70308853-4. AVENIDA CASEROS 3039, PISO 2, CIUDAD AUTÓNOMA DE BUENOS AIRES",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/d44efac1-f04a-4ef0-8353-b338e576e38f/img_card/attachments/Mercado%20Pago%20grande.png"
+      }
+    },
+    {
+      "id": "03596052-2ed5-417e-b1c0-59a0c9f1a1fa",
+      "order": 13,
+      "days_label": "Todos los días",
+      "days": [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": null,
+      "discount_text": null,
+      "installments_amount": "4",
+      "installments_text": "Sin Interés",
+      "title": "EN TODA LA COMPRA",
+      "subtitle": "Válido en todo el país. Incluye medicamentos bajo receta. No aplica con tarjeta Visa, Mastercard y American Express. (NX2)",
+      "tope_lines": [],
+      "bank": {
+        "id": "9a9c3703-2fe8-11ee-83ab-0ecaeb3d03b5",
+        "name": "NaranjaX",
+        "image": "Logo_Naranjax_final.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-04-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "4 CSI NARANJA: 4 CUOTAS SIN INTERÉS. PROMOCIÓN VÁLIDA EN TODA LA COMPRA EN LA VIGENCIA 01/10/2026 AL 31/12/2026, SOLO PAGANDO CON TARJETA NARANJA X EMITIDAS POR TARJETA NARANJA S.A. (O NARANJA DIGITAL COMPAÑÍA FINANCIERA S.A.U.) CFT 0%. TEA0%, TNA0%. PARA TODAS LAS TIENDAS DE PAIS Y MÁS ONLINE. (N). LA CUENTA NARANJA X ES ADMINISTRADA POR NARANJA DIGITAL COMPAÑÍA FINANCIERA S.A.U., CUIT 30-71663964-5, TTE. GRAL. JUAN D. PERÓN 430, PISO 19, CABA. LA TARJETA DE CRÉDITO NARANJA X ES EMITIDA POR TARJETA NARANJA S.A.U., CUIT 30-68537634-9, LA TABLADA 451, CIUDAD DE CÓRDOBA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/03596052-2ed5-417e-b1c0-59a0c9f1a1fa/img_card/attachments/Banco%20Naranja%20grande.png"
+      }
+    },
+    {
+      "id": "63800b70-3ecd-4866-a020-76119a1b44f8",
+      "order": 14,
+      "days_label": "Todos los días",
+      "days": [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": null,
+      "discount_text": null,
+      "installments_amount": "4",
+      "installments_text": "Sin Interés",
+      "title": "Con Tarjeta de Crédito Visa y MasterCard",
+      "subtitle": "EN TODA TU COMPRA (4CB)",
+      "tope_lines": [],
+      "bank": {
+        "id": "ec7714dc-2866-405a-843a-8f8476c47b01",
+        "name": "BANCOR",
+        "image": "BANCOR_chico.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-05-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "CARTERA DE CONSUMO. PROMOCIÓN VÁLIDA DESDE EL 01/10/2026 AL 31/12/2026 PARA PAGOS CON TARJETA DE CRÉDITO DEL BANCO DE CÓRDOBA (MASTERCARD Y/O VISA) PARA COMPRAS REALIZADAS EN COMERCIOS ADHERIDOS A LA PROMOCIÓN, PERTENECIENTES A LOS SIGUIENTES RUBROS: SUPERMERCADOS/FARMACIAS. FINANCIACIÓN EN CUATRO (4) CUOTAS SIN INTERÉS. TASA NOMINAL ANUAL (TNA): 0%. TASA EFECTIVA ANUAL (TEA) 0%.   COSTO FINANCIERO TOTAL (CFT): 0% EFECTIVO ANUAL. EJEMPLO: PARA UN PAGO DE PESOS CUARENTA MIL ($40.000), EL CLIENTE ABONARÁ CUATRO (4) CUOTAS SIN INTERÉS DE PESOS DIEZ MIL ($10.000). LOS BENEFICIOS SE APLICARÁN SIEMPRE QUE LA TARJETA SE ENCUENTRE HABILITADA Y QUE LA CUENTA NO SE ENCUENTRE EN MORA Y/O BLOQUEADA POR MOTIVOS ADMINISTRATIVOS.  BANCO PROVINCIA DE CÓRDOBA S.A. CUIT 30999228565. DOMICILIO: SAN JERÓNIMO 166, CÓRDOBA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/63800b70-3ecd-4866-a020-76119a1b44f8/img_card/attachments/Cordobesa%20BANCOR_grande.png"
+      }
+    },
+    {
+      "id": "7ef0bdad-4543-4234-aab4-2eb0653a6d40",
+      "order": null,
+      "days_label": "Todos los días",
+      "days": [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": null,
+      "discount_text": null,
+      "installments_amount": "3",
+      "installments_text": "Sin interés",
+      "title": "Con QR con Tarjeta de Crédito de Mercado Pago",
+      "subtitle": "Exclusivo en sucursales en compras a partir de $150.000. (MP3)",
+      "tope_lines": [],
+      "bank": {
+        "id": "8ccbdf0d-905d-11ee-8452-0eb8fa5466a5",
+        "name": "Mercado Pago",
+        "image": "Mercado-Pago-Logo 2.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-09-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "CUOTAS SIN INTERÉS CON QR DE MERCADO PAGO: VÁLIDO DEL 1/10/2026 AL 31/12/2025 PARA COMPRAS DESDE $50.000 HASTA $149.000 EN 2 CUOTAS SIN INTERES REALIZADAS CON LA TARJETA DE CRÉDITO MERCADO PAGO EN UN QR DE MERCADO PAGO Y PARA COMPRAS MINIMAS DE$150.000 EN 3 CUOTAS SIN INTERES REALIZADAS CON LA TARJETA DE CRÉDITO MERCADO PAGO EN UN QR DE MERCADO PAGO . APLICA SOLO SI SE CUMPLEN TODAS LAS CONDICIONES: (I) PAGO CON QR CON LA TARJETA DE CRÉDITO DE MERCADO PAGO (II) EN QR DE MERCADO PAGO, (III) COMPRA MÍNIMA DE $50.000 EN 2 CUOTAS SIN INTERES Y COMPRA MINIMA DE $150.000 EN 3 CUOTAS SIN INTERES. MERCADOLIBRE S.R.L. CUIT 30-70308853-4. AVENIDA CASEROS 3039, PISO 2, CIUDAD AUTÓNOMA DE BUENOS AIRES",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/7ef0bdad-4543-4234-aab4-2eb0653a6d40/img_card/attachments/Mercado%20Pago%20grande.png"
+      }
+    },
+    {
+      "id": "0c45a40a-10dc-47bb-bd64-db8ae32b0c60",
+      "order": null,
+      "days_label": "Todos los días",
+      "days": [
+        "lunes",
+        "martes",
+        "miércoles",
+        "jueves",
+        "viernes",
+        "sábado",
+        "domingo"
+      ],
+      "day_flags": {
+        "monday": true,
+        "tuesday": true,
+        "wednesday": true,
+        "thursday": true,
+        "friday": true,
+        "saturday": true,
+        "sunday": true
+      },
+      "percent": 20,
+      "discount_text": "de descuento",
+      "installments_amount": "6",
+      "installments_text": "Sin Interés",
+      "title": "En tu primera compra",
+      "subtitle": "Pagando con la linea de credito desde la app. Tope: $6.000 (CD)*",
+      "tope_lines": [
+        "Pagando con la linea de credito desde la app. Tope: $6.000 (CD)*"
+      ],
+      "bank": {
+        "id": "1ca7093d-5c03-45ef-8550-a8f06cd46921",
+        "name": "Credicuotas",
+        "image": "Logo_Credicuotas.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-06-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "BENEFICIO VÁLIDO EN LA REPÚBLICA ARGENTINA PARA COMPRAS PRESENCIALES REALIZADAS EN LAS SUCURSALES  DE CHANGOMÁS, HIPERCHANGOMÁS Y MASGO. TODOS LOS DÍAS DEL 01/07/2026 AL 31/12/2026  AMBAS FECHAS INCLUSIVE, O HASTA ALCANZAR UN CUPO MÁXIMO DE 10.000 USUARIOS BENEFICIADOS, LO QUE OCURRA PRIMERO. EL BENEFICIO CONSISTE EN UN 20% DE DESCUENTO APLICADO EN EL MOMENTO DE LA PRIMERA COMPRA ABONADA MEDIANTE LECTURA DE CÓDIGO QR DESDE LA BILLETERA VIRTUAL DE CREDICUOTAS UTILIZANDO EL PRODUCTO LÍNEA DE CRÉDITO. EN CASO QUE EL CLIENTE YA HAYA UTILIZADO EL PRODUCTO LÍNEA DE CRÉDITO OFRECIDO POR CREDICUOTAS NO OBTENDRÁ EL BENEFICIO. TOPE DE DESCUENTO HASTA $8.000 POR USUARIO EN UNA ÚNICA TRANSACCIÓN.  EL BENEFICIO ES ACUMULABLE CON OTRAS PROMOCIONES Y/O DESCUENTOS.  CRÉDITO SUJETO A EVALUACIÓN CREDITICIA DE CREDICUOTAS CONSUMO S.A. SIN PARTICIPACIÓN DE DORINKA S.R.L. EN DICHA EVALUACIÓN NI SU OTORGAMIENTO.  PROMOCIÓN SUJETA A MODIFICACIÓN, SUSPENSIÓN O CANCELACIÓN.  CREDICUOTAS CONSUMO S.A. (Ex CREDISHOPP S.A) (C.U.I.T. 30-71091158-0) CON DOMICILIO EN ARENALES 707, PISO 7, CABA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/0c45a40a-10dc-47bb-bd64-db8ae32b0c60/img_card/attachments/Logo_Credicuotas.png"
+      }
+    },
+    {
+      "id": "86caaea5-67c9-46ac-8a61-cff9e3ffded3",
+      "order": null,
+      "days_label": "Todos los Martes",
+      "days": [
+        "martes"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": true,
+        "wednesday": false,
+        "thursday": false,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 30,
+      "discount_text": "de reintegro",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "Plan Épico - Con Crédito NaranjaX o débito Visa",
+      "subtitle": "Tope: $12.000 semanal. (NX3)*",
+      "tope_lines": [
+        "Tope: $12.000 semanal. (NX3)*"
+      ],
+      "bank": {
+        "id": "9a9c3703-2fe8-11ee-83ab-0ecaeb3d03b5",
+        "name": "NaranjaX",
+        "image": "Logo_Naranjax_final.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "express"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": false,
+        "ecommerce": false,
+        "express": true,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-10-01T00:00:00+00:00",
+      "active_to": "2026-11-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN VÁLIDA LOS DÍAS MARTES DE MES DE SEPTIEMBRE Y OCTUBRE 2026, O HASTA AGOTAR UN STOCK TOTAL DE 80.000 REINTEGROS, LO QUE OCURRA PRIMERO. EL BENEFICIO CONSISTE EN UN REINTEGRO (CASHBACK) PARA LAS COMPRAS REALIZADAS CON TARJETA DE CRÉDITO NARANJAX Y TARJETA DE DÉBITO VISA NARANJAX EN TODOS LOS COMERCIOS ADHERIDOS A LA PROMO SUPERMERCADO; APLICANDO EL SIGUIENTE DESCUENTO Y TOPE SEGÚN EL PLAN DEL USUARIO: (1) PLAN INICIAL: 20% DE DESCUENTO CON TOPE DE $3.000 POR SEMANA. (2) PLAN TURBO: 25% DE DESCUENTO CON TOPE DE $9.500 POR SEMANA. (3) PLAN ÉPICO: 30% DE DESCUENTO CON TOPE DE $12.000 POR SEMANA. EL MONTO REINTEGRADO SE ACREDITARÁ ÚNICAMENTE EN TU CUENTA NARANJA X DENTRO DE LOS 10 DÍAS POSTERIORES A LA FECHA DE LA COMPRA. ESTA PROMOCIÓN ES VÁLIDA SOLO EN LOS COMERCIOS ADHERIDOS Y NO APLICA PARA COMPRAS REALIZADAS CON NARANJA VISA, NARANJA MASTERCARD, NARANJA AMEX, NI PARA TRANSACCIONES EFECTUADAS EN AGRUPADORES Y BILLETERAS VIRTUALES QUE NO SEAN NARANJA X. NARANJA X SE RESERVA EL DERECHO DE SUSPENDER O MODIFICAR LA PROMOCIÓN POR CAUSAS DE FUERZA MAYOR, NOTIFICÁNDOLO A TRAVÉS DE LA APLICACIÓN NARANJA X. LA CUENTA NARANJA X ES ADMINISTRADA POR NARANJA DIGITAL COMPAÑÍA FINANCIERA S.A.U., CUIT 30-71663964-5, TTE. GRAL. JUAN D. PERÓN 430, PISO 19, CABA. LA TARJETA DE CRÉDITO NARANJA X ES EMITIDA POR TARJETA NARANJA S.A.U., CUIT 30-68537634-9, LA TABLADA 451, CIUDAD DE CÓRDOBA.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/86caaea5-67c9-46ac-8a61-cff9e3ffded3/img_card/attachments/Banco%20Naranja%20grande.png"
+      }
+    },
+    {
+      "id": "1612a3c1-4982-4e72-9d55-074a23635b1b",
+      "order": null,
+      "days_label": "Todos los jueves",
+      "days": [
+        "jueves"
+      ],
+      "day_flags": {
+        "monday": false,
+        "tuesday": false,
+        "wednesday": false,
+        "thursday": true,
+        "friday": false,
+        "saturday": false,
+        "sunday": false
+      },
+      "percent": 20,
+      "discount_text": "descuento",
+      "installments_amount": null,
+      "installments_text": null,
+      "title": "SIN TOPE | Abonando con NFC con Tarjeta de Crédito Visa",
+      "subtitle": "Promoción no acumulable con otras promociones. Abonando sin contacto (NFC) con tarjetas Visa crédito habilitadas en Cuenta DNI y dispositivos con sistema operativo Android.  ((BP-DNI)*",
+      "tope_lines": [
+        "SIN TOPE | Abonando con NFC con Tarjeta de Crédito Visa"
+      ],
+      "bank": {
+        "id": "f9315b48-4f81-11ef-8452-121b3ce95f81",
+        "name": "Banco Provincia - Cuenta DNI",
+        "image": "CuentaDNI_chico.png"
+      },
+      "card": null,
+      "rendered_logos": [
+        "market"
+      ],
+      "store_flags": {
+        "hyper": null,
+        "market": true,
+        "ecommerce": false,
+        "express": false,
+        "maxi": null,
+        "express_ecommerce_all": false
+      },
+      "is_masclub": false,
+      "active_from": "2026-09-01T00:00:00+00:00",
+      "active_to": "2027-01-01T00:00:00+00:00",
+      "legal": "PROMOCIÓN VÁLIDA TODOS LOS JUEVES COMPRENDIDOS ENTRE EL 01\nDE OCTUBRE Y EL 31 DE DICIEMBRE DE 2026, AMBAS FECHAS\nINCLUSIVE. 20% DE REINTEGRO, SIN TOPE, PARA LAS COMPRAS\nREALIZADAS DE MANERA PRSENCIAL A TRAVÉS DE CUENTA DNI CON\nTECNOLOGÍA SIN CONTACTO (NFC) UTILIZANDO TARJETAS DE CRÉDITO VISA, EN\nLOCALES ADHERIDOS DE “HIPER CHANGOMAS, CHANGOMAS Y\nMASGO”. LA MODALIDAD DE PAGO MEDIANTE TECNOLOGÍA SIN\nCONTACTO (NFC) SERÁ VÁLIDA ÚNICAMENTE PARA TARJETAS VISA\nCRÉDITO HABILITADAS EN CUENTA DNI Y DISPONIBLES EN\nDISPOSITIVOS CON SISTEMA OPERATIVO ANDROID. LOS LOCALES\nADHERIDOS PARTICIPANTES PODRÁN CONSULTARSE EN\nWWW.BANCOPROVINCIA.COM.AR. VÁLIDO ÚNICAMENTE PARA\nCONSUMO FAMILIAR. EL REINTEGRO SE VERÁ REFLEJADO COMO\nBONIFICACIÓN HASTA EN EL RESUMEN SIGUIENTE A AQUEL EN EL QUE\nINGRESE EL CONSUMO. NO ACUMULABLE CON OTRAS PROMOCIONES\nY/O DESCUENTOS VIGENTES SOBRE LA MISMA COMPRA. EJEMPLO\nREPRESENTATIVO: QUIEN REALICE UNA COMPRA CON CUENTA DNI\nNFC DE $50.000 RECIBIRÁ UN REINTEGRO DE $10.000. PARA MÁS\nINFORMACIÓN COMUNÍQUESE AL 0810-666-2364. BANCO DE LA\nPROVINCIA DE BUENOS AIRES. CUIT 33-99924210-9. CALLE 7 N° 726, LA\nPLATA, PROVINCIA DE BUENOS AIRES.\nWWW.BANCOPROVINCIA.COM.AR. CARTERA DE CONSUMO.",
+      "valid": null,
+      "images": {
+        "img": null,
+        "img_card": "https://www.masonline.com.ar/api/dataentities/BP/documents/1612a3c1-4982-4e72-9d55-074a23635b1b/img_card/attachments/BcoProv_Grande-01.png"
+      }
+    }
+  ]
+}
