@@ -1222,11 +1222,24 @@
       }
       return "<div class=\"photo-frame\"></div>";
     }
+    function avisoMercadoLibre(fuentes) {
+      const list = Array.isArray(fuentes) ? fuentes : [];
+      const ml = list.find((f) => f && (f.tienda_id === "mla" || f.tienda === "Mercado Libre"));
+      if (!ml) return "";
+      const texto = String(ml.aviso || ml.error || "").trim();
+      if (ml.ok && !texto) return "";
+      return texto || "Mercado Libre no respondió.";
+    }
     function renderElectro(data, q) {
       const items = Array.isArray(data.productos) ? data.productos : [];
       const fuentes = Array.isArray(data.fuentes) ? data.fuentes : [];
       const quienes = fuentes.filter((f) => f && f.n).map((f) => f.tienda);
-      meta.textContent = notaCuenta(window.__ultima) + (quienes.length ? "Respondieron " + quienes.join(", ") + "." : "Ninguna tienda publicó un precio.");
+      const falloMl = avisoMercadoLibre(fuentes);
+      meta.textContent = notaCuenta(window.__ultima) + (quienes.length ? "Respondieron " + quienes.join(", ") + "." : "Ninguna tienda publicó un precio.") + (falloMl ? " " + falloMl : "");
+      if (falloMl) {
+        aviso.className = "warn-flag on";
+        aviso.textContent = falloMl;
+      }
       if (!items.length) {
         setState("empty", "No encontré «" + q + "».", "Esas tiendas no publicaron un precio.");
         return;
@@ -1302,7 +1315,12 @@
         const respondieron = cadenas.filter((f) => f && f.n && !f.error).map((f) => f.tienda);
         const leidoTxt = j.leido_texto ? "Precios leídos el " + j.leido_texto + ". " : "";
         const quienesTxt = respondieron.length ? "Respondieron " + respondieron.join(", ") + "." : "";
-        meta.textContent = (notaCuenta(j) + leidoTxt + quienesTxt).trim();
+        const falloMl = avisoMercadoLibre(cadenas);
+        meta.textContent = (notaCuenta(j) + leidoTxt + quienesTxt + (falloMl ? " " + falloMl : "")).trim();
+        if (falloMl) {
+          aviso.className = "warn-flag on";
+          aviso.textContent = aviso.textContent ? (aviso.textContent + " " + falloMl) : falloMl;
+        }
         if (promosEl) {
           promosEl.hidden = true;
           promosEl.innerHTML = "";

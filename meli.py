@@ -1,4 +1,4 @@
-﻿"""Búsqueda oficial de Mercado Libre Argentina. Sin HTML y sin proxy.
+"""Búsqueda oficial de Mercado Libre Argentina. Sin HTML y sin proxy.
 
 Usa la app BaratoYa (client credentials). Si faltan las variables, no inventa precios.
 """
@@ -188,7 +188,13 @@ async def buscar_meli(q: str, limit: int = 10) -> dict[str, Any]:
             return vacio
     vacio["http"] = r.status_code
     if r.status_code != 200:
-        vacio["aviso"] = f"búsqueda http {r.status_code}"
+        if r.status_code == 403:
+            vacio["aviso"] = (
+                "Mercado Libre rechazó la búsqueda (403). "
+                "Ese listado público ya no está abierto a esta app."
+            )
+        else:
+            vacio["aviso"] = f"búsqueda http {r.status_code}"
         return vacio
     try:
         body = r.json()

@@ -134,8 +134,21 @@ async def buscar_electro(q: str) -> dict[str, Any]:
         from meli import buscar_meli
     except ImportError:
         from baratoya.meli import buscar_meli
-    meli = await buscar_meli(q)
-    productos.extend(meli.get("productos") or [])
+    try:
+        meli = await buscar_meli(q)
+    except Exception as e:
+        meli = {
+            "tienda": "Mercado Libre",
+            "tienda_id": "mla",
+            "http": 0,
+            "ok": False,
+            "n": 0,
+            "productos": [],
+            "aviso": str(e),
+        }
+    rows = meli.get("productos") if isinstance(meli.get("productos"), list) else []
+    if rows:
+        productos.extend(rows)
     productos.sort(key=lambda p: p["precio"])
     fuentes.append({k: v for k, v in meli.items() if k != "productos"})
     return {

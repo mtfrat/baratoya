@@ -757,6 +757,15 @@ async def buscar(
         meli = await meli_task
     except Exception as e:
         meli = {"tienda": "Mercado Libre", "tienda_id": "mla", "http": 0, "ok": False, "n": 0, "productos": [], "aviso": str(e)}
+    cadenas = dict(cadenas)
+    rows = meli.get("productos") if isinstance(meli.get("productos"), list) else []
+    if rows:
+        productos_c = list(cadenas.get("productos") or [])
+        productos_c.extend(rows)
+        cadenas["productos"] = productos_c
+    fuentes = list(cadenas.get("fuentes") or [])
+    fuentes.append({k: v for k, v in meli.items() if k != "productos"})
+    cadenas["fuentes"] = fuentes
     leido, leido_texto = _leido_ahora()
 
     def _consulta() -> dict[str, Any]:
@@ -821,14 +830,6 @@ async def buscar(
         )
         data = dict(data)
         data["productos"] = productos
-    if meli.get("productos"):
-        cadenas = dict(cadenas)
-        productos_c = list(cadenas.get("productos") or [])
-        productos_c.extend(meli["productos"])
-        cadenas["productos"] = productos_c
-        fuentes = list(cadenas.get("fuentes") or [])
-        fuentes.append({k: v for k, v in meli.items() if k != "productos"})
-        cadenas["fuentes"] = fuentes
     data = _presentar_super(q, _merge_cadenas(data, cadenas), leido)
     return _con_cuenta({
         "http": code,
