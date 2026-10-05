@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% if ok %}Administración{% else %}No podés abrir esto{% endif %} — BaratoYa</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-forest-ink: #163300;
+      --color-lime-voltage: #9fe870;
+      --color-charcoal: #454745;
+      --color-slate: #6a6c6a;
+      --color-fog: #e8ebe6;
+      --color-paper: #ffffff;
+      --font-inter: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--color-paper);
+      color: var(--color-charcoal);
+      font-family: var(--font-inter);
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: -0.006em;
+    }
+    ::selection { background: var(--color-lime-voltage); color: var(--color-forest-ink); }
+    a { color: var(--color-forest-ink); }
+    a:focus-visible { outline: 2px solid var(--color-forest-ink); outline-offset: 2px; }
+    .nav {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      box-shadow: rgba(14, 15, 12, 0.12) 0px 0px 0px 1px;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      color: var(--color-forest-ink);
+      text-decoration: none;
+    }
+    main { width: min(100% - 32px, 40rem); margin: 0 auto; padding: 48px 0 64px; }
+    h1 {
+      margin: 0 0 12px;
+      color: #0e0f0c;
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    p { margin: 0 0 16px; max-width: 38rem; }
+    .who { color: var(--color-slate); font-size: 14px; }
+    .stats { margin: 28px 0 0; }
+    .stats div {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      padding: 16px 0;
+      border-top: 1px solid var(--color-fog);
+    }
+    .stats dt {
+      margin: 0;
+      color: var(--color-forest-ink);
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .stats dd {
+      margin: 0;
+      color: var(--color-forest-ink);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+    }
+    .note { margin-top: 20px; color: var(--color-slate); font-size: 14px; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="/">BaratoYa</a>
+    <a href="/">Volver</a>
+  </header>
+  <main>
+    {% if ok %}
+      <h1>Administración</h1>
+      <p class="who">{{ email }}</p>
+      <dl class="stats">
+        <div><dt>Usuarios</dt><dd>{{ vista.usuarios }}</dd></div>
+        <div><dt>Búsquedas usadas</dt><dd>{{ vista.busquedas }}</dd></div>
+        <div><dt>Perfiles pagos</dt><dd>{{ vista.perfiles_pagos }}</dd></div>
+        <div><dt>Ingresos</dt><dd>{{ vista.ingresos }}</dd></div>
+        <div><dt>Pagos</dt><dd>{{ vista.pagos }}</dd></div>
+      </dl>
+      <p class="note">Ingresos $0. No hay pagos: Mercado Pago no cobra y no hay filas de pago para mostrar.</p>
+    {% else %}
+      <h1>No podés abrir esto.</h1>
+      <p>Esta página es solo para la cuenta de administración. Si no entraste con esa cuenta, no hay números para ver.</p>
+      <p><a href="/">Volver al inicio</a></p>
+    {% endif %}
+  </main>
+</body>
+</html>

@@ -46,6 +46,11 @@
       letter-spacing: -0.006em;
     }
     a { color: var(--color-forest-ink); }
+    ::selection { background: #9fe870; color: #163300; }
+    .btn:focus-visible, .nav-links a:focus-visible {
+      outline: 2px solid var(--color-forest-ink);
+      outline-offset: 2px;
+    }
     img { max-width: 100%; }
     .nav {
       min-height: 64px;
@@ -113,12 +118,20 @@
       letter-spacing: -0.02em;
     }
     .sub {
-      margin: 0 0 24px;
+      margin: 0 0 8px;
       max-width: 38rem;
       font-size: 18px;
       line-height: 1.5;
       letter-spacing: -0.007em;
       color: var(--color-charcoal);
+    }
+    .sesion-note {
+      margin: 0 0 24px;
+      max-width: 38rem;
+      color: var(--color-forest-ink);
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
     }
     form.search {
       display: flex;
@@ -634,7 +647,7 @@
     .nav-links .btn { padding: 8px 16px; font-size: 14px; }
     .nav-sesion { display: none; align-items: center; gap: 4px; }
     .nav-sesion:not([hidden]) { display: inline-flex; }
-    #abrir-entrar[hidden] { display: none; }
+    #abrir-entrar[hidden], #nav-admin[hidden] { display: none; }
     #nav-nombre {
       color: var(--color-forest-ink);
       font-size: 14px;
@@ -712,6 +725,7 @@
       <a href="#promos-bancarias">Promos</a>
       {% if cuentas_on %}
       <button type="button" class="btn outline" id="abrir-entrar">Entrar</button>
+      <a href="/admin" id="nav-admin" hidden>Admin</a>
       <span class="nav-sesion" id="nav-sesion" hidden>
         <span id="nav-nombre"></span>
         <button type="button" class="btn text" id="cuenta-salir">Salir</button>
@@ -725,6 +739,7 @@
       <div class="wrap">
         <h1>El mismo producto, en cada cadena, al precio de hoy.</h1>
         <p class="sub">El número grande es el que se paga ahora. El tachado queda al lado y no se compara.</p>
+        <p class="sesion-note" id="sesion-note">Para buscar hace falta entrar. Sin sesión no se consulta el precio.</p>
 
         <div class="modes" role="group" aria-label="Qué comparar">
           <button type="button" class="btn outline on" id="mode-super" data-mode="super">Súper</button>
@@ -758,8 +773,8 @@
         <p id="aviso" class="warn-flag" role="status"></p>
         <ul id="promos" class="promos" hidden></ul>
         <div id="estado" class="state">
-          <p class="state-title">Todavía no buscaste.</p>
-          <p>Escribí un producto. El número aparece cuando una cadena publica un precio.</p>
+          <p class="state-title">Para buscar hace falta entrar.</p>
+          <p>Sin sesión no se llama a la búsqueda. Usá Entrar, en el encabezado.</p>
         </div>
         <div id="out" class="results" aria-live="polite"></div>
       </div>
@@ -790,6 +805,7 @@
   <dialog class="entrar" id="entrar-dialog" aria-labelledby="entrar-titulo">
     <form id="cuenta-form">
       <p class="entrar-titulo" id="entrar-titulo">Entrar</p>
+      <p class="lista-note">Hace falta una cuenta para buscar.</p>
       <p id="cuenta-msg" role="status"></p>
       <div class="field">
         <label for="cuenta-email">Mail</label>
@@ -822,6 +838,17 @@
       try { return JSON.parse(localStorage.getItem(SESION_KEY) || "null"); }
       catch (_) { return null; }
     }
+    function cookieSesion(token, expiresAt) {
+      const now = Math.floor(Date.now() / 1000);
+      let max = 3600;
+      if (expiresAt && expiresAt > now) max = expiresAt - now;
+      const secure = location.protocol === "https:" ? "; Secure" : "";
+      document.cookie = "baratoya_at=" + encodeURIComponent(token) + "; Path=/; SameSite=Lax; Max-Age=" + max + secure;
+    }
+    function borrarCookieSesion() {
+      const secure = location.protocol === "https:" ? "; Secure" : "";
+      document.cookie = "baratoya_at=; Path=/; SameSite=Lax; Max-Age=0" + secure;
+    }
     function guardarSesion(j) {
       if (!j || !j.access_token) return false;
       localStorage.setItem(SESION_KEY, JSON.stringify({
@@ -829,10 +856,12 @@
         refresh_token: j.refresh_token || "",
         expires_at: j.expires_at || 0
       }));
+      cookieSesion(j.access_token, j.expires_at || 0);
       return true;
     }
     function borrarSesion() {
       try { localStorage.removeItem(SESION_KEY); } catch (_) {}
+      borrarCookieSesion();
     }
     async function authPost(path, body) {
       const r = await fetch(CUENTA.url + path, {
@@ -863,7 +892,7 @@
     function notaCuenta(j) {
       const c = j && j.cuenta;
       if (!c) return "";
-      if (c.plan === "paid") return "Búsquedas ilimitadas. ";
+      if (c.role === "admin" || c.plan === "paid") return "Sin tope de búsquedas. ";
       if (c.remaining != null) return "Te quedan " + c.remaining + " de " + (c.limit || CUENTA.limit || 5) + ". ";
       return "";
     }
@@ -926,19 +955,55 @@
       if (!r.ok) return null;
       try { return await r.json(); } catch (_) { return null; }
     }
+    function estadoInicial(hay) {
+      if (!estado || !out) return;
+      if (out.innerHTML.trim()) return;
+      const title = estado.querySelector(".state-title");
+      const gated = title && title.textContent === "Para buscar hace falta entrar.";
+      if (estado.classList.contains("error") && !gated) return;
+      if (hay) setState("", "Todavía no buscaste.", "Escribí un producto. El número aparece cuando una cadena publica un precio.");
+      else setState("", "Para buscar hace falta entrar.", "Sin sesión no se llama a la búsqueda. Usá Entrar, en el encabezado.");
+    }
     async function refrescarCuenta() {
+      const note = document.getElementById("sesion-note");
+      const adminLink = document.getElementById("nav-admin");
+      const tok = await tokenFresco();
+      if (tok) {
+        const s = leerSesion();
+        cookieSesion(tok, s && s.expires_at);
+      } else {
+        borrarCookieSesion();
+      }
       if (!CUENTA.on) {
         pintarCabecera("");
+        if (adminLink) adminLink.hidden = true;
+        if (note) note.textContent = "Para buscar hace falta entrar. Sin sesión no se consulta el precio.";
+        estadoInicial(false);
         await pintarBusquedas([]);
         return;
       }
       const user = await usuarioActual();
       if (!user) {
         pintarCabecera("");
+        if (adminLink) adminLink.hidden = true;
+        if (note) note.textContent = "Para buscar hace falta entrar. Sin sesión no se consulta el precio.";
+        estadoInicial(false);
         await pintarBusquedas([]);
         return;
       }
       pintarCabecera(nombreVisible(user));
+      let cj = null;
+      try {
+        const cr = await fetch("/api/cuenta", { headers: await headersAuth() });
+        cj = await cr.json();
+      } catch (_) { cj = null; }
+      if (adminLink) adminLink.hidden = !(cj && cj.admin);
+      if (note) {
+        if (cj && (cj.admin || cj.plan === "paid")) note.textContent = "Esta cuenta no tiene tope de búsquedas.";
+        else if (cj && cj.remaining != null) note.textContent = "Te quedan " + cj.remaining + " de " + (cj.limit || 5) + " búsquedas.";
+        else note.textContent = "Ya entraste. Escribí un producto.";
+      }
+      estadoInicial(true);
       const br = await fetch("/api/cuenta/busquedas", { headers: await headersAuth() });
       let bj = null;
       try { bj = await br.json(); } catch (_) { bj = null; }
@@ -949,7 +1014,7 @@
       const crudo = String((j && j.error) || "");
       const humano = crudo.replace(/HTTP\s*\d+/gi, "").replace(/\b(401|402|503)\b/g, "").replace(/\s+/g, " ").trim();
       if (r.status === 402) {
-        setState("error", "Ya usaste las cinco búsquedas.", humano || "Para seguir, el cobro tiene que estar activo. Desde acá no se compra el súper.");
+        setState("error", "Ya usaste las cinco búsquedas.", humano || "El cobro todavía no está activo. Desde acá no se puede pagar.");
         return true;
       }
       if (r.status === 503) {
@@ -1188,6 +1253,13 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const sesion = await tokenFresco();
+      if (!sesion) {
+        setState("error", "Para buscar hace falta entrar.", "Sin sesión no se consulta el precio.");
+        const dlg = document.getElementById("entrar-dialog");
+        if (dlg && typeof dlg.showModal === "function" && !dlg.open) dlg.showModal();
+        return;
+      }
       const q = document.getElementById("q").value.trim();
       const lat = document.getElementById("lat").value;
       const lng = document.getElementById("lng").value;
@@ -1207,7 +1279,7 @@
           if (corteBusqueda(r, j)) return;
           window.__ultima = j;
           if (!r.ok || !j || !j.data) {
-            setState("error", "No pude leer esas tiendas.", "Probá de nuevo. Probá de nuevo.");
+            setState("error", "No pude leer esas tiendas.", "Probá de nuevo.");
             return;
           }
           renderElectro(j.data, q);
@@ -1218,7 +1290,7 @@
         try { j = await r.json(); } catch (_) { j = null; }
         if (corteBusqueda(r, j)) return;
         if (!r.ok || !j) {
-          setState("error", "No pude leer los precios.", "Probá de nuevo. Probá de nuevo.");
+          setState("error", "No pude leer los precios.", "Probá de nuevo.");
           return;
         }
         if (j.fuente === "snapshot") {

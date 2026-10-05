@@ -478,11 +478,16 @@ def _con_cuenta(payload: dict[str, Any], quota: dict[str, Any]) -> dict[str, Any
 
 
 def _cuenta_publica(quota: dict[str, Any]) -> dict[str, Any]:
+    role = quota.get("role") or ""
+    limit = quota.get("limit")
+    if limit is None and role != "admin":
+        limit = cuentas.FREE_LIMIT
     return {
         "plan": quota.get("plan"),
+        "role": role,
         "used": quota.get("used"),
         "remaining": quota.get("remaining"),
-        "limit": quota.get("limit") or cuentas.FREE_LIMIT,
+        "limit": limit,
     }
 
 
@@ -493,13 +498,18 @@ def _imagen_https(url: Any) -> str:
 
 
 async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONResponse:
-    """Sin sesión se busca igual. El cupo de 5 solo corre con sesión y cobro activo."""
-    libre: dict[str, Any] = {"ok": True, "anon": True}
+    """Sin bearer no se busca. El cupo de 5 corre para una cuenta normal. El admin no tiene tope."""
     token = cuentas.bearer(request.headers)
-    if not token or not cuentas.cobro_on():
-        return libre
-    if not cuentas.cupo_on():
-        return libre
+    if not token:
+        return JSONResponse(
+            {"ok": False, "reason": "auth", "error": "Sin sesión. Entrá para buscar."},
+            status_code=401,
+        )
+    if not cuentas.cuentas_on():
+        return JSONResponse(
+            {"ok": False, "reason": "auth", "error": "No se pudo verificar la sesión. No se buscó."},
+            status_code=503,
+        )
     try:
         user = await cuentas.usuario(token)
     except Exception:
@@ -511,6 +521,15 @@ async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONRes
         return JSONResponse(
             {"ok": False, "reason": "auth", "error": "La sesión no sirve. Volvé a entrar."},
             status_code=401,
+        )
+    if not cuentas.cupo_on():
+        return JSONResponse(
+            {
+                "ok": False,
+                "reason": "quota_unavailable",
+                "error": "No se pudo contar la búsqueda en el servidor. No se buscó.",
+            },
+            status_code=503,
         )
     try:
         quota = await cuentas.consumir(user["id"], q)
@@ -525,11 +544,15 @@ async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONRes
         )
     if not quota.get("ok"):
         if quota.get("reason") == "quota":
+            if cuentas.cobro_on():
+                msg = "Usaste las 5 búsquedas. Para seguir hace falta el plan, y el cobro tiene que estar activo."
+            else:
+                msg = "Usaste las 5 búsquedas. El cobro todavía no está activo, así que desde acá no se puede pagar."
             return JSONResponse(
                 {
                     "ok": False,
                     "reason": "quota",
-                    "error": "Usaste las 5 búsquedas. Para seguir hace falta el plan, y el cobro tiene que estar activo.",
+                    "error": msg,
                     "plan": quota.get("plan") or "free",
                     "used": quota.get("used"),
                     "remaining": 0,
@@ -570,6 +593,62 @@ def _unwrap_snapshot(body: Any) -> Any:
     if isinstance(body, dict) and "productos" not in body and isinstance(body.get("data"), dict):
         return body["data"]
     return body
+
+
+def _admin_vista(resumen: dict[str, Any] | None) -> dict[str, str]:
+    def n(key: str) -> str:
+        if not isinstance(resumen, dict) or resumen.get(key) is None:
+            return "No se pudo contar"
+        try:
+            return str(int(resumen[key]))
+        except (TypeError, ValueError):
+            return "No se pudo contar"
+
+    pagos = resumen.get("pagos") if isinstance(resumen, dict) else None
+    if pagos in (None, 0):
+        pagos_txt = "No hay pagos."
+    else:
+        try:
+            pagos_txt = str(int(pagos))
+        except (TypeError, ValueError):
+            pagos_txt = "No hay pagos."
+    return {
+        "usuarios": n("usuarios"),
+        "busquedas": n("busquedas"),
+        "perfiles_pagos": n("perfiles_pagos"),
+        "ingresos": "$0",
+        "pagos": pagos_txt,
+    }
+
+
+@app.get("/admin", response_class=HTMLResponse)
+async def admin(request: Request):
+    """Solo la sesión admin abre la página. Cualquier otra recibe 403."""
+    token = cuentas.token_de(request.headers, request.cookies)
+    user = None
+    if token and cuentas.cuentas_on():
+        try:
+            user = await cuentas.usuario(token)
+        except Exception:
+            user = None
+    admin_ok = False
+    if user:
+        try:
+            admin_ok = await cuentas.es_admin(user["id"])
+        except Exception:
+            admin_ok = False
+    if not admin_ok:
+        body = templates.get_template("admin.html").render({"ok": False, "email": "", "vista": {}})
+        return HTMLResponse(body, status_code=403)
+    resumen = None
+    try:
+        resumen = await cuentas.resumen_admin()
+    except Exception:
+        resumen = None
+    body = templates.get_template("admin.html").render(
+        {"ok": True, "email": user["email"] if user else "", "vista": _admin_vista(resumen)}
+    )
+    return HTMLResponse(body)
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -791,6 +870,7 @@ async def ver_cuenta(request: Request):
         "used": perfil["used"],
         "remaining": perfil["remaining"],
         "limit": perfil["limit"],
+        "admin": bool(perfil.get("admin")),
         "cobro_activo": cuentas.cobro_on(),
         "plan_label": cuentas.plan_label() if cuentas.cobro_on() else "",
     }

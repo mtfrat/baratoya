@@ -1,7 +1,7 @@
 """Cuenta, cupo y Mercado Pago.
 
-La búsqueda no exige sesión. El cupo (5) solo se descuenta si hay sesión
-y el cobro está activo. Sin MERCADOPAGO_ACCESS_TOKEN no se llama a Mercado
+La búsqueda exige sesión. Una cuenta normal tiene 5 búsquedas.
+El admin no tiene tope. Sin MERCADOPAGO_ACCESS_TOKEN no se llama a Mercado
 Pago y no se simula un pago.
 """
 from __future__ import annotations
@@ -47,7 +47,7 @@ def cuentas_on() -> bool:
 
 
 def cupo_on() -> bool:
-    """Sin la service role el cupo no se puede contar. La búsqueda sigue."""
+    """Sin la service role el cupo no se puede contar. La búsqueda no sigue."""
     return bool(cuentas_on() and service_key())
 
 
@@ -105,6 +105,16 @@ def bearer(request_headers: Any) -> str:
     return header.split(" ", 1)[1].strip()
 
 
+def token_de(request_headers: Any, cookies: Any = None) -> str:
+    """Bearer de la API, o la cookie que el navegador manda al abrir /admin."""
+    tok = bearer(request_headers)
+    if tok:
+        return tok
+    if cookies is None or not hasattr(cookies, "get"):
+        return ""
+    return str(cookies.get("baratoya_at") or "").strip()
+
+
 def _service_headers() -> dict[str, str]:
     key = service_key()
     return {
@@ -147,6 +157,8 @@ def _cuenta_vacia() -> dict[str, Any]:
         "used": 0,
         "remaining": FREE_LIMIT,
         "limit": FREE_LIMIT,
+        "role": "user",
+        "admin": False,
     }
 
 
@@ -156,7 +168,7 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.get(
             f"{supabase_url()}/rest/v1/profiles",
-            params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at"},
+            params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role"},
             headers=_user_headers(token),
         )
     if r.status_code != 200:
@@ -175,8 +187,20 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
         used = 0
     if used < 0:
         used = 0
-    remaining = None if plan == "paid" else max(0, FREE_LIMIT - used)
-    return {"plan": plan, "used": used, "remaining": remaining, "limit": FREE_LIMIT, "paid_at": row.get("paid_at")}
+    role = row.get("role") if row.get("role") in {"user", "admin"} else "user"
+    if role == "admin" or plan == "paid":
+        remaining = None
+    else:
+        remaining = max(0, FREE_LIMIT - used)
+    return {
+        "plan": plan,
+        "used": used,
+        "remaining": remaining,
+        "limit": None if role == "admin" else FREE_LIMIT,
+        "paid_at": row.get("paid_at"),
+        "role": role,
+        "admin": role == "admin",
+    }
 
 
 async def listar_busquedas(token: str, user_id: str) -> list[dict[str, str]]:
@@ -210,6 +234,44 @@ async def listar_busquedas(token: str, user_id: str) -> list[dict[str, str]]:
             continue
         out.append({"query": q, "created_at": str(row.get("created_at") or "")})
     return out
+
+
+async def es_admin(user_id: str) -> bool:
+    if not cupo_on() or not UUID_RE.match(user_id):
+        return False
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.get(
+            f"{supabase_url()}/rest/v1/profiles",
+            params={"id": f"eq.{user_id}", "select": "role"},
+            headers=_service_headers(),
+        )
+    if r.status_code != 200:
+        return False
+    try:
+        rows = r.json()
+    except Exception:
+        return False
+    if not isinstance(rows, list) or not rows or not isinstance(rows[0], dict):
+        return False
+    return rows[0].get("role") == "admin"
+
+
+async def resumen_admin() -> dict[str, Any]:
+    """Conteos reales. ingresos_centavos queda en 0 hasta que exista Mercado Pago."""
+    if not cupo_on():
+        raise RuntimeError("sin service role")
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.post(
+            f"{supabase_url()}/rest/v1/rpc/admin_stats",
+            headers=_service_headers(),
+            json={},
+        )
+    if r.status_code not in (200, 201):
+        raise RuntimeError(f"admin_stats http {r.status_code}")
+    data = r.json()
+    if not isinstance(data, dict):
+        raise RuntimeError("admin_stats vacío")
+    return data
 
 
 async def consumir(user_id: str, query: str) -> dict[str, Any]:

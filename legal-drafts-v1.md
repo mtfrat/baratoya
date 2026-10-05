@@ -74,7 +74,7 @@ Hoy BaratoYa casi no guarda datos personales.
 
 Si te anotás en la lista de espera, guardamos el email que nos das, en forma local, solo para avisarte cuando haya novedades del producto. No vendemos esa lista. No la compartimos con tiendas ni con anunciantes.
 
-No hace falta cuenta para buscar precios. No pedimos documento, tarjeta ni domicilio.
+Hace falta una cuenta para buscar precios. Sin sesión no se consulta el precio. No pedimos documento, tarjeta ni domicilio.
 
 Para borrar tu email de la lista, escribinos a punatechba@gmail.com con el asunto “Borrar mi email — BaratoYa”. Lo sacamos de la lista local.
 
