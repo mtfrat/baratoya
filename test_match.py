@@ -294,5 +294,30 @@ class MatchTests(unittest.TestCase):
         self.assertEqual(sc._tipo_de(p), "yerba")
 
 
+
+class BancoFiltroTest(unittest.TestCase):
+    """El filtro muestra un banco, no un id ni una frase cortada. No toca precios."""
+
+    def test_etiquetas(self) -> None:
+        import promos_hoy as ph
+
+        self.assertEqual(ph.etiqueta_banco("varios bancos (ver banks_named)"), "Varios bancos")
+        self.assertEqual(ph.etiqueta_banco("Banco_Comafi_MODO"), "Banco Comafi MODO")
+        self.assertEqual(ph.etiqueta_banco("Anses"), "ANSES")
+        self.assertEqual(ph.etiqueta_banco("ANSES"), "ANSES")
+        self.assertEqual(ph.etiqueta_banco("Modo"), "MODO")
+        self.assertEqual(ph.etiqueta_banco("MODO, Modo, ICBC, Visa"), "MODO, ICBC, Visa")
+        self.assertEqual(ph.etiqueta_banco("NaranjaX"), "Naranja X")
+        self.assertEqual(
+            ph.etiqueta_banco("Exclusivo en sucursales. Pagando con Modo desde la APP SUPERVIELLE con tus tarjetas de cre"),
+            "Banco Supervielle MODO",
+        )
+        self.assertEqual(
+            ph.etiqueta_banco("LUNES 10% DE DESCUENTO A TRAVES DE MERCADO PAGO - NO ACUMULABE CON OTRAS OFERTAS"),
+            "Mercado Pago",
+        )
+        self.assertEqual(ph.etiqueta_banco("20% de descuento"), "")
+        self.assertEqual(ph.etiqueta_banco("Banco Columbia"), "Banco Columbia")
+
 if __name__ == "__main__":
     unittest.main()

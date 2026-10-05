@@ -915,11 +915,187 @@ def _dias_txt(rec: dict[str, Any]) -> str:
     return ", ".join(dias[:-1]) + " y " + dias[-1]
 
 
+
+_MARCA_BANCO = (
+    ("banco de tierra del fuego", "Banco de Tierra del Fuego"),
+    ("banco de san juan", "Banco de San Juan"),
+    ("banco hipotecario", "Banco Hipotecario"),
+    ("banco patagonia", "Banco Patagonia"),
+    ("banco columbia", "Banco Columbia"),
+    ("banco santa cruz", "Banco Santa Cruz"),
+    ("banco santa fe", "Banco Santa Fe"),
+    ("banco del chubut", "Banco del Chubut"),
+    ("banco chubut", "Banco del Chubut"),
+    ("patagonia 365", "Patagonia 365"),
+    ("banco comafi", "Banco Comafi"),
+    ("banco macro", "Banco Macro"),
+    ("banco galicia", "Banco Galicia"),
+    ("banco nacion", "Banco Nación"),
+    ("banco provincia", "Banco Provincia"),
+    ("banco ciudad", "Banco Ciudad"),
+    ("banco supervielle", "Banco Supervielle"),
+    ("banco credicoop", "Banco Credicoop"),
+    ("banco de corrientes", "Banco de Corrientes"),
+    ("personal pay", "Personal Pay"),
+    ("mercado pago", "Mercado Pago"),
+    ("cuenta dni", "Cuenta DNI"),
+    ("american express", "American Express"),
+    ("american expres", "American Express"),
+    ("tarjeta la anonima", "Tarjeta La Anónima"),
+    ("tarjeta sol", "Tarjeta Sol"),
+    ("banco del sol", "Banco del Sol"),
+    ("credito nacion", "Banco Nación"),
+    ("naranja x", "Naranja X"),
+    ("naranjax", "Naranja X"),
+    ("cencopay", "Cencopay"),
+    ("mutualcard", "Mutualcard"),
+    ("mastercard", "Mastercard"),
+    ("supervielle", "Banco Supervielle"),
+    ("hipotecario", "Banco Hipotecario"),
+    ("comafi", "Banco Comafi"),
+    ("galicia", "Banco Galicia"),
+    ("finanya", "FinanYa"),
+    ("credimas", "Credimas"),
+    ("favacard", "Favacard"),
+    ("elebar", "Elebar"),
+    ("sucredito", "Sucrédito"),
+    ("titanio", "Titanio"),
+    ("credicuotas", "Credicuotas"),
+    ("sidecreer", "Sidecreer"),
+    ("cordobesa", "Cordobesa"),
+    ("prex", "Prex"),
+    ("cabal", "Cabal"),
+    ("visa", "Visa"),
+    ("icbc", "ICBC"),
+    ("bbva", "BBVA"),
+    ("santander", "Santander"),
+    ("bancor", "BANCOR"),
+    ("modo", "MODO"),
+    ("bna+", "BNA+"),
+    ("bna", "BNA"),
+    ("anses", "ANSES"),
+    ("yoy", "Yoy"),
+    ("macro", "Banco Macro"),
+)
+
+_NOMBRE_EXACTO = {
+    "anses": "ANSES",
+    "modo": "MODO",
+    "naranjax": "Naranja X",
+    "naranja x": "Naranja X",
+    "club la nacion": "Club La Nación",
+    "hipotecario modo": "Hipotecario MODO",
+    "yoy modo": "Yoy MODO",
+    "icbc sueldos": "ICBC Sueldos",
+    "banco comafi modo": "Banco Comafi MODO",
+}
+
+
+def _es_texto_de_oferta(fold: str) -> bool:
+    """Un titulo de promo, no el nombre de un banco. No va al filtro."""
+    if "banks_named" in fold:
+        return True
+    marcas = (
+        "%", "descuento", "pagando", "exclusiv", "cuota", "reintegro",
+        "abonan", "atraves", " dto", "sin tope", "por mes", "jubilad",
+        "familia militar", "plan z", "aniversario", "hoy ", "todos los",
+        "lunes", "martes", "miercoles", "jueves", "viernes", "sabado",
+        "domingo", "ahorr", "csi", "en toda tu compra", "dinero en cuenta",
+        "con tarjeta",
+    )
+    return any(m in fold for m in marcas)
+
+
+def _marcas_en(fold: str) -> list[str]:
+    """Bancos nombrados en una frase. La frase no se muestra cortada."""
+    ocupados: list[tuple[int, int]] = []
+    hallados: list[tuple[int, str]] = []
+    claves = sorted(_MARCA_BANCO, key=lambda par: len(par[0]), reverse=True)
+    for clave, etiqueta in claves:
+        inicio = 0
+        while True:
+            i = fold.find(clave, inicio)
+            if i < 0:
+                break
+            fin = i + len(clave)
+            if i > 0 and fold[i - 1].isalnum():
+                inicio = i + 1
+                continue
+            if fin < len(fold) and fold[fin].isalnum() and not clave.endswith("+"):
+                inicio = i + 1
+                continue
+            if clave == "nacion" and fold[max(0, i - 3):i] == "la ":
+                inicio = i + 1
+                continue
+            if any(not (fin <= a or i >= b) for a, b in ocupados):
+                inicio = i + 1
+                continue
+            ocupados.append((i, fin))
+            hallados.append((i, etiqueta))
+            inicio = fin
+    hallados.sort()
+    vistos: list[str] = []
+    ya: set[str] = set()
+    for _i, etiqueta in hallados:
+        if etiqueta in ya:
+            continue
+        ya.add(etiqueta)
+        vistos.append(etiqueta)
+    return vistos
+
+
+def _canon_nombre(raw: str) -> str:
+    """Misma etiqueta para Anses/ANSES, Modo/MODO y los id con guion bajo."""
+    limpio = re.sub(r"\s+", " ", raw.replace("_", " ")).strip(" .")
+    partes = [p.strip(" .") for p in limpio.split(",") if p.strip(" .")]
+    salida: list[str] = []
+    vistos: set[str] = set()
+    for parte in partes:
+        clave = _fold(parte)
+        etiqueta = _NOMBRE_EXACTO.get(clave)
+        if etiqueta is None:
+            etiqueta = re.sub(r"(?i)\bmodo\b", "MODO", parte)
+            etiqueta = re.sub(r"(?i)\banses\b", "ANSES", etiqueta)
+            etiqueta = etiqueta.replace("NaranjaX", "Naranja X").replace("NARANJAX", "Naranja X")
+        firma = _fold(etiqueta)
+        if firma in vistos:
+            continue
+        vistos.add(firma)
+        salida.append(etiqueta)
+    return ", ".join(salida)
+
+
+def etiqueta_banco(raw: str) -> str:
+    """Nombre para el filtro de bancos. No es un precio ni la letra de la promo."""
+    texto = str(raw or "").strip()
+    if not texto:
+        return ""
+    if "banks_named" in _fold(texto):
+        return "Varios bancos"
+    fold = _fold(texto.replace("_", " "))
+    if _es_texto_de_oferta(fold):
+        marcas = _marcas_en(fold)
+        if "MODO" in marcas and len(marcas) == 2:
+            otro = next(m for m in marcas if m != "MODO")
+            return f"{otro} MODO"
+        if marcas:
+            return ", ".join(marcas)
+        if "bancos seleccionados" in fold or "varios bancos" in fold:
+            return "Varios bancos"
+        return ""
+    return _canon_nombre(texto)
+
+
 def tarjeta_publica(rec: dict[str, Any]) -> dict[str, str]:
+    crudo = str(rec.get("banco") or "")
+    filtro = etiqueta_banco(crudo)
+    # La frase sin banco se queda en la tarjeta, no en el filtro.
+    titulo = filtro or _canon_nombre(crudo) or crudo.strip()
     return {
         "cadena": rec["cadena"],
         "chain_id": rec["chain_id"],
-        "banco": rec["banco"],
+        "banco": titulo,
+        "banco_filtro": filtro,
         "oferta": _oferta_txt(rec),
         "dias": _dias_txt(rec),
         "canal": rec.get("canal") or "no indicado",
@@ -963,7 +1139,10 @@ def catalogo(hoy: date | None = None) -> dict[str, Any]:
         por_dia.append({"dia": nombre, "hoy": i == hoy.weekday(), "items": items})
     bancos: dict[str, list[dict[str, str]]] = {}
     for card in cards:
-        bancos.setdefault(card["banco"] or "Sin banco", []).append(card)
+        filtro = card.get("banco_filtro") or ""
+        if not filtro:
+            continue
+        bancos.setdefault(filtro, []).append(card)
     por_banco = [
         {"banco": banco, "items": items}
         for banco, items in sorted(bancos.items(), key=lambda kv: kv[0].casefold())
