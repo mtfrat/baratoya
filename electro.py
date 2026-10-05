@@ -3,6 +3,8 @@ Sin scrapers pagos y sin HTML de Mercado Libre.
 """
 from __future__ import annotations
 
+import re
+import unicodedata
 from typing import Any
 
 import httpx
@@ -21,6 +23,66 @@ UA = (
     "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 )
 MLA_NOTA = "no disponible desde este servidor"
+
+
+# Mismo aparato con otro nombre. "heladera" trae freezers y frigobares; "freezer" no trae
+# heladeras con freezer (esa la pide quien escribe heladera).
+_SINONIMOS: dict[str, frozenset[str]] = {
+    "heladera": frozenset({"heladera", "heladeras", "freezer", "freezers", "frigobar", "frigobares", "refrigerador", "refrigeradora", "minibar"}),
+    "lavarropas": frozenset({"lavarropas", "lavasecarropas", "lavarropa"}),
+    "televisor": frozenset({"televisor", "televisores", "tv", "smart", "led"}),
+    "tv": frozenset({"televisor", "televisores", "tv", "smart"}),
+    "aire": frozenset({"aire", "split"}),
+}
+_CONECTOR = frozenset({"para", "de", "p", "x", "compatible", "repuesto"})
+_ACCESORIO = frozenset({
+    "organizador", "organizadores", "huevera", "estante", "estantes", "bandeja", "cajon",
+    "burlete", "filtro", "repuesto", "manija", "puerta", "jarra", "conservadora", "termo",
+    "cubetera", "imanes", "iman", "funda", "soporte", "cable", "control", "kit", "botella",
+    "contenedor", "contenedores", "recipiente", "set", "tapa", "rejilla", "termostato",
+    "lampara", "ventilador", "motor", "bisagra", "plaqueta", "porta", "aparador", "mueble",
+    "rack", "base", "cubre", "protector", "limpiador", "accesorio", "accesorios",
+})
+
+
+def _fold(s: str) -> list[str]:
+    s = unicodedata.normalize("NFKD", s or "")
+    s = "".join(c for c in s if not unicodedata.combining(c)).casefold()
+    return re.findall(r"[a-z0-9]+", s)
+
+
+def _familia(token: str) -> frozenset[str]:
+    if token in _SINONIMOS:
+        return _SINONIMOS[token]
+    base = token[:-1] if token.endswith("s") and len(token) > 4 else token
+    return frozenset({token, base, base + "s", base + "es"})
+
+
+def relevancia(nombre: str, q: str) -> int:
+    """0: el titulo es el aparato pedido. 1: lo nombra pero es otra cosa (accesorio).
+    2: no lo nombra (la tienda lo trajo por parecido). No mira el precio.
+    """
+    q_tokens = [t for t in _fold(q) if t not in _CONECTOR]
+    if not q_tokens:
+        return 0
+    familia = _familia(q_tokens[0])
+    tokens = _fold(nombre)
+    pos = next((i for i, t in enumerate(tokens) if t in familia), None)
+    if pos is None:
+        return 2
+    antes = tokens[:pos]
+    if pos == 0 or not (set(antes) & (_ACCESORIO | _CONECTOR)) and len(antes) <= 2:
+        if not (pos + 1 < len(tokens) and tokens[pos + 1] in {"para", "p"}):
+            return 0
+    return 1
+
+
+def ordenar(productos: list[dict[str, Any]], q: str) -> list[dict[str, Any]]:
+    """El aparato antes que el accesorio que lo nombra; dentro de cada nivel, el mas barato."""
+    rel = [relevancia(str(p.get("nombre") or ""), q) for p in productos]
+    if any(r < 2 for r in rel):
+        productos = [p for p, r in zip(productos, rel) if r < 2]
+    return sorted(productos, key=lambda p: (relevancia(str(p.get("nombre") or ""), q), p["precio"]))
 
 
 def _precio(product: dict[str, Any]) -> tuple[float | None, bool]:
@@ -92,7 +154,8 @@ async def _one(client: httpx.AsyncClient, store: dict[str, str], q: str) -> dict
     try:
         r = await client.get(
             url,
-            params={"ft": q, "_from": 0, "_to": 4},
+            # 10 por tienda: con 5, On City devolvia solo accesorios para "heladera".
+            params={"ft": q, "_from": 0, "_to": 9},
             headers={"Accept": "application/json", "User-Agent": UA},
         )
     except Exception as e:
@@ -149,7 +212,7 @@ async def buscar_electro(q: str) -> dict[str, Any]:
     rows = meli.get("productos") if isinstance(meli.get("productos"), list) else []
     if rows:
         productos.extend(rows)
-    productos.sort(key=lambda p: p["precio"])
+    productos = ordenar(productos, q)
     fuentes.append({k: v for k, v in meli.items() if k != "productos"})
     return {
         "q": q,

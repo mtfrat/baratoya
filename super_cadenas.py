@@ -867,6 +867,26 @@ _TIPOS_PRODUCTO = frozenset({
     "manteca", "yogurt", "polenta",
 })
 _MARCA_INGREDIENTE = frozenset({"con", "sabor", "saborizada"})
+# Otro producto que nombra al tipo como ingrediente o como destino: "Flan de leche",
+# "Dulce de leche", "Hervidor de leche", "Postre sabor leche". Si aparece antes del tipo,
+# el producto es eso y no el tipo.
+_OTRO_PRODUCTO = frozenset({
+    "flan", "flanes", "postre", "postres", "hervidor", "batidor", "espumador",
+    "alfajor", "alfajores", "chocolatada", "chocolate", "chocolates", "chocolatin",
+    "tableta", "bombon", "bombones", "oblea", "obleas", "galletitas", "galletas",
+    "galletita", "galleta", "donuts", "donas", "alimento", "torta", "tortas", "budin", "bizcochuelo", "helado", "helados",
+    "mousse", "dulce", "crema", "licor", "bebida", "acondicionador", "shampoo",
+    "jabon", "jarra", "taza", "vaso", "mamadera", "cafetera", "pava", "bandeja",
+    "molde", "batidora", "rallador", "tapa", "pastillas", "caramelos", "barra",
+    "barrita", "cereal", "cereales", "muffin", "muffins", "bano", "magdalena",
+    "magdalenas", "pepitas", "rellena", "relleno",
+})
+# Variantes del tipo que no son lo que se pide con la palabra sola ("leche" no es
+# "leche chocolatada"). Bajan en el orden salvo que la consulta las nombre.
+_VARIANTE_BAJA = frozenset({
+    "chocolatada", "chocoltada", "condensada", "fermentada", "saborizada", "cacao", "frutilla",
+    "vainilla", "infantil", "modificada", "repostero", "repostera",
+})
 _UNIT_SRC = r"kilos?|kg|gramos?|grs?|mls?|cc|litros?|lts?|ml|g|l"
 _PACK_X_SIZE_RE = re.compile(
     rf"(?<!\d)(\d+)\s*x\s*(\d+(?:\.\d+)?)\s*({_UNIT_SRC})\b",
@@ -892,10 +912,14 @@ def _marca_norm(p: dict[str, Any]) -> str:
 
 
 def _tipo_en(text: str) -> str:
-    """Sustantivo de cabeza. con/sabor/saborizada en los dos tokens previos lo vuelven ingrediente."""
+    """Sustantivo de cabeza. con/sabor/saborizada en los dos tokens previos lo vuelven ingrediente.
+
+    Si antes del tipo aparece otro producto (flan, postre, dulce, hervidor...), el sustantivo
+    de cabeza es ese: "Flan de leche" es flan, "Dulce de leche" es dulce.
+    """
     tokens = [t.strip(".") for t in _preparar(text).split() if t.strip(".")]
     for i, token in enumerate(tokens):
-        if token not in _TIPOS_PRODUCTO:
+        if token not in _TIPOS_PRODUCTO and token not in _OTRO_PRODUCTO:
             continue
         prev = tokens[max(0, i - 2):i]
         if any(p in _MARCA_INGREDIENTE for p in prev):
@@ -1098,10 +1122,36 @@ def _pum(precio: float, size: tuple[str, int | float] | None) -> tuple[float | N
     return None, ""
 
 
+def _cabeza(nombre: str, q_tokens: list[str]) -> int:
+    """1 si el titulo es del tipo pedido y arranca con el sustantivo de la consulta."""
+    if not q_tokens:
+        return 0
+    q_tipo = _tipo_en(" ".join(q_tokens))
+    if q_tipo and _tipo_en(nombre) != q_tipo:
+        return 0
+    # La primera palabra del titulo, sin sacar la marca: "Bon o Bon Leche" es un bombon
+    # aunque la marca sea "Bon o Bon"; casi toda leche se publica "Leche ...".
+    nts = _tokens(nombre)
+    if not nts:
+        return 0
+    return 1 if _token_hit(q_tokens[0], [nts[0]], fuzzy=True) else 0
+
+
+def _variante(nts: list[str], q_tokens: list[str]) -> int:
+    pedidas = set(q_tokens)
+    return sum(1 for t in nts if t in _VARIANTE_BAJA and t not in pedidas)
+
+
 def _rank(nombre: str, q_tokens: list[str]) -> tuple:
     nts = _tokens(nombre)
     exact = 1 if _covers(q_tokens, nts, fuzzy=False) else 0
-    return (exact, -_extras(nts, q_tokens), SequenceMatcher(None, " ".join(q_tokens), " ".join(nts)).ratio())
+    return (
+        exact,
+        _cabeza(nombre, q_tokens),
+        -_variante(nts, q_tokens),
+        -_extras(nts, q_tokens),
+        SequenceMatcher(None, " ".join(q_tokens), " ".join(nts)).ratio(),
+    )
 
 
 def _tienda(p: dict[str, Any]) -> tuple[str, str]:
@@ -1267,7 +1317,7 @@ def agrupar_mismo_producto(
         size, pack = _medida_de(p)
         if not _size_ok(size, spec):
             continue
-        if q_tipo and _tipo_de(p) != q_tipo:
+        if q_tipo in _TIPOS_PRODUCTO and _tipo_de(p) != q_tipo:
             continue
         if not _covers(q_tokens, _hay(p), fuzzy=True):
             continue
@@ -1342,7 +1392,8 @@ def agrupar_mismo_producto(
         g["nombre"] = str(elegido.get("nombre") or g["nombre"])
         g["best"] = elegido
 
-    built.sort(key=lambda g: (g["rank"][0], g["rank"][1], g["rank"][2], -g["min_precio"]), reverse=True)
+    # Relevancia primero (tipo pedido, sin variante, menos palabras de mas); a igual, mas barato.
+    built.sort(key=lambda g: (*g["rank"], -g["min_precio"]), reverse=True)
 
     out: list[dict[str, Any]] = []
     for g in built:

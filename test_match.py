@@ -290,7 +290,8 @@ class MatchTests(unittest.TestCase):
         size, pack = sc._medida_de(p)
         self.assertEqual(sc._clave(p, size, pack), ("PLAYADITO", "yerba", ("g", 1000), ("unit",)))
         bebida = _fila("Bebida gasificada con yerba", "Otra", 1500, "dia")
-        self.assertEqual(sc._tipo_de(bebida), "")
+        # El sustantivo de cabeza es "bebida": nunca cae en el tipo yerba.
+        self.assertEqual(sc._tipo_de(bebida), "bebida")
         self.assertEqual(sc._tipo_de(p), "yerba")
 
     def test_playadito_suave_1kg_sin_ean_va_al_grupo_principal(self) -> None:
@@ -421,6 +422,83 @@ class BancoFiltroTest(unittest.TestCase):
         )
         self.assertEqual(ph.etiqueta_banco("20% de descuento"), "")
         self.assertEqual(ph.etiqueta_banco("Banco Columbia"), "Banco Columbia")
+
+class RelevanciaSuperTest(unittest.TestCase):
+    """"leche" trae leche primero. Postres, accesorios y golosinas que la nombran no la tapan."""
+
+    def test_leche_antes_que_postres_y_accesorios(self) -> None:
+        filas = [
+            _fila("Flan Exquisita Dulce De Leche Sobre 40gr", "Exquisita", 1363, "carrefour", ean="7790000000011"),
+            _fila("Postre Ser Sabor Dulce de Leche 100g", "Ser", 2308, "carrefour", ean="7790000000028"),
+            _fila("Hervidor de leche acero 1 L", "Hudson", 9999, "carrefour", ean="7790000000035"),
+            _fila("Batidor de leche a pila", "Atma", 4999, "jumbo", ean="7790000000042"),
+            _fila("Alfajor Dulce De Leche Terrabusi 55g", "Terrabusi", 2150, "jumbo", ean="7790000000059"),
+            _fila("Leche chocolatada La Serenisima 1 L", "La Serenisima", 6750, "dia", ean="7790000000066"),
+            _fila("Leche Entera La Serenisima 1 L", "La Serenisima", 2050, "dia", ean="7790000000073"),
+            _fila("Leche Descremada Ilolay 1 L", "Ilolay", 2549, "jumbo", ean="7790000000080"),
+        ]
+        nombres = _nombres(sc.agrupar_mismo_producto("leche", filas))
+        for fuera in ("Flan", "Postre", "Hervidor", "Batidor", "Alfajor"):
+            self.assertFalse(any(n.startswith(fuera) for n in nombres), (fuera, nombres))
+        self.assertTrue(nombres[0].startswith("Leche Entera") or nombres[0].startswith("Leche Descremada"), nombres)
+        self.assertEqual(nombres[-1], "Leche chocolatada La Serenisima 1 L")
+
+    def test_dulce_de_leche_es_dulce(self) -> None:
+        self.assertEqual(sc._tipo_en("Dulce de leche La Serenisima 400 g"), "dulce")
+        self.assertEqual(sc._tipo_en("Hervidor de leche"), "hervidor")
+        self.assertEqual(sc._tipo_en("Leche Entera 1 L"), "leche")
+        filas = [
+            _fila("Postre Ser Sabor Dulce de Leche 100g", "Ser", 2308, "carrefour", ean="7790000000028"),
+            _fila("Dulce de Leche La Serenisima 400 g", "La Serenisima", 3499, "dia", ean="7790000000097"),
+        ]
+        nombres = _nombres(sc.agrupar_mismo_producto("dulce de leche", filas))
+        self.assertEqual(nombres[0], "Dulce de Leche La Serenisima 400 g")
+
+
+class RelevanciaElectroTest(unittest.TestCase):
+    """"heladera" trae heladeras antes que organizadores, hueveras o jarras."""
+
+    def test_heladera_antes_que_accesorios(self) -> None:
+        import electro
+
+        def p(nombre: str, precio: float) -> dict:
+            return {"nombre": nombre, "precio": precio, "tienda": "T", "tienda_id": "t"}
+
+        productos = [
+            p("Organizador Heladera Nouvelle Cuisine 1040501", 9269),
+            p("Jarra Termolar 2.5lt Guarani azul", 14719),
+            p("Huevera Heladera Todos Los Modelos Samsung", 16019),
+            p("Conservadora Garden 34 lt azul", 27599),
+            p("Estante De Vidrio Heladera Bespoke Samsung", 43329),
+            p("Heladera Midea Ciclica 295lt", 792402),
+            p("Freezer Horizontal Gafa 200 L", 600000),
+            p("Heladera Frigobar Vondom Negra 47L", 321999),
+            p("Samsung Heladera No Frost 380 L", 1500000),
+        ]
+        out = [x["nombre"] for x in electro.ordenar(productos, "heladera")]
+        self.assertEqual(
+            out[:4],
+            [
+                "Heladera Frigobar Vondom Negra 47L",
+                "Freezer Horizontal Gafa 200 L",
+                "Heladera Midea Ciclica 295lt",
+                "Samsung Heladera No Frost 380 L",
+            ],
+        )
+        self.assertNotIn("Jarra Termolar 2.5lt Guarani azul", out)
+        self.assertNotIn("Conservadora Garden 34 lt azul", out)
+        self.assertEqual(set(out[4:]), {
+            "Organizador Heladera Nouvelle Cuisine 1040501",
+            "Huevera Heladera Todos Los Modelos Samsung",
+            "Estante De Vidrio Heladera Bespoke Samsung",
+        })
+
+    def test_sin_coincidencias_no_se_vacia(self) -> None:
+        import electro
+
+        productos = [{"nombre": "Jarra Termolar", "precio": 10.0}]
+        self.assertEqual(len(electro.ordenar(productos, "heladera")), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
