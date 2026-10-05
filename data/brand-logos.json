@@ -17,7 +17,8 @@
       "initials": "MO",
       "group": "modo",
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/modo.svg",
-      "logo_local": "/static/brand-logos/modo.svg"
+      "logo_local": "/static/brand-logos/modo.svg",
+      "logo_style": "wordmark_recreation"
     },
     "mercado_pago": {
       "id": "mercado_pago",
@@ -26,7 +27,8 @@
       "initials": "MP",
       "group": "mercado_pago",
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/mercado_pago.svg",
-      "logo_local": "/static/brand-logos/mercado_pago.svg"
+      "logo_local": "/static/brand-logos/mercado_pago.svg",
+      "logo_style": "wordmark_recreation"
     },
     "galicia": {
       "id": "galicia",
@@ -35,7 +37,8 @@
       "initials": "GA",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/galicia.svg",
-      "logo_local": "/static/brand-logos/galicia.svg"
+      "logo_local": "/static/brand-logos/galicia.svg",
+      "logo_style": "wordmark_recreation"
     },
     "bbva": {
       "id": "bbva",
@@ -44,7 +47,8 @@
       "initials": "BB",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/bbva.svg",
-      "logo_local": "/static/brand-logos/bbva.svg"
+      "logo_local": "/static/brand-logos/bbva.svg",
+      "logo_style": "wordmark_recreation"
     },
     "santander": {
       "id": "santander",
@@ -53,7 +57,8 @@
       "initials": "SA",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/santander.svg",
-      "logo_local": "/static/brand-logos/santander.svg"
+      "logo_local": "/static/brand-logos/santander.svg",
+      "logo_style": "wordmark_recreation"
     },
     "icbc": {
       "id": "icbc",
@@ -62,7 +67,8 @@
       "initials": "IC",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/icbc.svg",
-      "logo_local": "/static/brand-logos/icbc.svg"
+      "logo_local": "/static/brand-logos/icbc.svg",
+      "logo_style": "wordmark_recreation"
     },
     "nacion": {
       "id": "nacion",
@@ -71,7 +77,8 @@
       "initials": "BN",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/nacion.svg",
-      "logo_local": "/static/brand-logos/nacion.svg"
+      "logo_local": "/static/brand-logos/nacion.svg",
+      "logo_style": "wordmark_recreation"
     },
     "bna": {
       "id": "bna",
@@ -80,7 +87,8 @@
       "initials": "B+",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/bna.svg",
-      "logo_local": "/static/brand-logos/bna.svg"
+      "logo_local": "/static/brand-logos/bna.svg",
+      "logo_style": "wordmark_recreation"
     },
     "provincia": {
       "id": "provincia",
@@ -89,7 +97,8 @@
       "initials": "BP",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/provincia.svg",
-      "logo_local": "/static/brand-logos/provincia.svg"
+      "logo_local": "/static/brand-logos/provincia.svg",
+      "logo_style": "wordmark_recreation"
     },
     "cuenta_dni": {
       "id": "cuenta_dni",
@@ -98,7 +107,8 @@
       "initials": "DN",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/cuenta_dni.svg",
-      "logo_local": "/static/brand-logos/cuenta_dni.svg"
+      "logo_local": "/static/brand-logos/cuenta_dni.svg",
+      "logo_style": "wordmark_recreation"
     },
     "patagonia": {
       "id": "patagonia",
@@ -107,7 +117,8 @@
       "initials": "PA",
       "group": "patagonia",
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/patagonia.svg",
-      "logo_local": "/static/brand-logos/patagonia.svg"
+      "logo_local": "/static/brand-logos/patagonia.svg",
+      "logo_style": "wordmark_recreation"
     },
     "patagonia_365": {
       "id": "patagonia_365",
@@ -116,7 +127,8 @@
       "initials": "P3",
       "group": "patagonia",
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/patagonia_365.svg",
-      "logo_local": "/static/brand-logos/patagonia_365.svg"
+      "logo_local": "/static/brand-logos/patagonia_365.svg",
+      "logo_style": "wordmark_recreation"
     },
     "ciudad": {
       "id": "ciudad",
@@ -125,7 +137,8 @@
       "initials": "BC",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/ciudad.svg",
-      "logo_local": "/static/brand-logos/ciudad.svg"
+      "logo_local": "/static/brand-logos/ciudad.svg",
+      "logo_style": "wordmark_recreation"
     },
     "macro": {
       "id": "macro",
@@ -134,7 +147,8 @@
       "initials": "MA",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/macro.svg",
-      "logo_local": "/static/brand-logos/macro.svg"
+      "logo_local": "/static/brand-logos/macro.svg",
+      "logo_style": "wordmark_recreation"
     },
     "supervielle": {
       "id": "supervielle",
@@ -143,7 +157,8 @@
       "initials": "SU",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/supervielle.svg",
-      "logo_local": "/static/brand-logos/supervielle.svg"
+      "logo_local": "/static/brand-logos/supervielle.svg",
+      "logo_style": "wordmark_recreation"
     },
     "comafi": {
       "id": "comafi",
@@ -152,7 +167,8 @@
       "initials": "CO",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/comafi.svg",
-      "logo_local": "/static/brand-logos/comafi.svg"
+      "logo_local": "/static/brand-logos/comafi.svg",
+      "logo_style": "wordmark_recreation"
     },
     "credicoop": {
       "id": "credicoop",
@@ -161,7 +177,8 @@
       "initials": "CR",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/credicoop.svg",
-      "logo_local": "/static/brand-logos/credicoop.svg"
+      "logo_local": "/static/brand-logos/credicoop.svg",
+      "logo_style": "wordmark_recreation"
     },
     "hipotecario": {
       "id": "hipotecario",
@@ -170,7 +187,8 @@
       "initials": "HI",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/hipotecario.svg",
-      "logo_local": "/static/brand-logos/hipotecario.svg"
+      "logo_local": "/static/brand-logos/hipotecario.svg",
+      "logo_style": "wordmark_recreation"
     },
     "columbia": {
       "id": "columbia",
@@ -179,7 +197,8 @@
       "initials": "CL",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/columbia.svg",
-      "logo_local": "/static/brand-logos/columbia.svg"
+      "logo_local": "/static/brand-logos/columbia.svg",
+      "logo_style": "wordmark_recreation"
     },
     "bancor": {
       "id": "bancor",
@@ -188,7 +207,8 @@
       "initials": "BR",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/bancor.svg",
-      "logo_local": "/static/brand-logos/bancor.svg"
+      "logo_local": "/static/brand-logos/bancor.svg",
+      "logo_style": "wordmark_recreation"
     },
     "naranja_x": {
       "id": "naranja_x",
@@ -197,7 +217,8 @@
       "initials": "NX",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/naranja_x.svg",
-      "logo_local": "/static/brand-logos/naranja_x.svg"
+      "logo_local": "/static/brand-logos/naranja_x.svg",
+      "logo_style": "wordmark_recreation"
     },
     "prex": {
       "id": "prex",
@@ -206,7 +227,8 @@
       "initials": "PX",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/prex.svg",
-      "logo_local": "/static/brand-logos/prex.svg"
+      "logo_local": "/static/brand-logos/prex.svg",
+      "logo_style": "wordmark_recreation"
     },
     "personal_pay": {
       "id": "personal_pay",
@@ -215,7 +237,8 @@
       "initials": "PP",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/personal_pay.svg",
-      "logo_local": "/static/brand-logos/personal_pay.svg"
+      "logo_local": "/static/brand-logos/personal_pay.svg",
+      "logo_style": "wordmark_recreation"
     },
     "uala": {
       "id": "uala",
@@ -224,7 +247,8 @@
       "initials": "UA",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/uala.svg",
-      "logo_local": "/static/brand-logos/uala.svg"
+      "logo_local": "/static/brand-logos/uala.svg",
+      "logo_style": "wordmark_recreation"
     },
     "carrefour": {
       "id": "carrefour",
@@ -233,7 +257,8 @@
       "initials": "CA",
       "group": "carrefour",
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/carrefour.svg",
-      "logo_local": "/static/brand-logos/carrefour.svg"
+      "logo_local": "/static/brand-logos/carrefour.svg",
+      "logo_style": "simple_icons_cc0"
     },
     "visa": {
       "id": "visa",
@@ -242,7 +267,8 @@
       "initials": "VI",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/visa.svg",
-      "logo_local": "/static/brand-logos/visa.svg"
+      "logo_local": "/static/brand-logos/visa.svg",
+      "logo_style": "simple_icons_cc0"
     },
     "mastercard": {
       "id": "mastercard",
@@ -251,7 +277,8 @@
       "initials": "MC",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/mastercard.svg",
-      "logo_local": "/static/brand-logos/mastercard.svg"
+      "logo_local": "/static/brand-logos/mastercard.svg",
+      "logo_style": "public_geometric"
     },
     "amex": {
       "id": "amex",
@@ -260,7 +287,8 @@
       "initials": "AX",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/amex.svg",
-      "logo_local": "/static/brand-logos/amex.svg"
+      "logo_local": "/static/brand-logos/amex.svg",
+      "logo_style": "simple_icons_cc0"
     },
     "cabal": {
       "id": "cabal",
@@ -269,7 +297,8 @@
       "initials": "CB",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/cabal.svg",
-      "logo_local": "/static/brand-logos/cabal.svg"
+      "logo_local": "/static/brand-logos/cabal.svg",
+      "logo_style": "wordmark_recreation"
     },
     "anses": {
       "id": "anses",
@@ -278,7 +307,8 @@
       "initials": "AN",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/anses.svg",
-      "logo_local": "/static/brand-logos/anses.svg"
+      "logo_local": "/static/brand-logos/anses.svg",
+      "logo_style": "wordmark_recreation"
     },
     "cencopay": {
       "id": "cencopay",
@@ -287,7 +317,8 @@
       "initials": "CP",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/cencopay.svg",
-      "logo_local": "/static/brand-logos/cencopay.svg"
+      "logo_local": "/static/brand-logos/cencopay.svg",
+      "logo_style": "wordmark_recreation"
     },
     "sol": {
       "id": "sol",
@@ -296,7 +327,8 @@
       "initials": "SO",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/sol.svg",
-      "logo_local": "/static/brand-logos/sol.svg"
+      "logo_local": "/static/brand-logos/sol.svg",
+      "logo_style": "wordmark_recreation"
     },
     "del_sol": {
       "id": "del_sol",
@@ -305,7 +337,8 @@
       "initials": "DS",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/del_sol.svg",
-      "logo_local": "/static/brand-logos/del_sol.svg"
+      "logo_local": "/static/brand-logos/del_sol.svg",
+      "logo_style": "wordmark_recreation"
     },
     "la_anonima": {
       "id": "la_anonima",
@@ -314,7 +347,8 @@
       "initials": "LA",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/la_anonima.svg",
-      "logo_local": "/static/brand-logos/la_anonima.svg"
+      "logo_local": "/static/brand-logos/la_anonima.svg",
+      "logo_style": "wordmark_recreation"
     },
     "chubut": {
       "id": "chubut",
@@ -323,7 +357,8 @@
       "initials": "CH",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/chubut.svg",
-      "logo_local": "/static/brand-logos/chubut.svg"
+      "logo_local": "/static/brand-logos/chubut.svg",
+      "logo_style": "wordmark_recreation"
     },
     "santa_fe": {
       "id": "santa_fe",
@@ -332,7 +367,8 @@
       "initials": "SF",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/santa_fe.svg",
-      "logo_local": "/static/brand-logos/santa_fe.svg"
+      "logo_local": "/static/brand-logos/santa_fe.svg",
+      "logo_style": "wordmark_recreation"
     },
     "santa_cruz": {
       "id": "santa_cruz",
@@ -341,7 +377,8 @@
       "initials": "SC",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/santa_cruz.svg",
-      "logo_local": "/static/brand-logos/santa_cruz.svg"
+      "logo_local": "/static/brand-logos/santa_cruz.svg",
+      "logo_style": "wordmark_recreation"
     },
     "san_juan": {
       "id": "san_juan",
@@ -350,7 +387,8 @@
       "initials": "SJ",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/san_juan.svg",
-      "logo_local": "/static/brand-logos/san_juan.svg"
+      "logo_local": "/static/brand-logos/san_juan.svg",
+      "logo_style": "wordmark_recreation"
     },
     "santiago": {
       "id": "santiago",
@@ -359,7 +397,8 @@
       "initials": "SE",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/santiago.svg",
-      "logo_local": "/static/brand-logos/santiago.svg"
+      "logo_local": "/static/brand-logos/santiago.svg",
+      "logo_style": "wordmark_recreation"
     },
     "yoy": {
       "id": "yoy",
@@ -368,7 +407,8 @@
       "initials": "YO",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/yoy.svg",
-      "logo_local": "/static/brand-logos/yoy.svg"
+      "logo_local": "/static/brand-logos/yoy.svg",
+      "logo_style": "wordmark_recreation"
     },
     "club_nacion": {
       "id": "club_nacion",
@@ -377,7 +417,8 @@
       "initials": "LN",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/club_nacion.svg",
-      "logo_local": "/static/brand-logos/club_nacion.svg"
+      "logo_local": "/static/brand-logos/club_nacion.svg",
+      "logo_style": "wordmark_recreation"
     },
     "masclub": {
       "id": "masclub",
@@ -386,7 +427,8 @@
       "initials": "MS",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/masclub.svg",
-      "logo_local": "/static/brand-logos/masclub.svg"
+      "logo_local": "/static/brand-logos/masclub.svg",
+      "logo_style": "monogram"
     },
     "centrocardi": {
       "id": "centrocardi",
@@ -395,7 +437,8 @@
       "initials": "CC",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/centrocardi.svg",
-      "logo_local": "/static/brand-logos/centrocardi.svg"
+      "logo_local": "/static/brand-logos/centrocardi.svg",
+      "logo_style": "monogram"
     },
     "platino": {
       "id": "platino",
@@ -404,7 +447,8 @@
       "initials": "PL",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/platino.svg",
-      "logo_local": "/static/brand-logos/platino.svg"
+      "logo_local": "/static/brand-logos/platino.svg",
+      "logo_style": "monogram"
     },
     "primera_ciudad": {
       "id": "primera_ciudad",
@@ -413,7 +457,8 @@
       "initials": "PC",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/primera_ciudad.svg",
-      "logo_local": "/static/brand-logos/primera_ciudad.svg"
+      "logo_local": "/static/brand-logos/primera_ciudad.svg",
+      "logo_style": "wordmark_recreation"
     },
     "verde": {
       "id": "verde",
@@ -422,7 +467,8 @@
       "initials": "VE",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/verde.svg",
-      "logo_local": "/static/brand-logos/verde.svg"
+      "logo_local": "/static/brand-logos/verde.svg",
+      "logo_style": "wordmark_recreation"
     },
     "credicuotas": {
       "id": "credicuotas",
@@ -431,7 +477,8 @@
       "initials": "CQ",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/credicuotas.svg",
-      "logo_local": "/static/brand-logos/credicuotas.svg"
+      "logo_local": "/static/brand-logos/credicuotas.svg",
+      "logo_style": "monogram"
     },
     "credimas": {
       "id": "credimas",
@@ -440,7 +487,8 @@
       "initials": "CM",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/credimas.svg",
-      "logo_local": "/static/brand-logos/credimas.svg"
+      "logo_local": "/static/brand-logos/credimas.svg",
+      "logo_style": "monogram"
     },
     "elebar": {
       "id": "elebar",
@@ -449,7 +497,8 @@
       "initials": "EL",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/elebar.svg",
-      "logo_local": "/static/brand-logos/elebar.svg"
+      "logo_local": "/static/brand-logos/elebar.svg",
+      "logo_style": "monogram"
     },
     "favacard": {
       "id": "favacard",
@@ -458,7 +507,8 @@
       "initials": "FA",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/favacard.svg",
-      "logo_local": "/static/brand-logos/favacard.svg"
+      "logo_local": "/static/brand-logos/favacard.svg",
+      "logo_style": "monogram"
     },
     "finanya": {
       "id": "finanya",
@@ -467,7 +517,8 @@
       "initials": "FY",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/finanya.svg",
-      "logo_local": "/static/brand-logos/finanya.svg"
+      "logo_local": "/static/brand-logos/finanya.svg",
+      "logo_style": "monogram"
     },
     "sidecreer": {
       "id": "sidecreer",
@@ -476,7 +527,8 @@
       "initials": "SI",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/sidecreer.svg",
-      "logo_local": "/static/brand-logos/sidecreer.svg"
+      "logo_local": "/static/brand-logos/sidecreer.svg",
+      "logo_style": "monogram"
     },
     "sucredito": {
       "id": "sucredito",
@@ -485,7 +537,8 @@
       "initials": "SU",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/sucredito.svg",
-      "logo_local": "/static/brand-logos/sucredito.svg"
+      "logo_local": "/static/brand-logos/sucredito.svg",
+      "logo_style": "monogram"
     },
     "titanio": {
       "id": "titanio",
@@ -494,7 +547,8 @@
       "initials": "TI",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/titanio.svg",
-      "logo_local": "/static/brand-logos/titanio.svg"
+      "logo_local": "/static/brand-logos/titanio.svg",
+      "logo_style": "monogram"
     },
     "mutualcard": {
       "id": "mutualcard",
@@ -503,7 +557,8 @@
       "initials": "MU",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/mutualcard.svg",
-      "logo_local": "/static/brand-logos/mutualcard.svg"
+      "logo_local": "/static/brand-logos/mutualcard.svg",
+      "logo_style": "monogram"
     },
     "empleados_publicos": {
       "id": "empleados_publicos",
@@ -512,7 +567,8 @@
       "initials": "EP",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/empleados_publicos.svg",
-      "logo_local": "/static/brand-logos/empleados_publicos.svg"
+      "logo_local": "/static/brand-logos/empleados_publicos.svg",
+      "logo_style": "monogram"
     },
     "varios": {
       "id": "varios",
@@ -521,7 +577,8 @@
       "initials": "VB",
       "group": null,
       "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/varios.svg",
-      "logo_local": "/static/brand-logos/varios.svg"
+      "logo_local": "/static/brand-logos/varios.svg",
+      "logo_style": "monogram"
     }
   },
   "keywords": [
@@ -886,6 +943,16 @@
       "label": "Carrefour",
       "brand_id": "carrefour",
       "hint": "Cuenta digital y tarjetas"
+    }
+  },
+  "logo_notes": {
+    "updated": "2026-10-05",
+    "policy": "Prefer free public SVG marks (Simple Icons CC0 / geometric recreations). Clear wordmark recreations for well-known AR banks/wallets. Keep monogram if trademark uncertain (niche cards).",
+    "styles": {
+      "simple_icons_cc0": "Visa, Amex, Carrefour path from Simple Icons (CC0); trademarks still belong to owners — used for identification only.",
+      "public_geometric": "Mastercard interlocking circles (PD-threshold geometric).",
+      "wordmark_recreation": "Brand-color tile + short readable name (not official logo artwork).",
+      "monogram": "Initials tile kept where official mark is uncertain or niche."
     }
   }
 }
