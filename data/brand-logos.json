@@ -1,0 +1,891 @@
+{
+  "version": 1,
+  "logo_base": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos",
+  "pins": [
+    "galicia",
+    "mercado_pago",
+    "modo",
+    "naranja_x",
+    "provincia",
+    "santander"
+  ],
+  "brands": {
+    "modo": {
+      "id": "modo",
+      "label": "MODO",
+      "color": "#6C3CE1",
+      "initials": "MO",
+      "group": "modo",
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/modo.svg",
+      "logo_local": "/static/brand-logos/modo.svg"
+    },
+    "mercado_pago": {
+      "id": "mercado_pago",
+      "label": "Mercado Pago",
+      "color": "#009EE3",
+      "initials": "MP",
+      "group": "mercado_pago",
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/mercado_pago.svg",
+      "logo_local": "/static/brand-logos/mercado_pago.svg"
+    },
+    "galicia": {
+      "id": "galicia",
+      "label": "Galicia",
+      "color": "#FA6400",
+      "initials": "GA",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/galicia.svg",
+      "logo_local": "/static/brand-logos/galicia.svg"
+    },
+    "bbva": {
+      "id": "bbva",
+      "label": "BBVA",
+      "color": "#072146",
+      "initials": "BB",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/bbva.svg",
+      "logo_local": "/static/brand-logos/bbva.svg"
+    },
+    "santander": {
+      "id": "santander",
+      "label": "Santander",
+      "color": "#EC0000",
+      "initials": "SA",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/santander.svg",
+      "logo_local": "/static/brand-logos/santander.svg"
+    },
+    "icbc": {
+      "id": "icbc",
+      "label": "ICBC",
+      "color": "#C41230",
+      "initials": "IC",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/icbc.svg",
+      "logo_local": "/static/brand-logos/icbc.svg"
+    },
+    "nacion": {
+      "id": "nacion",
+      "label": "Nación",
+      "color": "#003DA5",
+      "initials": "BN",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/nacion.svg",
+      "logo_local": "/static/brand-logos/nacion.svg"
+    },
+    "bna": {
+      "id": "bna",
+      "label": "BNA+",
+      "color": "#003DA5",
+      "initials": "B+",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/bna.svg",
+      "logo_local": "/static/brand-logos/bna.svg"
+    },
+    "provincia": {
+      "id": "provincia",
+      "label": "Provincia",
+      "color": "#00A0E3",
+      "initials": "BP",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/provincia.svg",
+      "logo_local": "/static/brand-logos/provincia.svg"
+    },
+    "cuenta_dni": {
+      "id": "cuenta_dni",
+      "label": "Cuenta DNI",
+      "color": "#00A0E3",
+      "initials": "DN",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/cuenta_dni.svg",
+      "logo_local": "/static/brand-logos/cuenta_dni.svg"
+    },
+    "patagonia": {
+      "id": "patagonia",
+      "label": "Patagonia",
+      "color": "#6B2D5B",
+      "initials": "PA",
+      "group": "patagonia",
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/patagonia.svg",
+      "logo_local": "/static/brand-logos/patagonia.svg"
+    },
+    "patagonia_365": {
+      "id": "patagonia_365",
+      "label": "Patagonia 365",
+      "color": "#6B2D5B",
+      "initials": "P3",
+      "group": "patagonia",
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/patagonia_365.svg",
+      "logo_local": "/static/brand-logos/patagonia_365.svg"
+    },
+    "ciudad": {
+      "id": "ciudad",
+      "label": "Ciudad",
+      "color": "#00A651",
+      "initials": "BC",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/ciudad.svg",
+      "logo_local": "/static/brand-logos/ciudad.svg"
+    },
+    "macro": {
+      "id": "macro",
+      "label": "Macro",
+      "color": "#002B5C",
+      "initials": "MA",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/macro.svg",
+      "logo_local": "/static/brand-logos/macro.svg"
+    },
+    "supervielle": {
+      "id": "supervielle",
+      "label": "Supervielle",
+      "color": "#E30613",
+      "initials": "SU",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/supervielle.svg",
+      "logo_local": "/static/brand-logos/supervielle.svg"
+    },
+    "comafi": {
+      "id": "comafi",
+      "label": "Comafi",
+      "color": "#0033A0",
+      "initials": "CO",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/comafi.svg",
+      "logo_local": "/static/brand-logos/comafi.svg"
+    },
+    "credicoop": {
+      "id": "credicoop",
+      "label": "Credicoop",
+      "color": "#006633",
+      "initials": "CR",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/credicoop.svg",
+      "logo_local": "/static/brand-logos/credicoop.svg"
+    },
+    "hipotecario": {
+      "id": "hipotecario",
+      "label": "Hipotecario",
+      "color": "#003366",
+      "initials": "HI",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/hipotecario.svg",
+      "logo_local": "/static/brand-logos/hipotecario.svg"
+    },
+    "columbia": {
+      "id": "columbia",
+      "label": "Columbia",
+      "color": "#1B4F72",
+      "initials": "CL",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/columbia.svg",
+      "logo_local": "/static/brand-logos/columbia.svg"
+    },
+    "bancor": {
+      "id": "bancor",
+      "label": "BANCOR",
+      "color": "#00A859",
+      "initials": "BR",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/bancor.svg",
+      "logo_local": "/static/brand-logos/bancor.svg"
+    },
+    "naranja_x": {
+      "id": "naranja_x",
+      "label": "Naranja X",
+      "color": "#FF6200",
+      "initials": "NX",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/naranja_x.svg",
+      "logo_local": "/static/brand-logos/naranja_x.svg"
+    },
+    "prex": {
+      "id": "prex",
+      "label": "Prex",
+      "color": "#00C389",
+      "initials": "PX",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/prex.svg",
+      "logo_local": "/static/brand-logos/prex.svg"
+    },
+    "personal_pay": {
+      "id": "personal_pay",
+      "label": "Personal Pay",
+      "color": "#1A1A2E",
+      "initials": "PP",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/personal_pay.svg",
+      "logo_local": "/static/brand-logos/personal_pay.svg"
+    },
+    "uala": {
+      "id": "uala",
+      "label": "Ualá",
+      "color": "#3D0CEB",
+      "initials": "UA",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/uala.svg",
+      "logo_local": "/static/brand-logos/uala.svg"
+    },
+    "carrefour": {
+      "id": "carrefour",
+      "label": "Carrefour",
+      "color": "#004E9A",
+      "initials": "CA",
+      "group": "carrefour",
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/carrefour.svg",
+      "logo_local": "/static/brand-logos/carrefour.svg"
+    },
+    "visa": {
+      "id": "visa",
+      "label": "Visa",
+      "color": "#1A1F71",
+      "initials": "VI",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/visa.svg",
+      "logo_local": "/static/brand-logos/visa.svg"
+    },
+    "mastercard": {
+      "id": "mastercard",
+      "label": "Mastercard",
+      "color": "#EB001B",
+      "initials": "MC",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/mastercard.svg",
+      "logo_local": "/static/brand-logos/mastercard.svg"
+    },
+    "amex": {
+      "id": "amex",
+      "label": "Amex",
+      "color": "#006FCF",
+      "initials": "AX",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/amex.svg",
+      "logo_local": "/static/brand-logos/amex.svg"
+    },
+    "cabal": {
+      "id": "cabal",
+      "label": "Cabal",
+      "color": "#00529B",
+      "initials": "CB",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/cabal.svg",
+      "logo_local": "/static/brand-logos/cabal.svg"
+    },
+    "anses": {
+      "id": "anses",
+      "label": "ANSES",
+      "color": "#1B5E9C",
+      "initials": "AN",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/anses.svg",
+      "logo_local": "/static/brand-logos/anses.svg"
+    },
+    "cencopay": {
+      "id": "cencopay",
+      "label": "Cencopay",
+      "color": "#E30613",
+      "initials": "CP",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/cencopay.svg",
+      "logo_local": "/static/brand-logos/cencopay.svg"
+    },
+    "sol": {
+      "id": "sol",
+      "label": "Tarjeta Sol",
+      "color": "#F5A623",
+      "initials": "SO",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/sol.svg",
+      "logo_local": "/static/brand-logos/sol.svg"
+    },
+    "del_sol": {
+      "id": "del_sol",
+      "label": "del Sol",
+      "color": "#F5A623",
+      "initials": "DS",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/del_sol.svg",
+      "logo_local": "/static/brand-logos/del_sol.svg"
+    },
+    "la_anonima": {
+      "id": "la_anonima",
+      "label": "La Anónima",
+      "color": "#C8102E",
+      "initials": "LA",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/la_anonima.svg",
+      "logo_local": "/static/brand-logos/la_anonima.svg"
+    },
+    "chubut": {
+      "id": "chubut",
+      "label": "Chubut",
+      "color": "#0055A5",
+      "initials": "CH",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/chubut.svg",
+      "logo_local": "/static/brand-logos/chubut.svg"
+    },
+    "santa_fe": {
+      "id": "santa_fe",
+      "label": "Santa Fe",
+      "color": "#0066B3",
+      "initials": "SF",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/santa_fe.svg",
+      "logo_local": "/static/brand-logos/santa_fe.svg"
+    },
+    "santa_cruz": {
+      "id": "santa_cruz",
+      "label": "Santa Cruz",
+      "color": "#003366",
+      "initials": "SC",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/santa_cruz.svg",
+      "logo_local": "/static/brand-logos/santa_cruz.svg"
+    },
+    "san_juan": {
+      "id": "san_juan",
+      "label": "San Juan",
+      "color": "#8B0000",
+      "initials": "SJ",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/san_juan.svg",
+      "logo_local": "/static/brand-logos/san_juan.svg"
+    },
+    "santiago": {
+      "id": "santiago",
+      "label": "Sgo. del Estero",
+      "color": "#006400",
+      "initials": "SE",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/santiago.svg",
+      "logo_local": "/static/brand-logos/santiago.svg"
+    },
+    "yoy": {
+      "id": "yoy",
+      "label": "Yoy",
+      "color": "#7B2D8E",
+      "initials": "YO",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/yoy.svg",
+      "logo_local": "/static/brand-logos/yoy.svg"
+    },
+    "club_nacion": {
+      "id": "club_nacion",
+      "label": "Club La Nación",
+      "color": "#111111",
+      "initials": "LN",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/club_nacion.svg",
+      "logo_local": "/static/brand-logos/club_nacion.svg"
+    },
+    "masclub": {
+      "id": "masclub",
+      "label": "MasClub",
+      "color": "#E31C23",
+      "initials": "MS",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/masclub.svg",
+      "logo_local": "/static/brand-logos/masclub.svg"
+    },
+    "centrocardi": {
+      "id": "centrocardi",
+      "label": "CentroCard",
+      "color": "#2C3E50",
+      "initials": "CC",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/centrocardi.svg",
+      "logo_local": "/static/brand-logos/centrocardi.svg"
+    },
+    "platino": {
+      "id": "platino",
+      "label": "Platino",
+      "color": "#7F8C8D",
+      "initials": "PL",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/platino.svg",
+      "logo_local": "/static/brand-logos/platino.svg"
+    },
+    "primera_ciudad": {
+      "id": "primera_ciudad",
+      "label": "Primera Ciudad",
+      "color": "#27AE60",
+      "initials": "PC",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/primera_ciudad.svg",
+      "logo_local": "/static/brand-logos/primera_ciudad.svg"
+    },
+    "verde": {
+      "id": "verde",
+      "label": "Verde",
+      "color": "#27AE60",
+      "initials": "VE",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/verde.svg",
+      "logo_local": "/static/brand-logos/verde.svg"
+    },
+    "credicuotas": {
+      "id": "credicuotas",
+      "label": "Credicuotas",
+      "color": "#34495E",
+      "initials": "CQ",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/credicuotas.svg",
+      "logo_local": "/static/brand-logos/credicuotas.svg"
+    },
+    "credimas": {
+      "id": "credimas",
+      "label": "Credimas",
+      "color": "#8E44AD",
+      "initials": "CM",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/credimas.svg",
+      "logo_local": "/static/brand-logos/credimas.svg"
+    },
+    "elebar": {
+      "id": "elebar",
+      "label": "Elebar",
+      "color": "#16A085",
+      "initials": "EL",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/elebar.svg",
+      "logo_local": "/static/brand-logos/elebar.svg"
+    },
+    "favacard": {
+      "id": "favacard",
+      "label": "Favacard",
+      "color": "#D35400",
+      "initials": "FA",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/favacard.svg",
+      "logo_local": "/static/brand-logos/favacard.svg"
+    },
+    "finanya": {
+      "id": "finanya",
+      "label": "FinanYa",
+      "color": "#2980B9",
+      "initials": "FY",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/finanya.svg",
+      "logo_local": "/static/brand-logos/finanya.svg"
+    },
+    "sidecreer": {
+      "id": "sidecreer",
+      "label": "Sidecreer",
+      "color": "#1ABC9C",
+      "initials": "SI",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/sidecreer.svg",
+      "logo_local": "/static/brand-logos/sidecreer.svg"
+    },
+    "sucredito": {
+      "id": "sucredito",
+      "label": "Sucrédito",
+      "color": "#9B59B6",
+      "initials": "SU",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/sucredito.svg",
+      "logo_local": "/static/brand-logos/sucredito.svg"
+    },
+    "titanio": {
+      "id": "titanio",
+      "label": "Titanio",
+      "color": "#7F8C8D",
+      "initials": "TI",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/titanio.svg",
+      "logo_local": "/static/brand-logos/titanio.svg"
+    },
+    "mutualcard": {
+      "id": "mutualcard",
+      "label": "Mutualcard",
+      "color": "#2C3E50",
+      "initials": "MU",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/mutualcard.svg",
+      "logo_local": "/static/brand-logos/mutualcard.svg"
+    },
+    "empleados_publicos": {
+      "id": "empleados_publicos",
+      "label": "Empleados públicos",
+      "color": "#34495E",
+      "initials": "EP",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/empleados_publicos.svg",
+      "logo_local": "/static/brand-logos/empleados_publicos.svg"
+    },
+    "varios": {
+      "id": "varios",
+      "label": "Varios bancos",
+      "color": "#666666",
+      "initials": "VB",
+      "group": null,
+      "logo": "https://rwjfcxepamjnqoawuysd.supabase.co/storage/v1/object/public/brand-logos/varios.svg",
+      "logo_local": "/static/brand-logos/varios.svg"
+    }
+  },
+  "keywords": [
+    [
+      "cuenta digital carrefour",
+      "carrefour"
+    ],
+    [
+      "tarjeta de credito carrefour",
+      "carrefour"
+    ],
+    [
+      "mi carrefour",
+      "carrefour"
+    ],
+    [
+      "carrefour banco",
+      "carrefour"
+    ],
+    [
+      "carrefour",
+      "carrefour"
+    ],
+    [
+      "mercado pago",
+      "mercado_pago"
+    ],
+    [
+      "cuenta dni",
+      "cuenta_dni"
+    ],
+    [
+      "banco provincia",
+      "provincia"
+    ],
+    [
+      "banco galicia",
+      "galicia"
+    ],
+    [
+      "banco nacion",
+      "nacion"
+    ],
+    [
+      "banco patagonia",
+      "patagonia"
+    ],
+    [
+      "patagonia 365",
+      "patagonia_365"
+    ],
+    [
+      "patagonia",
+      "patagonia"
+    ],
+    [
+      "banco ciudad",
+      "ciudad"
+    ],
+    [
+      "buepp",
+      "ciudad"
+    ],
+    [
+      "primera ciudad",
+      "primera_ciudad"
+    ],
+    [
+      "banco macro",
+      "macro"
+    ],
+    [
+      "banco supervielle",
+      "supervielle"
+    ],
+    [
+      "supervielle",
+      "supervielle"
+    ],
+    [
+      "banco comafi",
+      "comafi"
+    ],
+    [
+      "comafi",
+      "comafi"
+    ],
+    [
+      "banco credicoop",
+      "credicoop"
+    ],
+    [
+      "credicoop",
+      "credicoop"
+    ],
+    [
+      "banco hipotecario",
+      "hipotecario"
+    ],
+    [
+      "hipotecario",
+      "hipotecario"
+    ],
+    [
+      "banco columbia",
+      "columbia"
+    ],
+    [
+      "columbia",
+      "columbia"
+    ],
+    [
+      "banco del sol",
+      "del_sol"
+    ],
+    [
+      "tarjeta sol",
+      "sol"
+    ],
+    [
+      "tarjeta la anonima",
+      "la_anonima"
+    ],
+    [
+      "la anonima",
+      "la_anonima"
+    ],
+    [
+      "banco de san juan",
+      "san_juan"
+    ],
+    [
+      "san juan",
+      "san_juan"
+    ],
+    [
+      "banco santa cruz",
+      "santa_cruz"
+    ],
+    [
+      "santa cruz",
+      "santa_cruz"
+    ],
+    [
+      "banco santa fe",
+      "santa_fe"
+    ],
+    [
+      "santa fe",
+      "santa_fe"
+    ],
+    [
+      "santiago del estero",
+      "santiago"
+    ],
+    [
+      "banco del chubut",
+      "chubut"
+    ],
+    [
+      "chubut",
+      "chubut"
+    ],
+    [
+      "personal pay",
+      "personal_pay"
+    ],
+    [
+      "naranja x",
+      "naranja_x"
+    ],
+    [
+      "naranjax",
+      "naranja_x"
+    ],
+    [
+      "naranja",
+      "naranja_x"
+    ],
+    [
+      "american express",
+      "amex"
+    ],
+    [
+      "american expres",
+      "amex"
+    ],
+    [
+      "amex",
+      "amex"
+    ],
+    [
+      "mastercard",
+      "mastercard"
+    ],
+    [
+      "club la nacion",
+      "club_nacion"
+    ],
+    [
+      "empleados publicos",
+      "empleados_publicos"
+    ],
+    [
+      "empleado/a publico",
+      "empleados_publicos"
+    ],
+    [
+      "empleado publico",
+      "empleados_publicos"
+    ],
+    [
+      "varios bancos",
+      "varios"
+    ],
+    [
+      "cencopay",
+      "cencopay"
+    ],
+    [
+      "credicuotas",
+      "credicuotas"
+    ],
+    [
+      "credimas",
+      "credimas"
+    ],
+    [
+      "masclub",
+      "masclub"
+    ],
+    [
+      "sidecreer",
+      "sidecreer"
+    ],
+    [
+      "sucredito",
+      "sucredito"
+    ],
+    [
+      "favacard",
+      "favacard"
+    ],
+    [
+      "finanya",
+      "finanya"
+    ],
+    [
+      "mutualcard",
+      "mutualcard"
+    ],
+    [
+      "platino",
+      "platino"
+    ],
+    [
+      "titanio",
+      "titanio"
+    ],
+    [
+      "elebar",
+      "elebar"
+    ],
+    [
+      "bancor",
+      "bancor"
+    ],
+    [
+      "galicia",
+      "galicia"
+    ],
+    [
+      "santander",
+      "santander"
+    ],
+    [
+      "provincia",
+      "provincia"
+    ],
+    [
+      "macro",
+      "macro"
+    ],
+    [
+      "bbva",
+      "bbva"
+    ],
+    [
+      "icbc",
+      "icbc"
+    ],
+    [
+      "visa",
+      "visa"
+    ],
+    [
+      "cabal",
+      "cabal"
+    ],
+    [
+      "prex",
+      "prex"
+    ],
+    [
+      "uala",
+      "uala"
+    ],
+    [
+      "anses",
+      "anses"
+    ],
+    [
+      "modo",
+      "modo"
+    ],
+    [
+      "bna+",
+      "bna"
+    ],
+    [
+      "bna",
+      "nacion"
+    ],
+    [
+      "nacion",
+      "nacion"
+    ],
+    [
+      "yoy",
+      "yoy"
+    ],
+    [
+      "verde",
+      "verde"
+    ],
+    [
+      "sol",
+      "sol"
+    ],
+    [
+      "centrocard",
+      "centrocardi"
+    ]
+  ],
+  "groups": {
+    "modo": {
+      "label": "MODO",
+      "brand_id": "modo",
+      "hint": "QR y billeteras en MODO"
+    },
+    "mercado_pago": {
+      "label": "Mercado Pago",
+      "brand_id": "mercado_pago",
+      "hint": "App, QR y tarjeta MP"
+    },
+    "patagonia": {
+      "label": "Patagonia",
+      "brand_id": "patagonia",
+      "hint": "Plan sueldo y cartera general"
+    },
+    "carrefour": {
+      "label": "Carrefour",
+      "brand_id": "carrefour",
+      "hint": "Cuenta digital y tarjetas"
+    }
+  }
+}

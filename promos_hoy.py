@@ -15,6 +15,11 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from baratoya.brand_logos import enriquecer_tarjeta, meta_publica as marcas_meta
+except ImportError:
+    from brand_logos import enriquecer_tarjeta, meta_publica as marcas_meta
+
 ART = timezone(timedelta(hours=-3))
 DATA = Path(__file__).resolve().parent / "data"
 
@@ -1086,12 +1091,12 @@ def etiqueta_banco(raw: str) -> str:
     return _canon_nombre(texto)
 
 
-def tarjeta_publica(rec: dict[str, Any]) -> dict[str, str]:
+def tarjeta_publica(rec: dict[str, Any]) -> dict[str, Any]:
     crudo = str(rec.get("banco") or "")
     filtro = etiqueta_banco(crudo)
     # La frase sin banco se queda en la tarjeta, no en el filtro.
     titulo = filtro or _canon_nombre(crudo) or crudo.strip()
-    return {
+    base = {
         "cadena": rec["cadena"],
         "chain_id": rec["chain_id"],
         "banco": titulo,
@@ -1103,6 +1108,7 @@ def tarjeta_publica(rec: dict[str, Any]) -> dict[str, str]:
         "minimo": _min_txt(rec),
         "vigencia": _vigencia_txt(rec),
     }
+    return enriquecer_tarjeta(base)
 
 
 def activas(hoy: date | None = None) -> list[dict[str, Any]]:
@@ -1161,6 +1167,7 @@ def catalogo(hoy: date | None = None) -> dict[str, Any]:
         "dia": NOMBRE_DIA[hoy.weekday()],
         "por_dia": por_dia,
         "por_banco": por_banco,
+        "marcas": marcas_meta(),
         "notas": notas,
         "n": len(cards),
     }

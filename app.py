@@ -100,6 +100,19 @@ async def _http_error(request: Request, exc: StarletteHTTPException):
     return await http_exception_handler(request, exc)
 
 
+@app.get("/static/brand-logos/{name}", include_in_schema=False)
+async def brand_logo(name: str):
+    """Logos de marcas para el filtro. Fallback local si Storage no responde."""
+    safe = Path(name).name
+    if not safe.endswith((".svg", ".png", ".webp")):
+        raise StarletteHTTPException(status_code=404)
+    path = STATIC_DIR / "brand-logos" / safe
+    if not path.is_file():
+        raise StarletteHTTPException(status_code=404)
+    media = "image/svg+xml" if safe.endswith(".svg") else "image/png"
+    return FileResponse(path, media_type=media)
+
+
 @app.get("/favicon.svg", include_in_schema=False)
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
