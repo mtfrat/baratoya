@@ -14,8 +14,10 @@ from urllib.parse import urlparse
 
 import httpx
 from fastapi import FastAPI, Query, Request
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.exception_handlers import http_exception_handler
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Paquete (uvicorn baratoya.app:app desde micro-saas) o módulo suelto (Vercel carga app.py).
 try:
@@ -81,6 +83,31 @@ PLANES = {"lista", "historial", "no-se"}
 
 app = FastAPI(title="BaratoYa")
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
+STATIC_DIR = Path(__file__).parent / "static"
+
+
+@app.exception_handler(StarletteHTTPException)
+async def _http_error(request: Request, exc: StarletteHTTPException):
+    """Una persona que cae en una ruta que no existe ve una página, no {"detail": ...}.
+    /api y los clientes que piden JSON siguen recibiendo JSON."""
+    accept = request.headers.get("accept") or ""
+    if (
+        exc.status_code == 404
+        and not request.url.path.startswith("/api/")
+        and "application/json" not in accept
+    ):
+        return templates.TemplateResponse(request, "404.html", {}, status_code=404)
+    return await http_exception_handler(request, exc)
+
+
+@app.get("/favicon.svg", include_in_schema=False)
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse(
+        STATIC_DIR / "favicon.svg",
+        media_type="image/svg+xml",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 def _headers() -> dict[str, str]:

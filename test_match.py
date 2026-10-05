@@ -500,5 +500,89 @@ class RelevanciaElectroTest(unittest.TestCase):
         self.assertEqual(len(electro.ordenar(productos, "heladera")), 1)
 
 
+class PaginasTest(unittest.TestCase):
+    """404 en HTML para personas, JSON para /api. Favicon servido."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        from fastapi.testclient import TestClient
+        import app as app_mod
+
+        cls.client = TestClient(app_mod.app)
+
+    def test_404_html(self) -> None:
+        r = self.client.get("/no-existe-esto", headers={"Accept": "text/html"})
+        self.assertEqual(r.status_code, 404)
+        self.assertIn("text/html", r.headers["content-type"])
+        self.assertIn("BaratoYa", r.text)
+        self.assertNotIn('"detail"', r.text)
+
+    def test_404_api_sigue_json(self) -> None:
+        r = self.client.get("/api/no-existe")
+        self.assertEqual(r.status_code, 404)
+        self.assertEqual(r.json().get("detail"), "Not Found")
+
+    def test_favicon(self) -> None:
+        for path in ("/favicon.svg", "/favicon.ico"):
+            r = self.client.get(path)
+            self.assertEqual(r.status_code, 200, path)
+            self.assertIn("image/svg+xml", r.headers["content-type"])
+            self.assertIn("#163300", r.text)
+
+
+class MeliAvisoTest(unittest.TestCase):
+    """Un 403 de Mercado Libre llega una sola vez, en castellano, y la búsqueda sigue."""
+
+    def test_403_una_vez_en_super_y_electro(self) -> None:
+        import asyncio as aio
+        from fastapi.testclient import TestClient
+        import app as app_mod
+        import electro
+
+        aviso = "Mercado Libre no dejó ver ese listado."
+        meli_403 = {
+            "tienda": "Mercado Libre", "tienda_id": "mla", "http": 403, "ok": False,
+            "n": 0, "productos": [], "aviso": aviso,
+        }
+
+        async def gate(request, q):
+            return {"ok": True, "plan": "free", "used": 1, "remaining": 4, "limit": 5}
+
+        async def meli(q, limit=10):
+            return dict(meli_403)
+
+        async def super_(q, consultas=None):
+            return {"productos": [], "q_usada": q, "fuentes": [
+                {"tienda": "Dia", "tienda_id": "dia", "http": 200, "ok": False, "n": 0}]}
+
+        async def promos():
+            return []
+
+        async def pc(path, params):
+            return 200, {"productos": []}
+
+        async def vtex(client, store, q):
+            return {"tienda": store["nombre"], "tienda_id": store["id"], "http": 206, "ok": False, "productos": []}
+
+        with patch.object(app_mod, "_exigir_busqueda", gate), \
+                patch.object(app_mod, "buscar_meli", meli), \
+                patch.object(app_mod, "buscar_super", super_), \
+                patch.object(app_mod, "buscar_promos", promos), \
+                patch.object(app_mod, "pc_get", pc), \
+                patch("meli.buscar_meli", meli), \
+                patch.object(electro, "_one", vtex):
+            client = TestClient(app_mod.app)
+            r = client.get("/api/buscar?q=leche")
+            self.assertEqual(r.status_code, 200)
+            mla = [f for f in r.json()["cadenas"] if f.get("tienda_id") == "mla"]
+            self.assertEqual(len(mla), 1)
+            self.assertEqual(mla[0]["aviso"], aviso)
+            r = client.get("/api/electro?q=heladera")
+            self.assertEqual(r.status_code, 200)
+            mla = [f for f in r.json()["data"]["fuentes"] if f.get("tienda_id") == "mla"]
+            self.assertEqual(len(mla), 1)
+            self.assertEqual(mla[0]["aviso"], aviso)
+
+
 if __name__ == "__main__":
     unittest.main()

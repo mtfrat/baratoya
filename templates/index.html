@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <title>BaratoYa — el mismo producto, en cada cadena, al precio de hoy</title>
   <meta name="description" content="El mismo producto, en cada cadena, al precio de hoy. No se compra el súper desde acá." />
   <meta property="og:title" content="BaratoYa — el mismo producto, en cada cadena, al precio de hoy" />
@@ -777,6 +778,29 @@
           <p>Sin sesión no se llama a la búsqueda. Usá Entrar, en el encabezado.</p>
         </div>
         <div id="out" class="results" aria-live="polite"></div>
+        {% if cuentas_on %}
+        <script>
+          // Con sesión guardada no se pinta el muro de "entrar" mientras se confirma la cuenta.
+          // Si la sesión no sirve, refrescarCuenta() vuelve a mostrarlo.
+          (function () {
+            try {
+              var s = JSON.parse(localStorage.getItem("baratoya-sesion") || "null");
+              if (!s || !s.access_token) return;
+              var now = Math.floor(Date.now() / 1000);
+              if (s.expires_at && s.expires_at - 30 <= now && !s.refresh_token) return;
+              var abrir = document.getElementById("abrir-entrar");
+              if (abrir) abrir.hidden = true;
+              var note = document.getElementById("sesion-note");
+              if (note) note.textContent = "Ya entraste. Escribí un producto.";
+              var est = document.getElementById("estado");
+              if (est) {
+                est.querySelector(".state-title").textContent = "Todavía no buscaste.";
+                est.querySelector(".state-title").nextElementSibling.textContent = "Escribí un producto. El número aparece cuando una cadena publica un precio.";
+              }
+            } catch (_) {}
+          })();
+        </script>
+        {% endif %}
       </div>
     </section>
 
