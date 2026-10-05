@@ -1421,18 +1421,17 @@
           chip("Todos los días", promoDia === "", "dia", "");
       }
       if (bancosEl) {
-        bancosEl.innerHTML = chip("Todos los bancos", promoBanco === "", "banco", "") +
+        bancosEl.innerHTML = chip("Todos los bancos", promoBanco === "*", "banco", "*") +
           bancos.map((b) => chip(b, promoBanco === b, "banco", b)).join("");
       }
-      const visibles = todas.filter((c) => {
-        const diaOk = promoDia === "" || (promoDia === "hoy" ? c.hoy : c.dia === promoDia);
-        const bancoOk = !promoBanco || c.banco === promoBanco;
-        return diaOk && bancoOk;
-      });
+      const delDia = todas.filter((c) => promoDia === "" || (promoDia === "hoy" ? c.hoy : c.dia === promoDia));
+      const visibles = promoBanco === "*" ? delDia : (promoBanco ? delDia.filter((c) => c.banco === promoBanco) : []);
       if (cuenta) {
-        cuenta.textContent = visibles.length
-          ? (visibles.length + (promoDia === "hoy" ? " de hoy" : ""))
-          : "No hay promos de ese banco para ese día.";
+        if (!promoBanco) {
+          cuenta.textContent = delDia.length ? (delDia.length + (promoDia === "hoy" ? " de hoy" : "") + ". Elegí un banco.") : "No hay promos para ese día.";
+        } else {
+          cuenta.textContent = visibles.length ? String(visibles.length) : "No hay promos de ese banco para ese día.";
+        }
       }
       box.innerHTML = visibles.length
         ? "<div class=\"promo-grid\">" + visibles.map(promoCard).join("") + "</div>"
