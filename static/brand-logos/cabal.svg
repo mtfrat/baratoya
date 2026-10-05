@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Cabal">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Cabal">
   <rect width="64" height="64" rx="14" fill="#00529B"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="800" fill="#fff">Cabal</text>
+  <g transform="translate(13 18) scale(0.6)">
+    <path d="M5 24C5 12.95 13.95 4 25 4C33.1 4 40.1 8.8 43.3 15.7L36.2 19.3C34.3 14.8 29.9 11.7 25 11.7C18.2 11.7 12.7 17.2 12.7 24C12.7 30.8 18.2 36.3 25 36.3C29.9 36.3 34.3 33.2 36.2 28.7L43.3 32.3C40.1 39.2 33.1 44 25 44C13.95 44 5 35.05 5 24Z" fill="#FFFFFF"/>
+    <polygon points="46,18 56,24 46,30" fill="#ED1C24"/>
+    <polygon points="50,21 58,24 50,27" fill="#FFD100"/>
+  </g>
 </svg>

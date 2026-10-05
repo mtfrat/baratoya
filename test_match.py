@@ -642,5 +642,142 @@ class PromosSemanaTest(unittest.TestCase):
         self.assertGreater(len(grupo_domingo["items"]), 0)
 
 
+class PreciosLogosTypoTest(unittest.TestCase):
+    """Pruebas para el brief precios-logos-typo (lote crítico 1–3)."""
+
+    def test_consultas_busqueda_playadito_suave_1kg(self) -> None:
+        from app import consultas_busqueda
+
+        consultas = consultas_busqueda("playadito suave 1 kg")
+        self.assertIn("playadito suave 1 kg", consultas)
+        self.assertIn("playadito suave", consultas)
+        # La versión de una palabra "playadito" debe estar para fallback de Precios Claros
+        self.assertIn("playadito", consultas)
+
+    def test_agrupar_playadito_suave_no_confunde_sin_palo_500g(self) -> None:
+        grupos = sc.agrupar_mismo_producto(
+            "playadito suave 1 kg",
+            [
+                _fila(
+                    "Yerba Mate Suave Playadito 1kg",
+                    "Playadito",
+                    5289.0,
+                    "masonline",
+                    presentacion="1 kg",
+                    ean="7793704000928",
+                ),
+                _fila(
+                    "Yerba Suave Playadito 1 Kg",
+                    "PLAYADITO",
+                    5198.0,
+                    "precios_claros",
+                    presentacion="1.0 kg",
+                    pc=True,
+                    pc_id="7793704000928",
+                ),
+                _fila(
+                    "Yerba Mate Elaborada sin Palo Playadito 500 Gr",
+                    "PLAYADITO",
+                    3969.0,
+                    "precios_claros",
+                    presentacion="500.0 gr",
+                    pc=True,
+                    pc_id="7793704000881",
+                ),
+            ],
+        )
+        # 500g sin palo no cumple con 1kg ni con suave
+        self.assertEqual(len(grupos), 1)
+        self.assertEqual(grupos[0]["ean"], "7793704000928")
+        self.assertEqual(len(grupos[0]["ofertas"]), 2)
+        tiendas = {o["tienda_id"] for o in grupos[0]["ofertas"]}
+        self.assertEqual(tiendas, {"masonline", "precios_claros"})
+        self.assertEqual(grupos[0]["precio"], 5198.0)
+
+    def test_agrupar_playadito_suave_sin_especificar_peso(self) -> None:
+        grupos = sc.agrupar_mismo_producto(
+            "playadito suave",
+            [
+                _fila(
+                    "Yerba Mate Suave Playadito 1kg",
+                    "Playadito",
+                    5289.0,
+                    "masonline",
+                    presentacion="1 kg",
+                    ean="7793704000928",
+                ),
+                _fila(
+                    "Yerba Mate Suave con Palo Playadito 500 Gr",
+                    "PLAYADITO",
+                    2758.0,
+                    "precios_claros",
+                    presentacion="500.0 gr",
+                    pc=True,
+                    pc_id="7793704000911",
+                ),
+                _fila(
+                    "Yerba Mate Elaborada sin Palo Playadito 500 Gr",
+                    "PLAYADITO",
+                    3969.0,
+                    "precios_claros",
+                    presentacion="500.0 gr",
+                    pc=True,
+                    pc_id="7793704000881",
+                ),
+            ],
+        )
+        # Suave 1kg y Suave 500g quedan separados; Sin Palo no tiene 'suave'
+        eans = [g["ean"] for g in grupos]
+        self.assertIn("7793704000928", eans)
+        self.assertIn("7793704000911", eans)
+        self.assertNotIn("7793704000881", eans)
+
+    def test_cache_control_headers_en_con_cuenta(self) -> None:
+        from app import _con_cuenta
+
+        resp = _con_cuenta({"test": 123}, {"plan": "free", "used": 1, "remaining": 4})
+        self.assertIn("Cache-Control", resp.headers)
+        self.assertIn("no-store", resp.headers["Cache-Control"])
+        self.assertIn("max-age=0", resp.headers["Cache-Control"])
+        self.assertEqual(resp.headers.get("Pragma"), "no-cache")
+
+    def test_brand_logos_vector_oficiales_validos(self) -> None:
+        from pathlib import Path
+        import json
+
+        logos_json = Path(__file__).parent / "data" / "brand-logos.json"
+        self.assertTrue(logos_json.exists())
+        data = json.loads(logos_json.read_text(encoding="utf-8"))
+        self.assertIn("brands", data)
+        self.assertGreater(len(data["brands"]), 20)
+
+        # Verificar que existen los logos vectoriales oficiales de bancos clave
+        static_logos = Path(__file__).parent / "static" / "brand-logos"
+        bancos_clave = [
+            "galicia", "bbva", "santander", "macro", "nacion", "provincia",
+            "cuenta_dni", "ciudad", "credicoop", "hipotecario", "supervielle",
+            "patagonia", "bancor", "comafi", "columbia", "icbc", "uala",
+            "cencopay", "la_anonima", "modo", "mercado_pago", "naranja_x",
+        ]
+        for banco in bancos_clave:
+            svg_path = static_logos / f"{banco}.svg"
+            self.assertTrue(svg_path.exists(), f"Falta SVG para {banco}")
+            content = svg_path.read_text(encoding="utf-8")
+            self.assertTrue(content.startswith("<svg"), f"{banco} no empieza con <svg")
+            self.assertTrue(content.strip().endswith("</svg>"), f"{banco} no termina con </svg>")
+            self.assertIn('rx="14"', content, f"{banco} no tiene el radio de esquina estándar")
+
+    def test_tipografia_atkinson_y_baskerville_en_index(self) -> None:
+        from pathlib import Path
+
+        tpl = (Path(__file__).parent / "templates" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("Atkinson+Hyperlegible", tpl)
+        self.assertIn("Libre+Baskerville", tpl)
+        self.assertIn("--font-ui: \"Atkinson Hyperlegible\"", tpl)
+        self.assertIn("--font-serif: \"Libre Baskerville\"", tpl)
+        self.assertIn("#163300", tpl.casefold())
+        self.assertIn("#9fe870", tpl.casefold())
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Provincia">
-  <rect width="64" height="64" rx="14" fill="#00A0E3"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="800" fill="#fff" textLength="52" lengthAdjust="spacingAndGlyphs">Provincia</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Banco Provincia">
+  <rect width="64" height="64" rx="14" fill="#FFFFFF" stroke="#E8E8E8"/>
+  <g transform="translate(14 13) scale(1.05) translate(-149 0)">
+    <path fill="#25B4BD" d="M150.83,26.88v1.53A7.69,7.69,0,0,0,158.44,36h3.95a2.22,2.22,0,0,0,2.32-2.29V18.82a1.18,1.18,0,0,0-1.92-.88l-11.15,7.18a1.75,1.75,0,0,0-.81,1.76"/>
+    <path fill="#279D2E" d="M152.4,21.24l10.68-6.89c2.21-1.41,4.47-.06,4.47,2.18v8.29A1.46,1.46,0,0,0,169,26.35h1.91c6.51,0,12.08-4.7,12.08-12.7C183,5.18,176.5,0,168.89,0H153a2.2,2.2,0,0,0-2.15,2.18V20.47a1,1,0,0,0,1.57.77"/>
+  </g>
 </svg>

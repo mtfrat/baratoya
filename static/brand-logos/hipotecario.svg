@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Hipotecario">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Banco Hipotecario">
   <rect width="64" height="64" rx="14" fill="#003366"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="800" fill="#fff" textLength="52" lengthAdjust="spacingAndGlyphs">Hipotecario</text>
+  <g transform="translate(14 13) scale(0.36)">
+    <path fill="#F1801F" d="M50 8L15 35V85H85V35L50 8Z"/>
+    <circle cx="38" cy="50" r="10" fill="#FFFFFF"/>
+    <circle cx="62" cy="50" r="10" fill="#FFFFFF"/>
+    <circle cx="38" cy="50" r="5" fill="#003366"/>
+    <circle cx="62" cy="50" r="5" fill="#003366"/>
+    <polygon points="50,56 45,66 55,66" fill="#F1801F"/>
+  </g>
 </svg>

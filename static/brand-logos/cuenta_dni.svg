@@ -1,5 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Cuenta DNI">
-  <rect width="64" height="64" rx="14" fill="#00A0E3"/>
-  <text x="32" y="28.5" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="800" fill="#fff" textLength="50" lengthAdjust="spacingAndGlyphs">Cuenta</text>
-  <text x="32" y="43.5" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="800" fill="#fff">DNI</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Cuenta DNI">
+  <rect width="64" height="64" rx="14" fill="#008272"/>
+  <g transform="translate(13 13) scale(1.6)">
+    <rect x="2" y="4" width="20" height="15" rx="3" stroke="#FFFFFF" stroke-width="1.8" fill="none"/>
+    <path d="M6 9h4M6 12h2" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M13 11l2.5 2.5L20 9" stroke="#9FE870" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
 </svg>

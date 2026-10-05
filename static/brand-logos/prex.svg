@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Prex">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Prex">
   <rect width="64" height="64" rx="14" fill="#00C389"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#fff">Prex</text>
+  <g transform="translate(17 15) scale(1.0)">
+    <path d="M6 3h11a9 9 0 0 1 0 18H12v12H6V3zm6 6v6h5a3 3 0 0 0 0-6h-5z" fill="#FFFFFF"/>
+    <path d="M22 21l6 12h-6l-4-8 4-4z" fill="#FFFFFF" opacity="0.8"/>
+  </g>
 </svg>

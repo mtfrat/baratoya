@@ -1,4 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="BNA+">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Banco Nación">
   <rect width="64" height="64" rx="14" fill="#003DA5"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#fff">BNA+</text>
+  <g transform="translate(13 14) scale(0.24)">
+    <path d="M125.427 0.255371H38.5731C17.4108 0.255371 0.255371 17.4108 0.255371 38.5731V125.427C0.255371 146.589 17.4108 163.745 38.5731 163.745H125.427C146.589 163.745 163.745 146.589 163.745 125.427V38.5731C163.745 17.4108 146.589 0.255371 125.427 0.255371Z" fill="#005F86"/>
+    <path d="M82.0001 24.3828L139.697 53.2312V62.8474H24.3032V53.2312L82.0001 24.3828Z" fill="white"/>
+    <path d="M33.9194 72.4639H48.3435V115.736H33.9194V72.4639Z" fill="white"/>
+    <path d="M57.9597 72.4639H72.3838V115.736H57.9597V72.4639Z" fill="white"/>
+    <path d="M82.0002 72.4639H96.4243V115.736H82.0002V72.4639Z" fill="white"/>
+    <path d="M106.041 72.4639H120.465V115.736H106.041V72.4639Z" fill="white"/>
+    <path d="M19.4951 125.352H144.505V139.776H19.4951V125.352Z" fill="white"/>
+  </g>
 </svg>

@@ -6,6 +6,7 @@ import json
 import os
 import re
 import sqlite3
+import time
 import unicodedata
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -489,9 +490,12 @@ def consultas_busqueda(q: str, tope: int = 8) -> list[str]:
     add(sin_medida)
     tokens = [t for t in sin_medida.split() if t.casefold() not in _STOP]
     add(" ".join(tokens))
-    if len(tokens) > 2:
-        for i in range(len(tokens)):
+    if len(tokens) >= 2:
+        for i in range(len(tokens) - 1, -1, -1):
             add(" ".join(tokens[:i] + tokens[i + 1 :]))
+        if len(tokens) > 2:
+            for t in tokens:
+                add(t)
     return out or ([base] if base else [])
 
 
@@ -513,10 +517,16 @@ def _leido_ahora() -> tuple[str, str]:
     return dt.isoformat(timespec="seconds"), texto
 
 
-def _con_cuenta(payload: dict[str, Any], quota: dict[str, Any]) -> dict[str, Any]:
+def _con_cuenta(payload: dict[str, Any], quota: dict[str, Any]) -> JSONResponse:
     payload = dict(payload)
     payload["cuenta"] = _cuenta_publica(quota)
-    return payload
+    return JSONResponse(
+        payload,
+        headers={
+            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+        },
+    )
 
 
 def _cuenta_publica(quota: dict[str, Any]) -> dict[str, Any]:
@@ -830,7 +840,7 @@ async def buscar(
                 **_consulta(),
             }, gate)
         snap = SNAPSHOT_DIR / "last_ok.json"
-        if snap.exists():
+        if snap.exists() and (time.time() - snap.stat().st_mtime) < 12 * 3600:
             body = _unwrap_snapshot(json.loads(snap.read_text()))
             body = _presentar_super(q, body, "")
             consulta = _consulta()
@@ -845,14 +855,21 @@ async def buscar(
                 **consulta,
             }, gate)
         err = {
-                "http": code,
-                "fuente": "precios_claros",
-                "error": data,
-                "cadenas": cadenas.get("fuentes") or [],
-                **_consulta(),
-            }
+            "http": code,
+            "fuente": "precios_claros",
+            "error": data,
+            "cadenas": cadenas.get("fuentes") or [],
+            **_consulta(),
+        }
         err["cuenta"] = _cuenta_publica(gate)
-        return JSONResponse(err, status_code=502)
+        return JSONResponse(
+            err,
+            status_code=502,
+            headers={
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+            },
+        )
     # guardar snapshot liviano (solo Precios Claros, sin mezclar otras cadenas)
     if _pc_tiene(data):
         try:

@@ -7,11 +7,18 @@
   <title>{% if page == "aviso-precios" %}Aviso de precios{% elif page == "terminos" %}Términos de uso{% else %}Privacidad{% endif %} — BaratoYa</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <style>
-    :root { --ink: #163300; --paper: #fff; --muted: #454745; --fog: #e8ebe6; }
+    :root {
+      --ink: #163300;
+      --paper: #fff;
+      --muted: #454745;
+      --fog: #e8ebe6;
+      --font-ui: "Atkinson Hyperlegible", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --font-serif: "Libre Baskerville", Georgia, serif;
+    }
     * { box-sizing: border-box; }
-    body { margin: 0; color: var(--muted); background: var(--paper); font: 16px/1.6 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    body { margin: 0; color: var(--muted); background: var(--paper); font: 16px/1.6 var(--font-ui); }
     a { color: var(--ink); }
     .nav { min-height: 64px; display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #d9ddd8; }
     .nav a { font-weight: 700; text-decoration: none; letter-spacing: -0.02em; }

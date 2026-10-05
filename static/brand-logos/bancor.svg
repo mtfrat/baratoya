@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="BANCOR">
-  <rect width="64" height="64" rx="14" fill="#00A859"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="800" fill="#fff">BANCOR</text>
+  <rect width="64" height="64" rx="14" fill="#005F5A"/>
+  <g transform="translate(13 13) scale(0.14)">
+    <path fill="#F0643C" d="M56.9 142.6L18 180.6C12.5 186 9.4 193.3 9.4 201C9.4 208.7 12.5 216 18 221.4C29.2 232.6 47.4 232.6 58.6 221.4L138.8 141.2C144.2 135.8 147.3 128.5 147.3 120.8C147.3 113.1 144.2 105.8 138.8 100.4L58.6 20.2C47.4 9 29.2 9 18 20.2C12.5 25.6 9.4 32.9 9.4 40.6C9.4 48.3 12.5 55.6 18 61L56.9 99.9L18 142.6"/>
+    <path fill="#FFFFFF" d="M138.8 100.4L219 20.2C230.2 9 248.4 9 259.6 20.2C270.8 31.4 270.8 49.6 259.6 60.8L179.4 141C174 146.4 170.9 153.7 170.9 161.4C170.9 169.1 174 176.4 179.4 181.8L259.6 262C270.8 273.2 270.8 291.4 259.6 302.6C248.4 313.8 230.2 313.8 219 302.6L138.8 222.4"/>
+  </g>
 </svg>

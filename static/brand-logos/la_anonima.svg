@@ -1,5 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="La Anónima">
   <rect width="64" height="64" rx="14" fill="#C8102E"/>
-  <text x="32" y="28.5" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="800" fill="#fff">La</text>
-  <text x="32" y="43.5" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="800" fill="#fff" textLength="50" lengthAdjust="spacingAndGlyphs">Anónima</text>
+  <g transform="translate(17 17) scale(0.95)">
+    <path fill="#FFFFFF" d="M15 0C6.72 0 0 6.72 0 15C0 23.28 6.72 30 15 30C23.28 30 30 23.28 30 15C30 6.72 23.28 0 15 0ZM15 6C19.97 6 24 10.03 24 15C24 19.97 19.97 24 15 24C10.03 24 6 19.97 6 15C6 10.03 10.03 6 15 6Z"/>
+    <path fill="#C8102E" d="M12 9h6v12h-6z"/>
+    <path fill="#FFFFFF" d="M15 9l4 12h-3l-1-3h-2l-1 3h-3l4-12h2z"/>
+  </g>
 </svg>

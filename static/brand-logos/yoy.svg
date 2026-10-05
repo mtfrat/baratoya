@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Yoy">
-  <rect width="64" height="64" rx="14" fill="#7B2D8E"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="22" font-weight="800" fill="#fff">YOY</text>
+  <rect width="64" height="64" rx="14" fill="#17002F"/>
+  <g transform="translate(14 17) scale(0.6)">
+    <path fill="#FF1B5D" d="M12 4l9 16v14h-6v-10l-9-20h6zm24 0l9 16v14h-6v-10l-9-20h6z"/>
+    <circle cx="30" cy="18" r="7" fill="#00E5FF"/>
+  </g>
 </svg>

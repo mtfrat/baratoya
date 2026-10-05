@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Naranja X">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Naranja X">
   <rect width="64" height="64" rx="14" fill="#FF6200"/>
-  <text x="32" y="28.5" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="800" fill="#fff" textLength="50" lengthAdjust="spacingAndGlyphs">Naranja</text>
-  <text x="32" y="43.5" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="13" font-weight="800" fill="#fff">X</text>
+  <g transform="translate(12 20) scale(0.625)">
+    <path d="M0 0H7.72898V2.58334C9.52924 0.902379 12.0628 0 14.8118 0C21.4338 0 25.4373 4.88796 25.4373 12.2268V38.4H17.7083V14.1648C17.7083 9.42167 15.3263 6.64161 11.5654 6.64161C7.80456 6.64161 5.42253 9.42167 5.42253 14.1648V38.4H0V0Z" fill="white"/>
+    <path d="M43.0805 20.301L53.4883 38.4H44.6062L38.4878 27.7317L32.3693 38.4H23.4873L33.8951 20.301L24.167 3.39893H33.049L38.4878 12.8703L43.9265 3.39893H52.8085L43.0805 20.301Z" fill="white"/>
+  </g>
 </svg>

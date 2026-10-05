@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Columbia">
-  <rect width="64" height="64" rx="14" fill="#1B4F72"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="800" fill="#fff" textLength="52" lengthAdjust="spacingAndGlyphs">Columbia</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Banco Columbia">
+  <rect width="64" height="64" rx="14" fill="#0367A4"/>
+  <g transform="translate(13 13) scale(0.6)">
+    <path d="M20.25 16.66H45.15C45.26 17.06 45.33 17.47 45.34 17.88V45.89C45.34 46.42 44.92 46.85 44.39 46.85H19.49C18.96 46.85 18.53 46.42 18.53 45.89V18.17C18.53 17.34 19.3 16.66 20.25 16.66Z" fill="#FFFFFF"/>
+    <path d="M25 24H39V28H25V24ZM25 32H35V36H25V32Z" fill="#0367A4"/>
+  </g>
 </svg>

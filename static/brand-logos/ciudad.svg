@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Ciudad">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Banco Ciudad">
   <rect width="64" height="64" rx="14" fill="#00A651"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="800" fill="#fff">Ciudad</text>
+  <g transform="translate(14 14) scale(2.8)">
+    <path fill="#FFFFFF" d="M11.5 6.5C11.5 9.26 9.26 11.5 6.5 11.5C3.74 11.5 1.5 9.26 1.5 6.5C1.5 3.74 3.74 1.5 6.5 1.5C8.4 1.5 10.05 2.56 10.9 4.1L9 5.2C8.5 4.15 7.6 3.5 6.5 3.5C4.84 3.5 3.5 4.84 3.5 6.5C3.5 8.16 4.84 9.5 6.5 9.5C7.6 9.5 8.5 8.85 9 7.8L10.9 8.9C10.05 10.44 8.4 11.5 6.5 11.5"/>
+  </g>
 </svg>

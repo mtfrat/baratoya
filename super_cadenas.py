@@ -1392,8 +1392,19 @@ def agrupar_mismo_producto(
         g["nombre"] = str(elegido.get("nombre") or g["nombre"])
         g["best"] = elegido
 
-    # Relevancia primero (tipo pedido, sin variante, menos palabras de mas); a igual, mas barato.
-    built.sort(key=lambda g: (*g["rank"], -g["min_precio"]), reverse=True)
+    # Relevancia primero (tipo pedido, sin variante, menos palabras de mas, mas cobertura); a igual, mas barato.
+    built.sort(
+        key=lambda g: (
+            g["rank"][0],
+            g["rank"][1],
+            g["rank"][2],
+            g["rank"][3],
+            len(g["members"]),
+            g["rank"][4],
+            -g["min_precio"],
+        ),
+        reverse=True,
+    )
 
     out: list[dict[str, Any]] = []
     for g in built:

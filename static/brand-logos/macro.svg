@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Macro">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Banco Macro">
   <rect width="64" height="64" rx="14" fill="#002B5C"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="16" font-weight="800" fill="#fff">Macro</text>
+  <g transform="translate(10 17) scale(0.11)">
+    <path fill="#00ADEF" d="M12.9,258.8c0-70.1,56.8-126.9,126.9-126.9c70.1,0,126.9,56.8,126.9,126.9c0,70.1-56.8,126.9-126.9,126.9C69.7,385.7,12.9,328.9,12.9,258.8z"/>
+    <path fill="#FFFFFF" d="M266.7,258.8c0-70.1,56.8-126.9,126.9-126.9c70.1,0,126.9,56.8,126.9,126.9c0,70.1-56.8,126.9-126.9,126.9C323.5,385.7,266.7,328.9,266.7,258.8z"/>
+    <path fill="#002B5C" d="M139.8,131.9c70.1,0,126.9,56.8,126.9,126.9c0,70.1-56.8,126.9-126.9,126.9c-29.3,0-56.3-9.9-77.8-26.6c21.8,9.7,46,15.1,71.5,15.1c90.4,0,163.6-73.3,163.6-163.6S223.9,47,133.5,47c-25.5,0-49.7,5.4-71.5,15.1C83.5,141.8,110.5,131.9,139.8,131.9z"/>
+  </g>
 </svg>

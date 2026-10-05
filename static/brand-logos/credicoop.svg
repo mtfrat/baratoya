@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Credicoop">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-label="Banco Credicoop">
   <rect width="64" height="64" rx="14" fill="#006633"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="800" fill="#fff" textLength="52" lengthAdjust="spacingAndGlyphs">Credicoop</text>
+  <g transform="translate(13 13) scale(0.6)">
+    <path d="M32 10C19.85 10 10 19.85 10 32C10 44.15 19.85 54 32 54C44.15 54 54 44.15 54 32C54 19.85 44.15 10 32 10ZM32 16C40.84 16 48 23.16 48 32C48 40.84 40.84 48 32 48C23.16 48 16 40.84 16 32C16 23.16 23.16 16 32 16Z" fill="#FFFFFF"/>
+    <path d="M25 32L30 37L39 27" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
 </svg>

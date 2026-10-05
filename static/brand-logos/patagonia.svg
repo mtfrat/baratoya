@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Patagonia">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Banco Patagonia">
   <rect width="64" height="64" rx="14" fill="#6B2D5B"/>
-  <text x="32" y="36" text-anchor="middle" font-family="Inter,Arial,Helvetica,sans-serif" font-size="14" font-weight="800" fill="#fff" textLength="52" lengthAdjust="spacingAndGlyphs">Patagonia</text>
+  <g transform="translate(14 16) scale(0.64)">
+    <path fill="#FFFFFF" d="M6 35L22 7L38 35H6Z"/>
+    <path fill="#F39200" d="M26 35L38 14L50 35H26Z"/>
+  </g>
 </svg>
