@@ -173,6 +173,33 @@ def _ean_item(product: dict[str, Any]) -> str:
     return digits if len(digits) >= 8 else ""
 
 
+def _imagen_vtex(product: dict[str, Any]) -> str:
+    """URL que el JSON de VTEX ya trae en items[].images[].imageUrl. No se arma otra."""
+    items = product.get("items") or []
+    if not isinstance(items, list):
+        return ""
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        images = item.get("images") or []
+        if not isinstance(images, list):
+            continue
+        for img in images:
+            if not isinstance(img, dict):
+                continue
+            url = img.get("imageUrl")
+            if isinstance(url, str) and url.startswith("https://"):
+                return url
+    return ""
+
+
+def _imagen_publicada(p: dict[str, Any]) -> str:
+    url = p.get("imagen")
+    if isinstance(url, str) and url.startswith("https://"):
+        return url
+    return ""
+
+
 def _parse(store: dict[str, str], body: Any) -> list[dict[str, Any]]:
     if not isinstance(body, list):
         return []
@@ -200,6 +227,7 @@ def _parse(store: dict[str, str], body: Any) -> list[dict[str, Any]]:
                 "disponible": available,
                 "fuente_item": store["fuente"],
                 "ean": _ean_item(product),
+                "imagen": _imagen_vtex(product),
             }
         )
     return out
@@ -360,6 +388,7 @@ def _parse_la_anonima(html: str) -> list[dict[str, Any]]:
                 "disponible": True,
                 "fuente_item": "la_anonima_html",
                 "ean": "",
+                "imagen": "",
             }
         )
     return out
@@ -390,6 +419,7 @@ def _parse_super_mami(html: str) -> list[dict[str, Any]]:
                 "disponible": True,
                 "fuente_item": "super_mami_html",
                 "ean": "",
+                "imagen": "",
                 "_bloque": parte,
             }
         )
@@ -447,6 +477,7 @@ def _parse_coto(html: str) -> list[dict[str, Any]]:
                 "disponible": True,
                 "fuente_item": "coto_digital_html",
                 "ean": "",
+                "imagen": "",
             }
         )
         if len(out) >= 24:
@@ -1029,10 +1060,16 @@ def agrupar_mismo_producto(
         baratos = [o["tienda"] for o in ofertas if o["barato"]]
         elegido = next(o for o in ofertas if o["barato"])
         best = g["best"]
+        imagen = ""
+        for candidato in (best, *g["members"]):
+            imagen = _imagen_publicada(candidato)
+            if imagen:
+                break
         out.append(
             {
                 "agrupado": True,
                 "nombre": g["nombre"],
+                "imagen": imagen,
                 "marca": best.get("marca") or elegido.get("marca") or "",
                 "ean": g["clave"][1] if g["clave"][0] == "ean" else "",
                 "tamano": tamano_texto(g["size"]),

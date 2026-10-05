@@ -1,8 +1,8 @@
 """Cuenta, cupo y Mercado Pago.
 
-La búsqueda real exige sesión. El cupo (5) se cuenta en Supabase con el
-rol de servicio. El browser no puede subirlo. Sin MERCADOPAGO_ACCESS_TOKEN
-no se llama a Mercado Pago y no se simula un pago.
+La búsqueda no exige sesión. El cupo (5) solo se descuenta si hay sesión
+y el cobro está activo. Sin MERCADOPAGO_ACCESS_TOKEN no se llama a Mercado
+Pago y no se simula un pago.
 """
 from __future__ import annotations
 
@@ -47,7 +47,7 @@ def cuentas_on() -> bool:
 
 
 def cupo_on() -> bool:
-    """Sin la service role el cupo no se puede contar. No se busca igual."""
+    """Sin la service role el cupo no se puede contar. La búsqueda sigue."""
     return bool(cuentas_on() and service_key())
 
 

@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BaratoYa — el mismo producto, en cada cadena, al precio de hoy</title>
-  <meta name="description" content="El mismo producto, en cada cadena, al precio de hoy. Hace falta una cuenta. Cinco búsquedas, contadas en el servidor. No se compra el súper desde acá." />
+  <meta name="description" content="El mismo producto, en cada cadena, al precio de hoy. No se compra el súper desde acá." />
   <meta property="og:title" content="BaratoYa — el mismo producto, en cada cadena, al precio de hoy" />
-  <meta property="og:description" content="El mismo producto, en cada cadena, al precio de hoy. Hace falta una cuenta. Cinco búsquedas, contadas en el servidor." />
+  <meta property="og:description" content="El mismo producto, en cada cadena, al precio de hoy." />
   <meta name="theme-color" content="#163300" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -136,7 +136,7 @@
       clip: rect(0, 0, 0, 0);
       border: 0;
     }
-    input[type="text"], input[type="email"], select {
+    input[type="text"], input[type="email"], input[type="password"], select {
       width: 100%;
       border: 1px solid var(--color-pebble);
       border-radius: var(--radius-inputs);
@@ -145,6 +145,7 @@
       font: 400 16px/1.5 var(--font-inter);
       letter-spacing: -0.006em;
       padding: 12px 16px;
+      height: 48px;
     }
     input:focus, select:focus {
       outline: none;
@@ -622,6 +623,64 @@
       .section { padding: 80px 0; }
       .wait { padding: 40px; }
     }
+
+    .nav-links .btn { padding: 8px 16px; font-size: 14px; }
+    .nav-sesion { display: none; align-items: center; gap: 4px; }
+    .nav-sesion:not([hidden]) { display: inline-flex; }
+    #abrir-entrar[hidden] { display: none; }
+    #nav-nombre {
+      color: var(--color-forest-ink);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 4px;
+    }
+    .nav-sesion .btn.text { padding: 8px 10px; }
+    dialog.entrar {
+      border: 0;
+      border-radius: var(--radius-cards);
+      padding: 24px;
+      width: min(100% - 32px, 22rem);
+      color: var(--color-charcoal);
+      background: var(--color-paper);
+      box-shadow: var(--shadow-subtle);
+    }
+    dialog.entrar::backdrop { background: rgba(14, 15, 12, 0.45); }
+    dialog.entrar form { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+    dialog.entrar .entrar-titulo {
+      margin: 0;
+      color: var(--color-forest-ink);
+      font-size: 18px;
+      font-weight: 700;
+    }
+    dialog.entrar .field { display: flex; flex-direction: column; gap: 6px; }
+    dialog.entrar label {
+      color: var(--color-forest-ink);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    dialog.entrar input[type="email"],
+    dialog.entrar input[type="password"] {
+      width: 100%;
+      height: 48px;
+    }
+    .product-top { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
+    .product-top > div { min-width: 0; flex: 1; }
+    .photo-frame {
+      width: 72px;
+      height: 72px;
+      flex: 0 0 72px;
+      border-radius: var(--radius-cards);
+      background: var(--color-fog);
+      box-shadow: var(--shadow-subtle);
+      overflow: hidden;
+    }
+    .photo-frame img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+      background: var(--color-fog);
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -630,7 +689,13 @@
     <nav class="nav-links" aria-label="Secciones">
       <a href="#buscar">Buscar</a>
       <a href="#promos-bancarias">Promos</a>
-      <a href="#cuenta">Cuenta</a>
+      {% if cuentas_on %}
+      <button type="button" class="btn outline" id="abrir-entrar">Entrar</button>
+      <span class="nav-sesion" id="nav-sesion" hidden>
+        <span id="nav-nombre"></span>
+        <button type="button" class="btn text" id="cuenta-salir">Salir</button>
+      </span>
+      {% endif %}
     </nav>
   </header>
 
@@ -652,29 +717,10 @@
           <button class="btn lime" id="go" type="submit">Buscar un precio</button>
         </form>
 
-        <p class="regla" id="regla-cupo">Sin cuenta no se busca. Las primeras {{ free_limit }} búsquedas se cuentan en el servidor.</p>
-        <div class="cuenta" id="cuenta">
-          <h2>Para buscar</h2>
-          <p id="cuenta-msg" role="status">{% if not cuentas_on %}Las cuentas no están configuradas en este servidor. El buscador no corre.{% endif %}</p>
-          {% if cuentas_on %}
-          <form class="cuenta-form" id="cuenta-form">
-            <label class="visually-hidden" for="cuenta-email">Mail</label>
-            <input id="cuenta-email" type="email" maxlength="200" autocomplete="username" placeholder="Mail" required />
-            <label class="visually-hidden" for="cuenta-pass">Contraseña</label>
-            <input id="cuenta-pass" type="password" minlength="6" maxlength="200" autocomplete="current-password" placeholder="Contraseña" required />
-            <div class="btn-row">
-              <button class="btn lime" type="submit" id="cuenta-entrar">Entrar</button>
-              <button class="btn outline" type="button" id="cuenta-crear">Crear cuenta</button>
-            </div>
-          </form>
-          <div class="cuenta-sesion" id="cuenta-sesion" hidden>
-            <p id="cuenta-estado"></p>
-            <button class="btn outline" type="button" id="cuenta-salir">Salir</button>
-            {% if cobro_on %}<button class="btn lime" type="button" id="pagar-plan">Pagar con Mercado Pago</button>{% endif %}
-          </div>
-          {% endif %}
+        <div id="anteriores" hidden>
           <p class="lista-note" id="busquedas-note" hidden>Búsquedas anteriores.</p>
           <ul class="busquedas" id="busquedas-list"></ul>
+        </div>
           <details class="lista-min" id="mi-lista" hidden>
             <summary>Lista</summary>
             <div class="lista-row">
@@ -686,14 +732,13 @@
             <p id="mi-lista-msg" role="status"></p>
             <div id="mi-lista-out" class="results"></div>
           </details>
-        </div>
 
         <p id="meta" class="meta"></p>
         <p id="aviso" class="warn-flag" role="status"></p>
         <ul id="promos" class="promos" hidden></ul>
         <div id="estado" class="state">
           <p class="state-title">Todavía no buscaste.</p>
-          <p>Escribí un producto. Sin sesión no se busca, y acá no hay un precio de muestra.</p>
+          <p>Escribí un producto. El número aparece cuando una cadena publica un precio.</p>
         </div>
         <div id="out" class="results" aria-live="polite"></div>
       </div>
@@ -720,6 +765,28 @@
       <p><a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
   </footer>
+
+  {% if cuentas_on %}
+  <dialog class="entrar" id="entrar-dialog" aria-labelledby="entrar-titulo">
+    <form id="cuenta-form">
+      <p class="entrar-titulo" id="entrar-titulo">Entrar</p>
+      <p id="cuenta-msg" role="status"></p>
+      <div class="field">
+        <label for="cuenta-email">Mail</label>
+        <input id="cuenta-email" type="email" maxlength="200" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="cuenta-pass">Contraseña</label>
+        <input id="cuenta-pass" type="password" minlength="6" maxlength="200" autocomplete="current-password" required />
+      </div>
+      <div class="btn-row">
+        <button class="btn lime" type="submit" id="cuenta-entrar">Entrar</button>
+        <button class="btn outline" type="button" id="cuenta-crear">Crear cuenta</button>
+      </div>
+      <button class="btn text" type="button" id="cerrar-entrar">Cerrar</button>
+    </form>
+  </dialog>
+  {% endif %}
 
   <script>
 
@@ -789,52 +856,73 @@
       if (s) return "No se pudo. Revisá el mail y la contraseña.";
       return "No se pudo hablar con la cuenta.";
     }
+    function nombreVisible(user) {
+      const meta = (user && user.user_metadata) || {};
+      const named = String(meta.full_name || meta.name || "").trim();
+      if (named) return named;
+      const email = String((user && user.email) || "");
+      const local = email.split("@")[0] || "";
+      if (!local) return "Cuenta";
+      return local.charAt(0).toLocaleUpperCase("es-AR") + local.slice(1);
+    }
+    function pintarCabecera(nombre) {
+      const abrir = document.getElementById("abrir-entrar");
+      const ses = document.getElementById("nav-sesion");
+      const nom = document.getElementById("nav-nombre");
+      const prev = document.getElementById("anteriores");
+      const dlg = document.getElementById("entrar-dialog");
+      if (nombre) {
+        if (abrir) abrir.hidden = true;
+        if (ses) ses.hidden = false;
+        if (nom) nom.textContent = nombre;
+        if (prev) prev.hidden = false;
+        if (dlg && dlg.open && typeof dlg.close === "function") dlg.close();
+      } else {
+        if (abrir) abrir.hidden = false;
+        if (ses) ses.hidden = true;
+        if (nom) nom.textContent = "";
+        if (prev) prev.hidden = true;
+      }
+    }
     async function pintarBusquedas(items) {
       const list = document.getElementById("busquedas-list");
-      if (!list) return;
-      const rows = Array.isArray(items) ? items : [];
-      list.innerHTML = rows.map((it) => "<li><button type=\"button\">" + esc(it.query) + "</button></li>").join("");
-    }
       const note = document.getElementById("busquedas-note");
-      if (note) note.hidden = rows.length === 0;
-    async function refrescarCuenta() {
-      const formEl = document.getElementById("cuenta-form");
-      const sesEl = document.getElementById("cuenta-sesion");
-      const estado = document.getElementById("cuenta-estado");
-      const msg = document.getElementById("cuenta-msg");
-      if (!CUENTA.on) {
-        if (formEl) formEl.hidden = true;
-        if (msg && !msg.textContent) msg.textContent = "Las cuentas no están configuradas en este servidor. El buscador no corre.";
-        return;
+      const rows = Array.isArray(items) ? items : [];
+      if (list) {
+        list.innerHTML = rows.map((it) => "<li><button type=\"button\">" + esc(it.query) + "</button></li>").join("");
       }
-      const t = await tokenFresco();
-      if (!t) {
-        if (formEl) formEl.hidden = false;
-        if (sesEl) sesEl.hidden = true;
+      if (note) note.hidden = rows.length === 0;
+    }
+    async function usuarioActual() {
+      const tok = await tokenFresco();
+      if (!tok || !CUENTA.on || !CUENTA.url) return null;
+      const r = await fetch(CUENTA.url + "/auth/v1/user", {
+        headers: { "apikey": CUENTA.anon, "Authorization": "Bearer " + tok, "Accept": "application/json" }
+      });
+      if (r.status === 401) {
+        borrarSesion();
+        return null;
+      }
+      if (!r.ok) return null;
+      try { return await r.json(); } catch (_) { return null; }
+    }
+    async function refrescarCuenta() {
+      if (!CUENTA.on) {
+        pintarCabecera("");
         await pintarBusquedas([]);
         return;
       }
-      const r = await fetch("/api/cuenta", { headers: await headersAuth() });
-      let j = null;
-      try { j = await r.json(); } catch (_) { j = null; }
-      if (!r.ok || !j || !j.ok) {
-        if (r.status === 401) borrarSesion();
-        if (formEl) formEl.hidden = false;
-        if (sesEl) sesEl.hidden = true;
+      const user = await usuarioActual();
+      if (!user) {
+        pintarCabecera("");
+        await pintarBusquedas([]);
         return;
       }
-      if (formEl) formEl.hidden = true;
-      if (sesEl) sesEl.hidden = false;
-      let linea = (j.email || "Sesión abierta") + ". ";
-      if (j.plan === "paid") linea += "Búsquedas ilimitadas.";
-      else linea += "Usadas " + j.used + " de " + (j.limit || 5) + ".";
-      if (estado) estado.textContent = linea;
-      const pagar = document.getElementById("pagar-plan");
-      if (pagar) pagar.hidden = j.plan === "paid";
+      pintarCabecera(nombreVisible(user));
       const br = await fetch("/api/cuenta/busquedas", { headers: await headersAuth() });
       let bj = null;
       try { bj = await br.json(); } catch (_) { bj = null; }
-      await pintarBusquedas(bj && bj.items || []);
+      await pintarBusquedas((bj && bj.items) || []);
     }
     function corteBusqueda(r, j) {
       if (r.status !== 401 && r.status !== 402 && r.status !== 503) return false;
@@ -848,7 +936,7 @@
         setState("error", "Ahora no puedo buscar.", humano || "No pude contar la búsqueda. No hay un precio para mostrar.");
         return true;
       }
-      setState("error", "Hace falta entrar.", humano || "Sin sesión no se busca.");
+      setState("error", "La sesión no sirve.", humano || "Volvé a entrar.");
       return true;
     }
 
@@ -1042,6 +1130,13 @@
       if (d.data && Array.isArray(d.data.productos)) return { items: d.data.productos, total: d.data.total ?? null };
       return { items: [], total: null };
     }
+    function marcoFoto(url, nombre) {
+      const alt = esc(nombre || "");
+      if (typeof url === "string" && url.indexOf("https://") === 0) {
+        return "<div class=\"photo-frame\"><img src=\"" + esc(url) + "\" alt=\"" + alt + "\"></div>";
+      }
+      return "<div class=\"photo-frame\"></div>";
+    }
     function renderElectro(data, q) {
       const items = Array.isArray(data.productos) ? data.productos : [];
       const fuentes = Array.isArray(data.fuentes) ? data.fuentes : [];
@@ -1056,12 +1151,13 @@
       lastItems = items;
       out.innerHTML = items.map((p, i) => {
         const link = p.url ? "<a class=\"store-link\" href=\"" + esc(p.url) + "\" rel=\"noopener noreferrer\">Ver precio</a>" : "";
-        return "<article class=\"product\"><div class=\"store-card\">" +
+        return "<article class=\"product\"><div class=\"product-top\">" + marcoFoto(p.imagen, p.nombre) +
+          "<div class=\"store-card\">" +
           "<p class=\"store-name\">" + esc(p.tienda || p.marca || "") + "</p>" +
           "<p class=\"store-product\">" + esc(p.nombre) + "</p>" +
           "<p class=\"store-price\">" + esc(money(p.precio)) + "</p>" +
           link +
-        "</div>" + botonGuardar(p, i) + "</article>";
+        "</div></div>" + botonGuardar(p, i) + "</article>";
       }).join("");
     }
     function setState(kind, title, body) {
@@ -1082,11 +1178,6 @@
       meta.textContent = "";
       if (promosEl) { promosEl.hidden = true; promosEl.innerHTML = ""; }
       setState("loading", "Estoy buscando.", "Leo lo que publican las cadenas. Todavía no hay un número.");
-      if (CUENTA.on && !(await tokenFresco())) {
-        setState("error", "Hace falta entrar.", "Sin sesión no se busca. No hay una búsqueda de muestra.");
-        document.getElementById("cuenta")?.scrollIntoView({ block: "nearest" });
-        return;
-      }
       go.disabled = true;
       try {
         if (mode === "electro") {
@@ -1153,19 +1244,22 @@
             const cards = p.ofertas.map((o) => tarjetaTienda(o, p.nombre)).join("");
             const tam = p.tamano ? "<p class=\"pres\">" + esc(p.tamano) + "</p>" : "";
             return "<article class=\"product\">" +
-              "<h3>" + esc(p.nombre || "Sin nombre") + "</h3>" +
+              "<div class=\"product-top\">" + marcoFoto(p.imagen, p.nombre || "") +
+              "<div><h3>" + esc(p.nombre || "Sin nombre") + "</h3>" +
               tam +
+              "</div></div>" +
               "<div class=\"store-cards\">" + cards + "</div>" +
               botonGuardar(p, i) +
             "</article>";
           }
           if (p.tienda) {
-            return "<article class=\"product\">" + tarjetaTienda(p, p.nombre) + botonGuardar(p, i) + "</article>";
+            return "<article class=\"product\"><div class=\"product-top\">" + marcoFoto(p.imagen, p.nombre) +
+              "<div>" + tarjetaTienda(p, p.nombre) + "</div></div>" + botonGuardar(p, i) + "</article>";
           }
           const nombre = p.nombre || p.descripcion || p.id || "Sin nombre";
           const marca = p.marca || "";
           const pres = p.presentacion || "";
-          return "<article class=\"product\">" +
+          return "<article class=\"product\"><div class=\"product-top\">" + marcoFoto(p.imagen, nombre) + "<div>" +
             (marca ? "<p class=\"brand\">" + esc(marca) + "</p>" : "") +
             "<h3>" + esc(nombre) + "</h3>" +
             (pres ? "<p class=\"pres\">" + esc(pres) + "</p>" : "<p class=\"pres\"></p>") +
@@ -1176,7 +1270,7 @@
             "</div>" +
             "<span class=\"badge\">" + esc(badge) + "</span>" +
             botonGuardar(p, i) +
-          "</article>";
+          "</div></div></article>";
         }).join("");
       } catch (err) {
         setState("error", "No pude leer los precios.", "Se cortó. Probá de nuevo.");
@@ -1262,8 +1356,8 @@
       const meta = [cuando, extraBits.join(" · ")].filter(Boolean).join("<br>");
       return "<article class=\"promo-card\">" +
         "<p class=\"brand\">" + esc(c.cadena || "") + "</p>" +
-        "<h4>" + esc(textoPromo(c.banco || "Sin banco") + "</h4>" +
-        "<p class=\"promo-offer\">" + esc(textoPromo(c.oferta || "") + "</p>" +
+        "<h4>" + esc(textoPromo(c.banco || "Sin banco")) + "</h4>" +
+        "<p class=\"promo-offer\">" + esc(textoPromo(c.oferta || "")) + "</p>" +
         (meta ? "<p class=\"promo-meta\">" + meta + "</p>" : "") +
       "</article>";
     }
@@ -1310,6 +1404,12 @@
         if (sel) sel.value = a.getAttribute("data-plan");
       });
     });
+
+    document.getElementById("out").addEventListener("error", (e) => {
+      const img = e.target;
+      if (!img || img.tagName !== "IMG") return;
+      if (img.parentElement && img.parentElement.classList.contains("photo-frame")) img.remove();
+    }, true);
 
     document.getElementById("out").addEventListener("click", async (e) => {
       const btn = e.target.closest(".guardar");
@@ -1403,6 +1503,8 @@
             return;
           }
           if (cuentaMsg) cuentaMsg.textContent = "";
+          const dlg = document.getElementById("entrar-dialog");
+          if (dlg && typeof dlg.close === "function") dlg.close();
           await refrescarCuenta();
         } catch (_) {
           if (cuentaMsg) cuentaMsg.textContent = "No se pudo entrar.";
@@ -1420,6 +1522,8 @@
           const res = await authPost("/auth/v1/signup", { email: email, password: password });
           if (res.j && res.j.access_token && guardarSesion(res.j)) {
             if (cuentaMsg) cuentaMsg.textContent = "";
+            const dlg = document.getElementById("entrar-dialog");
+            if (dlg && typeof dlg.close === "function") dlg.close();
             await refrescarCuenta();
             return;
           }
@@ -1431,6 +1535,26 @@
         } catch (_) {
           if (cuentaMsg) cuentaMsg.textContent = "No se pudo crear la cuenta.";
         }
+      });
+    }
+    const entrarDialog = document.getElementById("entrar-dialog");
+    const abrirEntrar = document.getElementById("abrir-entrar");
+    if (abrirEntrar && entrarDialog) {
+      abrirEntrar.addEventListener("click", () => {
+        if (cuentaMsg) cuentaMsg.textContent = "";
+        if (typeof entrarDialog.showModal === "function") entrarDialog.showModal();
+        else entrarDialog.setAttribute("open", "");
+        document.getElementById("cuenta-email")?.focus();
+      });
+      const cerrar = document.getElementById("cerrar-entrar");
+      if (cerrar) cerrar.addEventListener("click", () => {
+        if (typeof entrarDialog.close === "function") entrarDialog.close();
+        else entrarDialog.removeAttribute("open");
+      });
+      entrarDialog.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        if (typeof entrarDialog.close === "function") entrarDialog.close();
+        else entrarDialog.removeAttribute("open");
       });
     }
     const salir = document.getElementById("cuenta-salir");
@@ -1453,30 +1577,6 @@
         qInput.value = b.textContent || "";
         delete qInput.dataset.autofill;
         form.requestSubmit();
-      });
-    }
-    const pagarPlan = document.getElementById("pagar-plan");
-    if (pagarPlan) {
-      pagarPlan.addEventListener("click", async () => {
-        if (!(await tokenFresco())) {
-          if (cuentaMsg) cuentaMsg.textContent = "Entrá con tu cuenta antes de pagar.";
-          return;
-        }
-        pagarPlan.disabled = true;
-        try {
-          const r = await fetch("/api/cuenta/checkout", { method: "POST", headers: await headersAuth({ "Content-Type": "application/json" }), body: "{}" });
-          let j = null;
-          try { j = await r.json(); } catch (_) { j = null; }
-          if (j && j.init_point) {
-            window.location.href = j.init_point;
-            return;
-          }
-          if (cuentaMsg) cuentaMsg.textContent = (j && j.error) || "El cobro todavía no está activo.";
-        } catch (_) {
-          if (cuentaMsg) cuentaMsg.textContent = "No se pudo abrir el cobro. No se marcó ningún pago.";
-        } finally {
-          pagarPlan.disabled = false;
-        }
       });
     }
     if (new URLSearchParams(location.search).get("mp")) {

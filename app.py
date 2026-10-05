@@ -486,27 +486,20 @@ def _cuenta_publica(quota: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _imagen_https(url: Any) -> str:
+    if isinstance(url, str) and url.startswith("https://"):
+        return url
+    return ""
+
+
 async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONResponse:
-    """Sin sesión no se busca. El cupo se descuenta en Supabase antes de salir a las tiendas."""
-    if not cuentas.cupo_on():
-        return JSONResponse(
-            {
-                "ok": False,
-                "reason": "unconfigured",
-                "error": "El buscador pide una cuenta y este servidor no puede contarla. No se buscó.",
-            },
-            status_code=503,
-        )
+    """Sin sesión se busca igual. El cupo de 5 solo corre con sesión y cobro activo."""
+    libre: dict[str, Any] = {"ok": True, "anon": True}
     token = cuentas.bearer(request.headers)
-    if not token:
-        return JSONResponse(
-            {
-                "ok": False,
-                "reason": "auth",
-                "error": "Sin cuenta no se busca. Entrá o creá una cuenta.",
-            },
-            status_code=401,
-        )
+    if not token or not cuentas.cobro_on():
+        return libre
+    if not cuentas.cupo_on():
+        return libre
     try:
         user = await cuentas.usuario(token)
     except Exception:
@@ -564,6 +557,9 @@ def _presentar_super(q: str, data: Any, leido: str) -> Any:
     if not isinstance(productos, list):
         productos = []
     grupos = agrupar_mismo_producto(q, productos, leido)
+    for g in grupos:
+        if isinstance(g, dict):
+            g["imagen"] = _imagen_https(g.get("imagen"))
     data["productos"] = grupos
     data["total"] = len(grupos)
     return data
@@ -765,6 +761,11 @@ async def electro(
     if isinstance(gate, JSONResponse):
         return gate
     data = await buscar_electro(q)
+    productos = data.get("productos") if isinstance(data, dict) else None
+    if isinstance(productos, list):
+        for p in productos:
+            if isinstance(p, dict):
+                p["imagen"] = _imagen_https(p.get("imagen"))
     return _con_cuenta({"http": 200, "fuente": "vtex_publico", "data": data}, gate)
 
 

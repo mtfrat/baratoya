@@ -41,6 +41,26 @@ def _precio(product: dict[str, Any]) -> tuple[float | None, bool]:
     return float(price), bool(offer.get("IsAvailable"))
 
 
+def _imagen_vtex(product: dict[str, Any]) -> str:
+    """URL que el JSON de VTEX ya trae en items[].images[].imageUrl. No se arma otra."""
+    items = product.get("items") or []
+    if not isinstance(items, list):
+        return ""
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        images = item.get("images") or []
+        if not isinstance(images, list):
+            continue
+        for img in images:
+            if not isinstance(img, dict):
+                continue
+            url = img.get("imageUrl")
+            if isinstance(url, str) and url.startswith("https://"):
+                return url
+    return ""
+
+
 def _parse(store: dict[str, str], body: Any) -> list[dict[str, Any]]:
     if not isinstance(body, list):
         return []
@@ -63,6 +83,7 @@ def _parse(store: dict[str, str], body: Any) -> list[dict[str, Any]]:
                 "precio": price,
                 "url": product.get("link") or "",
                 "disponible": available,
+                "imagen": _imagen_vtex(product),
             }
         )
     return out
