@@ -667,6 +667,7 @@
     }
     dialog.entrar::backdrop { background: rgba(14, 15, 12, 0.45); }
     dialog.entrar form { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+    dialog.entrar form[hidden] { display: none; }
     dialog.entrar .entrar-titulo {
       margin: 0;
       color: var(--color-forest-ink);
@@ -1008,6 +1009,19 @@
         <button class="btn outline" type="button" id="cuenta-crear">Crear cuenta</button>
       </div>
       <button class="btn text" type="button" id="cerrar-entrar">Cerrar</button>
+    </form>
+    <form id="recuperar-form" hidden novalidate>
+      <p class="entrar-titulo" id="recuperar-titulo">Recuperar contraseña</p>
+      <p class="lista-note">Escribí el mail de tu cuenta y te mandamos un enlace para elegir una contraseña nueva.</p>
+      <p id="recuperar-msg" role="status"></p>
+      <div class="field">
+        <label for="recuperar-email">Mail</label>
+        <input id="recuperar-email" type="email" maxlength="200" autocomplete="username" required />
+      </div>
+      <div class="btn-row">
+        <button class="btn lime" type="submit" id="recuperar-enviar">Enviar enlace</button>
+      </div>
+      <button class="btn text" type="button" id="recuperar-volver">Volver a entrar</button>
     </form>
   </dialog>
   <dialog class="entrar" id="nueva-pass-dialog" aria-labelledby="nueva-pass-titulo">
@@ -2141,37 +2155,85 @@
         }
       });
     }
+    // Vista "Recuperar contraseña" dentro del mismo modal: solo Mail, sin contraseña.
+    const recuperarForm = document.getElementById("recuperar-form");
+    const recuperarMsg = document.getElementById("recuperar-msg");
+    const recuperarEmail = document.getElementById("recuperar-email");
+    const loginEmail = document.getElementById("cuenta-email");
+    function mailInvalido(input) {
+      const v = (input && input.value || "").trim();
+      if (!v) return "Escribí tu mail.";
+      if (input.validity && input.validity.typeMismatch) return "Ese mail no parece válido.";
+      return "";
+    }
+    function verRecuperar(msg) {
+      if (!cuentaForm || !recuperarForm) return;
+      const dlg = document.getElementById("entrar-dialog");
+      if (recuperarEmail && loginEmail && loginEmail.value.trim()) recuperarEmail.value = loginEmail.value.trim();
+      cuentaForm.hidden = true;
+      recuperarForm.hidden = false;
+      if (dlg) dlg.setAttribute("aria-labelledby", "recuperar-titulo");
+      if (recuperarMsg) recuperarMsg.textContent = msg != null ? msg : mailInvalido(recuperarEmail);
+      if (recuperarEmail) recuperarEmail.focus();
+    }
+    function verEntrar() {
+      if (!cuentaForm || !recuperarForm) return;
+      const dlg = document.getElementById("entrar-dialog");
+      if (loginEmail && recuperarEmail && recuperarEmail.value.trim()) loginEmail.value = recuperarEmail.value.trim();
+      recuperarForm.hidden = true;
+      cuentaForm.hidden = false;
+      if (dlg) dlg.setAttribute("aria-labelledby", "entrar-titulo");
+      if (recuperarMsg) recuperarMsg.textContent = "";
+    }
     const olvide = document.getElementById("cuenta-olvide");
     if (olvide) {
-      olvide.addEventListener("click", async () => {
-        const emailInput = document.getElementById("cuenta-email");
-        const email = (emailInput && emailInput.value || "").trim();
-        if (!email || (emailInput && emailInput.validity && emailInput.validity.typeMismatch)) {
-          if (cuentaMsg) cuentaMsg.textContent = "Escribí tu mail arriba y tocá de nuevo «Olvidé mi contraseña».";
-          if (emailInput) emailInput.focus();
+      olvide.addEventListener("click", () => {
+        if (cuentaMsg) cuentaMsg.textContent = "";
+        verRecuperar();
+      });
+    }
+    const recuperarVolver = document.getElementById("recuperar-volver");
+    if (recuperarVolver) {
+      recuperarVolver.addEventListener("click", () => {
+        verEntrar();
+        if (loginEmail) loginEmail.focus();
+      });
+    }
+    if (recuperarForm) {
+      recuperarForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const error = mailInvalido(recuperarEmail);
+        if (error) {
+          if (recuperarMsg) recuperarMsg.textContent = error;
+          if (recuperarEmail) recuperarEmail.focus();
           return;
         }
+        const email = recuperarEmail.value.trim();
         if (!CUENTA.on || !CUENTA.url) {
-          if (cuentaMsg) cuentaMsg.textContent = "No se pudo hablar con la cuenta.";
+          if (recuperarMsg) recuperarMsg.textContent = "No se pudo hablar con la cuenta. Probá de nuevo en un rato.";
           return;
         }
-        olvide.disabled = true;
-        if (cuentaMsg) cuentaMsg.textContent = "Mandando el enlace…";
+        const btn = document.getElementById("recuperar-enviar");
+        if (btn) btn.disabled = true;
+        if (recuperarMsg) recuperarMsg.textContent = "Mandando el enlace…";
         try {
           // Igual que supabase.auth.resetPasswordForEmail(email, { redirectTo }).
           const res = await authPost("/auth/v1/recover?redirect_to=" + encodeURIComponent(RESET_REDIRECT), { email: email });
           if (res.ok) {
-            if (cuentaMsg) cuentaMsg.textContent = "Listo. Si " + email + " tiene cuenta, te llega un mail con un enlace para elegir otra contraseña. Fijate también en spam.";
+            if (recuperarMsg) recuperarMsg.textContent = "Listo. Si " + email + " tiene cuenta, te llega un mail con el enlace. Revisá también spam.";
           } else {
-            if (cuentaMsg) cuentaMsg.textContent = msgAuth(res.j);
+            if (recuperarMsg) recuperarMsg.textContent = msgAuth(res.j);
           }
         } catch (_) {
-          if (cuentaMsg) cuentaMsg.textContent = "No se pudo mandar el enlace. Probá de nuevo.";
+          if (recuperarMsg) recuperarMsg.textContent = "No se pudo mandar el enlace. Probá de nuevo.";
         } finally {
-          olvide.disabled = false;
+          if (btn) btn.disabled = false;
         }
       });
     }
+    // Al cerrar el modal, la próxima vez abre en "Entrar".
+    const entrarDlgReset = document.getElementById("entrar-dialog");
+    if (entrarDlgReset) entrarDlgReset.addEventListener("close", verEntrar);
     const nuevaDialog = document.getElementById("nueva-pass-dialog");
     const nuevaForm = document.getElementById("nueva-pass-form");
     const nuevaMsg = document.getElementById("nueva-pass-msg");
@@ -2248,9 +2310,9 @@
           if (typeof ed.showModal === "function") ed.showModal();
           else ed.setAttribute("open", "");
         }
-        if (cuentaMsg) cuentaMsg.textContent = /expired/i.test(code) || /expired|invalid/i.test(hp.get("error_description") || "")
-          ? "El enlace del mail venció o ya se usó. Escribí tu mail y pedí otro."
-          : "El enlace del mail no sirvió. Escribí tu mail y probá de nuevo.";
+        verRecuperar(/expired/i.test(code) || /expired|invalid/i.test(hp.get("error_description") || "")
+          ? "El enlace venció o ya se usó. Pedí otro."
+          : "El enlace no sirvió. Pedí otro.");
         return;
       }
       const at = hp.get("access_token");
