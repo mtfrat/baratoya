@@ -236,14 +236,15 @@ async def listar_busquedas(token: str, user_id: str) -> list[dict[str, str]]:
     return out
 
 
-async def es_admin(user_id: str) -> bool:
-    if not cupo_on() or not UUID_RE.match(user_id):
+async def es_admin(token: str, user_id: str) -> bool:
+    """La propia sesion lee su rol. No hace falta la service role para abrir /admin."""
+    if not cuentas_on() or not token or not UUID_RE.match(user_id):
         return False
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.get(
             f"{supabase_url()}/rest/v1/profiles",
             params={"id": f"eq.{user_id}", "select": "role"},
-            headers=_service_headers(),
+            headers=_user_headers(token),
         )
     if r.status_code != 200:
         return False

@@ -634,7 +634,7 @@ async def admin(request: Request):
     admin_ok = False
     if user:
         try:
-            admin_ok = await cuentas.es_admin(user["id"])
+            admin_ok = await cuentas.es_admin(token, user["id"])
         except Exception:
             admin_ok = False
     if not admin_ok:
