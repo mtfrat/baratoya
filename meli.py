@@ -189,10 +189,7 @@ async def buscar_meli(q: str, limit: int = 10) -> dict[str, Any]:
     vacio["http"] = r.status_code
     if r.status_code != 200:
         if r.status_code == 403:
-            vacio["aviso"] = (
-                "Mercado Libre rechazó la búsqueda (403). "
-                "Ese listado público ya no está abierto a esta app."
-            )
+            vacio["aviso"] = "Mercado Libre no dejó ver ese listado."
         else:
             vacio["aviso"] = f"búsqueda http {r.status_code}"
         return vacio

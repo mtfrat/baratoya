@@ -1235,7 +1235,7 @@
       const fuentes = Array.isArray(data.fuentes) ? data.fuentes : [];
       const quienes = fuentes.filter((f) => f && f.n).map((f) => f.tienda);
       const falloMl = avisoMercadoLibre(fuentes);
-      meta.textContent = notaCuenta(window.__ultima) + (quienes.length ? "Respondieron " + quienes.join(", ") + "." : "Ninguna tienda publicó un precio.") + (falloMl ? " " + falloMl : "");
+      meta.textContent = notaCuenta(window.__ultima) + (quienes.length ? "Respondieron " + quienes.join(", ") + "." : "Ninguna tienda publicó un precio.");
       if (falloMl) {
         aviso.className = "warn-flag on";
         aviso.textContent = falloMl;
@@ -1316,7 +1316,7 @@
         const leidoTxt = j.leido_texto ? "Precios leídos el " + j.leido_texto + ". " : "";
         const quienesTxt = respondieron.length ? "Respondieron " + respondieron.join(", ") + "." : "";
         const falloMl = avisoMercadoLibre(cadenas);
-        meta.textContent = (notaCuenta(j) + leidoTxt + quienesTxt + (falloMl ? " " + falloMl : "")).trim();
+        meta.textContent = (notaCuenta(j) + leidoTxt + quienesTxt).trim();
         if (falloMl) {
           aviso.className = "warn-flag on";
           aviso.textContent = aviso.textContent ? (aviso.textContent + " " + falloMl) : falloMl;

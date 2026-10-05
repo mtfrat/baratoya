@@ -963,6 +963,10 @@ def _sacar_pack(text: str) -> tuple[tuple[int, tuple[str, int | float] | None] |
         return (int(m.group(1)), None), _recortar(raw, m.start(), m.end())
     m = _PACK_X_BARE_RE.search(raw)
     if m and int(m.group(1)) >= 2 and not re.search(r"\d\s*$", raw[:m.start()]):
+        after = raw[m.end():]
+        # "x 500 g" / "x 1 kg" es gramaje, no multipack ("pack x6", "12 un").
+        if re.match(rf"\s*({_UNIT_SRC})\b", after, re.IGNORECASE):
+            return None, raw
         return (int(m.group(1)), None), _recortar(raw, m.start(), m.end())
     return None, raw
 
@@ -1126,8 +1130,27 @@ def _claves_compatibles(a: tuple, b: tuple) -> bool:
 
 
 
+_SINONIMOS_TITULO = {
+    "despalada": ("sin", "palo"),
+    "despalado": ("sin", "palo"),
+}
+
+
+def _tokens_parecido(nombre: str) -> set[str]:
+    """Tokens para comparar titulos sin EAN. Despalada y sin palo son lo mismo. No toca la clave."""
+    out: set[str] = set()
+    for t in _tokens(nombre):
+        out.update(_SINONIMOS_TITULO.get(t, (t,)))
+    return out
+
+
 def _componentes_producto(filas: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
-    """Mismo EAN se junta. Sin EAN compartido, marca + tipo + balde. Dos EAN no se pegan."""
+    """Mismo EAN se junta. Sin EAN compartido, marca + tipo + balde. Dos EAN no se pegan.
+
+    Cada fila sin EAN se pega sola al grupo con EAN compatible cuyo titulo mas se parece.
+    Recien despues las filas sin EAN que sobran se juntan entre si, y dos publicaciones
+    distintas de la misma tienda no se juntan (serian dos productos).
+    """
     n = len(filas)
     parent = list(range(n))
 
@@ -1152,34 +1175,60 @@ def _componentes_producto(filas: list[dict[str, Any]]) -> list[list[dict[str, An
         else:
             vistos[ean] = i
 
-    sin = [i for i, fila in enumerate(filas) if not fila["ean"]]
-    for a in range(len(sin)):
-        for b in range(a + 1, len(sin)):
-            i, j = sin[a], sin[b]
-            if _claves_compatibles(filas[i]["clave"], filas[j]["clave"]):
-                union(i, j)
+    toks = [_tokens_parecido(str(f["p"].get("nombre") or f["p"].get("descripcion") or "")) for f in filas]
 
-    comps: dict[int, list[int]] = {}
-    for i in range(n):
-        comps.setdefault(find(i), []).append(i)
-    ean_roots: list[tuple[int, list[int]]] = []
-    sin_roots: list[tuple[int, list[int]]] = []
-    for root, members in comps.items():
-        if any(filas[i]["ean"] for i in members):
-            ean_roots.append((root, members))
-        else:
-            sin_roots.append((root, members))
+    def _solape(a: set[str], b: set[str]) -> float:
+        if not a or not b:
+            return 0.0
+        return len(a & b) / len(a | b)
 
-    for _root, members in sin_roots:
-        hits: list[int] = []
-        for eroot, emembers in ean_roots:
-            claves = [filas[i]["clave"] for i in emembers]
-            ref = Counter(claves).most_common(1)[0][0]
-            if all(_claves_compatibles(filas[i]["clave"], ref) for i in members):
-                hits.append(eroot)
-        if len(hits) == 1:
-            for i in members:
-                union(i, hits[0])
+    ean_comps: dict[int, list[int]] = {}
+    for i, fila in enumerate(filas):
+        if fila["ean"]:
+            ean_comps.setdefault(find(i), []).append(i)
+    ean_refs = {
+        root: Counter(filas[i]["clave"] for i in members).most_common(1)[0][0]
+        for root, members in ean_comps.items()
+    }
+
+    sueltas: list[int] = []
+    for i, fila in enumerate(filas):
+        if fila["ean"]:
+            continue
+        candidatos: list[tuple[float, int, int]] = []
+        for root, members in ean_comps.items():
+            if not _claves_compatibles(fila["clave"], ean_refs[root]):
+                continue
+            score = max(_solape(toks[i], toks[j]) for j in members)
+            candidatos.append((score, len(members), root))
+        if not candidatos:
+            sueltas.append(i)
+            continue
+        candidatos.sort(reverse=True)
+        mejor = candidatos[0]
+        if len(candidatos) > 1:
+            segundo = candidatos[1]
+            if mejor[0] <= 0 or (segundo[0] == mejor[0] and segundo[1] == mejor[1]):
+                sueltas.append(i)
+                continue
+        union(mejor[2], i)
+
+    def _tienda_fila(i: int) -> str:
+        p = filas[i]["p"]
+        return str(p.get("tienda_id") or ("" if p.get("tienda") else "precios_claros"))
+
+    def _nombre_fila(i: int) -> str:
+        p = filas[i]["p"]
+        return " ".join(str(p.get("nombre") or p.get("descripcion") or "").casefold().split())
+
+    for a in range(len(sueltas)):
+        for b in range(a + 1, len(sueltas)):
+            i, j = sueltas[a], sueltas[b]
+            if not _claves_compatibles(filas[i]["clave"], filas[j]["clave"]):
+                continue
+            if _tienda_fila(i) == _tienda_fila(j) and _nombre_fila(i) != _nombre_fila(j):
+                continue
+            union(i, j)
 
     final: dict[int, list[dict[str, Any]]] = {}
     for i, fila in enumerate(filas):
