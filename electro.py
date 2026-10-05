@@ -1,7 +1,5 @@
-"""Electro v1: catálogo VTEX público, $0. Sin scrapers pagos y sin Mercado Libre.
-
-Mercado Libre Argentina (search y listado) no devuelve precio desde este servidor.
-No se llama en cada búsqueda para no simular resultados.
+"""Electro: catálogo VTEX público más la API oficial de Mercado Libre si hay credenciales.
+Sin scrapers pagos y sin HTML de Mercado Libre.
 """
 from __future__ import annotations
 
@@ -132,21 +130,18 @@ async def buscar_electro(q: str) -> dict[str, Any]:
                 }
             )
             productos.extend(row["productos"])
+    try:
+        from meli import buscar_meli
+    except ImportError:
+        from baratoya.meli import buscar_meli
+    meli = await buscar_meli(q)
+    productos.extend(meli.get("productos") or [])
     productos.sort(key=lambda p: p["precio"])
-    fuentes.append(
-        {
-            "tienda": "Mercado Libre",
-            "tienda_id": "mla",
-            "http": 403,
-            "ok": False,
-            "n": 0,
-            "aviso": MLA_NOTA,
-        }
-    )
+    fuentes.append({k: v for k, v in meli.items() if k != "productos"})
     return {
         "q": q,
         "fuente": "vtex_publico",
         "productos": productos,
         "fuentes": fuentes,
-        "mla": MLA_NOTA,
+        "mla": meli.get("aviso") or ("ok" if meli.get("ok") else "sin resultados"),
     }

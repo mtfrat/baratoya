@@ -20,6 +20,7 @@ from fastapi.templating import Jinja2Templates
 # Paquete (uvicorn baratoya.app:app desde micro-saas) o módulo suelto (Vercel carga app.py).
 try:
     from baratoya.electro import buscar_electro
+    from baratoya.meli import buscar_meli
     from baratoya.super_cadenas import STORES as SUPER_STORES
     from baratoya.super_cadenas import UA as VTEX_UA
     from baratoya.super_cadenas import _precio as _precio_oferta
@@ -30,6 +31,7 @@ try:
     from baratoya import cuentas
 except ImportError:
     from electro import buscar_electro
+    from meli import buscar_meli
     from super_cadenas import STORES as SUPER_STORES
     from super_cadenas import UA as VTEX_UA
     from super_cadenas import _precio as _precio_oferta
@@ -719,6 +721,7 @@ async def buscar(
     consultas = consultas_busqueda(q)
     cadenas_task = asyncio.create_task(buscar_super(q, consultas))
     promos_task = asyncio.create_task(buscar_promos())
+    meli_task = asyncio.create_task(buscar_meli(q))
     code, data = await pc_get(
         "/productos",
         {"string": q, "lat": lat, "lng": lng, "offset": offset, "limit": limit},
@@ -750,6 +753,10 @@ async def buscar(
         promos = await promos_task
     except Exception as e:
         promos = [{"tienda": "promos", "ok": False, "nota": str(e), "items": [], "url": "", "http": 0}]
+    try:
+        meli = await meli_task
+    except Exception as e:
+        meli = {"tienda": "Mercado Libre", "tienda_id": "mla", "http": 0, "ok": False, "n": 0, "productos": [], "aviso": str(e)}
     leido, leido_texto = _leido_ahora()
 
     def _consulta() -> dict[str, Any]:
@@ -814,6 +821,14 @@ async def buscar(
         )
         data = dict(data)
         data["productos"] = productos
+    if meli.get("productos"):
+        cadenas = dict(cadenas)
+        productos_c = list(cadenas.get("productos") or [])
+        productos_c.extend(meli["productos"])
+        cadenas["productos"] = productos_c
+        fuentes = list(cadenas.get("fuentes") or [])
+        fuentes.append({k: v for k, v in meli.items() if k != "productos"})
+        cadenas["fuentes"] = fuentes
     data = _presentar_super(q, _merge_cadenas(data, cadenas), leido)
     return _con_cuenta({
         "http": code,
