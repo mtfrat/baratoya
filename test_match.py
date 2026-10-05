@@ -584,5 +584,63 @@ class MeliAvisoTest(unittest.TestCase):
             self.assertEqual(mla[0]["aviso"], aviso)
 
 
+class PromosSemanaTest(unittest.TestCase):
+    """Pruebas para promos-semana: do_not_apply no se resta y día ISO 7 = domingo."""
+
+    def test_do_not_apply_no_se_resta(self) -> None:
+        from datetime import date
+        import promos_hoy as ph
+
+        # Tarjeta válida en vigencia, porcentaje, canal online y con tope,
+        # pero con motivo en do_not_apply -> nunca se resta.
+        rec = ph._base(
+            chain_id="dia",
+            cadena="Día",
+            banco="Prex",
+            percent=30.0,
+            days={0},  # Lunes (0)
+            canal="online",
+            cap=20000.0,
+            inicio=date(2026, 10, 5),
+            fin=date(2026, 10, 5),
+            do_not_apply="Solo una vez / primera compra con Prex",
+        )
+        ok, motivo, total = ph.puede_restar(rec, "Leche Entera", 5000.0, date(2026, 10, 5))
+        self.assertFalse(ok)
+        self.assertEqual(total, 5000.0)
+        self.assertEqual(motivo, "Solo una vez / primera compra con Prex")
+
+        # Comprobar también que si do_not_apply es None la tarjeta sí se resta (control)
+        rec_ok = dict(rec)
+        rec_ok["do_not_apply"] = None
+        ok_resta, _, total_resta = ph.puede_restar(rec_ok, "Leche Entera", 5000.0, date(2026, 10, 5))
+        self.assertTrue(ok_resta)
+        self.assertEqual(total_resta, 3500.0)
+
+    def test_dia_iso_7_es_domingo(self) -> None:
+        from datetime import date
+        import promos_hoy as ph
+
+        # El domingo 11/10/2026 tiene weekday() == 6
+        domingo = date(2026, 10, 11)
+        self.assertEqual(domingo.weekday(), 6)
+        self.assertEqual(ph.NOMBRE_DIA[6], "domingo")
+
+        # Cargar catálogo de promos-semana y verificar que las filas con ISO 7 mapean a domingo (6)
+        recs = ph.cargar(forzar=True)
+        recs_domingo = [r for r in recs if 6 in r.get("days", set())]
+        self.assertGreater(len(recs_domingo), 0)
+
+        # En la tarjeta pública de una promo de domingo figura el domingo
+        card = ph.tarjeta_publica(recs_domingo[0])
+        self.assertTrue("domingo" in card["dias"] or card["dias"] == "todos los días")
+
+        # En el catálogo, el grupo domingo incluye las tarjetas con día 6
+        cat = ph.catalogo(domingo)
+        grupo_domingo = next(g for g in cat["por_dia"] if g["dia"] == "domingo")
+        self.assertTrue(grupo_domingo["hoy"])
+        self.assertGreater(len(grupo_domingo["items"]), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

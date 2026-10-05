@@ -62,6 +62,8 @@ CHAIN_ID = {
     "la anónima": "laanonima", "la anonima": "laanonima",
     "coto": "cotodigital", "coto digital": "cotodigital",
     "makro": "makro",
+    "maxiconsumo": "maxiconsumo",
+    "supermami": "supermami", "super mami": "supermami",
 }
 CHAIN_NOMBRE = {
     "dia": "Día", "carrefour": "Carrefour", "masonline": "Mas Online",
@@ -69,6 +71,7 @@ CHAIN_NOMBRE = {
     "toledo": "Toledo", "josimar": "Josimar", "laanonima": "La Anónima",
     "cotodigital": "Coto Digital", "makro": "Makro",
     "supermami": "Super Mami", "abastecedor": "El Abastecedor", "comodin": "Comodín",
+    "maxiconsumo": "Maxiconsumo",
 }
 
 _CACHE: list[dict[str, Any]] | None = None
@@ -307,6 +310,9 @@ def _base(**kwargs: Any) -> dict[str, Any]:
         "legal": "",
         "texto": "",
         "fechas_especificas": set(),
+        "do_not_apply": None,
+        "source_url": "",
+        "ref": "",
     }
     rec.update(kwargs)
     return rec
@@ -838,10 +844,104 @@ def _cargar_coto_md() -> list[dict[str, Any]]:
     return out
 
 
+def _cargar_promos_semana() -> list[dict[str, Any]]:
+    path = DATA / "promos-semana.json"
+    if not path.exists():
+        return []
+    data = json.loads(path.read_text(encoding="utf-8"))
+    out = []
+    for row in data:
+        if not isinstance(row, dict):
+            continue
+        chain_id = str(row.get("chain") or "").strip().lower()
+        if not chain_id:
+            continue
+        cadena = CHAIN_NOMBRE.get(chain_id, chain_id.title())
+        banco = str(row.get("bank") or "").strip()
+        kind = str(row.get("kind") or "").strip().lower()
+        val = row.get("value")
+
+        if kind == "percent":
+            pct = float(val) if val is not None else None
+            cuotas = ""
+        elif kind == "installments":
+            pct = None
+            if val is not None:
+                n_c = int(val) if float(val).is_integer() else val
+                cuotas = f"{n_c} cuotas sin interés" if n_c != 1 else "1 cuota sin interés"
+            else:
+                cuotas = "Cuotas"
+        else:
+            pct = None
+            cuotas = ""
+
+        # ISO 1=lunes...7=domingo -> internal 0=lunes...6=domingo
+        days = {int(d) - 1 for d in (row.get("days") or []) if 1 <= int(d) <= 7}
+
+        ch = str(row.get("channel") or "").strip().lower()
+        if ch == "both":
+            canal = "online y sucursal"
+        elif ch == "store":
+            canal = "sucursal"
+        elif ch == "online":
+            canal = "online"
+        else:
+            canal = _canal(ch, "")
+
+        cap_raw = row.get("cap")
+        if cap_raw is not None:
+            cap = float(cap_raw)
+            sin_tope = False
+            cap_conocido = True
+        else:
+            cap = None
+            sin_tope = ("sin tope" in str(row.get("legal") or "").lower())
+            cap_conocido = True if sin_tope else False
+
+        min_raw = row.get("minimum")
+        minimo = float(min_raw) if min_raw is not None else None
+
+        inicio = date.fromisoformat(row["valid_from"]) if row.get("valid_from") else None
+        fin = date.fromisoformat(row["valid_to"]) if row.get("valid_to") else None
+        legal = str(row.get("legal") or "")
+        do_not_apply = row.get("do_not_apply")
+
+        rec = _base(
+            chain_id=chain_id,
+            cadena=cadena,
+            banco=banco,
+            percent=pct,
+            cuotas=cuotas,
+            days=days,
+            canal=canal,
+            cap=cap,
+            sin_tope=sin_tope,
+            cap_conocido=cap_conocido,
+            minimo=minimo,
+            inicio=inicio,
+            fin=fin,
+            legal=legal,
+            exclusion=legal,
+            source_url=str(row.get("source_url") or ""),
+            ref=str(row.get("ref") or ""),
+            do_not_apply=do_not_apply,
+            texto=str(row.get("legal") or "")[:120],
+        )
+        out.append(rec)
+    return out
+
+
 def cargar(forzar: bool = False) -> list[dict[str, Any]]:
     global _CACHE
     if _CACHE is not None and not forzar:
         return _CACHE
+    path_semana = DATA / "promos-semana.json"
+    if path_semana.exists():
+        recs = _cargar_promos_semana()
+        # Josimar y Comodín: sin cambios
+        recs.extend(_cargar_josimar())
+        _CACHE = recs
+        return recs
     recs: list[dict[str, Any]] = []
     for loader in (
         _cargar_dia, _cargar_mas, _cargar_cordiez, _cargar_toledo,
@@ -1108,6 +1208,8 @@ def tarjeta_publica(rec: dict[str, Any]) -> dict[str, Any]:
         "minimo": _min_txt(rec),
         "vigencia": _vigencia_txt(rec),
     }
+    if rec.get("do_not_apply"):
+        base["do_not_apply"] = rec["do_not_apply"]
     return enriquecer_tarjeta(base)
 
 
@@ -1118,14 +1220,13 @@ def activas(hoy: date | None = None) -> list[dict[str, Any]]:
         if rec["chain_id"] == "makro":
             # se listan en el navegador, no en la búsqueda de precios
             pass
-        ok, _ = _vigente(rec, hoy)
-        # vigente() también exige el día de hoy. Para el navegador, la tarjeta
-        # está activa si no está oculta, vencida ni en conflicto, aunque hoy
-        # no sea su día: se archiva bajo ese día.
         if rec.get("oculta") or rec.get("conflicto"):
             continue
         fin = rec.get("fin")
         if isinstance(fin, date) and fin < hoy:
+            continue
+        inicio = rec.get("inicio")
+        if isinstance(inicio, date) and inicio > hoy:
             continue
         if not rec.get("percent") and not rec.get("cuotas"):
             continue
@@ -1156,10 +1257,9 @@ def catalogo(hoy: date | None = None) -> dict[str, Any]:
     notas = [
         "El precio grande de cada súper es el de ahora. El tachado, si aparece, es contexto de la tienda y no se compara.",
         "Una tarjeta oculta, vencida o con dos fechas que no coinciden no se muestra acá.",
-        "Jumbo: el sábado no había tarjetas. No se copian las de otros días a Disco ni a Vea, que devolvieron 0.",
         "Josimar: las promos de banco tienen showMessage en falso y no se cuentan como vigentes.",
         "Makro tiene promos de sucursal y no tiene precio de producto: no entra en la búsqueda.",
-        "Super Mami, El Abastecedor y Comodín no tienen un archivo de promos usable: solo precio de góndola.",
+        "El Abastecedor y Comodín no tienen un archivo de promos usable: solo precio de góndola.",
         "Coto: el porcentaje del sábado en la app es de sucursal y no se resta del precio de Coto Digital.",
     ]
     return {
@@ -1220,6 +1320,8 @@ def puede_restar(
     ok, motivo = _vigente(rec, hoy)
     if not ok:
         return False, motivo, precio
+    if rec.get("do_not_apply"):
+        return False, str(rec["do_not_apply"]), precio
     if not rec.get("days") and not rec.get("fechas_especificas"):
         return False, "La tarjeta no publica el día.", precio
     if not rec.get("percent"):
@@ -1312,10 +1414,6 @@ def aplicar_oferta(
 
 def notas_cadenas_sin_promo() -> list[dict[str, Any]]:
     return [
-        {"tienda": "Jumbo", "ok": False, "nota": "El sábado no había tarjetas. No se copian las de lunes a viernes.", "items": [], "url": "", "http": 0},
-        {"tienda": "Disco", "ok": False, "nota": "La página de promos no trajo tarjetas.", "items": [], "url": "", "http": 0},
-        {"tienda": "Vea", "ok": False, "nota": "La página de promos no trajo tarjetas.", "items": [], "url": "", "http": 0},
-        {"tienda": "Super Mami", "ok": False, "nota": "No hay un archivo de promos usable. Solo el precio de góndola.", "items": [], "url": "", "http": 0},
         {"tienda": "El Abastecedor", "ok": False, "nota": "No hay un archivo de promos usable. Solo el precio de góndola.", "items": [], "url": "", "http": 0},
         {"tienda": "Comodín", "ok": False, "nota": "No hay un archivo de promos usable. Solo el precio de góndola.", "items": [], "url": "", "http": 0},
         {"tienda": "Makro", "ok": False, "nota": "No se muestra en la búsqueda: promos de sucursal y sin precio de producto.", "items": [], "url": "", "http": 0},
