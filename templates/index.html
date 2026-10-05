@@ -766,7 +766,9 @@
     }
     .bank-dd-toggle:focus-visible { outline: 2px solid var(--color-forest-ink); outline-offset: 2px; }
     .bank-dd-toggle .chev { opacity: 0.7; font-size: 12px; }
-    .bank-dd.open .bank-dd-toggle { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+    .bank-dd.open .bank-dd-toggle {
+      border-radius: var(--radius-cards) var(--radius-cards) 0 0;
+    }
     .bank-dd-panel {
       display: none;
       position: absolute;
@@ -775,7 +777,7 @@
       top: 100%;
       border: 1px solid var(--color-forest-ink);
       border-top: 0;
-      border-radius: 0 0 var(--radius-buttons) var(--radius-buttons);
+      border-radius: 0 0 var(--radius-cards) var(--radius-cards);
       background: var(--color-paper);
       box-shadow: 0 12px 28px rgba(0,0,0,.08);
       max-height: min(70vh, 420px);
