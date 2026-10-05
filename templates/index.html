@@ -221,9 +221,9 @@
     }
     .results { display: flex; flex-direction: column; gap: 12px; }
     .product {
-      background: var(--color-fog);
+      background: var(--color-paper);
       border-radius: var(--radius-cards);
-      padding: 24px;
+      padding: 16px 16px 4px;
       box-shadow: var(--shadow-subtle);
     }
     .brand {
@@ -425,20 +425,27 @@
     .store-cards {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin: 0 0 12px;
+      gap: 0;
+      margin: 0;
     }
     .store-card {
       display: block;
-      padding: 16px 18px 14px;
-      background: var(--color-paper);
-      border-radius: var(--radius-cards);
-      box-shadow: var(--shadow-subtle);
+      padding: 12px 4px;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      border-bottom: 1px solid var(--color-fog);
       color: inherit;
     }
+    .store-card:last-child { border-bottom: 0; }
     .store-card.barato {
-      border-left: 3px solid var(--color-spruce);
+      background: var(--color-linen-mist);
+      border-radius: var(--radius-cards);
+      border-bottom: 0;
+      padding: 12px 16px;
+      margin: 4px 0 8px;
     }
+    .store-card.barato .store-price { font-size: 32px; font-weight: 900; }
     .store-top {
       display: flex;
       justify-content: space-between;
@@ -466,11 +473,11 @@
       line-height: 1.35;
     }
     .store-price {
-      margin: 10px 0 4px;
+      margin: 4px 0;
       color: var(--color-forest-ink);
-      font-size: 40px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
       font-variant-numeric: tabular-nums;
       line-height: 1;
     }
@@ -663,24 +670,38 @@
       width: 100%;
       height: 48px;
     }
-    .product-top { display: flex; gap: 12px; align-items: flex-start; min-width: 0; }
-    .product-top > div { min-width: 0; flex: 1; }
+    .product-top { display: flex; gap: 16px; align-items: center; min-width: 0; margin: 0 0 8px; }
+    .product-top > div:not(.photo-frame) { min-width: 0; flex: 1; }
     .photo-frame {
-      width: 72px;
-      height: 72px;
-      flex: 0 0 72px;
+      width: 96px;
+      height: 96px;
+      flex: 0 0 96px;
       border-radius: var(--radius-cards);
       background: var(--color-fog);
-      box-shadow: var(--shadow-subtle);
       overflow: hidden;
     }
     .photo-frame img {
-      width: 72px;
-      height: 72px;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
+      object-position: center;
       background: var(--color-fog);
       display: block;
     }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+    .chip {
+      height: 36px;
+      padding: 0 14px;
+      border-radius: var(--radius-buttons);
+      border: 1px solid var(--color-forest-ink);
+      background: var(--color-paper);
+      color: var(--color-forest-ink);
+      font: 500 14px/1 var(--font-inter);
+      letter-spacing: -0.005em;
+      cursor: pointer;
+    }
+    .chip.on { background: var(--color-lime-voltage); border-color: var(--color-lime-voltage); }
+    .chip:focus-visible { outline: 2px solid var(--color-forest-ink); outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -749,10 +770,9 @@
       <div class="wrap">
         <h2 class="sec">Promos de banco, juntas.</h2>
         <p class="lead" id="promos-lead">Las mismas tarjetas, cortadas por día o por banco. No entran las ocultas, las vencidas ni las que publican dos fechas distintas.</p>
-        <div class="modes" role="group" aria-label="Cómo ver las promos">
-          <button type="button" class="btn outline on" id="promo-por-dia">Por día</button>
-          <button type="button" class="btn outline" id="promo-por-banco">Por banco</button>
-        </div>
+        <div class="chip-row" id="promo-dias" role="group" aria-label="Día"></div>
+        <div class="chip-row" id="promo-bancos" role="group" aria-label="Banco"></div>
+        <p class="lista-note" id="promo-cuenta"></p>
         <div id="promo-browser" class="promo-browser" aria-live="polite"></div>
         <ul id="promo-notas" class="promo-notas"></ul>
       </div>
@@ -1133,7 +1153,7 @@
     function marcoFoto(url, nombre) {
       const alt = esc(nombre || "");
       if (typeof url === "string" && url.indexOf("https://") === 0) {
-        return "<div class=\"photo-frame\"><img src=\"" + esc(url) + "\" alt=\"" + alt + "\"></div>";
+        return "<div class=\"photo-frame\"><img src=\"" + esc(url) + "\" alt=\"" + alt + "\" referrerpolicy=\"no-referrer\"></div>";
       }
       return "<div class=\"photo-frame\"></div>";
     }
@@ -1313,8 +1333,6 @@
       if (aplicada) {
         const banco = [aplicada.banco, aplicada.descuento].filter(Boolean).join(" ");
         bits.push(esc(banco ? banco + ", " + money(aplicada.total) : money(aplicada.total)));
-      } else if (promo && promo.banco) {
-        bits.push(esc(promo.banco));
       }
       const extra = bits.length ? "<p class=\"store-extra\">" + bits.join(" · ") + "</p>" : "";
       let legal = "";
@@ -1362,37 +1380,80 @@
       "</article>";
     }
     let promoData = null;
-    let promoVista = "dia";
+    let promoDia = "hoy";
+    let promoBanco = "";
+    function promosPlanas() {
+      const grupos = (promoData && promoData.por_dia) || [];
+      const out = [];
+      grupos.forEach((g) => {
+        (g.items || []).forEach((c) => {
+          out.push(Object.assign({}, c, { dia: g.dia || "", hoy: !!g.hoy }));
+        });
+      });
+      return out;
+    }
+    function chip(label, on, kind, value) {
+      return "<button type=\"button\" class=\"chip" + (on ? " on" : "") + "\" data-kind=\"" + kind + "\" data-value=\"" + esc(value) + "\">" + esc(label) + "</button>";
+    }
     function pintarPromos() {
       const box = document.getElementById("promo-browser");
       const notas = document.getElementById("promo-notas");
       const lead = document.getElementById("promos-lead");
+      const diasEl = document.getElementById("promo-dias");
+      const bancosEl = document.getElementById("promo-bancos");
+      const cuenta = document.getElementById("promo-cuenta");
       if (!box || !promoData) return;
-      if (lead) {
-        lead.textContent = "Hoy es " + (promoData.dia || "") + ". Las de hoy están abiertas. El resto de los días, plegado.";
+      const todas = promosPlanas();
+      const dias = [];
+      (promoData.por_dia || []).forEach((g) => {
+        if (g.dia && dias.indexOf(g.dia) < 0) dias.push(g.dia);
+      });
+      const bancos = [];
+      todas.forEach((c) => {
+        const b = c.banco || "";
+        if (b && bancos.indexOf(b) < 0) bancos.push(b);
+      });
+      bancos.sort((a, b) => a.localeCompare(b, "es"));
+      if (lead) lead.textContent = "Elegí el día y el banco. Se ve solo eso.";
+      if (diasEl) {
+        diasEl.innerHTML = chip("Hoy", promoDia === "hoy", "dia", "hoy") +
+          dias.map((d) => chip(d, promoDia === d, "dia", d)).join("") +
+          chip("Todos los días", promoDia === "", "dia", "");
       }
-      const grupos = (promoVista === "banco" ? (promoData.por_banco || []) : (promoData.por_dia || [])).slice().sort((a, b) => (b.hoy ? 1 : 0) - (a.hoy ? 1 : 0));
-      box.innerHTML = grupos.map((g) => {
-        const items = Array.isArray(g.items) ? g.items : [];
-        if (!items.length) return "";
-        const titulo = promoVista === "banco" ? (g.banco || "") : (g.dia || "");
-        const marca = g.hoy ? " <span class=\"hoy\">hoy</span>" : "";
-        const abierto = g.hoy ? " open" : "";
-        return "<details class=\"promo-group\"" + abierto + "><summary><h3>" + esc(titulo) + marca + "</h3></summary><div class=\"promo-grid\">" +
-          items.map(promoCard).join("") + "</div></details>";
-      }).join("") || "<p class=\"pres\">No hay tarjetas vigentes para mostrar.</p>";
+      if (bancosEl) {
+        bancosEl.innerHTML = chip("Todos los bancos", promoBanco === "", "banco", "") +
+          bancos.map((b) => chip(b, promoBanco === b, "banco", b)).join("");
+      }
+      const visibles = todas.filter((c) => {
+        const diaOk = promoDia === "" || (promoDia === "hoy" ? c.hoy : c.dia === promoDia);
+        const bancoOk = !promoBanco || c.banco === promoBanco;
+        return diaOk && bancoOk;
+      });
+      if (cuenta) {
+        cuenta.textContent = visibles.length
+          ? (visibles.length + (promoDia === "hoy" ? " de hoy" : ""))
+          : "No hay promos de ese banco para ese día.";
+      }
+      box.innerHTML = visibles.length
+        ? "<div class=\"promo-grid\">" + visibles.map(promoCard).join("") + "</div>"
+        : "";
       if (notas) notas.innerHTML = "";
     }
-    function vistaPromos(vista) {
-      promoVista = vista;
-      const dia = document.getElementById("promo-por-dia");
-      const banco = document.getElementById("promo-por-banco");
-      if (dia) dia.classList.toggle("on", vista === "dia");
-      if (banco) banco.classList.toggle("on", vista === "banco");
+    function elegirPromo(kind, value) {
+      if (kind === "dia") promoDia = value;
+      if (kind === "banco") promoBanco = value;
       pintarPromos();
     }
-    document.getElementById("promo-por-dia").addEventListener("click", () => vistaPromos("dia"));
-    document.getElementById("promo-por-banco").addEventListener("click", () => vistaPromos("banco"));
+    document.getElementById("promo-dias").addEventListener("click", (e) => {
+      const b = e.target.closest(".chip");
+      if (!b) return;
+      elegirPromo(b.getAttribute("data-kind"), b.getAttribute("data-value") || "");
+    });
+    document.getElementById("promo-bancos").addEventListener("click", (e) => {
+      const b = e.target.closest(".chip");
+      if (!b) return;
+      elegirPromo(b.getAttribute("data-kind"), b.getAttribute("data-value") || "");
+    });
     fetch("/api/promos", { headers: { "Accept": "application/json" } })
       .then((r) => r.ok ? r.json() : null)
       .then((j) => { promoData = j; pintarPromos(); })
