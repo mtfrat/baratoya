@@ -16,9 +16,17 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from baratoya.brand_logos import enriquecer_tarjeta, meta_publica as marcas_meta
+    from baratoya.brand_logos import (
+        enriquecer_tarjeta,
+        meta_publica as marcas_meta,
+        resolver_marcas,
+    )
 except ImportError:
-    from brand_logos import enriquecer_tarjeta, meta_publica as marcas_meta
+    from brand_logos import (
+        enriquecer_tarjeta,
+        meta_publica as marcas_meta,
+        resolver_marcas,
+    )
 
 ART = timezone(timedelta(hours=-3))
 DATA = Path(__file__).resolve().parent / "data"
@@ -1364,8 +1372,15 @@ def aplicar_oferta(
     hoy: date | None = None,
     *,
     ya_descuento: bool = False,
+    bancos_permitidos: list[str] | set[str] | None = None,
 ) -> dict[str, Any]:
     hoy = hoy or hoy_art()
+    permitidos: set[str] | None = None
+    if bancos_permitidos:
+        permitidos = {str(b).strip().casefold() for b in bancos_permitidos if str(b).strip()}
+        if not permitidos:
+            permitidos = None
+
     candidatos = []
     for rec in cargar():
         if rec["chain_id"] != tienda_id:
@@ -1373,38 +1388,36 @@ def aplicar_oferta(
         if rec.get("days") and hoy.weekday() not in rec["days"]:
             if not (rec.get("fechas_especificas") and hoy in rec["fechas_especificas"]):
                 continue
+        if permitidos is not None:
+            meta = resolver_marcas(rec.get("banco") or "")
+            bids = set(meta.get("brand_ids") or [])
+            gids = set(meta.get("group_ids") or [])
+            fold_banco = _fold(rec.get("banco") or "")
+            match = bool(bids.intersection(permitidos) or gids.intersection(permitidos) or any(p in fold_banco for p in permitidos))
+            if not match:
+                continue
         ok, motivo, total = puede_restar(rec, nombre, precio, hoy, ya_descuento=ya_descuento)
-        candidatos.append((ok, total, motivo, rec))
+        if ok and total < precio:
+            candidatos.append((ok, total, motivo, rec))
+
     aplicados = [c for c in candidatos if c[0]]
     promo = None
     total = precio
     promos = []
     if aplicados:
         ok, total, motivo, rec = min(aplicados, key=lambda c: c[1])
+        meta = resolver_marcas(rec.get("banco") or "")
+        label = meta.get("brand_label") or _etiqueta_corta(rec.get("banco") or "")
+        descuento_txt = _oferta_txt(rec)
         promo = {
             "aplicada": True,
-            "banco": rec["banco"],
-            "descuento": _oferta_txt(rec),
+            "banco": label,
+            "banco_crudo": rec.get("banco") or "",
+            "brand_ids": meta.get("brand_ids") or [],
+            "descuento": descuento_txt,
+            "linea_corta": f"{label} {descuento_txt}".strip(),
             "motivo": "",
             "total": total,
-            "canal": rec.get("canal") or "",
-            "tope": _tope_txt(rec),
-        }
-        promos.append(promo)
-    elif candidatos:
-        # La tarjeta de hoy que no se restó, antes que una que todavía no corre.
-        def _orden(c):
-            rec = c[3]
-            vigente = _vigente(rec, hoy)[0]
-            return (0 if vigente else 1, 0 if rec.get("percent") else 1, c[2])
-        candidatos.sort(key=_orden)
-        _ok, _total, motivo, rec = candidatos[0]
-        promo = {
-            "aplicada": False,
-            "banco": rec["banco"],
-            "descuento": _oferta_txt(rec),
-            "motivo": motivo,
-            "total": precio,
             "canal": rec.get("canal") or "",
             "tope": _tope_txt(rec),
         }

@@ -1298,6 +1298,11 @@ def agrupar_mismo_producto(
     q: str,
     productos: list[dict[str, Any]],
     leido: str = "",
+    *,
+    bancos_permitidos: list[str] | set[str] | None = None,
+    con_promo: bool = True,
+    supermercados_permitidos: list[str] | set[str] | None = None,
+    hoy: date | None = None,
 ) -> list[dict[str, Any]]:
     """Agrupa el mismo EAN, o si no hay uno compartido, marca + tipo + balde.
 
@@ -1435,7 +1440,26 @@ def agrupar_mismo_producto(
                 and not isinstance(badge, bool)
                 and float(badge) > 0
             )
-            promo = aplicar_oferta(tienda_id or "", nombre, precio, ya_descuento=ya_descuento)
+            if con_promo:
+                if bancos_permitidos is not None:
+                    promo = aplicar_oferta(
+                        tienda_id or "",
+                        nombre,
+                        precio,
+                        hoy=hoy,
+                        ya_descuento=ya_descuento,
+                        bancos_permitidos=bancos_permitidos,
+                    )
+                else:
+                    promo = aplicar_oferta(
+                        tienda_id or "",
+                        nombre,
+                        precio,
+                        hoy=hoy,
+                        ya_descuento=ya_descuento,
+                    )
+            else:
+                promo = {"total": precio, "promo": None, "promos": []}
             row = {
                 "tienda": tienda,
                 "tienda_id": tienda_id or "precios_claros",
@@ -1469,7 +1493,18 @@ def agrupar_mismo_producto(
         piso = min(o["precio"] for o in ofertas)
         for o in ofertas:
             o["barato"] = o["precio"] == piso
-        ofertas.sort(key=lambda o: (o["precio"], _TIENDA_ORDEN.get(o["tienda_id"], 50), o["tienda"]))
+        if supermercados_permitidos:
+            favs = {s.casefold().strip() for s in supermercados_permitidos if s.strip()}
+            ofertas.sort(
+                key=lambda o: (
+                    0 if o["tienda_id"].casefold() in favs else 1,
+                    o["precio"],
+                    _TIENDA_ORDEN.get(o["tienda_id"], 50),
+                    o["tienda"],
+                )
+            )
+        else:
+            ofertas.sort(key=lambda o: (o["precio"], _TIENDA_ORDEN.get(o["tienda_id"], 50), o["tienda"]))
         baratos = [o["tienda"] for o in ofertas if o["barato"]]
         elegido = next(o for o in ofertas if o["barato"])
         best = g["best"]

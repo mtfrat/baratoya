@@ -540,6 +540,7 @@ def _cuenta_publica(quota: dict[str, Any]) -> dict[str, Any]:
         "used": quota.get("used"),
         "remaining": quota.get("remaining"),
         "limit": limit,
+        "prefs": quota.get("prefs") or cuentas.DEFAULT_PREFS,
     }
 
 
@@ -619,10 +620,23 @@ async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONRes
     quota["user_id"] = user["id"]
     quota["email"] = user["email"]
     quota["token"] = token
+    try:
+        perfil = await cuentas.leer_cuenta(token, user["id"])
+        quota["prefs"] = perfil.get("prefs") or cuentas.DEFAULT_PREFS
+    except Exception:
+        quota["prefs"] = cuentas.DEFAULT_PREFS
     return quota
 
 
-def _presentar_super(q: str, data: Any, leido: str) -> Any:
+def _presentar_super(
+    q: str,
+    data: Any,
+    leido: str,
+    *,
+    bancos_permitidos: list[str] | set[str] | None = None,
+    con_promo: bool = True,
+    supermercados_permitidos: list[str] | set[str] | None = None,
+) -> Any:
     """Un resultado por producto exacto, con un precio por tienda."""
     if not isinstance(data, dict):
         data = {"productos": []}
@@ -631,7 +645,14 @@ def _presentar_super(q: str, data: Any, leido: str) -> Any:
     productos = data.get("productos")
     if not isinstance(productos, list):
         productos = []
-    grupos = agrupar_mismo_producto(q, productos, leido)
+    grupos = agrupar_mismo_producto(
+        q,
+        productos,
+        leido,
+        bancos_permitidos=bancos_permitidos,
+        con_promo=con_promo,
+        supermercados_permitidos=supermercados_permitidos,
+    )
     for g in grupos:
         if isinstance(g, dict):
             g["imagen"] = _imagen_https(g.get("imagen"))
@@ -758,6 +779,9 @@ async def buscar(
     lng: float = Query(CABA_LNG),
     offset: int = 0,
     limit: int = Query(20, ge=1, le=50),
+    bancos: str | None = None,
+    supermercados: str | None = None,
+    con_promo: bool | None = None,
 ):
     # TODO: if ENABLE_PAID_SCRAPERS: merge VTEX/MLA paid paths
     if ENABLE_MLA:
@@ -768,6 +792,21 @@ async def buscar(
     gate = await _exigir_busqueda(request, q)
     if isinstance(gate, JSONResponse):
         return gate
+    user_prefs = (gate.get("prefs") if isinstance(gate, dict) else None) or {}
+    bancos_filtro = [b.strip() for b in bancos.split(",") if b.strip()] if bancos is not None else user_prefs.get("banks")
+    supers_filtro = [s.strip() for s in supermercados.split(",") if s.strip()] if supermercados is not None else user_prefs.get("supermarkets")
+    promo_on = con_promo if con_promo is not None else user_prefs.get("show_promo_price", True)
+
+    def _presentar(raw_data: Any, leido_ts: str) -> Any:
+        return _presentar_super(
+            q,
+            raw_data,
+            leido_ts,
+            bancos_permitidos=bancos_filtro,
+            con_promo=promo_on,
+            supermercados_permitidos=supers_filtro,
+        )
+
     consultas = consultas_busqueda(q)
     cadenas_task = asyncio.create_task(buscar_super(q, consultas))
     promos_task = asyncio.create_task(buscar_promos())
@@ -826,6 +865,9 @@ async def buscar(
             "leido": leido,
             "leido_texto": leido_texto,
             "promos": promos,
+            "bancos": bancos_filtro or [],
+            "supermercados": supers_filtro or [],
+            "con_promo": promo_on,
         }
 
     if code != 200:
@@ -836,13 +878,13 @@ async def buscar(
                 "fuente": "mas_online",
                 "aviso": "Precios Claros no respondió. Solo precios leídos ahora del catálogo público de las cadenas que respondieron.",
                 "cadenas": cadenas.get("fuentes") or [],
-                "data": _presentar_super(q, {"productos": cadenas["productos"]}, leido),
+                "data": _presentar({"productos": cadenas["productos"]}, leido),
                 **_consulta(),
             }, gate)
         snap = SNAPSHOT_DIR / "last_ok.json"
         if snap.exists() and (time.time() - snap.stat().st_mtime) < 12 * 3600:
             body = _unwrap_snapshot(json.loads(snap.read_text()))
-            body = _presentar_super(q, body, "")
+            body = _presentar(body, "")
             consulta = _consulta()
             consulta["leido"] = ""
             consulta["leido_texto"] = ""
@@ -887,7 +929,7 @@ async def buscar(
         )
         data = dict(data)
         data["productos"] = productos
-    data = _presentar_super(q, _merge_cadenas(data, cadenas), leido)
+    data = _presentar(_merge_cadenas(data, cadenas), leido)
     return _con_cuenta({
         "http": code,
         "fuente": "precios_claros_live",
@@ -946,7 +988,40 @@ async def ver_cuenta(request: Request):
         "admin": bool(perfil.get("admin")),
         "cobro_activo": cuentas.cobro_on(),
         "plan_label": cuentas.plan_label() if cuentas.cobro_on() else "",
+        "prefs": perfil.get("prefs") or cuentas.DEFAULT_PREFS,
     }
+
+
+@app.get("/api/cuenta/preferencias")
+async def ver_preferencias(request: Request):
+    if not cuentas.cuentas_on():
+        return JSONResponse({"ok": False, "error": "Las cuentas no están configuradas."}, status_code=503)
+    token = cuentas.bearer(request.headers)
+    if not token:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "Sin sesión."}, status_code=401)
+    user = await cuentas.usuario(token)
+    if not user:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
+    perfil = await cuentas.leer_cuenta(token, user["id"])
+    return {"ok": True, "prefs": perfil.get("prefs") or cuentas.DEFAULT_PREFS}
+
+
+@app.post("/api/cuenta/preferencias")
+async def guardar_preferencias_endpoint(request: Request):
+    if not cuentas.cuentas_on():
+        return JSONResponse({"ok": False, "error": "Las cuentas no están configuradas."}, status_code=503)
+    token = cuentas.bearer(request.headers)
+    if not token:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "Sin sesión."}, status_code=401)
+    user = await cuentas.usuario(token)
+    if not user:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    res = await cuentas.guardar_preferencias(token, user["id"], body)
+    return res
 
 
 @app.get("/api/cuenta/busquedas")

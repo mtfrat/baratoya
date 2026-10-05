@@ -151,6 +151,36 @@ async def usuario(token: str) -> dict[str, str] | None:
     return {"id": uid, "email": email}
 
 
+DEFAULT_PREFS: dict[str, Any] = {
+    "show_promo_price": True,
+    "banks": [],
+    "supermarkets": [],
+}
+
+
+def normalizar_prefs(raw: Any) -> dict[str, Any]:
+    if not isinstance(raw, dict):
+        return dict(DEFAULT_PREFS)
+    show_promo = raw.get("show_promo_price")
+    if not isinstance(show_promo, bool):
+        show_promo = True
+    banks = raw.get("banks")
+    if not isinstance(banks, list):
+        banks = []
+    else:
+        banks = [str(b).strip().lower() for b in banks if str(b).strip() and len(str(b)) <= 40]
+    supermarkets = raw.get("supermarkets")
+    if not isinstance(supermarkets, list):
+        supermarkets = []
+    else:
+        supermarkets = [str(s).strip().lower() for s in supermarkets if str(s).strip() and len(str(s)) <= 40]
+    return {
+        "show_promo_price": show_promo,
+        "banks": banks,
+        "supermarkets": supermarkets,
+    }
+
+
 def _cuenta_vacia() -> dict[str, Any]:
     return {
         "plan": "free",
@@ -159,6 +189,7 @@ def _cuenta_vacia() -> dict[str, Any]:
         "limit": FREE_LIMIT,
         "role": "user",
         "admin": False,
+        "prefs": dict(DEFAULT_PREFS),
     }
 
 
@@ -168,9 +199,15 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.get(
             f"{supabase_url()}/rest/v1/profiles",
-            params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role"},
+            params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role,prefs"},
             headers=_user_headers(token),
         )
+        if r.status_code != 200:
+            r = await client.get(
+                f"{supabase_url()}/rest/v1/profiles",
+                params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role"},
+                headers=_user_headers(token),
+            )
     if r.status_code != 200:
         return _cuenta_vacia()
     try:
@@ -200,6 +237,37 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
         "paid_at": row.get("paid_at"),
         "role": role,
         "admin": role == "admin",
+        "prefs": normalizar_prefs(row.get("prefs")),
+    }
+
+
+async def guardar_preferencias(token: str, user_id: str, raw_prefs: Any) -> dict[str, Any]:
+    prefs = normalizar_prefs(raw_prefs)
+    if not cuentas_on() or not token or not UUID_RE.match(user_id):
+        return {"ok": False, "reason": "auth", "prefs": prefs}
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        r = await client.patch(
+            f"{supabase_url()}/rest/v1/profiles",
+            params={"id": f"eq.{user_id}"},
+            json={"prefs": prefs},
+            headers={**_user_headers(token), "Content-Type": "application/json", "Prefer": "return=minimal"},
+        )
+        if r.status_code in (200, 204):
+            return {"ok": True, "prefs": prefs, "synced": True}
+        if cupo_on():
+            r_serv = await client.patch(
+                f"{supabase_url()}/rest/v1/profiles",
+                params={"id": f"eq.{user_id}"},
+                json={"prefs": prefs},
+                headers=_service_headers(),
+            )
+            if r_serv.status_code in (200, 204):
+                return {"ok": True, "prefs": prefs, "synced": True}
+    return {
+        "ok": True,
+        "prefs": prefs,
+        "synced": False,
+        "note": "Guardado localmente. La columna prefs en Supabase aún no fue migrada.",
     }
 
 

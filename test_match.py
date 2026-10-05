@@ -778,6 +778,112 @@ class PreciosLogosTypoTest(unittest.TestCase):
         self.assertIn("#163300", tpl.casefold())
         self.assertIn("#9fe870", tpl.casefold())
 
+    def test_aplicar_oferta_con_banco_preferido_y_banco_inexistente(self) -> None:
+        from datetime import date
+        from promos_hoy import aplicar_oferta
+
+        # Martes 06/10/2026: Naranja X 30% en Dia
+        d_martes = date(2026, 10, 6)
+        res_naranja = aplicar_oferta("dia", "Yerba Mate 1kg", 10000.0, d_martes, bancos_permitidos=["naranja_x"])
+        self.assertEqual(res_naranja["total"], 7000.0)
+        self.assertIsNotNone(res_naranja["promo"])
+        self.assertTrue(res_naranja["promo"]["aplicada"])
+        self.assertIn("Naranja X", res_naranja["promo"]["linea_corta"])
+        self.assertIn("30%", res_naranja["promo"]["linea_corta"])
+
+        # Si el usuario solo tiene un banco sin promo ese día, no se descuenta
+        res_fantasma = aplicar_oferta("dia", "Yerba Mate 1kg", 10000.0, d_martes, bancos_permitidos=["banco_inexistente"])
+        self.assertEqual(res_fantasma["total"], 10000.0)
+        self.assertIsNone(res_fantasma["promo"])
+
+    def test_agrupar_con_promo_on_off_y_supermercados(self) -> None:
+        from datetime import date
+
+        filas = [
+            _fila("Yerba Mate 1kg", "Playadito", 10000.0, "dia"),
+            _fila("Yerba Mate 1kg", "Playadito", 9500.0, "disco"),
+        ]
+        d_martes = date(2026, 10, 6)
+
+        # con_promo=True: calcula descuento
+        g_on = sc.agrupar_mismo_producto("yerba mate", filas, hoy=d_martes, con_promo=True, bancos_permitidos=["naranja_x"])
+        ofertas_on = g_on[0]["ofertas"]
+        promos_on = [o.get("promo") for o in ofertas_on if o.get("promo")]
+        self.assertTrue(len(promos_on) > 0)
+
+        # con_promo=False: precio puro de góndola, sin promo
+        g_off = sc.agrupar_mismo_producto("yerba mate", filas, hoy=d_martes, con_promo=False)
+        ofertas_off = g_off[0]["ofertas"]
+        for o in ofertas_off:
+            self.assertIsNone(o.get("promo"))
+
+        # supermercados_permitidos: prioriza Dia primero en ofertas
+        g_fav = sc.agrupar_mismo_producto("yerba mate", filas, hoy=d_martes, supermercados_permitidos=["dia"])
+        self.assertEqual(g_fav[0]["ofertas"][0]["tienda_id"], "dia")
+
+    def test_links_tienda_target_blank_y_sin_ruido_legal(self) -> None:
+        from pathlib import Path
+
+        tpl = (Path(__file__).parent / "templates" / "index.html").read_text(encoding="utf-8")
+        # Todos los links externos de tienda deben abrir en nueva pestaña
+        tpl_clean = tpl.replace('\\"', '"')
+        self.assertIn('target="_blank" rel="noopener noreferrer"', tpl_clean)
+        # No debe haber acordeón ni texto crudo de letra de promo en las cards
+        self.assertNotIn("store-legal", tpl)
+        self.assertNotIn("Letra de la promo", tpl)
+        # Debe tener los estilos de góndola tachado y promo pill
+        self.assertIn(".store-gondola", tpl)
+        self.assertIn(".store-promo-line", tpl)
+        self.assertIn("prefs-dialog", tpl)
+
+    def test_preferencias_usuario_normalizar_y_endpoints(self) -> None:
+        from unittest.mock import AsyncMock, patch
+        import cuentas
+        from fastapi.testclient import TestClient
+        from app import app
+
+        # Normalización de prefs
+        norm = cuentas.normalizar_prefs({"show_promo_price": False, "banks": ["Galicia", " "], "supermarkets": ["DIA", "carrefour"]})
+        self.assertFalse(norm["show_promo_price"])
+        self.assertEqual(norm["banks"], ["galicia"])
+        self.assertEqual(norm["supermarkets"], ["dia", "carrefour"])
+
+        # Default prefs
+        self.assertTrue(cuentas.DEFAULT_PREFS["show_promo_price"])
+        self.assertEqual(cuentas.DEFAULT_PREFS["banks"], [])
+        self.assertEqual(cuentas.DEFAULT_PREFS["supermarkets"], [])
+
+        # Endpoints
+        client = TestClient(app)
+        with patch("cuentas.cuentas_on", return_value=True):
+            # Sin token -> 401
+            r_unauth = client.get("/api/cuenta/preferencias")
+            self.assertEqual(r_unauth.status_code, 401)
+
+            # Con sesión válida -> GET y POST funcionan
+            with patch("cuentas.usuario", AsyncMock(return_value={"id": "u-123", "email": "test@baratoya.com"})):
+                with patch("cuentas.leer_cuenta", AsyncMock(return_value={"plan": "free", "used": 0, "remaining": 5, "limit": 5, "prefs": norm})):
+                    with patch("cuentas.guardar_preferencias", AsyncMock(return_value={"ok": True, "prefs": norm})):
+                        headers = {"Authorization": "Bearer mock-token"}
+                        r_get = client.get("/api/cuenta/preferencias", headers=headers)
+                        self.assertEqual(r_get.status_code, 200)
+                        self.assertEqual(r_get.json()["prefs"]["show_promo_price"], False)
+
+                        r_post = client.post("/api/cuenta/preferencias", json=norm, headers=headers)
+                        self.assertEqual(r_post.status_code, 200)
+                        self.assertTrue(r_post.json()["ok"])
+
+    def test_migracion_sql_perfil_prefs_existente_y_valida(self) -> None:
+        from pathlib import Path
+
+        migration_path = Path(__file__).parent / "supabase" / "migrations" / "baratoya_perfil_prefs.sql"
+        self.assertTrue(migration_path.exists(), "La migración SQL de preferencias de perfil debe existir")
+        sql = migration_path.read_text(encoding="utf-8")
+        self.assertIn("alter table public.profiles", sql.lower())
+        self.assertIn("add column if not exists prefs jsonb", sql.lower())
+        self.assertIn("grant update (prefs", sql.lower())
+
 
 if __name__ == "__main__":
     unittest.main()
+
