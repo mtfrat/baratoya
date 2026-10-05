@@ -10,6 +10,7 @@ import asyncio
 import json
 import re
 import unicodedata
+from collections import Counter
 from difflib import SequenceMatcher
 from typing import Any
 from urllib.parse import quote
@@ -811,26 +812,33 @@ def _extras(name_tokens: list[str], q_tokens: list[str]) -> int:
 
 
 def _consulta_size(q: str) -> tuple[str, tuple[str, int | float] | int] | None:
-    sizes = _sizes_in(q)
-    if sizes:
-        return ("exact", sizes[-1])
+    size, pack, ambiguo = _medida_texto(q)
+    if ambiguo:
+        return None
+    if size:
+        return ("exact", _balde(size))
     bare = [int(t) for t in _tokens(q) if re.fullmatch(r"\d+", t)]
+    if pack and int(pack[0]) in bare:
+        bare = [n for n in bare if n != int(pack[0])]
     if not bare:
         return None
     return ("either", bare[-1])
 
 
 def _size_ok(size: tuple[str, int | float] | None, spec) -> bool:
+    """Mismo balde: 2% o la misma etiqueta (1 kg, 1kg, 1000 g). 500 g no es 1 kg."""
     if spec is None:
         return True
     if size is None:
         return False
     kind, mode = spec
     if kind == "exact":
-        return size == mode
-    amount = mode
+        return _mismo_balde(size, mode)
+    amount = float(mode)
     skind, samount = size
-    return samount == amount and skind in {"g", "ml"}
+    if skind not in {"g", "ml"} or amount <= 0 or float(samount) <= 0:
+        return False
+    return abs(float(samount) - amount) / max(float(samount), amount) <= 0.02
 
 
 def _precio_item(p: dict[str, Any]) -> float | None:
@@ -853,15 +861,216 @@ def _ean_of(p: dict[str, Any]) -> str:
     return digits if len(digits) >= 8 else ""
 
 
-def _item_size(p: dict[str, Any]) -> tuple[str, int | float] | None:
-    blob = " ".join(
-        str(p.get(k) or "")
-        for k in ("nombre", "presentacion")
-    )
-    sizes = _sizes_in(blob)
-    if not sizes:
+_TIPOS_PRODUCTO = frozenset({
+    "yerba", "leche", "aceite", "arroz", "azucar", "harina", "fideos",
+    "cafe", "te", "agua", "gaseosa", "cerveza", "vino", "queso",
+    "manteca", "yogurt", "polenta",
+})
+_MARCA_INGREDIENTE = frozenset({"con", "sabor", "saborizada"})
+_UNIT_SRC = r"kilos?|kg|gramos?|grs?|mls?|cc|litros?|lts?|ml|g|l"
+_PACK_X_SIZE_RE = re.compile(
+    rf"(?<!\d)(\d+)\s*x\s*(\d+(?:\.\d+)?)\s*({_UNIT_SRC})\b",
+    re.IGNORECASE,
+)
+_PACK_WORD_RE = re.compile(r"\bpack\s*x\s*(\d+)\b", re.IGNORECASE)
+_PACK_UN_RE = re.compile(
+    r"(?<!\d)(\d+)\s*(?:unidades|unidad|un|u)\b",
+    re.IGNORECASE,
+)
+_PACK_X_BARE_RE = re.compile(r"(?<!\d)x\s*(\d+)\b", re.IGNORECASE)
+_PUM_NO_DISPONIBLE = "precio por kg/L no disponible"
+
+
+def _marca_norm(p: dict[str, Any]) -> str:
+    """Marca en mayusculas, sin acentos. Vacia no se inventa con la primera palabra."""
+    raw = p.get("marca")
+    if raw is None or not str(raw).strip():
+        raw = p.get("brand") or ""
+    s = unicodedata.normalize("NFKD", str(raw))
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return " ".join(s.upper().split())
+
+
+def _tipo_en(text: str) -> str:
+    """Sustantivo de cabeza. con/sabor/saborizada en los dos tokens previos lo vuelven ingrediente."""
+    tokens = [t.strip(".") for t in _preparar(text).split() if t.strip(".")]
+    for i, token in enumerate(tokens):
+        if token not in _TIPOS_PRODUCTO:
+            continue
+        prev = tokens[max(0, i - 2):i]
+        if any(p in _MARCA_INGREDIENTE for p in prev):
+            continue
+        return token
+    return ""
+
+
+def _tipo_de(p: dict[str, Any]) -> str:
+    nombre = str(p.get("nombre") or p.get("descripcion") or "")
+    pres = str(p.get("presentacion") or "")
+    return _tipo_en(f"{nombre} {pres}")
+
+
+def _balde(size: tuple[str, int | float] | None) -> tuple[str, int | float] | None:
+    if not size:
         return None
-    return sizes[-1]
+    kind, amount = size
+    if isinstance(amount, float) and abs(amount - round(amount)) < 1e-6:
+        amount = int(round(amount))
+    return kind, amount
+
+
+def _etiqueta_tamano(size: tuple[str, int | float] | None) -> str:
+    size = _balde(size)
+    if not size:
+        return ""
+    return _size_token(size)
+
+
+def _mismo_balde(
+    a: tuple[str, int | float] | None,
+    b: tuple[str, int | float] | None,
+) -> bool:
+    """Mismo balde si la etiqueta normalizada coincide o la diferencia es de hasta 2%."""
+    if a is None or b is None:
+        return a is None and b is None
+    if _etiqueta_tamano(a) and _etiqueta_tamano(a) == _etiqueta_tamano(b):
+        return True
+    if a[0] != b[0]:
+        return False
+    fa, fb = float(a[1]), float(b[1])
+    if fa <= 0 or fb <= 0:
+        return False
+    return abs(fa - fb) / max(fa, fb) <= 0.02
+
+
+def _recortar(text: str, start: int, end: int) -> str:
+    return " ".join((text[:start] + " " + text[end:]).split())
+
+
+def _sacar_pack(text: str) -> tuple[tuple[int, tuple[str, int | float] | None] | None, str]:
+    """Multipack: 6 x 1 L, pack x3, 6 un, x 3. La unidad suelta no es pack."""
+    raw = _preparar(text)
+    m = _PACK_X_SIZE_RE.search(raw)
+    if m and int(m.group(1)) >= 2:
+        unit = _unit_base(m.group(2), m.group(3))
+        if unit:
+            return (int(m.group(1)), _balde(unit)), _recortar(raw, m.start(), m.end())
+    m = _PACK_WORD_RE.search(raw)
+    if m and int(m.group(1)) >= 2:
+        return (int(m.group(1)), None), _recortar(raw, m.start(), m.end())
+    m = _PACK_UN_RE.search(raw)
+    if m and int(m.group(1)) >= 2:
+        return (int(m.group(1)), None), _recortar(raw, m.start(), m.end())
+    m = _PACK_X_BARE_RE.search(raw)
+    if m and int(m.group(1)) >= 2 and not re.search(r"\d\s*$", raw[:m.start()]):
+        return (int(m.group(1)), None), _recortar(raw, m.start(), m.end())
+    return None, raw
+
+
+def _total_pack(pack: tuple[int, tuple[str, int | float] | None]) -> tuple[str, int | float] | None:
+    if not pack or pack[1] is None:
+        return None
+    kind, amount = pack[1]
+    total = float(amount) * int(pack[0])
+    if abs(total - round(total)) < 1e-6:
+        total = int(round(total))
+    return kind, total
+
+
+def _medida_texto(text: str) -> tuple[
+    tuple[str, int | float] | None,
+    tuple[int, tuple[str, int | float] | None] | None,
+    bool,
+]:
+    """Size suelto, pack y si hubo medidas que no se pueden decidir."""
+    if not str(text or "").strip():
+        return None, None, False
+    pack, rest = _sacar_pack(text)
+    sizes = [_balde(s) for s in _sizes_in(rest)]
+    sizes = [s for s in sizes if s]
+    if pack and pack[1] is not None:
+        if not sizes:
+            return pack[1], pack, False
+        if all(_mismo_balde(s, pack[1]) or _mismo_balde(s, _total_pack(pack)) for s in sizes):
+            return pack[1], pack, False
+        return None, (pack[0], None), True
+    if not sizes:
+        return None, pack, False
+    if all(_mismo_balde(s, sizes[0]) for s in sizes[1:]):
+        return sizes[0], pack, False
+    return None, pack, True
+
+
+def _elegir_pack(primero, segundo):
+    if primero and primero[1] is not None:
+        return primero
+    if segundo and segundo[1] is not None:
+        return segundo
+    return primero or segundo
+
+
+def _medida_de(
+    p: dict[str, Any],
+) -> tuple[tuple[str, int | float] | None, tuple[int, tuple[str, int | float] | None] | None]:
+    """Presentacion manda. Si hay varias medidas y no se puede decidir, contenido desconocido."""
+    nombre = str(p.get("nombre") or p.get("descripcion") or "")
+    pres = str(p.get("presentacion") or "")
+    sp, pp, ap = _medida_texto(pres) if pres.strip() else (None, None, False)
+    sn, pn, an = _medida_texto(nombre) if nombre.strip() else (None, None, False)
+    pack = _elegir_pack(pp, pn)
+    if pres.strip() and (sp is not None or ap):
+        size = None if ap else sp
+    elif an:
+        size = None
+    else:
+        size = sn
+    if pack and pack[1] is not None:
+        if size is not None and not (
+            _mismo_balde(size, pack[1]) or _mismo_balde(size, _total_pack(pack))
+        ):
+            return None, (int(pack[0]), None)
+        return _balde(pack[1]), (int(pack[0]), _balde(pack[1]))
+    return _balde(size), pack
+
+
+def _item_size(p: dict[str, Any]) -> tuple[str, int | float] | None:
+    return _medida_de(p)[0]
+
+
+def _pack_id(pack: tuple[int, tuple[str, int | float] | None] | None) -> tuple:
+    if not pack:
+        return ("unit",)
+    return ("pack", int(pack[0]))
+
+
+def _pum_fila(
+    precio: float,
+    size: tuple[str, int | float] | None,
+    pack: tuple[int, tuple[str, int | float] | None] | None,
+) -> tuple[float | None, str, str]:
+    """ARS/kg o ARS/L solo con contenido neto conocido. El pack sin gramos o ml no se inventa."""
+    if pack and pack[1] is None:
+        return None, "", _PUM_NO_DISPONIBLE
+    if pack and pack[1] is not None:
+        pum, unidad = _pum(precio, _total_pack(pack))
+        if pum is None:
+            return None, "", _PUM_NO_DISPONIBLE
+        return pum, unidad, ""
+    pum, unidad = _pum(precio, size)
+    return pum, unidad, ""
+
+
+def _tamano_fila(
+    size: tuple[str, int | float] | None,
+    pack: tuple[int, tuple[str, int | float] | None] | None,
+) -> str:
+    if pack and pack[1] is not None:
+        return f"{int(pack[0])} x {tamano_texto(pack[1])}"
+    base = tamano_texto(size)
+    if pack:
+        extra = f"pack x{int(pack[0])}"
+        return f"{extra}, {base}" if base else extra
+    return base
 
 
 def _hay(p: dict[str, Any]) -> list[str]:
@@ -897,13 +1106,85 @@ def _tienda(p: dict[str, Any]) -> tuple[str, str]:
     return "Precios Claros", "precios_claros"
 
 
-def _clave(p: dict[str, Any], size: tuple[str, int | float] | None) -> tuple:
-    """Mismo código de barras si los dos lo traen. Sin código, no se finge el mismo producto."""
-    ean = _ean_of(p)
-    if ean:
-        return ("ean", ean)
-    tienda, tienda_id = _tienda(p)
-    return ("sin_ean", tienda_id or tienda, str(p.get("url") or ""), str(p.get("nombre") or ""))
+def _clave(
+    p: dict[str, Any],
+    size: tuple[str, int | float] | None,
+    pack: tuple[int, tuple[str, int | float] | None] | None = None,
+) -> tuple:
+    """Sin EAN compartido: marca normalizada + tipo + balde + pack.
+
+    1 kg y 1000 g caen en el mismo balde. 500 g no. Un pack no es la unidad.
+    El mismo EAN junta aunque el texto difiera; dos EAN distintos no usan esta clave para unirse.
+    """
+    return (_marca_norm(p), _tipo_de(p), _balde(size), _pack_id(pack))
+
+
+def _claves_compatibles(a: tuple, b: tuple) -> bool:
+    if a[0] != b[0] or a[1] != b[1] or a[3] != b[3]:
+        return False
+    return _mismo_balde(a[2], b[2])
+
+
+
+def _componentes_producto(filas: list[dict[str, Any]]) -> list[list[dict[str, Any]]]:
+    """Mismo EAN se junta. Sin EAN compartido, marca + tipo + balde. Dos EAN no se pegan."""
+    n = len(filas)
+    parent = list(range(n))
+
+    def find(i: int) -> int:
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    def union(i: int, j: int) -> None:
+        ri, rj = find(i), find(j)
+        if ri != rj:
+            parent[rj] = ri
+
+    vistos: dict[str, int] = {}
+    for i, fila in enumerate(filas):
+        ean = fila["ean"]
+        if not ean:
+            continue
+        if ean in vistos:
+            union(i, vistos[ean])
+        else:
+            vistos[ean] = i
+
+    sin = [i for i, fila in enumerate(filas) if not fila["ean"]]
+    for a in range(len(sin)):
+        for b in range(a + 1, len(sin)):
+            i, j = sin[a], sin[b]
+            if _claves_compatibles(filas[i]["clave"], filas[j]["clave"]):
+                union(i, j)
+
+    comps: dict[int, list[int]] = {}
+    for i in range(n):
+        comps.setdefault(find(i), []).append(i)
+    ean_roots: list[tuple[int, list[int]]] = []
+    sin_roots: list[tuple[int, list[int]]] = []
+    for root, members in comps.items():
+        if any(filas[i]["ean"] for i in members):
+            ean_roots.append((root, members))
+        else:
+            sin_roots.append((root, members))
+
+    for _root, members in sin_roots:
+        hits: list[int] = []
+        for eroot, emembers in ean_roots:
+            claves = [filas[i]["clave"] for i in emembers]
+            ref = Counter(claves).most_common(1)[0][0]
+            if all(_claves_compatibles(filas[i]["clave"], ref) for i in members):
+                hits.append(eroot)
+        if len(hits) == 1:
+            for i in members:
+                union(i, hits[0])
+
+    final: dict[int, list[dict[str, Any]]] = {}
+    for i, fila in enumerate(filas):
+        final.setdefault(find(i), []).append(fila)
+    return list(final.values())
 
 
 def _product_key(tienda_id: str, url: str, nombre: str, ean: str) -> str:
@@ -919,47 +1200,65 @@ def agrupar_mismo_producto(
     productos: list[dict[str, Any]],
     leido: str = "",
 ) -> list[dict[str, Any]]:
-    """Agrupa el mismo EAN (o, si no hay, la misma marca + variante + tamaño).
+    """Agrupa el mismo EAN, o si no hay uno compartido, marca + tipo + balde.
 
-    500 g no se junta con 1 kg. El precio por kg o por L sale del precio leído y del tamaño.
+    Dos EAN distintos no se juntan. 500 g no se junta con 1 kg. El pack no se junta
+    con la unidad. El numero grande es el precio de gondola, nunca promo.total.
     """
     q_tokens = _tokens(q)
+    q_tipo = _tipo_en(q)
     spec = _consulta_size(q)
-    groups: dict[tuple, list[dict[str, Any]]] = {}
+    filas: list[dict[str, Any]] = []
     for p in productos:
         if not isinstance(p, dict):
             continue
         precio = _precio_item(p)
         if precio is None:
             continue
-        size = _item_size(p)
+        size, pack = _medida_de(p)
         if not _size_ok(size, spec):
+            continue
+        if q_tipo and _tipo_de(p) != q_tipo:
             continue
         if not _covers(q_tokens, _hay(p), fuzzy=True):
             continue
         nombre = str(p.get("nombre") or p.get("descripcion") or "").strip()
         if not nombre:
             continue
-        groups.setdefault(_clave(p, size), []).append(p)
+        filas.append(
+            {
+                "p": p,
+                "size": size,
+                "pack": pack,
+                "clave": _clave(p, size, pack),
+                "ean": _ean_of(p),
+            }
+        )
 
     built: list[dict[str, Any]] = []
-    for clave, members in groups.items():
+    for grupo in _componentes_producto(filas):
+        members = [f["p"] for f in grupo]
         best = max(members, key=lambda m: _rank(str(m.get("nombre") or ""), q_tokens))
         best_rank = _rank(str(best.get("nombre") or ""), q_tokens)
         if q_tokens and not any(_covers(q_tokens, _hay(m), fuzzy=True) for m in members):
             continue
-        sizes = [_item_size(m) for m in members]
-        sizes = [s for s in sizes if s]
-        size = None
-        if sizes:
-            size = max(set(sizes), key=sizes.count)
+        sizes = [f["size"] for f in grupo if f["size"]]
+        size = _item_size(best) or (sizes[0] if sizes else None)
+        eans = [f["ean"] for f in grupo if f["ean"]]
+        ean = eans[0] if eans and all(e == eans[0] for e in eans) else ""
+        packs = [f["pack"] for f in grupo if f["pack"]]
+        pack = next((f["pack"] for f in grupo if f["p"] is best and f["pack"]), None)
+        if pack is None and packs:
+            pack = packs[0]
         built.append(
             {
-                "clave": clave,
+                "clave": _clave(best, size, pack),
                 "members": members,
                 "best": best,
                 "rank": best_rank,
                 "size": size,
+                "pack": pack,
+                "ean": ean,
                 "min_precio": min(_precio_item(m) or 0 for m in members),
             }
         )
@@ -1004,14 +1303,16 @@ def agrupar_mismo_producto(
             precio = _precio_item(m)
             if precio is None:
                 continue
-            offer_size = _item_size(m) or g["size"]
-            if g["size"] and offer_size and offer_size != g["size"]:
-                pum, pum_unidad = None, ""
+            offer_size, offer_pack = _medida_de(m)
+            if offer_pack and offer_pack[1] is None:
+                pum, pum_unidad, pum_nota = None, "", _PUM_NO_DISPONIBLE
+            elif g["size"] and offer_size and not _mismo_balde(offer_size, g["size"]):
+                pum, pum_unidad, pum_nota = None, "", ""
             else:
-                pum, pum_unidad = _pum(precio, g["size"] or offer_size)
+                pum, pum_unidad, pum_nota = _pum_fila(precio, g["size"] or offer_size, offer_pack)
             nombre = str(m.get("nombre") or "")
             url = str(m.get("url") or "")
-            ean = _ean_of(m) or (g["clave"][1] if g["clave"][0] == "ean" else "")
+            ean = _ean_of(m) or g.get("ean") or ""
             lista = m.get("precio_lista")
             badge = m.get("descuento_tienda")
             ya_descuento = (
@@ -1037,6 +1338,7 @@ def agrupar_mismo_producto(
                 "promos": promo["promos"],
                 "pum": pum,
                 "pum_unidad": pum_unidad,
+                "pum_nota": pum_nota,
                 "url": url,
                 "ean": ean,
                 "product_key": _product_key(tienda_id or "precios_claros", url, nombre, ean),
@@ -1071,8 +1373,8 @@ def agrupar_mismo_producto(
                 "nombre": g["nombre"],
                 "imagen": imagen,
                 "marca": best.get("marca") or elegido.get("marca") or "",
-                "ean": g["clave"][1] if g["clave"][0] == "ean" else "",
-                "tamano": tamano_texto(g["size"]),
+                "ean": g.get("ean") or "",
+                "tamano": _tamano_fila(g["size"], g.get("pack")),
                 "ofertas": ofertas,
                 "mas_barato": baratos,
                 "tienda": elegido["tienda"],
@@ -1081,6 +1383,7 @@ def agrupar_mismo_producto(
                 "url": elegido["url"],
                 "pum": elegido.get("pum"),
                 "pum_unidad": elegido.get("pum_unidad") or "",
+                "pum_nota": elegido.get("pum_nota") or "",
                 "leido": leido,
             }
         )

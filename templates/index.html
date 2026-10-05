@@ -1419,6 +1419,8 @@
       }
       if (typeof o.pum === "number" && o.pum > 0 && o.pum_unidad) {
         bits.push(esc(money(o.pum)) + "/" + esc(o.pum_unidad));
+      } else if (o.pum_nota) {
+        bits.push(esc(o.pum_nota));
       }
       if (aplicada) {
         const banco = [aplicada.banco, aplicada.descuento].filter(Boolean).join(" ");
