@@ -5,8 +5,7 @@
       "source": "/:path*",
       "has": [{ "type": "host", "value": "baratoya.vercel.app" }],
       "destination": "https://baratoya.app/:path*",
-      "permanent": true,
-      "statusCode": 308
+      "permanent": true
     }
   ]
 }
