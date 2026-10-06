@@ -939,6 +939,320 @@
     .store-card.barato .store-promo-line {
       background: var(--color-lime-voltage);
     }
+    .store-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .store-action-sep {
+      color: var(--color-pebble);
+      font-size: 13px;
+      user-select: none;
+    }
+    .store-promo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0;
+      background: none;
+      border: 0;
+      color: var(--color-forest-ink);
+      font: 600 13px/1.4 var(--font-inter);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+    }
+    .store-promo-btn:hover {
+      color: var(--color-obsidian);
+      text-decoration-thickness: 2px;
+    }
+    .store-promo-btn svg {
+      color: var(--color-spruce);
+      flex-shrink: 0;
+    }
+
+    /* Modal de Promociones del Súper */
+    dialog.super-promos-dialog {
+      width: min(100% - 24px, 36rem);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      border: 0;
+      border-radius: var(--radius-largecards);
+      background: var(--color-paper);
+      color: var(--color-charcoal);
+      box-shadow: 0 16px 48px rgba(14, 15, 12, 0.24);
+    }
+    dialog.super-promos-dialog::backdrop {
+      background: rgba(14, 15, 12, 0.55);
+      backdrop-filter: blur(2px);
+    }
+    .super-promos-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--color-fog);
+    }
+    .super-promos-header-main {
+      min-width: 0;
+      flex: 1;
+    }
+    .super-promos-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .super-promos-chain {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: var(--radius-buttons);
+      background: var(--color-forest-ink);
+      color: var(--color-paper);
+      font: 700 12px/1 var(--font-inter);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .super-promos-title {
+      margin: 4px 0 6px;
+      color: var(--color-forest-ink);
+      font-family: var(--font-inter);
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.015em;
+    }
+    .super-promos-gondola-line {
+      margin: 0;
+      color: var(--color-slate);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .super-promos-gondola-line strong {
+      color: var(--color-forest-ink);
+      font-variant-numeric: tabular-nums;
+    }
+    .super-promos-close {
+      padding: 4px 8px;
+      font-size: 20px;
+      color: var(--color-slate);
+      background: none;
+      border: 0;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .super-promos-close:hover {
+      color: var(--color-forest-ink);
+    }
+    .super-promos-cta-bar {
+      margin: 14px 0;
+    }
+    .super-promos-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      height: 44px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: var(--radius-buttons);
+    }
+    .super-promos-day-selector {
+      margin: 14px 0 16px;
+    }
+    .super-promos-section-label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--color-forest-ink);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .super-promos-days {
+      margin-bottom: 0;
+    }
+    .super-promos-section {
+      margin-top: 18px;
+    }
+    .super-promos-section-title {
+      margin: 0 0 10px;
+      color: var(--color-forest-ink);
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    details.super-promos-others summary {
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+    details.super-promos-others summary::-webkit-details-marker {
+      display: none;
+    }
+    details.super-promos-others summary::after {
+      content: " ▸";
+      font-size: 12px;
+      color: var(--color-slate);
+      margin-left: 6px;
+    }
+    details.super-promos-others[open] summary::after {
+      content: " ▾";
+    }
+    .super-promos-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .super-promo-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      background: var(--color-linen-mist);
+      border-radius: var(--radius-cards);
+      border: 1px solid transparent;
+      transition: border-color 0.15s ease;
+    }
+    .super-promo-row.con-descuento {
+      background: #f4f7f2;
+      border-color: #dce7d6;
+    }
+    .super-promo-row.es-tu-banco {
+      box-shadow: 0 0 0 1.5px var(--color-spruce);
+    }
+    .super-promo-left {
+      min-width: 0;
+      flex: 1;
+    }
+    .super-promo-bank-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .super-promo-bank-title {
+      margin: 0;
+      color: var(--color-forest-ink);
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .super-promo-pills {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .super-promo-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: var(--radius-buttons);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+    .super-promo-tag.tag-discount {
+      background: var(--color-lime-voltage);
+      color: var(--color-forest-ink);
+    }
+    .super-promo-tag.tag-cuotas {
+      background: #e2e8f0;
+      color: var(--color-forest-ink);
+    }
+    .super-promo-tag.tag-neutral {
+      background: var(--color-fog);
+      color: var(--color-slate);
+    }
+    .super-promo-tag.tag-canal {
+      background: transparent;
+      border: 1px solid var(--color-pebble);
+      color: var(--color-slate);
+      font-weight: 600;
+    }
+    .super-promo-legal {
+      margin: 5px 0 0;
+      color: var(--color-slate);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .super-promo-motivo {
+      margin: 4px 0 0;
+      color: #991b1b;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .super-promo-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .super-promo-orig-price {
+      font-size: 12px;
+      color: var(--color-pebble);
+      text-decoration: line-through;
+      margin-bottom: 1px;
+    }
+    .super-promo-final-price {
+      margin: 0;
+      color: var(--color-forest-ink);
+      font-family: var(--font-ui);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+    .super-promo-final-price.destacado {
+      color: var(--color-forest-ink);
+      font-size: 22px;
+    }
+    .super-promo-save-pill {
+      margin-top: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-spruce);
+    }
+    .super-promo-no-save-pill {
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--color-slate);
+      font-weight: 600;
+    }
+    .super-promos-empty {
+      padding: 24px 16px;
+      text-align: center;
+      background: var(--color-linen-mist);
+      border-radius: var(--radius-cards);
+      margin-top: 16px;
+    }
+    .super-promos-empty-title {
+      margin: 0 0 6px;
+      color: var(--color-forest-ink);
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .super-promos-empty-text {
+      margin: 0;
+      color: var(--color-slate);
+      font-size: 13px;
+      line-height: 1.45;
+    }
     .sr-only {
       position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
       overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
@@ -1176,6 +1490,32 @@
   </dialog>
   {% endif %}
 
+  <dialog class="entrar super-promos-dialog" id="super-promos-dialog" aria-labelledby="super-promos-title">
+    <div class="super-promos-header">
+      <div class="super-promos-header-main">
+        <div class="super-promos-badge-row">
+          <span class="super-promos-chain" id="super-promos-cadena">Supermercado</span>
+        </div>
+        <h3 class="super-promos-title" id="super-promos-title">Producto</h3>
+        <p class="super-promos-gondola-line" id="super-promos-gondola-line">Precio góndola: <strong>$0</strong></p>
+      </div>
+      <button type="button" class="btn text super-promos-close" id="super-promos-close" aria-label="Cerrar">✕</button>
+    </div>
+
+    <div class="super-promos-cta-bar" id="super-promos-cta-bar">
+      <a href="#" target="_blank" rel="noopener noreferrer" class="btn lime super-promos-cta-btn" id="super-promos-cta-btn">
+        Ir a la tienda <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+
+    <div class="super-promos-day-selector">
+      <span class="super-promos-section-label">Día de la promo:</span>
+      <div class="chip-row super-promos-days" id="super-promos-days"></div>
+    </div>
+
+    <div class="super-promos-content" id="super-promos-content"></div>
+  </dialog>
+
   <script>
 
     const CUENTA = {
@@ -1257,11 +1597,17 @@
       "josimar": "josimar",
       "comodin": "comodin",
       "comodín": "comodin",
-      "abastecedor": "abastecedor"
+      "abastecedor": "abastecedor",
+      "el abastecedor": "abastecedor"
     };
     function normalizarCadenaId(s) {
       const k = String(s || "").toLowerCase().trim();
-      return CADENA_ALIAS[k] || k;
+      if (CADENA_ALIAS[k]) return CADENA_ALIAS[k];
+      if (k.startsWith("el ")) {
+        const sinEl = k.slice(3).trim();
+        if (CADENA_ALIAS[sinEl]) return CADENA_ALIAS[sinEl];
+      }
+      return k;
     }
     const RESET_REDIRECT = "https://baratoya.vercel.app";
     function leerSesion() {
@@ -1872,6 +2218,8 @@
     function tarjetaTienda(o, nombreGrupo) {
       const aplicada = promoAplicada(o);
       const bits = [];
+      const yaDescuento = (typeof o.precio_lista === "number" && o.precio_lista > o.precio) ||
+        (typeof o.descuento_tienda === "number" && o.descuento_tienda > 0);
       if (typeof o.precio_lista === "number" && o.precio_lista > o.precio) {
         bits.push("<s>" + esc(money(o.precio_lista)) + "</s>");
       }
@@ -1899,15 +2247,36 @@
         ? "<a class=\"store-link\" href=\"" + esc(o.url) + "\" target=\"_blank\" rel=\"noopener noreferrer\">Ver precio</a>"
         : "";
       const nombre = o.nombre || nombreGrupo || "";
+      const tiendaNombre = o.tienda || "Tienda";
+      const tiendaId = o.tienda_id || normalizarCadenaId(tiendaNombre) || "";
+
+      const btnPromos = "<button type=\"button\" class=\"store-promo-btn\" " +
+        "data-tienda=\"" + esc(tiendaNombre) + "\" " +
+        "data-tienda-id=\"" + esc(tiendaId) + "\" " +
+        "data-nombre=\"" + esc(nombre) + "\" " +
+        "data-precio=\"" + esc(String(o.precio || 0)) + "\" " +
+        "data-ya-descuento=\"" + (yaDescuento ? "1" : "0") + "\" " +
+        "data-url=\"" + esc(o.url || "") + "\" " +
+        "title=\"Ver todas las promociones bancarias de " + esc(tiendaNombre) + "\">" +
+        "<svg width=\"13\" height=\"13\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"2\" ry=\"2\"></rect><line x1=\"1\" y1=\"10\" x2=\"23\" y2=\"10\"></line></svg>" +
+        "<span>Promos de " + esc(tiendaNombre) + "</span>" +
+      "</button>";
+
+      const actions = "<div class=\"store-actions\">" +
+        btnPromos +
+        (link ? ("<span class=\"store-action-sep\">·</span>" + link) : "") +
+      "</div>";
+
       return "<div class=\"store-card" + (o.barato ? " barato" : "") + "\">" +
         "<div class=\"store-top\">" +
-          "<p class=\"store-name\">" + esc(o.tienda || "Tienda") + "</p>" +
+          "<p class=\"store-name\">" + esc(tiendaNombre) + "</p>" +
           (o.barato ? "<p class=\"store-mark\">La más barata</p>" : "") +
         "</div>" +
         (nombre ? "<p class=\"store-product\">" + esc(nombre) + "</p>" : "") +
         precioHtml +
         promoPill +
-        extra + link +
+        extra +
+        actions +
       "</div>";
     }
 
@@ -2870,6 +3239,269 @@
             prefsDialog.close();
           }
         }, 700);
+      });
+    }
+
+    /* Lógica del modal Ver promociones del súper */
+    let superPromosModalState = {
+      tienda: "",
+      tiendaId: "",
+      nombre: "",
+      precio: 0,
+      url: "",
+      dia: "hoy",
+      yaDescuento: false
+    };
+    const superPromosCache = new Map();
+
+    const DIAS_SUPER_PROMOS = [
+      { id: "hoy", label: "Hoy" },
+      { id: "lunes", label: "Lunes" },
+      { id: "martes", label: "Martes" },
+      { id: "miércoles", label: "Miércoles" },
+      { id: "jueves", label: "Jueves" },
+      { id: "viernes", label: "Viernes" },
+      { id: "sábado", label: "Sábado" },
+      { id: "domingo", label: "Domingo" },
+      { id: "todos", label: "Todos los días" }
+    ];
+
+    function pintarSelectorDiasSuperPromos() {
+      const box = document.getElementById("super-promos-days");
+      if (!box) return;
+      box.innerHTML = DIAS_SUPER_PROMOS.map((d) => {
+        const on = superPromosModalState.dia === d.id;
+        return "<button type=\"button\" class=\"chip" + (on ? " on" : "") + "\" data-super-promo-day=\"" + esc(d.id) + "\">" + esc(d.label) + "</button>";
+      }).join("");
+
+      box.querySelectorAll("[data-super-promo-day]").forEach((b) => {
+        b.addEventListener("click", () => {
+          const dayId = b.getAttribute("data-super-promo-day");
+          if (superPromosModalState.dia === dayId) return;
+          superPromosModalState.dia = dayId;
+          pintarSelectorDiasSuperPromos();
+          cargarYPintarPromosSuper();
+        });
+      });
+    }
+
+    async function abrirPromosSuper(tienda, tiendaId, nombre, precio, url, yaDescuento) {
+      const dlg = document.getElementById("super-promos-dialog");
+      if (!dlg) return;
+
+      const tid = tiendaId || normalizarCadenaId(tienda) || "";
+      superPromosModalState = {
+        tienda: tienda || "Supermercado",
+        tiendaId: tid,
+        nombre: nombre || "Producto",
+        precio: Number(precio) || 0,
+        url: url || "",
+        dia: "hoy",
+        yaDescuento: !!yaDescuento
+      };
+
+      const elCadena = document.getElementById("super-promos-cadena");
+      const elTitle = document.getElementById("super-promos-title");
+      const elGondolaLine = document.getElementById("super-promos-gondola-line");
+      const elCtaBtn = document.getElementById("super-promos-cta-btn");
+      const elCtaBar = document.getElementById("super-promos-cta-bar");
+
+      if (elCadena) elCadena.textContent = superPromosModalState.tienda;
+      if (elTitle) elTitle.textContent = superPromosModalState.nombre;
+      if (elGondolaLine) {
+        elGondolaLine.innerHTML = "Precio góndola: <strong>" + esc(money(superPromosModalState.precio)) + "</strong>";
+      }
+      if (elCtaBtn && elCtaBar) {
+        if (superPromosModalState.url) {
+          elCtaBar.style.display = "";
+          elCtaBtn.href = superPromosModalState.url;
+          elCtaBtn.innerHTML = "Ir a " + esc(superPromosModalState.tienda || "la tienda") + " <span aria-hidden=\"true\">↗</span>";
+        } else {
+          elCtaBar.style.display = "none";
+        }
+      }
+
+      pintarSelectorDiasSuperPromos();
+
+      if (typeof dlg.showModal === "function") dlg.showModal();
+      else dlg.setAttribute("open", "");
+
+      await cargarYPintarPromosSuper();
+    }
+
+    async function cargarYPintarPromosSuper() {
+      const content = document.getElementById("super-promos-content");
+      if (!content) return;
+
+      const { tiendaId, dia, precio, nombre, yaDescuento } = superPromosModalState;
+      const cacheKey = `${tiendaId}|${dia}|${precio}|${nombre}|${yaDescuento}`;
+
+      content.innerHTML = "<p class=\"sesion-note\" style=\"margin:24px 0; text-align:center;\">Consultando promociones...</p>";
+
+      try {
+        let data = superPromosCache.get(cacheKey);
+        if (!data) {
+          const params = new URLSearchParams({
+            cadena: tiendaId,
+            dia: dia,
+            precio: String(precio || 0),
+            nombre: nombre || "",
+            ya_descuento: yaDescuento ? "true" : "false"
+          });
+          const res = await fetch("/api/promos?" + params.toString(), {
+            headers: { "Accept": "application/json" }
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          data = await res.json();
+          superPromosCache.set(cacheKey, data);
+        }
+        renderPromosSuperModal(data);
+      } catch (err) {
+        content.innerHTML = "<div class=\"super-promos-empty\">" +
+          "<p class=\"super-promos-empty-title\">No pudimos consultar las promociones.</p>" +
+          "<p class=\"super-promos-empty-text\">Probá de nuevo en unos instantes.</p>" +
+        "</div>";
+      }
+    }
+
+    function renderPromosSuperModal(data) {
+      const content = document.getElementById("super-promos-content");
+      if (!content) return;
+
+      const promos = Array.isArray(data && data.promos) ? data.promos : [];
+      const precioGondola = superPromosModalState.precio;
+      const tienda = superPromosModalState.tienda;
+
+      if (!promos.length) {
+        const nota = (data && data.nota) || ("No hay promociones bancarias publicadas para " + tienda + " este día.");
+        content.innerHTML = "<div class=\"super-promos-empty\">" +
+          "<p class=\"super-promos-empty-title\">" + esc(nota) + "</p>" +
+          "<p class=\"super-promos-empty-text\">El precio a pagar es el de góndola: <strong>" + esc(money(precioGondola)) + "</strong>. Podés elegir otro día arriba o ver directamente en la tienda.</p>" +
+        "</div>";
+        return;
+      }
+
+      const userBanks = (typeof userPrefs !== "undefined" && userPrefs && Array.isArray(userPrefs.banks)) ? userPrefs.banks : [];
+      function matchUserBank(p) {
+        if (!userBanks.length) return false;
+        const bids = p.brand_ids || [];
+        if (bids.some((id) => userBanks.includes(id))) return true;
+        const gids = p.group_ids || [];
+        if (gids.some((g) => userBanks.includes(g))) return true;
+        const fb = _foldPromo(p.banco || "");
+        return userBanks.some((b) => fb.includes(_foldPromo(b)));
+      }
+
+      const tusBancos = promos.filter(matchUserBank);
+      const otrasPromos = promos.filter((p) => !matchUserBank(p));
+
+      function promoRowHtml(p, esTuBanco) {
+        const puede = p.puede_restar === true;
+        const cuotas = !!p.cuotas;
+        const logo = logoMarca((p.brand_ids || [])[0], p.brand_label || p.banco);
+
+        let tagClass = "tag-neutral";
+        if (puede) tagClass = "tag-discount";
+        else if (cuotas) tagClass = "tag-cuotas";
+
+        const tagHtml = "<span class=\"super-promo-tag " + tagClass + "\">" + esc(p.oferta || "") + "</span>";
+        const canalHtml = (p.canal && p.canal !== "no indicado")
+          ? "<span class=\"super-promo-tag tag-canal\">" + esc(p.canal) + "</span>"
+          : "";
+
+        const legalHtml = p.linea_corta ? "<p class=\"super-promo-legal\">" + esc(p.linea_corta) + "</p>" : "";
+        let motivoHtml = "";
+        if (!puede && p.motivo && !cuotas) {
+          motivoHtml = "<p class=\"super-promo-motivo\">" + esc(p.motivo) + "</p>";
+        }
+
+        let rightHtml = "";
+        if (puede && p.precio_final != null && precioGondola > 0 && p.precio_final < precioGondola) {
+          rightHtml = "<span class=\"super-promo-orig-price\"><s>" + esc(money(precioGondola)) + "</s></span>" +
+            "<p class=\"super-promo-final-price destacado\">" + esc(money(p.precio_final)) + "</p>" +
+            "<span class=\"super-promo-save-pill\">Ahorrás " + esc(money(p.descuento)) + "</span>";
+        } else {
+          const finalVal = p.precio_final != null ? p.precio_final : precioGondola;
+          rightHtml = "<p class=\"super-promo-final-price\">" + esc(money(finalVal)) + "</p>" +
+            "<span class=\"super-promo-no-save-pill\">" + (cuotas ? "En cuotas sin interés" : "Precio góndola") + "</span>";
+        }
+
+        return "<article class=\"super-promo-row" + (puede ? " con-descuento" : "") + (esTuBanco ? " es-tu-banco" : "") + "\">" +
+          "<div class=\"super-promo-left\">" +
+            "<div class=\"super-promo-bank-row\">" +
+              logo +
+              "<h4 class=\"super-promo-bank-title\">" + esc(p.banco) + "</h4>" +
+            "</div>" +
+            "<div class=\"super-promo-pills\">" +
+              tagHtml +
+              canalHtml +
+            "</div>" +
+            legalHtml +
+            motivoHtml +
+          "</div>" +
+          "<div class=\"super-promo-right\">" +
+            rightHtml +
+          "</div>" +
+        "</article>";
+      }
+
+      let html = "";
+      if (tusBancos.length > 0) {
+        html += "<div class=\"super-promos-section\">" +
+          "<h4 class=\"super-promos-section-title\">⭐ Tus bancos y medios (" + tusBancos.length + ")</h4>" +
+          "<div class=\"super-promos-list\">" +
+            tusBancos.map((p) => promoRowHtml(p, true)).join("") +
+          "</div>" +
+        "</div>";
+
+        if (otrasPromos.length > 0) {
+          html += "<div class=\"super-promos-section\">" +
+            "<details class=\"super-promos-others\" open>" +
+              "<summary class=\"super-promos-section-title\">Otras promos de " + esc(tienda) + " (" + otrasPromos.length + ")</summary>" +
+              "<div class=\"super-promos-list\" style=\"margin-top:10px;\">" +
+                otrasPromos.map((p) => promoRowHtml(p, false)).join("") +
+              "</div>" +
+            "</details>" +
+          "</div>";
+        }
+      } else {
+        html += "<div class=\"super-promos-section\">" +
+          "<h4 class=\"super-promos-section-title\">Promociones disponibles (" + promos.length + ")</h4>" +
+          "<div class=\"super-promos-list\">" +
+            promos.map((p) => promoRowHtml(p, false)).join("") +
+          "</div>" +
+        "</div>";
+      }
+
+      content.innerHTML = html;
+    }
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".store-promo-btn");
+      if (btn) {
+        e.preventDefault();
+        const tienda = btn.getAttribute("data-tienda");
+        const tiendaId = btn.getAttribute("data-tienda-id");
+        const nombre = btn.getAttribute("data-nombre");
+        const precio = parseFloat(btn.getAttribute("data-precio")) || 0;
+        const yaDescuento = btn.getAttribute("data-ya-descuento") === "1";
+        const url = btn.getAttribute("data-url");
+        abrirPromosSuper(tienda, tiendaId, nombre, precio, url, yaDescuento);
+      }
+    });
+
+    const superPromosDlg = document.getElementById("super-promos-dialog");
+    const superPromosCloseBtn = document.getElementById("super-promos-close");
+    if (superPromosCloseBtn && superPromosDlg) {
+      superPromosCloseBtn.addEventListener("click", () => {
+        if (typeof superPromosDlg.close === "function") superPromosDlg.close();
+        else superPromosDlg.removeAttribute("open");
+      });
+      superPromosDlg.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (typeof superPromosDlg.close === "function") superPromosDlg.close();
+          else superPromosDlg.removeAttribute("open");
+        }
       });
     }
 

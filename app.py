@@ -31,6 +31,7 @@ try:
     from baratoya.super_cadenas import buscar_promos
     from baratoya.super_cadenas import buscar_super
     from baratoya.promos_hoy import catalogo as catalogo_promos
+    from baratoya.promos_hoy import promos_para_cadena
     from baratoya import cuentas
 except ImportError:
     from electro import buscar_electro
@@ -42,6 +43,7 @@ except ImportError:
     from super_cadenas import buscar_promos
     from super_cadenas import buscar_super
     from promos_hoy import catalogo as catalogo_promos
+    from promos_hoy import promos_para_cadena
     import cuentas
 
 BASE = os.getenv("PRECIOS_CLAROS_BASE", "https://d3e6htiiul5ek9.cloudfront.net/prod").rstrip("/")
@@ -766,8 +768,24 @@ async def sucursales(
 
 
 @app.get("/api/promos")
-async def promos_bancarias():
-    """Tarjetas vigentes, por día y por banco. Sin ocultas, vencidas ni fechas en conflicto."""
+async def promos_bancarias(
+    cadena: str | None = None,
+    dia: str | None = None,
+    precio: float | None = None,
+    nombre: str | None = None,
+    ya_descuento: bool = False,
+):
+    """Tarjetas vigentes, por día y por banco. Sin ocultas, vencidas ni fechas en conflicto.
+    Si se pasa cadena, devuelve las promos de esa cadena para el día elegido con precio final.
+    """
+    if cadena:
+        return promos_para_cadena(
+            cadena=cadena,
+            dia=dia,
+            precio=precio,
+            nombre=nombre or "",
+            ya_descuento=ya_descuento,
+        )
     return catalogo_promos()
 
 

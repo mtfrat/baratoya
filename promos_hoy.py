@@ -17,12 +17,14 @@ from typing import Any
 
 try:
     from baratoya.brand_logos import (
+        _etiqueta_corta,
         enriquecer_tarjeta,
         meta_publica as marcas_meta,
         resolver_marcas,
     )
 except ImportError:
     from brand_logos import (
+        _etiqueta_corta,
         enriquecer_tarjeta,
         meta_publica as marcas_meta,
         resolver_marcas,
@@ -72,6 +74,8 @@ CHAIN_ID = {
     "makro": "makro",
     "maxiconsumo": "maxiconsumo",
     "supermami": "supermami", "super mami": "supermami",
+    "abastecedor": "abastecedor", "el abastecedor": "abastecedor",
+    "comodin": "comodin", "comodín": "comodin",
 }
 CHAIN_NOMBRE = {
     "dia": "Día", "carrefour": "Carrefour", "masonline": "Mas Online",
@@ -1431,3 +1435,201 @@ def notas_cadenas_sin_promo() -> list[dict[str, Any]]:
         {"tienda": "Comodín", "ok": False, "nota": "No hay un archivo de promos usable. Solo el precio de góndola.", "items": [], "url": "", "http": 0},
         {"tienda": "Makro", "ok": False, "nota": "No se muestra en la búsqueda: promos de sucursal y sin precio de producto.", "items": [], "url": "", "http": 0},
     ]
+
+
+def normalizar_cadena_id(val: str) -> str:
+    s = _fold(val).strip()
+    if s in CHAIN_ID:
+        return CHAIN_ID[s]
+    clean = s.replace("-", "").replace("_", "").replace(" ", "")
+    if clean in CHAIN_ID:
+        return CHAIN_ID[clean]
+    if s.startswith("el "):
+        sin_el = s[3:].strip()
+        if sin_el in CHAIN_ID:
+            return CHAIN_ID[sin_el]
+    for k, v in CHAIN_ID.items():
+        if _fold(k) == s or _fold(k).replace(" ", "") == clean:
+            return v
+    return clean
+
+
+def promos_para_cadena(
+    cadena: str,
+    dia: str | int | None = None,
+    precio: float | None = None,
+    nombre: str = "",
+    hoy: date | None = None,
+    *,
+    ya_descuento: bool = False,
+) -> dict[str, Any]:
+    """Todas las promociones de una cadena para un día dado, calculando el precio final de cada una."""
+    hoy_date = hoy or hoy_art()
+    cid = normalizar_cadena_id(cadena)
+    nombre_cadena = CHAIN_NOMBRE.get(cid, cadena.strip().title() if cadena else "Supermercado")
+
+    dia_str = str(dia or "hoy").strip().lower() if dia is not None else "hoy"
+    if dia_str in {"hoy", ""}:
+        dia_idx = hoy_date.weekday()
+        target_date = hoy_date
+        dia_nombre = NOMBRE_DIA.get(dia_idx, "hoy")
+    elif dia_str in {"todos", "todas", "toda la semana"}:
+        dia_idx = None
+        target_date = hoy_date
+        dia_nombre = "todos los días"
+    else:
+        dia_idx = _dia_idx(dia_str)
+        if dia_idx is None:
+            dia_idx = hoy_date.weekday()
+            target_date = hoy_date
+            dia_nombre = NOMBRE_DIA.get(dia_idx, "hoy")
+        else:
+            diff = dia_idx - hoy_date.weekday()
+            target_date = hoy_date + timedelta(days=diff)
+            dia_nombre = NOMBRE_DIA.get(dia_idx, dia_str)
+
+    precio_num = (
+        float(precio)
+        if precio is not None and not isinstance(precio, bool) and float(precio) > 0
+        else None
+    )
+
+    sin_promo_map = {
+        "abastecedor": "El Abastecedor no tiene promociones bancarias publicadas. Solo precio de góndola.",
+        "comodin": "Comodín no tiene promociones bancarias publicadas. Solo precio de góndola.",
+        "makro": "Makro no tiene precio de producto en el buscador.",
+    }
+    if cid in sin_promo_map:
+        return {
+            "cadena": nombre_cadena,
+            "chain_id": cid,
+            "dia": dia_nombre,
+            "dia_idx": dia_idx,
+            "fecha": target_date.isoformat(),
+            "precio_gondola": precio_num,
+            "nombre_producto": nombre,
+            "nota": sin_promo_map[cid],
+            "total": 0,
+            "promos": [],
+        }
+
+    recs = cargar()
+    items: list[dict[str, Any]] = []
+    for rec in recs:
+        if rec.get("chain_id") != cid:
+            continue
+        if rec.get("oculta") or rec.get("conflicto"):
+            continue
+        fin = rec.get("fin")
+        if isinstance(fin, date) and fin < target_date:
+            continue
+        inicio = rec.get("inicio")
+        if isinstance(inicio, date) and inicio > target_date:
+            continue
+        if dia_idx is not None:
+            especificas = rec.get("fechas_especificas") or set()
+            if especificas:
+                if target_date not in especificas:
+                    continue
+            elif rec.get("days") and dia_idx not in rec["days"]:
+                continue
+
+        card_pub = tarjeta_publica(rec)
+        banco_titulo = card_pub.get("banco") or rec.get("banco") or ""
+        oferta_txt = card_pub.get("oferta") or _oferta_txt(rec)
+        cuotas_txt = str(rec.get("cuotas") or "")
+
+        if precio_num is not None:
+            ok, motivo, total = puede_restar(rec, nombre, precio_num, target_date, ya_descuento=ya_descuento)
+            if ok and total < precio_num:
+                descuento = round(precio_num - total, 2)
+                precio_final = total
+                puede = True
+            else:
+                descuento = 0.0
+                precio_final = precio_num
+                puede = False
+        else:
+            ok, motivo, _ = puede_restar(rec, nombre, 1000.0, target_date, ya_descuento=ya_descuento)
+            puede = ok
+            descuento = 0.0
+            precio_final = None
+
+        partes_legales = []
+        if rec.get("cap"):
+            partes_legales.append(f"Tope {_tope_txt(rec)}")
+        elif rec.get("sin_tope"):
+            partes_legales.append("Sin tope")
+        if rec.get("minimo"):
+            partes_legales.append(f"Mín. {_min_txt(rec)}")
+        canal = rec.get("canal")
+        if canal and canal != "no indicado":
+            partes_legales.append(canal.capitalize())
+        if rec.get("fin"):
+            partes_legales.append(f"Hasta {rec['fin'].strftime('%d/%m/%Y')}")
+        linea_corta = " · ".join(partes_legales)
+
+        # Orden:
+        # 0: descuento efectivo aplicado (menor precio final primero)
+        # 1: promo con porcentaje que no resta (do_not_apply, sin tope, etc.)
+        # 2: cuotas al final
+        if puede and descuento > 0:
+            tipo_orden = 0
+        elif cuotas_txt:
+            tipo_orden = 2
+        else:
+            tipo_orden = 1
+
+        promo_item = {
+            "banco": banco_titulo,
+            "banco_crudo": rec.get("banco") or "",
+            "brand_ids": card_pub.get("brand_ids") or [],
+            "brand_label": card_pub.get("brand_label") or banco_titulo,
+            "variant_label": card_pub.get("variant_label") or "",
+            "group_ids": card_pub.get("group_ids") or [],
+            "oferta": oferta_txt,
+            "percent": rec.get("percent"),
+            "cuotas": cuotas_txt,
+            "puede_restar": puede,
+            "motivo": motivo,
+            "descuento": descuento,
+            "precio_gondola": precio_num,
+            "precio_final": precio_final,
+            "cap": rec.get("cap"),
+            "sin_tope": bool(rec.get("sin_tope")),
+            "tope": _tope_txt(rec),
+            "minimo": _min_txt(rec),
+            "canal": rec.get("canal") or "no indicado",
+            "vigencia": _vigencia_txt(rec),
+            "do_not_apply": rec.get("do_not_apply"),
+            "linea_corta": linea_corta,
+            "_tipo_orden": tipo_orden,
+        }
+        items.append(promo_item)
+
+    items.sort(
+        key=lambda p: (
+            p["_tipo_orden"],
+            p["precio_final"] if p["precio_final"] is not None and p["_tipo_orden"] == 0 else 999999999,
+            -p["descuento"],
+            -(p["percent"] or 0),
+            p["banco"],
+        )
+    )
+
+    for p in items:
+        p.pop("_tipo_orden", None)
+
+    return {
+        "cadena": nombre_cadena,
+        "chain_id": cid,
+        "dia": dia_nombre,
+        "dia_idx": dia_idx,
+        "fecha": target_date.isoformat(),
+        "precio_gondola": precio_num,
+        "nombre_producto": nombre,
+        "nota": "",
+        "total": len(items),
+        "promos": items,
+    }
+

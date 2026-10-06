@@ -934,6 +934,145 @@ class PreciosLogosTypoTest(unittest.TestCase):
         self.assertIn("grant update (prefs", sql.lower())
 
 
+class PromosSuperTests(unittest.TestCase):
+    """Pruebas del brief 'Ver promociones del supermercado':
+    - Día + lunes -> N promos con precio final
+    - Cuotas no bajan precio
+    - do_not_apply no resta
+    - Descuentos efectivos calculan precio final y ordenan con cuotas al final
+    - Endpoint /api/promos?cadena=dia&dia=lunes
+    - Cadena sin promos no explota
+    """
+
+    def test_dia_lunes_promos_con_precio_final(self) -> None:
+        import promos_hoy as ph
+
+        res = ph.promos_para_cadena("dia", "lunes", 3000.0, "Dulce de leche")
+        self.assertEqual(res["cadena"], "Día")
+        self.assertEqual(res["chain_id"], "dia")
+        self.assertEqual(res["dia"], "lunes")
+        self.assertEqual(res["precio_gondola"], 3000.0)
+
+        # Hay N promos para Día el lunes
+        promos = res["promos"]
+        self.assertGreater(len(promos), 0)
+        self.assertEqual(res["total"], len(promos))
+
+        # Cada promo tiene un precio final definido
+        for p in promos:
+            self.assertIsNotNone(p.get("precio_final"))
+            self.assertIsInstance(p["precio_final"], (int, float))
+
+    def test_cuotas_no_bajan_precio(self) -> None:
+        import promos_hoy as ph
+
+        res = ph.promos_para_cadena("dia", "lunes", 3000.0, "Dulce de leche")
+        promos_cuotas = [p for p in res["promos"] if p.get("cuotas")]
+        self.assertGreater(len(promos_cuotas), 0)
+
+        for p in promos_cuotas:
+            self.assertFalse(p["puede_restar"], f"{p['banco']} con cuotas no debe restar")
+            self.assertEqual(p["descuento"], 0.0)
+            self.assertEqual(p["precio_final"], 3000.0, "Cuotas deben mantener el precio de góndola")
+            self.assertIn("cuotas", p["cuotas"].lower())
+
+    def test_do_not_apply_no_resta(self) -> None:
+        import promos_hoy as ph
+
+        res = ph.promos_para_cadena("dia", "lunes", 3000.0, "Dulce de leche")
+        promos_dna = [p for p in res["promos"] if p.get("do_not_apply")]
+        self.assertGreater(len(promos_dna), 0)
+
+        for p in promos_dna:
+            self.assertFalse(p["puede_restar"], f"{p['banco']} con do_not_apply no debe restar")
+            self.assertEqual(p["descuento"], 0.0)
+            self.assertEqual(p["precio_final"], 3000.0, "do_not_apply no debe restar del precio")
+            self.assertTrue(len(p["do_not_apply"]) > 0)
+
+        # Prex específicamente tiene motivo do_not_apply
+        prex = next((p for p in promos_dna if "prex" in p["banco"].lower()), None)
+        self.assertIsNotNone(prex)
+        self.assertEqual(prex["precio_final"], 3000.0)
+        self.assertFalse(prex["puede_restar"])
+        self.assertEqual(prex["do_not_apply"], "Solo una vez / primera compra con Prex")
+
+    def test_dia_martes_descuento_efectivo_y_orden(self) -> None:
+        import promos_hoy as ph
+
+        res = ph.promos_para_cadena("dia", "martes", 3000.0, "Dulce de leche")
+        promos = res["promos"]
+        self.assertGreater(len(promos), 0)
+
+        # Hay promos que sí aplican descuento efectivo
+        aplican = [p for p in promos if p["puede_restar"]]
+        self.assertGreater(len(aplican), 0)
+
+        for p in aplican:
+            self.assertGreater(p["descuento"], 0.0)
+            self.assertLess(p["precio_final"], 3000.0)
+            self.assertEqual(round(p["precio_final"] + p["descuento"], 2), 3000.0)
+
+        # Comprobar Naranja X Plan Épico (30% sobre 3000 = $900 -> final $2100)
+        epico = next((p for p in aplican if "épico" in p["banco"].lower()), None)
+        self.assertIsNotNone(epico)
+        self.assertEqual(epico["precio_final"], 2100.0)
+        self.assertEqual(epico["descuento"], 900.0)
+
+        # Comprobar orden: los descuentos efectivos van primero (menor precio final primero)
+        # y las promos de cuotas van al final
+        precios_aplican = [p["precio_final"] for p in aplican]
+        self.assertEqual(precios_aplican, sorted(precios_aplican), "Deben ordenarse de menor precio final a mayor")
+
+        # Verificar que las cuotas quedan después de los descuentos efectivos
+        indices_descuento = [i for i, p in enumerate(promos) if p["puede_restar"]]
+        indices_cuotas = [i for i, p in enumerate(promos) if p.get("cuotas")]
+        if indices_descuento and indices_cuotas:
+            self.assertLess(max(indices_descuento), min(indices_cuotas), "Cuotas deben estar al final")
+
+    def test_api_promos_cadena_endpoint(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+
+        # Consulta con cadena y día
+        r = client.get("/api/promos?cadena=dia&dia=lunes&precio=3000&nombre=Dulce+de+leche")
+        self.assertEqual(r.status_code, 200)
+        data = r.json()
+        self.assertEqual(data["cadena"], "Día")
+        self.assertEqual(data["chain_id"], "dia")
+        self.assertEqual(data["dia"], "lunes")
+        self.assertEqual(data["precio_gondola"], 3000.0)
+        self.assertGreater(data["total"], 0)
+        self.assertEqual(len(data["promos"]), data["total"])
+
+        for p in data["promos"]:
+            self.assertIn("banco", p)
+            self.assertIn("oferta", p)
+            self.assertIn("precio_final", p)
+            self.assertIn("puede_restar", p)
+
+    def test_cadena_sin_promos_responde_amigable(self) -> None:
+        import promos_hoy as ph
+        from fastapi.testclient import TestClient
+        from app import app
+
+        # Directo en Python
+        res = ph.promos_para_cadena("El Abastecedor", "lunes", 2500.0)
+        self.assertEqual(res["chain_id"], "abastecedor")
+        self.assertEqual(res["total"], 0)
+        self.assertEqual(len(res["promos"]), 0)
+        self.assertIn("abastecedor", res["nota"].lower())
+
+        # Vía endpoint
+        client = TestClient(app)
+        r = client.get("/api/promos?cadena=abastecedor&dia=lunes&precio=2500")
+        self.assertEqual(r.status_code, 200)
+        data = r.json()
+        self.assertEqual(data["total"], 0)
+        self.assertIn("abastecedor", data["nota"].lower())
+
+
 if __name__ == "__main__":
     unittest.main()
 
