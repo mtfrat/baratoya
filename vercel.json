@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "baratoya.vercel.app" }],
+      "destination": "https://baratoya.app/:path*",
+      "permanent": true,
+      "statusCode": 308
+    }
+  ]
+}
