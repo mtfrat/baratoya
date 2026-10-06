@@ -819,6 +819,7 @@ async def crear_preferencia(user_id: str, email: str) -> dict[str, Any]:
         "notification_url": f"{base}/api/mercadopago/webhook",
         "back_urls": {"success": vuelta, "pending": vuelta, "failure": vuelta},
         "auto_return": "approved",
+        "statement_descriptor": "BARATOYA",
     }
     if email:
         body["payer"] = {"email": email}

@@ -1595,10 +1595,14 @@
         </div>
         <p class="sesion-note" id="sesion-note">Para buscar hace falta entrar. Sin sesión no se consulta el precio.</p>
 
+        {# Electro: oculto por ahora, Martin 2026-10-05. Para reactivar, SHOW_ELECTRO = true (/api/electro sigue vivo). #}
+        {% set SHOW_ELECTRO = false %}
+        {% if SHOW_ELECTRO %}
         <div class="modes" role="group" aria-label="Qué comparar">
           <button type="button" class="btn outline on" id="mode-super" data-mode="super">Súper</button>
           <button type="button" class="btn outline" id="mode-electro" data-mode="electro">Electro</button>
         </div>
+        {% endif %}
         <form class="search" id="buscar" action="/api/buscar" method="get">
           <label class="visually-hidden" for="q">Producto</label>
           <input id="q" name="q" type="text" required maxlength="80" placeholder="Yerba, leche, aceite…" autocomplete="off" />
@@ -2258,7 +2262,7 @@
       const crudo = String((j && j.error) || "");
       const humano = crudo.replace(/HTTP\s*\d+/gi, "").replace(/\b(401|402|503)\b/g, "").replace(/\s+/g, " ").trim();
       if (r.status === 402) {
-        setState("error", "Ya usaste las cinco búsquedas.", humano || "El cobro todavía no está activo. Desde acá no se puede pagar.");
+        setState("error", "Ya usaste las cinco búsquedas.", humano || (CUENTA.cobro ? "Para seguir sin tope, pasate a BaratoYa Plus en Planes (pago con Mercado Pago)." : "El cobro todavía no está activo. Desde acá no se puede pagar."));
         return true;
       }
       if (r.status === 503) {
@@ -2380,8 +2384,8 @@
 
     function setMode(next) {
       mode = next === "electro" ? "electro" : "super";
-      document.getElementById("mode-super").classList.toggle("on", mode === "super");
-      document.getElementById("mode-electro").classList.toggle("on", mode === "electro");
+      document.getElementById("mode-super")?.classList.toggle("on", mode === "super");
+      document.getElementById("mode-electro")?.classList.toggle("on", mode === "electro");
       if (mode === "electro") {
         qInput.placeholder = "Heladera, televisor, lavarropas…";
         if (qInput.dataset.autofill === "1") {
@@ -2396,8 +2400,8 @@
         }
       }
     }
-    document.getElementById("mode-super").addEventListener("click", () => setMode("super"));
-    document.getElementById("mode-electro").addEventListener("click", () => setMode("electro"));
+    document.getElementById("mode-super")?.addEventListener("click", () => setMode("super"));
+    document.getElementById("mode-electro")?.addEventListener("click", () => setMode("electro"));
     qInput.addEventListener("input", () => {
       if (qInput.dataset.autofill === "1" && qInput.value !== "heladera") delete qInput.dataset.autofill;
     });

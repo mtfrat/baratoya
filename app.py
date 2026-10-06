@@ -630,7 +630,7 @@ async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONRes
     if not quota.get("ok"):
         if quota.get("reason") == "quota":
             if cuentas.cobro_on():
-                msg = "Usaste las 5 búsquedas. Para seguir hace falta el plan, y el cobro tiene que estar activo."
+                msg = "Usaste las 5 búsquedas. Para seguir sin tope, pasate a BaratoYa Plus en Planes (pago con Mercado Pago)."
             else:
                 msg = "Usaste las 5 búsquedas. El cobro todavía no está activo, así que desde acá no se puede pagar."
             return JSONResponse(
@@ -886,17 +886,17 @@ async def planes_page(request: Request):
 
 @app.get("/aviso-precios", response_class=HTMLResponse)
 async def aviso_precios(request: Request):
-    return templates.TemplateResponse(request, "legal.html", {"page": "aviso-precios"})
+    return templates.TemplateResponse(request, "legal.html", {"page": "aviso-precios", "cobro_on": cuentas.cobro_on()})
 
 
 @app.get("/terminos", response_class=HTMLResponse)
 async def terminos(request: Request):
-    return templates.TemplateResponse(request, "legal.html", {"page": "terminos"})
+    return templates.TemplateResponse(request, "legal.html", {"page": "terminos", "cobro_on": cuentas.cobro_on()})
 
 
 @app.get("/privacidad", response_class=HTMLResponse)
 async def privacidad(request: Request):
-    return templates.TemplateResponse(request, "legal.html", {"page": "privacidad"})
+    return templates.TemplateResponse(request, "legal.html", {"page": "privacidad", "cobro_on": cuentas.cobro_on()})
 
 
 @app.get("/api/sucursales")
