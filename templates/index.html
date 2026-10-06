@@ -8,6 +8,12 @@
   <meta name="description" content="El mismo producto, en cada cadena, al precio de hoy. No se compra el súper desde acá." />
   <meta property="og:title" content="BaratoYa — el mismo producto, en cada cadena, al precio de hoy" />
   <meta property="og:description" content="El mismo producto, en cada cadena, al precio de hoy." />
+  <meta property="og:image" content="/static/baratoya-hero-landing.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BaratoYa — el mismo producto, en cada cadena, al precio de hoy" />
+  <meta name="twitter:description" content="Compará precios de góndola y promociones bancarias de supermercado en CABA." />
+  <meta name="twitter:image" content="/static/baratoya-hero-landing.jpg" />
   <meta name="theme-color" content="#163300" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -345,62 +351,319 @@
       letter-spacing: -0.02em;
     }
     .lead { margin: 0 0 24px; max-width: 40rem; font-size: 18px; }
-    .plans {
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 0 0 20px;
+    }
+    .hero-cta-row .btn {
+      height: 44px;
+      padding: 0 20px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .hero-mockup-frame {
+      margin: 16px 0 28px;
+      border-radius: var(--radius-cards);
+      overflow: hidden;
+      border: 1px solid var(--color-fog);
+      box-shadow: 0 12px 36px rgba(14, 15, 12, 0.08);
+      background: var(--color-fog);
+    }
+    .hero-mockup-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+
+    /* Cómo funciona */
+    .steps-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 12px;
+      gap: 16px;
+      margin: 24px 0 16px;
     }
-    .plan {
-      background: var(--color-paper);
-      border-radius: var(--radius-largecards);
-      padding: 24px;
-      box-shadow: var(--shadow-subtle);
+    @media (min-width: 640px) {
+      .steps-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+    }
+    .step-card {
+      background: var(--color-linen-mist);
+      border-radius: var(--radius-cards);
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
-    .plan header { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
-    .plan h3 { margin: 0; font-size: 18px; color: var(--color-obsidian); }
-    .tag {
-      padding: 4px 10px;
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-buttons);
+      background: var(--color-forest-ink);
+      color: var(--color-paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font: 700 14px/1 var(--font-inter);
+    }
+    .step-card h3 {
+      margin: 0;
+      color: var(--color-forest-ink);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+    }
+    .step-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--color-charcoal);
+    }
+
+    /* Planes en Landing */
+    .landing-planes {
+      border-top: 1px solid var(--color-fog);
+    }
+    .planes-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .planes-badge {
+      display: inline-block;
+      padding: 4px 12px;
       border-radius: var(--radius-buttons);
       background: var(--color-linen-mist);
       color: var(--color-forest-ink);
       font-size: 12px;
-      font-weight: 600;
-      white-space: nowrap;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
     }
-    .tag.hip { background: var(--color-fog); }
-    .price {
+    .landing-plans-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin: 24px 0;
+      align-items: stretch;
+    }
+    @media (min-width: 640px) {
+      .landing-plans-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+    }
+    .landing-plan-card {
+      background: var(--color-paper);
+      border-radius: var(--radius-largecards);
+      border: 1px solid var(--color-fog);
+      box-shadow: var(--shadow-subtle);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .landing-plan-card.featured {
+      border: 2px solid var(--color-forest-ink);
+      background: #fbfdf9;
+      box-shadow: 0 16px 40px rgba(22, 51, 0, 0.12);
+    }
+    .landing-plan-card .plan-tag {
+      position: absolute;
+      top: -12px;
+      left: 24px;
+      padding: 4px 12px;
+      border-radius: var(--radius-buttons);
+      background: var(--color-lime-voltage);
+      color: var(--color-forest-ink);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .landing-plan-card .plan-name {
+      margin: 0 0 8px;
+      color: var(--color-forest-ink);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .landing-plan-card .plan-desc {
+      margin: 0 0 20px;
+      color: var(--color-slate);
+      font-size: 14px;
+      line-height: 1.4;
+      min-height: 2.8em;
+    }
+    .landing-plan-card .plan-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--color-fog);
+    }
+    .landing-plan-card .plan-price {
       margin: 0;
       color: var(--color-forest-ink);
       font-family: var(--font-ui);
-      font-weight: 700;
-      font-size: 36px;
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1;
       letter-spacing: -0.03em;
-      line-height: 1.1;
       font-variant-numeric: tabular-nums;
     }
-    .price small {
-      display: block;
-      margin-top: 4px;
-      font-weight: 500;
-      font-size: 14px;
-      letter-spacing: -0.005em;
+    .landing-plan-card .plan-period {
       color: var(--color-slate);
+      font-size: 14px;
+      font-weight: 600;
     }
-    .plan ul { margin: 0; padding-left: 18px; }
-    .plan li { margin: 0 0 8px; }
-    .plan .btn { margin-top: auto; align-self: flex-start; }
-    .wait {
-      background: var(--color-fog);
-      border-radius: var(--radius-largecards);
-      padding: 24px;
+    .landing-plan-card .plan-features {
+      list-style: none;
+      margin: 0 0 32px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
     }
-    form.waitlist { display: flex; flex-direction: column; gap: 12px; max-width: 32rem; }
-    .field { display: flex; flex-direction: column; gap: 6px; }
-    .field span { font-size: 14px; font-weight: 600; color: var(--color-forest-ink); }
-    #lista-msg { margin: 0; min-height: 1.5em; font-size: 16px; color: var(--color-forest-ink); }
+    .landing-plan-card .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      line-height: 1.4;
+      color: var(--color-charcoal);
+    }
+    .landing-plan-card .plan-features li svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: var(--color-forest-ink);
+    }
+    .landing-plan-card .plan-features li.strong {
+      font-weight: 700;
+      color: var(--color-forest-ink);
+    }
+    .landing-plan-card .plan-cta {
+      width: 100%;
+      height: 48px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .landing-plan-card .plan-note {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: var(--color-slate);
+      text-align: center;
+      line-height: 1.35;
+    }
+    .landing-plan-card .plan-note.warn {
+      color: #991b1b;
+      font-weight: 600;
+    }
+
+    /* FAQ */
+    .faq-sec {
+      border-top: 1px solid var(--color-fog);
+    }
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 42rem;
+      margin: 20px auto 0;
+    }
+    .faq-item {
+      background: var(--color-linen-mist);
+      border-radius: var(--radius-cards);
+      padding: 20px 24px;
+    }
+    .faq-q {
+      margin: 0 0 8px;
+      color: var(--color-forest-ink);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .faq-a {
+      margin: 0;
+      color: var(--color-charcoal);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .super-promos-disclaimer {
+      margin: 16px 0 0;
+      padding-top: 12px;
+      border-top: 1px solid var(--color-fog);
+      color: var(--color-slate);
+      font-size: 12px;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    /* Scrollable chips on mobile */
+    .chip-row.scrollable,
+    #promo-dias,
+    #promo-bank-pins,
+    #super-promos-days {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      padding-bottom: 4px;
+    }
+    .chip-row.scrollable::-webkit-scrollbar,
+    #promo-dias::-webkit-scrollbar,
+    #promo-bank-pins::-webkit-scrollbar,
+    #super-promos-days::-webkit-scrollbar {
+      height: 4px;
+    }
+    .chip-row.scrollable::-webkit-scrollbar-thumb,
+    #promo-dias::-webkit-scrollbar-thumb,
+    #promo-bank-pins::-webkit-scrollbar-thumb,
+    #super-promos-days::-webkit-scrollbar-thumb {
+      background: var(--color-pebble);
+      border-radius: 4px;
+    }
+
+    @media (max-width: 480px) {
+      .nav {
+        padding: 10px 12px;
+      }
+      .nav-links {
+        gap: 4px;
+      }
+      .nav-links a {
+        padding: 6px 6px;
+        font-size: 13px;
+      }
+      .nav-links .btn {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      .hero {
+        padding: 24px 0 16px;
+      }
+      h1 {
+        font-size: 26px;
+        line-height: 1.2;
+      }
+      .sub {
+        font-size: 15px;
+      }
+      .prices strong {
+        font-size: 19px;
+      }
+      .store-actions .btn {
+        min-height: 44px;
+      }
+    }
     footer {
       padding: 32px 0 48px;
       color: var(--color-slate);
@@ -1264,7 +1527,9 @@
     <a class="logo" href="/">BaratoYa</a>
     <nav class="nav-links" aria-label="Secciones">
       <a href="#buscar">Buscar</a>
+      <a href="#como-funciona">Cómo funciona</a>
       <a href="#promos-bancarias">Promos</a>
+      <a href="/planes">Planes</a>
       {% if cuentas_on %}
       <button type="button" class="btn outline" id="abrir-entrar">Entrar</button>
       <a href="/admin" id="nav-admin" hidden>Admin</a>
@@ -1279,8 +1544,16 @@
   <main>
     <section class="hero">
       <div class="wrap">
+        <span class="eyebrow">Comparador independiente · Precios de hoy en CABA</span>
         <h1>El mismo producto, en cada cadena, al precio de hoy.</h1>
-        <p class="sub">El número grande es el que se paga ahora. El tachado queda al lado y no se compara.</p>
+        <p class="sub">El número grande es el que se paga ahora. Calculamos los descuentos de tus bancos para que nunca pagues de más en el súper.</p>
+        <div class="hero-cta-row">
+          <a href="#buscar" class="btn lime">Buscar un precio</a>
+          <a href="/planes" class="btn outline">Ver planes</a>
+        </div>
+        <div class="hero-mockup-frame">
+          <img src="/static/baratoya-hero-landing.jpg" alt="Comparativa de precios de supermercado en BaratoYa" class="hero-mockup-img" width="1280" height="720" loading="eager" />
+        </div>
         <p class="sesion-note" id="sesion-note">Para buscar hace falta entrar. Sin sesión no se consulta el precio.</p>
 
         <div class="modes" role="group" aria-label="Qué comparar">
@@ -1345,6 +1618,29 @@
       </div>
     </section>
 
+    <section class="section" id="como-funciona">
+      <div class="wrap">
+        <h2 class="sec">Cómo funciona</h2>
+        <p class="lead">Tres pasos simples para pagar menos cada vez que vas al súper.</p>
+        <div class="steps-grid">
+          <article class="step-card">
+            <div class="step-num">1</div>
+            <h3>Buscás tu producto</h3>
+            <p>Escribí el nombre de lo que necesitás (yerba, leche, aceite…). Consultamos Precios Claros y las cadenas oficiales al instante.</p>
+          </article>
+          <article class="step-card">
+            <div class="step-num">2</div>
+            <h3>Calculamos promos bancarias</h3>
+            <p>Cruzamos el precio de góndola con las promociones vigentes de tus tarjetas y billeteras del día, deduciendo el descuento exacto.</p>
+          </article>
+          <article class="step-card">
+            <div class="step-num">3</div>
+            <h3>Comprás en la tienda oficial</h3>
+            <p>Elegís la cadena más conveniente y vas directo a su tienda oficial. Sin intermediarios, sin comisiones y con el precio real.</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
     <section class="section" id="promos-bancarias">
       <div class="wrap">
@@ -1374,12 +1670,114 @@
         <ul id="promo-notas" class="promo-notas"></ul>
       </div>
     </section>
+
+    <section class="section landing-planes" id="planes">
+      <div class="wrap">
+        <div class="planes-header">
+          <span class="planes-badge">Planes y suscripciones</span>
+          <h2 class="sec">Elegí cómo ahorrar en el súper</h2>
+          <p class="lead">Probá gratis con tu cupo de bienvenida o desbloqueá búsquedas ilimitadas con BaratoYa Plus.</p>
+        </div>
+        <div class="landing-plans-grid">
+          <!-- Card Gratis -->
+          <article class="landing-plan-card">
+            <h3 class="plan-name">Gratis</h3>
+            <p class="plan-desc">Para comparar el súper de vez en cuando y revisar precios antes de salir.</p>
+            <div class="plan-price-row">
+              <span class="plan-price">$0</span>
+              <span class="plan-period">/ para siempre</span>
+            </div>
+            <ul class="plan-features">
+              <li>
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span><strong>{{ free_limit }} búsquedas</strong> al mes para probar</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span>Comparador en vivo (Día, Carrefour, Mas Online y más)</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span>Preferencias de tus bancos y supermercados</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span>Listas de compras básicas</span>
+              </li>
+            </ul>
+            <a href="#buscar" class="btn outline plan-cta">Empezar gratis</a>
+            <p class="plan-note">Sin tarjeta de crédito. Cuenta en segundos.</p>
+          </article>
+
+          <!-- Card BaratoYa Plus -->
+          <article class="landing-plan-card featured">
+            <span class="plan-tag">Recomendado</span>
+            <h3 class="plan-name">BaratoYa Plus</h3>
+            <p class="plan-desc">Para compras familiares y encontrar siempre la mejor combinación de descuentos.</p>
+            <div class="plan-price-row">
+              <span class="plan-price">{{ plan_label or "$1.990" }}</span>
+              <span class="plan-period">ARS / mes</span>
+            </div>
+            <ul class="plan-features">
+              <li class="strong">
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span><strong>Búsquedas ilimitadas</strong> sin tope mensual</span>
+              </li>
+              <li class="strong">
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span>Precios calculados con promociones bancarias</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span>Alertas cuando baja un precio de tu lista</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span>Cancelación simple vía Mercado Pago</span>
+              </li>
+            </ul>
+            <button type="button" class="btn lime plan-cta" id="btn-landing-comprar-plus">
+              Pagar con Mercado Pago <span aria-hidden="true">↗</span>
+            </button>
+            {% if not cobro_on %}
+            <p class="plan-note warn">El cobro con Mercado Pago se está configurando en producción. Próximamente disponible.</p>
+            {% else %}
+            <p class="plan-note">Pago seguro en pesos procesado por Mercado Pago.</p>
+            {% endif %}
+            <p id="landing-checkout-msg" role="status" style="font-size:13px; color:#991b1b; text-align:center; margin:8px 0 0; font-weight:600;"></p>
+          </article>
+        </div>
+        <div style="text-align:center; margin-top:16px;">
+          <a href="/planes" style="color:var(--color-forest-ink); font-weight:600; font-size:15px; text-decoration:underline;">Ver comparativa detallada y preguntas frecuentes →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section faq-sec" id="faq">
+      <div class="wrap">
+        <h2 class="sec" style="text-align:center;">Preguntas frecuentes</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <h3 class="faq-q">¿Cómo cancelo la suscripción?</h3>
+            <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en suscripciones o pagos automáticos) o enviando un mail a punatechba@gmail.com. Sin penalizaciones ni permanencia mínima.</p>
+          </div>
+          <div class="faq-item">
+            <h3 class="faq-q">¿Los precios con promociones son exactos?</h3>
+            <p class="faq-a">Son precios calculados y estimados a partir de las promociones bancarias públicas vigentes para el día. Las condiciones finales (topes de reintegro por cuenta, tarjetas habilitadas o promociones bancarias específicas) dependen de cada entidad y banco emisor.</p>
+          </div>
+          <div class="faq-item">
+            <h3 class="faq-q">¿Compro el supermercado desde BaratoYa?</h3>
+            <p class="faq-a">No. BaratoYa es un comparador independiente. Las compras se realizan directamente en la tienda oficial de cada supermercado haciendo click en <em>“Ir a la tienda”</em>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer>
     <div class="wrap">
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
-      <p><a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      <p><a href="/">Inicio</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
   </footer>
 
@@ -1514,6 +1912,7 @@
     </div>
 
     <div class="super-promos-content" id="super-promos-content"></div>
+    <p class="super-promos-disclaimer">* Precios estimados calculados con las promociones vigentes. No se realiza la compra desde BaratoYa.</p>
   </dialog>
 
   <script>
@@ -3501,6 +3900,54 @@
         if (e.key === "Escape") {
           if (typeof superPromosDlg.close === "function") superPromosDlg.close();
           else superPromosDlg.removeAttribute("open");
+        }
+      });
+    }
+
+    const btnLandingComprar = document.getElementById("btn-landing-comprar-plus");
+    const landingCheckoutMsg = document.getElementById("landing-checkout-msg");
+
+    if (btnLandingComprar) {
+      btnLandingComprar.addEventListener("click", async () => {
+        if (landingCheckoutMsg) landingCheckoutMsg.textContent = "";
+        const s = leerSesion();
+        if (!s || !s.access_token) {
+          const dlg = document.getElementById("entrar-dialog");
+          if (cuentaMsg) cuentaMsg.textContent = "Iniciá sesión o creá tu cuenta gratis para suscribirte a BaratoYa Plus.";
+          if (dlg && typeof dlg.showModal === "function") dlg.showModal();
+          return;
+        }
+
+        if (!CUENTA.cobro) {
+          if (landingCheckoutMsg) {
+            landingCheckoutMsg.textContent = "El cobro con Mercado Pago se está configurando en producción. Próximamente disponible.";
+          }
+          return;
+        }
+
+        btnLandingComprar.disabled = true;
+        btnLandingComprar.textContent = "Conectando con Mercado Pago...";
+
+        try {
+          const res = await fetch("/api/cuenta/checkout", {
+            method: "POST",
+            headers: await headersAuth()
+          });
+          const data = await res.json();
+          if (res.ok && data.init_point) {
+            location.href = data.init_point;
+          } else if (data.already) {
+            if (landingCheckoutMsg) landingCheckoutMsg.textContent = "Tu cuenta ya tiene búsquedas ilimitadas.";
+            btnLandingComprar.textContent = "Ya sos Plus ✓";
+          } else {
+            if (landingCheckoutMsg) landingCheckoutMsg.textContent = data.error || "No se pudo iniciar el pago. Probá de nuevo.";
+            btnLandingComprar.disabled = false;
+            btnLandingComprar.innerHTML = "Pagar con Mercado Pago <span aria-hidden=\"true\">↗</span>";
+          }
+        } catch (err) {
+          if (landingCheckoutMsg) landingCheckoutMsg.textContent = "Ocurrió un error al contactar al servidor.";
+          btnLandingComprar.disabled = false;
+          btnLandingComprar.innerHTML = "Pagar con Mercado Pago <span aria-hidden=\"true\">↗</span>";
         }
       });
     }

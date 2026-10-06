@@ -92,7 +92,9 @@ def pagina_publica() -> dict[str, Any]:
         "cuentas_on": cuentas_on(),
         "cobro_on": activo,
         "free_limit": FREE_LIMIT,
-        "plan_label": plan_label() if activo else "",
+        "plan_label": plan_label(),
+        "plan_price": plan_cents() // 100,
+        "plan_cents": plan_cents(),
     }
 
 

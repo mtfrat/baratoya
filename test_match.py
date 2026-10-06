@@ -1073,6 +1073,91 @@ class PromosSuperTests(unittest.TestCase):
         self.assertIn("abastecedor", data["nota"].lower())
 
 
+class LandingPlanesMercadoPagoTest(unittest.TestCase):
+    """Pruebas para el brief landing-planes-mp (producto vendible)."""
+
+    def test_landing_html_contiene_mockup_como_funciona_y_planes(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        r = client.get("/")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("baratoya-hero-landing.jpg", r.text)
+        self.assertIn("Cómo funciona", r.text)
+        self.assertIn("/planes", r.text)
+        self.assertIn("BaratoYa Plus", r.text)
+        self.assertIn("$1.990", r.text)
+        self.assertIn("Precios estimados", r.text)
+
+    def test_planes_endpoint_html(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        r = client.get("/planes")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("Gratis", r.text)
+        self.assertIn("BaratoYa Plus", r.text)
+        self.assertIn("$1.990", r.text)
+        self.assertIn("Mercado Pago", r.text)
+
+    def test_static_hero_landing_asset(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        r = client.get("/static/baratoya-hero-landing.jpg")
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.headers.get("content-type", "").startswith("image/"))
+
+    def test_checkout_sin_sesion_da_401(self) -> None:
+        from unittest.mock import patch
+        from fastapi.testclient import TestClient
+        from app import app
+        import cuentas
+
+        client = TestClient(app)
+        # Sin cuentas configuradas responde 503
+        r_503 = client.post("/api/cuenta/checkout")
+        self.assertEqual(r_503.status_code, 503)
+
+        # Con cuentas configuradas pero sin Bearer token responde 401
+        with patch.object(cuentas, "cuentas_on", return_value=True):
+            r = client.post("/api/cuenta/checkout")
+            self.assertEqual(r.status_code, 401)
+            self.assertEqual(r.json().get("reason"), "auth")
+
+    def test_cuentas_pagina_publica_valores(self) -> None:
+        import cuentas
+
+        pub = cuentas.pagina_publica()
+        self.assertEqual(pub["plan_label"], "$1.990")
+        self.assertEqual(pub["plan_price"], 1990)
+        self.assertEqual(pub["plan_cents"], 199000)
+
+    def test_404_y_legal_tienen_enlace_a_planes(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        r404 = client.get("/ruta-que-no-existe-para-test")
+        self.assertEqual(r404.status_code, 404)
+        self.assertIn("/planes", r404.text)
+
+        r_term = client.get("/terminos")
+        self.assertEqual(r_term.status_code, 200)
+        self.assertIn("/planes", r_term.text)
+
+    def test_admin_requiere_permisos(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        r = client.get("/admin")
+        self.assertEqual(r.status_code, 403)
+
+
 if __name__ == "__main__":
     unittest.main()
 

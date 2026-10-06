@@ -17,6 +17,7 @@ import httpx
 from fastapi import FastAPI, Query, Request
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -87,6 +88,7 @@ PLANES = {"lista", "historial", "no-se"}
 app = FastAPI(title="BaratoYa")
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 STATIC_DIR = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
 @app.exception_handler(StarletteHTTPException)
@@ -736,6 +738,17 @@ async def home(request: Request):
             "lng": CABA_LNG,
             "paid_scrapers": ENABLE_PAID,
             "mla": ENABLE_MLA,
+            **cuentas.pagina_publica(),
+        },
+    )
+
+
+@app.get("/planes", response_class=HTMLResponse)
+async def planes_page(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "planes.html",
+        {
             **cuentas.pagina_publica(),
         },
     )
