@@ -3,13 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {% if ga_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ ga_id }}');
+  </script>
+  {% endif %}
   <title>No está esa página — BaratoYa</title>
   <meta name="robots" content="noindex" />
   <meta name="theme-color" content="#163300" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/static/icon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --ink: #163300;
@@ -17,7 +28,7 @@
       --paper: #fff;
       --muted: #454745;
       --fog: #e8ebe6;
-      --font-ui: "Atkinson Hyperlegible", "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-ui: "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, sans-serif;
       --font-serif: "Libre Baskerville", Georgia, serif;
     }
     * { box-sizing: border-box; }
@@ -25,6 +36,20 @@
     a { color: var(--ink); }
     .nav { min-height: 64px; display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #d9ddd8; }
     .nav a { font-weight: 700; text-decoration: none; letter-spacing: -0.02em; }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #163300;
+      text-decoration: none;
+      line-height: 1;
+      letter-spacing: normal;
+    }
+    .logo:hover { text-decoration: none; }
+    .logo img { width: 32px; height: 32px; display: block; flex: none; }
+    .logo .wm { font-size: 26px; line-height: 1; letter-spacing: -0.01em; font-weight: 400; }
+    .logo .b { font-family: "Libre Baskerville", Georgia, serif; font-weight: 400; color: #163300; }
+    .logo .y { font-family: "Atkinson Hyperlegible", sans-serif; font-weight: 700; color: #4E8A1E; }
     main { flex: 1; width: min(100% - 32px, 40rem); margin: 0 auto; padding: 64px 0; }
     .code { margin: 0 0 8px; font-weight: 700; color: var(--ink); letter-spacing: 0.08em; font-size: 14px; }
     h1 { margin: 0 0 16px; color: var(--ink); font-size: clamp(28px, 4vw, 40px); font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; }
@@ -36,7 +61,7 @@
   </style>
 </head>
 <body>
-  <header class="nav"><a href="/">BaratoYa</a><nav style="margin-left:auto;"><a href="/planes" style="font-size:14px; font-weight:600; text-decoration:none; padding:8px 12px;">Planes</a></nav></header>
+  <header class="nav"><a class="logo" href="/" aria-label="BaratoYa — inicio"><img src="/static/icon-carrito-b.svg" alt="" width="32" height="32" /><span class="wm"><span class="b">Barato</span><span class="y">Ya</span></span></a><nav style="margin-left:auto;"><a href="/planes" style="font-size:14px; font-weight:600; text-decoration:none; padding:8px 12px;">Planes</a></nav></header>
   <main>
     <p class="code">404</p>
     <h1>Esa página no está.</h1>

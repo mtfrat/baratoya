@@ -83,10 +83,31 @@ def _sqlite_path() -> Path:
 
 DB_PATH = _sqlite_path()
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+_GA_ID_RE = re.compile(r"^G-[A-Z0-9]+$")
 PLANES = {"lista", "historial", "no-se"}
 
+
+def ga_measurement_id() -> str:
+    """GA4 measurement id from GA_MEASUREMENT_ID. Empty or invalid → no gtag."""
+    raw = os.getenv("GA_MEASUREMENT_ID", "").strip()
+    return raw if _GA_ID_RE.fullmatch(raw) else ""
+
+
+def _ga_context(_request: Request) -> dict[str, str]:
+    return {"ga_id": ga_measurement_id()}
+
+
 app = FastAPI(title="BaratoYa")
-templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
+templates = Jinja2Templates(
+    directory=str(Path(__file__).parent / "templates"),
+    context_processors=[_ga_context],
+)
+
+
+def _render_admin(ctx: dict[str, Any]) -> str:
+    return templates.get_template("admin.html").render({**ctx, "ga_id": ga_measurement_id()})
+
+
 STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
@@ -748,7 +769,7 @@ async def admin(request: Request):
     """Solo la sesión admin abre la página. Cualquier otra recibe 403."""
     admin_ok, user = await _verificar_admin(request)
     if not admin_ok:
-        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        body = _render_admin({"ok": False, "email": "", "seccion": "403", "vista": {}})
         return HTMLResponse(body, status_code=403)
     resumen = None
     try:
@@ -758,7 +779,7 @@ async def admin(request: Request):
     vista = _admin_vista(resumen)
     vista["hora_art"] = cuentas.ahora_art_texto()
     vista["mp_configurado"] = cuentas.cobro_on()
-    body = templates.get_template("admin.html").render(
+    body = _render_admin(
         {"ok": True, "email": user["email"] if user else "", "seccion": "resumen", "vista": vista}
     )
     return HTMLResponse(body)
@@ -768,10 +789,10 @@ async def admin(request: Request):
 async def admin_usuarios(request: Request):
     admin_ok, user = await _verificar_admin(request)
     if not admin_ok:
-        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        body = _render_admin({"ok": False, "email": "", "seccion": "403", "vista": {}})
         return HTMLResponse(body, status_code=403)
     usuarios = await cuentas.admin_listar_usuarios()
-    body = templates.get_template("admin.html").render(
+    body = _render_admin(
         {
             "ok": True,
             "email": user["email"] if user else "",
@@ -787,11 +808,11 @@ async def admin_usuarios(request: Request):
 async def admin_usuario_detalle(request: Request, user_id: str):
     admin_ok, user = await _verificar_admin(request)
     if not admin_ok:
-        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        body = _render_admin({"ok": False, "email": "", "seccion": "403", "vista": {}})
         return HTMLResponse(body, status_code=403)
     detalle = await cuentas.admin_detalle_usuario(user_id)
     if not detalle:
-        body = templates.get_template("admin.html").render(
+        body = _render_admin(
             {
                 "ok": True,
                 "email": user["email"] if user else "",
@@ -803,7 +824,7 @@ async def admin_usuario_detalle(request: Request, user_id: str):
     u_email = detalle["usuario"].get("email") or ""
     items_lista = [_item_out(r) for r in _lista_rows(u_email)] if u_email and "@" in u_email else []
     detalle["lista_compra"] = items_lista
-    body = templates.get_template("admin.html").render(
+    body = _render_admin(
         {
             "ok": True,
             "email": user["email"] if user else "",
@@ -821,10 +842,10 @@ async def admin_usuario_detalle(request: Request, user_id: str):
 async def admin_busquedas(request: Request):
     admin_ok, user = await _verificar_admin(request)
     if not admin_ok:
-        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        body = _render_admin({"ok": False, "email": "", "seccion": "403", "vista": {}})
         return HTMLResponse(body, status_code=403)
     busquedas = await cuentas.admin_listar_busquedas(limit=50)
-    body = templates.get_template("admin.html").render(
+    body = _render_admin(
         {
             "ok": True,
             "email": user["email"] if user else "",
@@ -840,10 +861,10 @@ async def admin_busquedas(request: Request):
 async def admin_pagos(request: Request):
     admin_ok, user = await _verificar_admin(request)
     if not admin_ok:
-        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        body = _render_admin({"ok": False, "email": "", "seccion": "403", "vista": {}})
         return HTMLResponse(body, status_code=403)
     pagos_info = await cuentas.admin_listar_pagos()
-    body = templates.get_template("admin.html").render(
+    body = _render_admin(
         {
             "ok": True,
             "email": user["email"] if user else "",

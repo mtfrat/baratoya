@@ -3,11 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {% if ga_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ ga_id }}');
+  </script>
+  {% endif %}
   <title>Planes — BaratoYa</title>
   <meta name="description" content="Elegí tu plan en BaratoYa: compará precios de supermercado gratis o pasate a Plus para búsquedas ilimitadas." />
   <link rel="canonical" href="https://baratoya.app/planes" />
   <meta name="theme-color" content="#163300" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/static/icon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
 
   <!-- Open Graph / Redes -->
   <meta property="og:title" content="Planes — BaratoYa" />
@@ -24,7 +35,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -42,7 +53,7 @@
       --radius-largecards: 24px;
       --shadow-subtle: 0 4px 20px rgba(14, 15, 12, 0.08);
       --shadow-prominent: 0 16px 40px rgba(22, 51, 0, 0.12);
-      --font-ui: "Atkinson Hyperlegible", "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-ui: "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, sans-serif;
       --font-serif: "Libre Baskerville", Georgia, serif;
     }
 
@@ -81,11 +92,35 @@
       border-bottom: 1px solid var(--color-fog);
     }
     .logo {
-      font-weight: 800;
-      font-size: 20px;
-      letter-spacing: -0.02em;
-      color: var(--color-forest-ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #163300;
       text-decoration: none;
+      line-height: 1;
+    }
+    .logo:hover { text-decoration: none; }
+    .logo img {
+      width: 32px;
+      height: 32px;
+      max-width: none;
+      display: block;
+      flex: none;
+    }
+    .logo .wm {
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.01em;
+    }
+    .logo .b {
+      font-family: "Libre Baskerville", Georgia, serif;
+      font-weight: 400;
+      color: #163300;
+    }
+    .logo .y {
+      font-family: "Atkinson Hyperlegible", sans-serif;
+      font-weight: 700;
+      color: #4E8A1E;
     }
     .nav-links {
       display: flex;
@@ -385,7 +420,7 @@
 </head>
 <body>
   <header class="nav">
-    <a class="logo" href="/">BaratoYa</a>
+    <a class="logo" href="/" aria-label="BaratoYa — inicio"><img src="/static/icon-carrito-b.svg" alt="" width="32" height="32" /><span class="wm"><span class="b">Barato</span><span class="y">Ya</span></span></a>
     <nav class="nav-links">
       <a href="/#buscar">Buscar</a>
       <a href="/#promos-bancarias">Promos</a>
