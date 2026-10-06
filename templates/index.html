@@ -1504,6 +1504,38 @@
       position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
       overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
+    .promos-wall-card {
+      margin-top: 24px;
+      padding: 40px 24px;
+      background: var(--color-paper);
+      border: 1.5px dashed #c7d2c3;
+      border-radius: var(--radius-cards);
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(22, 51, 0, 0.04);
+    }
+    .promos-wall-icon { font-size: 36px; margin-bottom: 12px; }
+    .promos-wall-title {
+      margin: 0 0 8px;
+      color: var(--color-forest-ink);
+      font-size: clamp(20px, 3vw, 24px);
+      font-weight: 700;
+    }
+    .promos-wall-sub {
+      margin: 0 auto 20px;
+      max-width: 32rem;
+      color: var(--color-slate);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+    .promos-wall-btn {
+      min-height: 44px;
+      padding: 12px 28px;
+      font-size: 15px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
@@ -1512,7 +1544,7 @@
     <nav class="nav-links" aria-label="Secciones">
       <a href="#buscar">Buscar</a>
       <a href="#como-funciona">Cómo funciona</a>
-      <a href="#promos-bancarias">Promos</a>
+      <a href="#promos-bancarias" id="nav-promos-link" hidden>Promos</a>
       <a href="/planes">Planes</a>
       {% if cuentas_on %}
       <button type="button" class="btn outline" id="abrir-entrar">Entrar</button>
@@ -1630,28 +1662,38 @@
       <div class="wrap">
         <h2 class="sec">Promos de banco, juntas.</h2>
         <p class="lead" id="promos-lead">Las mismas tarjetas, cortadas por día o por banco. No entran las ocultas, las vencidas ni las que publican dos fechas distintas.</p>
-        <div class="chip-row" id="promo-dias" role="group" aria-label="Día"></div>
-        <div class="bank-filter" id="promo-bancos">
-          <div class="chip-row bank-filter-pins" id="promo-bank-pins" role="group" aria-label="Bancos frecuentes"></div>
-          <div class="bank-dd" id="promo-bank-dd">
-            <button type="button" class="bank-dd-toggle" id="promo-bank-toggle" aria-expanded="false" aria-controls="promo-bank-panel">
-              <span id="promo-bank-toggle-label">Tu banco / medio</span>
-              <span class="chev" aria-hidden="true">▾</span>
-            </button>
-            <div class="bank-dd-panel" id="promo-bank-panel">
-              <label class="sr-only" for="promo-bank-search">Buscar banco</label>
-              <input type="search" id="promo-bank-search" class="bank-dd-search" placeholder="Buscar banco o billetera…" autocomplete="off" />
-              <div class="bank-dd-actions">
-                <button type="button" id="promo-bank-all">Ver todos</button>
-                <button type="button" id="promo-bank-clear">Limpiar</button>
+        <!-- Muro de login para anónimos -->
+        <div id="promos-wall" class="promos-wall-card">
+          <div class="promos-wall-icon" aria-hidden="true">🏷️</div>
+          <h3 class="promos-wall-title">Creá una cuenta gratis para ver promos y precios</h3>
+          <p class="promos-wall-sub">Accedé al comparador completo de descuentos de hoy con Galicia, Santander, Modo, Cuenta DNI, BBVA, Banco Nación y más.</p>
+          <button type="button" class="btn lime promos-wall-btn" id="promos-wall-cta">Crear cuenta gratis</button>
+        </div>
+
+        <div id="promos-content" hidden>
+          <div class="chip-row" id="promo-dias" role="group" aria-label="Día"></div>
+          <div class="bank-filter" id="promo-bancos">
+            <div class="chip-row bank-filter-pins" id="promo-bank-pins" role="group" aria-label="Bancos frecuentes"></div>
+            <div class="bank-dd" id="promo-bank-dd">
+              <button type="button" class="bank-dd-toggle" id="promo-bank-toggle" aria-expanded="false" aria-controls="promo-bank-panel">
+                <span id="promo-bank-toggle-label">Tu banco / medio</span>
+                <span class="chev" aria-hidden="true">▾</span>
+              </button>
+              <div class="bank-dd-panel" id="promo-bank-panel">
+                <label class="sr-only" for="promo-bank-search">Buscar banco</label>
+                <input type="search" id="promo-bank-search" class="bank-dd-search" placeholder="Buscar banco o billetera…" autocomplete="off" />
+                <div class="bank-dd-actions">
+                  <button type="button" id="promo-bank-all">Ver todos</button>
+                  <button type="button" id="promo-bank-clear">Limpiar</button>
+                </div>
+                <div id="promo-bank-list" role="group" aria-label="Elegí bancos"></div>
               </div>
-              <div id="promo-bank-list" role="group" aria-label="Elegí bancos"></div>
             </div>
           </div>
+          <p class="lista-note" id="promo-cuenta"></p>
+          <div id="promo-browser" class="promo-browser" aria-live="polite"></div>
+          <ul id="promo-notas" class="promo-notas"></ul>
         </div>
-        <p class="lista-note" id="promo-cuenta"></p>
-        <div id="promo-browser" class="promo-browser" aria-live="polite"></div>
-        <ul id="promo-notas" class="promo-notas"></ul>
       </div>
     </section>
 
@@ -1761,30 +1803,31 @@
   <footer>
     <div class="wrap">
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
+      <p>¿Problema o bug? Escribinos a <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a>.</p>
       <p><a href="/">Inicio</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
   </footer>
 
   {% if cuentas_on %}
   <dialog class="entrar" id="entrar-dialog" aria-labelledby="entrar-titulo">
-    <form id="cuenta-form">
+    <form id="cuenta-form" novalidate>
       <p class="entrar-titulo" id="entrar-titulo">Entrar</p>
-      <p class="lista-note">Hace falta una cuenta para buscar.</p>
-      <p id="cuenta-msg" role="status"></p>
+      <p class="lista-note" id="entrar-note">Iniciá sesión para ver promos y buscar precios.</p>
+      <p id="cuenta-msg" role="status" style="font-size:13px; color:#991b1b; font-weight:600; min-height:18px; margin:0 0 10px;"></p>
       <div class="field">
         <label for="cuenta-email">Mail</label>
-        <input id="cuenta-email" type="email" maxlength="200" autocomplete="username" required />
+        <input id="cuenta-email" type="email" maxlength="200" autocomplete="username" placeholder="tu@email.com" required style="min-height:44px;" />
       </div>
       <div class="field">
         <label for="cuenta-pass">Contraseña</label>
-        <input id="cuenta-pass" type="password" minlength="6" maxlength="200" autocomplete="current-password" required />
-        <button class="btn text olvide" type="button" id="cuenta-olvide">Olvidé mi contraseña</button>
+        <input id="cuenta-pass" type="password" minlength="6" maxlength="200" autocomplete="current-password" placeholder="Mínimo 6 caracteres" required style="min-height:44px;" />
+        <button class="btn text olvide" type="button" id="cuenta-olvide" style="min-height:36px;">Olvidé mi contraseña</button>
       </div>
-      <div class="btn-row">
-        <button class="btn lime" type="submit" id="cuenta-entrar">Entrar</button>
-        <button class="btn outline" type="button" id="cuenta-crear">Crear cuenta</button>
+      <div class="btn-row" style="flex-direction:column; gap:8px;">
+        <button class="btn lime" type="submit" id="cuenta-submit" style="width:100%; min-height:44px;">Entrar</button>
+        <button class="btn text" type="button" id="cuenta-toggle-modo" style="font-size:13px; padding:8px 0; min-height:44px; display:inline-flex; align-items:center; justify-content:center;">¿No tenés cuenta? Creá una gratis</button>
       </div>
-      <button class="btn text" type="button" id="cerrar-entrar">Cerrar</button>
+      <button class="btn text" type="button" id="cerrar-entrar" style="margin-top:12px; width:100%; text-align:center; min-height:44px; display:inline-flex; align-items:center; justify-content:center;">Cerrar</button>
     </form>
     <form id="recuperar-form" hidden novalidate>
       <p class="entrar-titulo" id="recuperar-titulo">Recuperar contraseña</p>
@@ -2058,13 +2101,13 @@
     function msgAuth(j) {
       const raw = (j && (j.msg || j.error_description || j.message || j.error)) || "";
       const s = String(raw);
-      if (/already registered|already exists/i.test(s)) return "Ese mail ya tiene cuenta. Entrá.";
-      if (/rate limit|security purposes|too many/i.test(s)) return "Pediste muchas veces seguidas. Esperá un rato y probá de nuevo.";
+      if (/already registered|already exists/i.test(s)) return "Ese mail ya tiene cuenta registrada. Podés entrar directamente.";
+      if (/rate limit|security purposes|too many/i.test(s)) return "Muchos intentos seguidos. Esperá unos minutos y probá de nuevo.";
       if (/should be different|same as the old/i.test(s)) return "La contraseña nueva tiene que ser distinta de la anterior.";
-      if (/invalid login|invalid credentials/i.test(s)) return "Mail o contraseña no sirven.";
-      if (/password/i.test(s) && /short|least/i.test(s)) return "La contraseña tiene que tener al menos 6 caracteres.";
-      if (s) return "No se pudo. Revisá el mail y la contraseña.";
-      return "No se pudo hablar con la cuenta.";
+      if (/invalid login|invalid credentials/i.test(s)) return "No encontramos esa cuenta o la contraseña no coincide.";
+      if (/password/i.test(s) && /short|least/i.test(s)) return "La contraseña debe tener al menos 6 caracteres.";
+      if (s && s.length < 120) return s;
+      return "No se pudo conectar con el servicio de cuentas. Revisá los datos.";
     }
     function nombreVisible(user) {
       const meta = (user && user.user_metadata) || {};
@@ -2081,17 +2124,26 @@
       const nom = document.getElementById("nav-nombre");
       const prev = document.getElementById("anteriores");
       const dlg = document.getElementById("entrar-dialog");
+      const navPromos = document.getElementById("nav-promos-link");
+      const promosWall = document.getElementById("promos-wall");
+      const promosContent = document.getElementById("promos-content");
       if (nombre) {
         if (abrir) abrir.hidden = true;
         if (ses) ses.hidden = false;
         if (nom) nom.textContent = nombre;
         if (prev) prev.hidden = false;
+        if (navPromos) navPromos.hidden = false;
+        if (promosWall) promosWall.hidden = true;
+        if (promosContent) promosContent.hidden = false;
         if (dlg && dlg.open && typeof dlg.close === "function") dlg.close();
       } else {
         if (abrir) abrir.hidden = false;
         if (ses) ses.hidden = true;
         if (nom) nom.textContent = "";
         if (prev) prev.hidden = true;
+        if (navPromos) navPromos.hidden = true;
+        if (promosWall) promosWall.hidden = false;
+        if (promosContent) promosContent.hidden = true;
       }
     }
     async function pintarBusquedas(items) {
@@ -2168,11 +2220,13 @@
       }
       if (adminLink) adminLink.hidden = !(cj && cj.admin);
       if (note) {
-        if (cj && (cj.admin || cj.plan === "paid")) note.textContent = "Esta cuenta no tiene tope de búsquedas.";
+        if (cj && cj.trial) note.textContent = "Trial BaratoYa Plus activo (sin tope de búsquedas).";
+        else if (cj && (cj.admin || cj.plan === "paid")) note.textContent = "Esta cuenta no tiene tope de búsquedas.";
         else if (cj && cj.remaining != null) note.textContent = "Te quedan " + cj.remaining + " de " + (cj.limit || 5) + " búsquedas.";
         else note.textContent = "Ya entraste. Escribí un producto.";
       }
       estadoInicial(true);
+      if (typeof cargarPromosSiHaySesion === "function") cargarPromosSiHaySesion();
       const br = await fetch("/api/cuenta/busquedas", { headers: await headersAuth() });
       let bj = null;
       try { bj = await br.json(); } catch (_) { bj = null; }
@@ -3070,20 +3124,48 @@
       }
     });
 
-    fetch("/api/promos", { headers: { "Accept": "application/json" } })
-      .then((r) => r.ok ? r.json() : null)
-      .then((j) => {
-        promoData = j;
-        if (promoBrandIds.length === 0 && userPrefs.banks && userPrefs.banks.length > 0) {
-          promoBrandIds = userPrefs.banks.slice();
+    async function cargarPromosSiHaySesion() {
+      const tok = await tokenFresco();
+      const wall = document.getElementById("promos-wall");
+      const cont = document.getElementById("promos-content");
+      if (!tok) {
+        if (wall) wall.hidden = false;
+        if (cont) cont.hidden = true;
+        return;
+      }
+      try {
+        const headers = await headersAuth({ "Accept": "application/json" });
+        const r = await fetch("/api/promos", { headers: headers });
+        if (r.ok) {
+          promoData = await r.json();
+          if (wall) wall.hidden = true;
+          if (cont) cont.hidden = false;
+          if (promoBrandIds.length === 0 && userPrefs.banks && userPrefs.banks.length > 0) {
+            promoBrandIds = userPrefs.banks.slice();
+          }
+          pintarPromos();
+          if (typeof pintarModalPrefs === "function") {
+            const dlg = document.getElementById("prefs-dialog");
+            if (dlg && dlg.open) pintarModalPrefs();
+          }
         }
-        pintarPromos();
-        if (typeof pintarModalPrefs === "function") {
-          const dlg = document.getElementById("prefs-dialog");
-          if (dlg && dlg.open) pintarModalPrefs();
+      } catch (_) {}
+    }
+    cargarPromosSiHaySesion();
+
+    const promosWallCta = document.getElementById("promos-wall-cta");
+    if (promosWallCta) {
+      promosWallCta.addEventListener("click", () => {
+        if (typeof setAuthModo === "function") setAuthModo("signup");
+        const msg = document.getElementById("cuenta-msg");
+        if (msg) {
+          msg.style.color = "var(--color-forest-ink)";
+          msg.textContent = "Creá una cuenta gratis para ver promos y precios.";
         }
-      })
-      .catch(() => {});
+        const dlg = document.getElementById("entrar-dialog");
+        if (dlg && typeof dlg.showModal === "function" && !dlg.open) dlg.showModal();
+      });
+    }
 
     document.querySelectorAll("[data-plan]").forEach((a) => {
       a.addEventListener("click", () => {
@@ -3175,52 +3257,123 @@
       cargarLista().catch(() => {});
     }
 
+    let authModo = "login";
     const cuentaForm = document.getElementById("cuenta-form");
     const cuentaMsg = document.getElementById("cuenta-msg");
+    const entrarTitulo = document.getElementById("entrar-titulo");
+    const entrarNote = document.getElementById("entrar-note");
+    const cuentaSubmit = document.getElementById("cuenta-submit");
+    const cuentaToggleModo = document.getElementById("cuenta-toggle-modo");
+    const cuentaOlvide = document.getElementById("cuenta-olvide");
+
+    function setAuthModo(modo) {
+      authModo = modo;
+      if (cuentaMsg) {
+        cuentaMsg.textContent = "";
+        cuentaMsg.style.color = "#991b1b";
+      }
+      if (modo === "signup") {
+        if (entrarTitulo) entrarTitulo.textContent = "Crear cuenta gratis";
+        if (entrarNote) entrarNote.textContent = "7 días de BaratoYa Plus gratis. Sin tarjeta.";
+        if (cuentaSubmit) cuentaSubmit.textContent = "Crear cuenta gratis";
+        if (cuentaToggleModo) cuentaToggleModo.textContent = "¿Ya tenés cuenta? Iniciar sesión";
+        if (cuentaOlvide) cuentaOlvide.hidden = true;
+      } else {
+        authModo = "login";
+        if (entrarTitulo) entrarTitulo.textContent = "Entrar";
+        if (entrarNote) entrarNote.textContent = "Iniciá sesión para ver promos y buscar precios.";
+        if (cuentaSubmit) cuentaSubmit.textContent = "Entrar";
+        if (cuentaToggleModo) cuentaToggleModo.textContent = "¿No tenés cuenta? Creá una gratis";
+        if (cuentaOlvide) cuentaOlvide.hidden = false;
+      }
+    }
+
+    if (cuentaToggleModo) {
+      cuentaToggleModo.addEventListener("click", () => {
+        setAuthModo(authModo === "login" ? "signup" : "login");
+      });
+    }
+
     if (cuentaForm) {
       cuentaForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const email = document.getElementById("cuenta-email").value.trim();
-        const password = document.getElementById("cuenta-pass").value;
-        if (cuentaMsg) cuentaMsg.textContent = "Entrando…";
-        try {
-          const res = await authPost("/auth/v1/token?grant_type=password", { email: email, password: password });
-          if (!res.ok || !guardarSesion(res.j)) {
-            if (cuentaMsg) cuentaMsg.textContent = msgAuth(res.j);
-            return;
+        const email = (document.getElementById("cuenta-email")?.value || "").trim();
+        const password = document.getElementById("cuenta-pass")?.value || "";
+
+        if (!email || !email.includes("@")) {
+          if (cuentaMsg) {
+            cuentaMsg.style.color = "#991b1b";
+            cuentaMsg.textContent = "Escribí un mail válido.";
           }
-          if (cuentaMsg) cuentaMsg.textContent = "";
-          const dlg = document.getElementById("entrar-dialog");
-          if (dlg && typeof dlg.close === "function") dlg.close();
-          await refrescarCuenta();
-        } catch (_) {
-          if (cuentaMsg) cuentaMsg.textContent = "No se pudo entrar.";
-        }
-      });
-      document.getElementById("cuenta-crear").addEventListener("click", async () => {
-        const email = document.getElementById("cuenta-email").value.trim();
-        const password = document.getElementById("cuenta-pass").value;
-        if (!email || password.length < 6) {
-          if (cuentaMsg) cuentaMsg.textContent = "Hace falta un mail y una contraseña de al menos 6 caracteres.";
+          document.getElementById("cuenta-email")?.focus();
           return;
         }
-        if (cuentaMsg) cuentaMsg.textContent = "Creando la cuenta…";
-        try {
-          const res = await authPost("/auth/v1/signup", { email: email, password: password });
-          if (res.j && res.j.access_token && guardarSesion(res.j)) {
+        if (!password || password.length < 6) {
+          if (cuentaMsg) {
+            cuentaMsg.style.color = "#991b1b";
+            cuentaMsg.textContent = "La contraseña debe tener al menos 6 caracteres.";
+          }
+          document.getElementById("cuenta-pass")?.focus();
+          return;
+        }
+
+        if (authModo === "signup") {
+          if (cuentaMsg) {
+            cuentaMsg.style.color = "var(--color-charcoal)";
+            cuentaMsg.textContent = "Creando cuenta…";
+          }
+          try {
+            const res = await authPost("/auth/v1/signup", { email: email, password: password });
+            if (res.j && res.j.access_token && guardarSesion(res.j)) {
+              if (cuentaMsg) cuentaMsg.textContent = "";
+              const dlg = document.getElementById("entrar-dialog");
+              if (dlg && typeof dlg.close === "function") dlg.close();
+              await refrescarCuenta();
+              await cargarPromosSiHaySesion();
+              return;
+            }
+            if (res.ok) {
+              if (cuentaMsg) {
+                cuentaMsg.style.color = "#166534";
+                cuentaMsg.textContent = "¡Cuenta creada! Te enviamos un mail de confirmación para activarla.";
+              }
+              return;
+            }
+            if (cuentaMsg) {
+              cuentaMsg.style.color = "#991b1b";
+              cuentaMsg.textContent = msgAuth(res.j);
+            }
+          } catch (_) {
+            if (cuentaMsg) {
+              cuentaMsg.style.color = "#991b1b";
+              cuentaMsg.textContent = "No se pudo crear la cuenta. Probá de nuevo.";
+            }
+          }
+        } else {
+          if (cuentaMsg) {
+            cuentaMsg.style.color = "var(--color-charcoal)";
+            cuentaMsg.textContent = "Entrando…";
+          }
+          try {
+            const res = await authPost("/auth/v1/token?grant_type=password", { email: email, password: password });
+            if (!res.ok || !guardarSesion(res.j)) {
+              if (cuentaMsg) {
+                cuentaMsg.style.color = "#991b1b";
+                cuentaMsg.textContent = msgAuth(res.j);
+              }
+              return;
+            }
             if (cuentaMsg) cuentaMsg.textContent = "";
             const dlg = document.getElementById("entrar-dialog");
             if (dlg && typeof dlg.close === "function") dlg.close();
             await refrescarCuenta();
-            return;
+            await cargarPromosSiHaySesion();
+          } catch (_) {
+            if (cuentaMsg) {
+              cuentaMsg.style.color = "#991b1b";
+              cuentaMsg.textContent = "No se pudo entrar. Revisá los datos.";
+            }
           }
-          if (res.ok) {
-            if (cuentaMsg) cuentaMsg.textContent = "Cuenta creada. Si hace falta confirmar el mail, el enlace tiene que llegar antes de entrar. Todavía no hay sesión.";
-            return;
-          }
-          if (cuentaMsg) cuentaMsg.textContent = msgAuth(res.j);
-        } catch (_) {
-          if (cuentaMsg) cuentaMsg.textContent = "No se pudo crear la cuenta.";
         }
       });
     }
@@ -3732,7 +3885,7 @@
             ya_descuento: yaDescuento ? "true" : "false"
           });
           const res = await fetch("/api/promos?" + params.toString(), {
-            headers: { "Accept": "application/json" }
+            headers: await headersAuth({ "Accept": "application/json" })
           });
           if (!res.ok) throw new Error("HTTP " + res.status);
           data = await res.json();

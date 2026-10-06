@@ -1030,32 +1030,47 @@ class PromosSuperTests(unittest.TestCase):
             self.assertLess(max(indices_descuento), min(indices_cuotas), "Cuotas deben estar al final")
 
     def test_api_promos_cadena_endpoint(self) -> None:
+        from unittest.mock import patch
         from fastapi.testclient import TestClient
         from app import app
+        import cuentas
 
         client = TestClient(app)
 
-        # Consulta con cadena y día
-        r = client.get("/api/promos?cadena=dia&dia=lunes&precio=3000&nombre=Dulce+de+leche")
-        self.assertEqual(r.status_code, 200)
-        data = r.json()
-        self.assertEqual(data["cadena"], "Día")
-        self.assertEqual(data["chain_id"], "dia")
-        self.assertEqual(data["dia"], "lunes")
-        self.assertEqual(data["precio_gondola"], 3000.0)
-        self.assertGreater(data["total"], 0)
-        self.assertEqual(len(data["promos"]), data["total"])
+        # Sin sesión da 401
+        r_anon = client.get("/api/promos?cadena=dia&dia=lunes&precio=3000&nombre=Dulce+de+leche")
+        self.assertEqual(r_anon.status_code, 401)
+        self.assertEqual(r_anon.json().get("reason"), "auth")
 
-        for p in data["promos"]:
-            self.assertIn("banco", p)
-            self.assertIn("oferta", p)
-            self.assertIn("precio_final", p)
-            self.assertIn("puede_restar", p)
+        # Con sesión da 200 y devuelve las promos
+        async def fake_usuario(token):
+            return {"id": "00000000-0000-0000-0000-000000000001", "email": "test@baratoya.app"}
+
+        with patch.object(cuentas, "token_de", return_value="tok_valido"), \
+             patch.object(cuentas, "cuentas_on", return_value=True), \
+             patch.object(cuentas, "usuario", fake_usuario):
+            r = client.get("/api/promos?cadena=dia&dia=lunes&precio=3000&nombre=Dulce+de+leche")
+            self.assertEqual(r.status_code, 200)
+            data = r.json()
+            self.assertEqual(data["cadena"], "Día")
+            self.assertEqual(data["chain_id"], "dia")
+            self.assertEqual(data["dia"], "lunes")
+            self.assertEqual(data["precio_gondola"], 3000.0)
+            self.assertGreater(data["total"], 0)
+            self.assertEqual(len(data["promos"]), data["total"])
+
+            for p in data["promos"]:
+                self.assertIn("banco", p)
+                self.assertIn("oferta", p)
+                self.assertIn("precio_final", p)
+                self.assertIn("puede_restar", p)
 
     def test_cadena_sin_promos_responde_amigable(self) -> None:
+        from unittest.mock import patch
         import promos_hoy as ph
         from fastapi.testclient import TestClient
         from app import app
+        import cuentas
 
         # Directo en Python
         res = ph.promos_para_cadena("El Abastecedor", "lunes", 2500.0)
@@ -1064,13 +1079,19 @@ class PromosSuperTests(unittest.TestCase):
         self.assertEqual(len(res["promos"]), 0)
         self.assertIn("abastecedor", res["nota"].lower())
 
-        # Vía endpoint
+        # Vía endpoint con sesión
+        async def fake_usuario(token):
+            return {"id": "00000000-0000-0000-0000-000000000001", "email": "test@baratoya.app"}
+
         client = TestClient(app)
-        r = client.get("/api/promos?cadena=abastecedor&dia=lunes&precio=2500")
-        self.assertEqual(r.status_code, 200)
-        data = r.json()
-        self.assertEqual(data["total"], 0)
-        self.assertIn("abastecedor", data["nota"].lower())
+        with patch.object(cuentas, "token_de", return_value="tok_valido"), \
+             patch.object(cuentas, "cuentas_on", return_value=True), \
+             patch.object(cuentas, "usuario", fake_usuario):
+            r = client.get("/api/promos?cadena=abastecedor&dia=lunes&precio=2500")
+            self.assertEqual(r.status_code, 200)
+            data = r.json()
+            self.assertEqual(data["total"], 0)
+            self.assertIn("abastecedor", data["nota"].lower())
 
 
 class LandingPlanesMercadoPagoTest(unittest.TestCase):
@@ -1158,6 +1179,308 @@ class LandingPlanesMercadoPagoTest(unittest.TestCase):
         self.assertEqual(r.status_code, 403)
 
 
+class BatchPendientesLoteTest(unittest.TestCase):
+    """Pruebas del lote único BRIEF-pendientes-lote.md (P0, P0b, P1, P1.5, P2)."""
+
+    def test_anonimo_sin_promos_da_401(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        r = client.get("/api/promos")
+        self.assertEqual(r.status_code, 401)
+        data = r.json()
+        self.assertFalse(data.get("ok"))
+        self.assertEqual(data.get("reason"), "auth")
+        self.assertIn("cuenta gratis", data.get("error", "").lower())
+
+    def test_anonimo_buscar_da_401(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        r = client.get("/api/buscar?q=leche")
+        self.assertEqual(r.status_code, 401)
+        data = r.json()
+        self.assertFalse(data.get("ok"))
+        self.assertEqual(data.get("reason"), "auth")
+        self.assertIn("cuenta gratis", data.get("error", "").lower())
+
+    def test_home_nav_limpia_y_promos_wall_presente(self) -> None:
+        from unittest.mock import patch
+        from fastapi.testclient import TestClient
+        from app import app
+        import cuentas
+
+        with patch.object(cuentas, "cuentas_on", return_value=True):
+            client = TestClient(app)
+            r = client.get("/")
+            self.assertEqual(r.status_code, 200)
+            # Link promos en nav está oculto por defecto para anónimos
+            self.assertIn('id="nav-promos-link" hidden', r.text)
+            # Muro de login para promos bancarias presente
+            self.assertIn('id="promos-wall"', r.text)
+            self.assertIn("Creá una cuenta gratis para ver promos y precios", r.text)
+            self.assertIn('id="promos-wall-cta"', r.text)
+            # Form modal entrar tiene toggle y mensajes
+            self.assertIn('id="cuenta-toggle-modo"', r.text)
+            self.assertIn('id="cuenta-submit"', r.text)
+
+    def test_admin_subroutes_anonimo_da_403(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        for path in ["/admin", "/admin/usuarios", "/admin/usuarios/123", "/admin/busquedas", "/admin/pagos"]:
+            r = client.get(path)
+            self.assertEqual(r.status_code, 403, f"Fallo en {path}")
+            self.assertIn("No podés abrir esto", r.text)
+
+    def test_admin_subroutes_admin_da_200(self) -> None:
+        from unittest.mock import patch
+        from fastapi.testclient import TestClient
+        from app import app
+        import cuentas
+
+        async def fake_usuario(token):
+            return {"id": "00000000-0000-0000-0000-000000000001", "email": "baratoyaba@gmail.com"}
+
+        async def fake_es_admin(token, uid):
+            return True
+
+        async def fake_listar_usuarios():
+            return [{
+                "id": "00000000-0000-0000-0000-000000000001",
+                "id_corto": "00000000",
+                "email": "baratoyaba@gmail.com",
+                "plan_display": "Plus",
+                "trial_ends_at": "—",
+                "searches_used": 10,
+                "role": "admin",
+                "created_at": "1 oct 2026, 12:00 ART",
+                "last_sign_in": "5 oct 2026, 20:00 ART",
+            }]
+
+        async def fake_detalle_usuario(uid):
+            return {
+                "usuario": {
+                    "id": uid,
+                    "id_corto": uid[:8],
+                    "email": "test@baratoya.app",
+                    "plan_display": "Trial Plus",
+                    "trial_ends_at": "12 oct 2026, 12:00 ART",
+                    "searches_used": 2,
+                    "role": "user",
+                    "created_at": "5 oct 2026, 12:00 ART",
+                    "last_sign_in": "5 oct 2026, 12:00 ART",
+                    "paid_at": "—",
+                },
+                "busquedas": [{"query": "yerba", "created_at": "5 oct 2026, 12:05 ART"}],
+            }
+
+        async def fake_listar_busquedas(limit=50):
+            return [{"id": "1", "user_id": "u1", "email": "test@baratoya.app", "query": "leche", "created_at": "5 oct 2026, 12:10 ART"}]
+
+        async def fake_listar_pagos():
+            return {
+                "pagos": [{"payment_id": "999888", "user_id": "u1", "email": "pago@baratoya.app", "monto": "$1.990", "status": "Aprobado", "fecha": "5 oct 2026, 10:00 ART"}],
+                "total_mes": "$1.990",
+                "total_lifetime": "$1.990",
+                "cobro_activo": True,
+                "vacio": False,
+            }
+
+        client = TestClient(app)
+        with patch.object(cuentas, "token_de", return_value="tok_admin"), \
+             patch.object(cuentas, "cuentas_on", return_value=True), \
+             patch.object(cuentas, "usuario", fake_usuario), \
+             patch.object(cuentas, "es_admin", fake_es_admin), \
+             patch.object(cuentas, "admin_listar_usuarios", fake_listar_usuarios), \
+             patch.object(cuentas, "admin_detalle_usuario", fake_detalle_usuario), \
+             patch.object(cuentas, "admin_listar_busquedas", fake_listar_busquedas), \
+             patch.object(cuentas, "admin_listar_pagos", fake_listar_pagos):
+
+            r_resumen = client.get("/admin")
+            self.assertEqual(r_resumen.status_code, 200)
+            self.assertIn("Panel de Administración", r_resumen.text)
+
+            r_usr = client.get("/admin/usuarios")
+            self.assertEqual(r_usr.status_code, 200)
+            self.assertIn("baratoyaba@gmail.com", r_usr.text)
+
+            r_det = client.get("/admin/usuarios/00000000-0000-0000-0000-000000000001")
+            self.assertEqual(r_det.status_code, 200)
+            self.assertIn("test@baratoya.app", r_det.text)
+            self.assertIn("yerba", r_det.text)
+
+            r_srch = client.get("/admin/busquedas")
+            self.assertEqual(r_srch.status_code, 200)
+            self.assertIn("leche", r_srch.text)
+
+            r_pagos = client.get("/admin/pagos")
+            self.assertEqual(r_pagos.status_code, 200)
+            self.assertIn("999888", r_pagos.text)
+            self.assertIn("$1.990", r_pagos.text)
+
+    def test_trial_7_dias_activo_freemium(self) -> None:
+        from datetime import datetime, timedelta, timezone
+        import cuentas
+
+        # 1. Signup / nuevo usuario con trial en el futuro
+        futuro = (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+        self.assertTrue(cuentas.es_trial_activo(futuro))
+
+        calc_activo = cuentas.calcular_plan_efectivo("free", None, futuro, "user")
+        self.assertEqual(calc_activo["plan_efectivo"], "paid")
+        self.assertTrue(calc_activo["es_trial"])
+        self.assertTrue(calc_activo["trial_activo"])
+        self.assertFalse(calc_activo["trial_vencido"])
+
+    def test_trial_vencido_dia_8_vuelve_a_free(self) -> None:
+        from datetime import datetime, timedelta, timezone
+        import cuentas
+
+        # 2. Día 8 simulado: fecha en el pasado
+        pasado = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+        self.assertFalse(cuentas.es_trial_activo(pasado))
+
+        calc_vencido = cuentas.calcular_plan_efectivo("free", None, pasado, "user")
+        self.assertEqual(calc_vencido["plan_efectivo"], "free")
+        self.assertFalse(calc_vencido["es_trial"])
+        self.assertFalse(calc_vencido["trial_activo"])
+        self.assertTrue(calc_vencido["trial_vencido"])
+
+    def test_pago_mp_supersede_trial_a_paid_permanente(self) -> None:
+        from datetime import datetime, timedelta, timezone
+        import cuentas
+
+        # 3. Usuario paga con MP -> plan paid permanente
+        futuro = (datetime.now(timezone.utc) + timedelta(days=5)).isoformat()
+        calc_paid = cuentas.calcular_plan_efectivo("paid", "2026-10-05T20:00:00Z", futuro, "user")
+        self.assertEqual(calc_paid["plan_efectivo"], "paid")
+        self.assertTrue(calc_paid["es_paid"])
+        self.assertFalse(calc_paid["es_trial"])
+        self.assertFalse(calc_paid["trial_activo"])
+
+    def test_consumir_trial_activo_no_consume_cupo(self) -> None:
+        import asyncio
+        from datetime import datetime, timedelta, timezone
+        from unittest.mock import patch, AsyncMock
+        import cuentas
+
+        futuro = (datetime.now(timezone.utc) + timedelta(days=6)).isoformat()
+        uid = "00000000-0000-0000-0000-000000000002"
+
+        # Mock respuesta de profile con trial activo
+        class FakeResponse:
+            status_code = 200
+            def json(self):
+                return [{"id": uid, "plan": "free", "paid_at": None, "trial_ends_at": futuro, "role": "user", "searches_used": 15}]
+
+        class FakeClient:
+            async def __aenter__(self):
+                return self
+            async def __aexit__(self, *args):
+                pass
+            async def get(self, *args, **kwargs):
+                return FakeResponse()
+            async def post(self, *args, **kwargs):
+                return FakeResponse()
+
+        with patch.object(cuentas, "cupo_on", return_value=True), \
+             patch("httpx.AsyncClient", return_value=FakeClient()):
+            res = asyncio.run(cuentas.consumir(uid, "yerba mate"))
+            self.assertTrue(res["ok"])
+            self.assertEqual(res["plan"], "paid")
+            self.assertTrue(res["trial"])
+            self.assertIsNone(res["remaining"])
+
+    def test_contacto_soporte_visible_en_footer_y_legal(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        for url in ["/", "/planes", "/terminos", "/privacidad", "/aviso-precios"]:
+            r = client.get(url)
+            self.assertEqual(r.status_code, 200)
+            self.assertIn("baratoyaba@gmail.com", r.text, f"Mail no encontrado en {url}")
+
+    def test_planes_modal_auth_modo_toggle_y_campos(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        client = TestClient(app)
+        r = client.get("/planes")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('id="cuenta-toggle-modo"', r.text)
+        self.assertIn('id="cuenta-submit"', r.text)
+        self.assertIn('id="cuenta-email"', r.text)
+        self.assertIn('id="cuenta-pass"', r.text)
+        self.assertIn("7 días Plus gratis", r.text)
+        self.assertIn("baratoyaba@gmail.com", r.text)
+
+    def test_admin_usuario_no_encontrado_da_404(self) -> None:
+        from unittest.mock import patch
+        from fastapi.testclient import TestClient
+        from app import app
+        import cuentas
+
+        async def fake_usuario(token):
+            return {"id": "00000000-0000-0000-0000-000000000001", "email": "baratoyaba@gmail.com"}
+
+        async def fake_es_admin(token, uid):
+            return True
+
+        async def fake_detalle_none(uid):
+            return None
+
+        client = TestClient(app)
+        with patch.object(cuentas, "token_de", return_value="tok_admin"), \
+             patch.object(cuentas, "cuentas_on", return_value=True), \
+             patch.object(cuentas, "usuario", fake_usuario), \
+             patch.object(cuentas, "es_admin", fake_es_admin), \
+             patch.object(cuentas, "admin_detalle_usuario", fake_detalle_none):
+            r = client.get("/admin/usuarios/00000000-0000-0000-0000-999999999999")
+            self.assertEqual(r.status_code, 404)
+            self.assertIn("Usuario no encontrado", r.text)
+
+    def test_consumir_trial_vencido_bloquea_por_cupo(self) -> None:
+        import asyncio
+        from datetime import datetime, timedelta, timezone
+        from unittest.mock import patch
+        import cuentas
+
+        pasado = (datetime.now(timezone.utc) - timedelta(days=2)).isoformat()
+        uid = "00000000-0000-0000-0000-000000000003"
+
+        class FakeResponseProfile:
+            status_code = 200
+            def json(self):
+                return [{"id": uid, "plan": "free", "paid_at": None, "trial_ends_at": pasado, "role": "user", "searches_used": 5}]
+
+        class FakeResponseRpcQuota:
+            status_code = 200
+            def json(self):
+                return {"ok": False, "reason": "quota", "plan": "free", "used": 5, "remaining": 0, "limit": 5}
+
+        class FakeClient:
+            async def __aenter__(self):
+                return self
+            async def __aexit__(self, *args):
+                pass
+            async def get(self, *args, **kwargs):
+                return FakeResponseProfile()
+            async def post(self, *args, **kwargs):
+                return FakeResponseRpcQuota()
+
+        with patch.object(cuentas, "cupo_on", return_value=True), \
+             patch("httpx.AsyncClient", return_value=FakeClient()):
+            res = asyncio.run(cuentas.consumir(uid, "yerba mate"))
+            self.assertFalse(res["ok"])
+            self.assertEqual(res["reason"], "quota")
+
+
 if __name__ == "__main__":
     unittest.main()
+
 

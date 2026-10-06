@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <title>{% if ok %}Administración{% else %}No podés abrir esto{% endif %} — BaratoYa</title>
+  <title>{% if ok %}Admin — BaratoYa{% else %}Acceso denegado — BaratoYa{% endif %}</title>
   <meta name="robots" content="noindex" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,33 +16,37 @@
       --color-charcoal: #454745;
       --color-slate: #6a6c6a;
       --color-fog: #e8ebe6;
+      --color-linen: #f4f7f2;
       --color-paper: #ffffff;
-      --font-ui: "Atkinson Hyperlegible", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --font-ui: "Atkinson Hyperlegible", "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
       --font-serif: "Libre Baskerville", Georgia, serif;
-      --font-inter: var(--font-ui);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: var(--color-paper);
+      background: #fafbfa;
       color: var(--color-charcoal);
       font-family: var(--font-ui);
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.5;
-      letter-spacing: -0.006em;
     }
     ::selection { background: var(--color-lime-voltage); color: var(--color-forest-ink); }
-    a { color: var(--color-forest-ink); }
-    a:focus-visible { outline: 2px solid var(--color-forest-ink); outline-offset: 2px; }
+    a { color: var(--color-forest-ink); text-decoration: underline; text-underline-offset: 2px; }
+    a:hover { opacity: 0.85; }
+
     .nav {
       min-height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 12px 16px;
-      box-shadow: rgba(14, 15, 12, 0.12) 0px 0px 0px 1px;
+      gap: 16px;
+      padding: 12px 24px;
+      background: var(--color-paper);
+      border-bottom: 1px solid var(--color-fog);
     }
+    .nav-left { display: flex; align-items: center; gap: 16px; }
     .logo {
       font-weight: 700;
       font-size: 18px;
@@ -50,65 +54,545 @@
       color: var(--color-forest-ink);
       text-decoration: none;
     }
-    main { width: min(100% - 32px, 40rem); margin: 0 auto; padding: 48px 0 64px; }
-    h1 {
-      margin: 0 0 12px;
-      color: #0e0f0c;
-      font-size: clamp(28px, 4vw, 40px);
-      font-weight: 600;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
+    .badge-admin {
+      display: inline-block;
+      padding: 3px 8px;
+      background: var(--color-forest-ink);
+      color: var(--color-lime-voltage);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-    p { margin: 0 0 16px; max-width: 38rem; }
-    .who { color: var(--color-slate); font-size: 14px; }
-    .stats { margin: 28px 0 0; }
-    .stats div {
+    .nav-links { display: flex; align-items: center; gap: 14px; font-size: 14px; }
+    .nav-links a { text-decoration: none; font-weight: 600; color: var(--color-charcoal); }
+    .nav-links a:hover, .nav-links a.active { color: var(--color-forest-ink); }
+
+    main {
+      width: min(100% - 32px, 56rem);
+      margin: 0 auto;
+      padding: 32px 0 64px;
+    }
+
+    /* Breadcrumbs */
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--color-slate);
+    }
+    .breadcrumbs a { color: var(--color-slate); text-decoration: none; }
+    .breadcrumbs a:hover { color: var(--color-forest-ink); text-decoration: underline; }
+    .breadcrumbs span.current { color: var(--color-forest-ink); font-weight: 600; }
+
+    .header-bar {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: flex-start;
       gap: 16px;
-      padding: 16px 0;
-      border-top: 1px solid var(--color-fog);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
     }
-    .stats dt {
-      margin: 0;
+    h1 {
+      margin: 0 0 4px;
       color: var(--color-forest-ink);
-      font-size: 16px;
+      font-size: clamp(24px, 3.5vw, 32px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .subtitle { margin: 0; color: var(--color-slate); font-size: 14px; }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
       font-weight: 600;
     }
-    .stats dd {
-      margin: 0;
-      color: var(--color-forest-ink);
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.015em;
-      font-variant-numeric: tabular-nums;
-      text-align: right;
+    .status-pill.on { background: #eaf8e2; color: #166534; border: 1px solid #bbf7d0; }
+    .status-pill.off { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    /* Metric Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
     }
-    .note { margin-top: 20px; color: var(--color-slate); font-size: 14px; }
+    .card-metric {
+      display: block;
+      padding: 20px;
+      background: var(--color-paper);
+      border: 1px solid var(--color-fog);
+      border-radius: var(--radius);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+    .card-metric:hover {
+      border-color: #c7d2c3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(22, 51, 0, 0.06);
+    }
+    .card-metric .title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-slate);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-metric .value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-forest-ink);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .card-metric .hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--color-slate);
+    }
+
+    /* Tables */
+    .table-container {
+      background: var(--color-paper);
+      border: 1px solid var(--color-fog);
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin-bottom: 32px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      padding: 12px 16px;
+      background: var(--color-linen);
+      color: var(--color-forest-ink);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      border-bottom: 1px solid var(--color-fog);
+    }
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--color-fog);
+      color: var(--color-charcoal);
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfa; }
+
+    .tag-plan {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .tag-plan.paid { background: #eaf8e2; color: #166534; }
+    .tag-plan.trial { background: #fef9c3; color: #854d0e; }
+    .tag-plan.free { background: var(--color-fog); color: var(--color-slate); }
+
+    /* Empty state */
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--color-slate);
+    }
+    .empty-state p { margin: 4px 0 0; }
+
+    /* Detail Card */
+    .detail-card {
+      background: var(--color-paper);
+      border: 1px solid var(--color-fog);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .detail-item dt {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--color-slate);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .detail-item dd {
+      margin: 0;
+      font-size: 15px;
+      color: var(--color-forest-ink);
+      font-weight: 600;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--color-fog);
+      color: var(--color-forest-ink);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .btn-back:hover { background: #dce1d9; }
+
+    /* Error 403 */
+    .error-card {
+      background: var(--color-paper);
+      border: 1px solid var(--color-fog);
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      max-width: 480px;
+      margin: 40px auto;
+    }
   </style>
 </head>
 <body>
   <header class="nav">
-    <a class="logo" href="/">BaratoYa</a>
-    <a href="/">Volver</a>
-  </header>
-  <main>
+    <div class="nav-left">
+      <a class="logo" href="/">BaratoYa</a>
+      <span class="badge-admin">Admin</span>
+    </div>
     {% if ok %}
-      <h1>Administración</h1>
-      <p class="who">{{ email }}</p>
-      <dl class="stats">
-        <div><dt>Usuarios</dt><dd>{{ vista.usuarios }}</dd></div>
-        <div><dt>Búsquedas usadas</dt><dd>{{ vista.busquedas }}</dd></div>
-        <div><dt>Perfiles pagos</dt><dd>{{ vista.perfiles_pagos }}</dd></div>
-        <div><dt>Ingresos</dt><dd>{{ vista.ingresos }}</dd></div>
-        <div><dt>Pagos</dt><dd>{{ vista.pagos }}</dd></div>
-      </dl>
-      <p class="note">Ingresos $0. No hay pagos: Mercado Pago no cobra y no hay filas de pago para mostrar.</p>
-    {% else %}
-      <h1>No podés abrir esto.</h1>
-      <p>Esta página es solo para la cuenta de administración. Si no entraste con esa cuenta, no hay números para ver.</p>
-      <p><a href="/">Volver al inicio</a></p>
+    <nav class="nav-links" aria-label="Navegación Admin">
+      <a href="/admin" {% if seccion == "resumen" %}class="active"{% endif %}>Resumen</a>
+      <a href="/admin/usuarios" {% if seccion in ["usuarios", "usuario_detalle"] %}class="active"{% endif %}>Usuarios</a>
+      <a href="/admin/busquedas" {% if seccion == "busquedas" %}class="active"{% endif %}>Búsquedas</a>
+      <a href="/admin/pagos" {% if seccion == "pagos" %}class="active"{% endif %}>Pagos</a>
+      <a href="/" style="margin-left:8px; color:var(--color-slate);">Volver al sitio ↗</a>
+    </nav>
+    {% endif %}
+  </header>
+
+  <main>
+    {% if not ok %}
+      <div class="error-card">
+        <h1>No podés abrir esto</h1>
+        <p>Esta página es exclusiva para la cuenta de administración ({{ email or "baratoyaba@gmail.com" }}). Sin esa sesión no se muestran estadísticas.</p>
+        <p><a href="/" class="btn-back">Volver al inicio</a></p>
+      </div>
+
+    {% elif seccion == "resumen" %}
+      <div class="breadcrumbs">
+        <span>Admin</span> · <span class="current">Resumen general</span>
+      </div>
+      <div class="header-bar">
+        <div>
+          <h1>Panel de Administración</h1>
+          <p class="subtitle">{{ email }} · {{ vista.hora_art }}</p>
+        </div>
+        <div>
+          {% if vista.mp_configurado %}
+            <span class="status-pill on">● Mercado Pago activo</span>
+          {% else %}
+            <span class="status-pill off">○ Mercado Pago sin token</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <a href="/admin/usuarios" class="card-metric">
+          <div class="title"><span>Usuarios</span> <span>→</span></div>
+          <div class="value">{{ vista.usuarios }}</div>
+          <div class="hint">Ver cuentas registradas</div>
+        </a>
+        <a href="/admin/busquedas" class="card-metric">
+          <div class="title"><span>Búsquedas usadas</span> <span>→</span></div>
+          <div class="value">{{ vista.busquedas }}</div>
+          <div class="hint">Historial de consultas</div>
+        </a>
+        <a href="/admin/pagos" class="card-metric">
+          <div class="title"><span>Perfiles pagos</span> <span>→</span></div>
+          <div class="value">{{ vista.perfiles_pagos }}</div>
+          <div class="hint">Cuentas con Plus activo</div>
+        </a>
+        <a href="/admin/pagos" class="card-metric">
+          <div class="title"><span>Ingresos</span> <span>→</span></div>
+          <div class="value">{{ vista.ingresos }}</div>
+          <div class="hint">Pagos registrados: {{ vista.pagos }}</div>
+        </a>
+      </div>
+
+      <p class="subtitle" style="font-size:13px;">Hacé click en cualquiera de las tarjetas de métricas para navegar al detalle de cada sección.</p>
+
+    {% elif seccion == "usuarios" %}
+      <div class="breadcrumbs">
+        <a href="/admin">Admin</a> · <span class="current">Usuarios</span>
+      </div>
+      <div class="header-bar">
+        <div>
+          <h1>Usuarios ({{ usuarios|length }})</h1>
+          <p class="subtitle">Datos leídos de Supabase (auth.users y profiles) · {{ hora_art }}</p>
+        </div>
+      </div>
+
+      <div class="table-container">
+        {% if usuarios %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Mail</th>
+                <th>Plan</th>
+                <th>Trial hasta</th>
+                <th>Búsquedas</th>
+                <th>Rol</th>
+                <th>Creado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in usuarios %}
+                <tr>
+                  <td><code title="{{ u.id }}">{{ u.id_corto }}</code></td>
+                  <td><strong>{{ u.email }}</strong></td>
+                  <td>
+                    {% if u.plan_display == "Paid (Plus)" %}
+                      <span class="tag-plan paid">Plus</span>
+                    {% elif "Trial" in u.plan_display %}
+                      <span class="tag-plan trial">Trial Plus</span>
+                    {% else %}
+                      <span class="tag-plan free">Free</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ u.trial_ends_at }}</td>
+                  <td>{{ u.searches_used }}</td>
+                  <td>{{ u.role }}</td>
+                  <td>{{ u.created_at }}</td>
+                  <td><a href="/admin/usuarios/{{ u.id }}" style="font-weight:600;">Ver detalle →</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="empty-state">
+            <p>No hay usuarios registrados aún en Supabase.</p>
+          </div>
+        {% endif %}
+      </div>
+
+    {% elif seccion == "usuario_detalle" %}
+      <div class="breadcrumbs">
+        <a href="/admin">Admin</a> · <a href="/admin/usuarios">Usuarios</a> · <span class="current">{{ usuario.email }}</span>
+      </div>
+      <a href="/admin/usuarios" class="btn-back">← Volver a usuarios</a>
+      
+      <div class="header-bar">
+        <div>
+          <h1>{{ usuario.email }}</h1>
+          <p class="subtitle">ID completo: <code>{{ usuario.id }}</code> · {{ hora_art }}</p>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <dl class="detail-grid">
+          <div class="detail-item"><dt>Plan actual</dt><dd>{{ usuario.plan_display }}</dd></div>
+          <div class="detail-item"><dt>Trial hasta</dt><dd>{{ usuario.trial_ends_at }}</dd></div>
+          <div class="detail-item"><dt>Búsquedas usadas</dt><dd>{{ usuario.searches_used }}</dd></div>
+          <div class="detail-item"><dt>Rol</dt><dd>{{ usuario.role }}</dd></div>
+          <div class="detail-item"><dt>Fecha de registro</dt><dd>{{ usuario.created_at }}</dd></div>
+          <div class="detail-item"><dt>Último acceso</dt><dd>{{ usuario.last_sign_in }}</dd></div>
+          <div class="detail-item"><dt>Pago acreditado</dt><dd>{{ usuario.paid_at or "—" }}</dd></div>
+          <div class="detail-item"><dt>Items en lista / alertas (SQLite)</dt><dd>{{ lista_compra|length }} items</dd></div>
+        </dl>
+      </div>
+
+      <h2>Búsquedas recientes del usuario ({{ busquedas|length }})</h2>
+      <div class="table-container">
+        {% if busquedas %}
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha (ART)</th>
+                <th>Producto buscado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in busquedas %}
+                <tr>
+                  <td>{{ b.created_at }}</td>
+                  <td><strong>{{ b.query }}</strong></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="empty-state">
+            <p>Este usuario todavía no realizó búsquedas guardadas.</p>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if lista_compra %}
+      <h2>Productos en lista de compra ({{ lista_compra|length }})</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Tienda</th>
+              <th>Precio guardado</th>
+              <th>Bajó</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in lista_compra %}
+              <tr>
+                <td>{{ item.nombre }}</td>
+                <td>{{ item.tienda }}</td>
+                <td>${{ item.precio_guardado }}</td>
+                <td>{% if item.bajo %}<strong style="color:#166534;">Sí</strong>{% else %}No{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+    {% elif seccion == "busquedas" %}
+      <div class="breadcrumbs">
+        <a href="/admin">Admin</a> · <span class="current">Búsquedas</span>
+      </div>
+      <div class="header-bar">
+        <div>
+          <h1>Búsquedas recientes (últimas {{ busquedas|length }})</h1>
+          <p class="subtitle">Registradas en Supabase public.searches · {{ hora_art }}</p>
+        </div>
+      </div>
+
+      <div class="table-container">
+        {% if busquedas %}
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha (ART)</th>
+                <th>Usuario</th>
+                <th>Término buscado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in busquedas %}
+                <tr>
+                  <td>{{ b.created_at }}</td>
+                  <td>
+                    {% if b.user_id %}
+                      <a href="/admin/usuarios/{{ b.user_id }}"><strong>{{ b.email }}</strong></a>
+                    {% else %}
+                      {{ b.email }}
+                    {% endif %}
+                  </td>
+                  <td><strong>{{ b.query }}</strong></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="empty-state">
+            <p>No hay búsquedas registradas aún en el sistema.</p>
+          </div>
+        {% endif %}
+      </div>
+
+    {% elif seccion == "pagos" %}
+      <div class="breadcrumbs">
+        <a href="/admin">Admin</a> · <span class="current">Pagos</span>
+      </div>
+      <div class="header-bar">
+        <div>
+          <h1>Historial de Pagos & Ingresos</h1>
+          <p class="subtitle">Cuentas con Checkout Pro abonado · {{ hora_art }}</p>
+        </div>
+        <div>
+          {% if mp_configurado %}
+            <span class="status-pill on">● Mercado Pago configurado</span>
+          {% else %}
+            <span class="status-pill off">○ Mercado Pago inactivo</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+        <div class="card-metric">
+          <div class="title"><span>Total Lifetime</span></div>
+          <div class="value">{{ total_lifetime }}</div>
+          <div class="hint">Recaudación acumulada</div>
+        </div>
+        <div class="card-metric">
+          <div class="title"><span>Total Mes Actual</span></div>
+          <div class="value">{{ total_mes }}</div>
+          <div class="hint">Ingresos este mes</div>
+        </div>
+        <div class="card-metric">
+          <div class="title"><span>Transacciones</span></div>
+          <div class="value">{{ pagos|length }}</div>
+          <div class="hint">Pagos completados</div>
+        </div>
+      </div>
+
+      <h2>Transacciones acreditadas</h2>
+      <div class="table-container">
+        {% if pagos %}
+          <table>
+            <thead>
+              <tr>
+                <th>ID de Pago (MP)</th>
+                <th>Usuario</th>
+                <th>Monto</th>
+                <th>Estado</th>
+                <th>Fecha (ART)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in pagos %}
+                <tr>
+                  <td><code>{{ p.payment_id }}</code></td>
+                  <td><a href="/admin/usuarios/{{ p.user_id }}"><strong>{{ p.email }}</strong></a></td>
+                  <td>{{ p.monto }}</td>
+                  <td><span class="status-pill on">{{ p.status }}</span></td>
+                  <td>{{ p.fecha }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <div class="empty-state">
+            <p>Aún no hay transacciones registradas de Mercado Pago.</p>
+            <p style="font-size:13px;">Cuando un usuario pague el plan Plus con Checkout Pro, el webhook registrará el pago y se listará acá.</p>
+          </div>
+        {% endif %}
+      </div>
+
+    {% elif seccion == "usuario_no_encontrado" %}
+      <div class="error-card">
+        <h1>Usuario no encontrado</h1>
+        <p>No se encontró ningún usuario con el identificador <code>{{ user_id }}</code>.</p>
+        <p><a href="/admin/usuarios" class="btn-back">← Volver al listado</a></p>
+      </div>
+
     {% endif %}
   </main>
 </body>

@@ -559,7 +559,7 @@ async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONRes
     token = cuentas.bearer(request.headers)
     if not token:
         return JSONResponse(
-            {"ok": False, "reason": "auth", "error": "Sin sesión. Entrá para buscar."},
+            {"ok": False, "reason": "auth", "error": "Sin sesión. Creá una cuenta gratis para ver promos y precios."},
             status_code=401,
         )
     if not cuentas.cuentas_on():
@@ -672,23 +672,23 @@ def _unwrap_snapshot(body: Any) -> Any:
     return body
 
 
-def _admin_vista(resumen: dict[str, Any] | None) -> dict[str, str]:
+def _admin_vista(resumen: dict[str, Any] | None) -> dict[str, Any]:
     def n(key: str) -> str:
         if not isinstance(resumen, dict) or resumen.get(key) is None:
-            return "No se pudo contar"
+            return "0"
         try:
             return str(int(resumen[key]))
         except (TypeError, ValueError):
-            return "No se pudo contar"
+            return "0"
 
     pagos = resumen.get("pagos") if isinstance(resumen, dict) else None
     if pagos in (None, 0):
-        pagos_txt = "No hay pagos."
+        pagos_txt = "0"
     else:
         try:
             pagos_txt = str(int(pagos))
         except (TypeError, ValueError):
-            pagos_txt = "No hay pagos."
+            pagos_txt = "0"
     return {
         "usuarios": n("usuarios"),
         "busquedas": n("busquedas"),
@@ -698,9 +698,7 @@ def _admin_vista(resumen: dict[str, Any] | None) -> dict[str, str]:
     }
 
 
-@app.get("/admin", response_class=HTMLResponse)
-async def admin(request: Request):
-    """Solo la sesión admin abre la página. Cualquier otra recibe 403."""
+async def _verificar_admin(request: Request) -> tuple[bool, dict[str, Any] | None]:
     token = cuentas.token_de(request.headers, request.cookies)
     user = None
     if token and cuentas.cuentas_on():
@@ -714,16 +712,120 @@ async def admin(request: Request):
             admin_ok = await cuentas.es_admin(token, user["id"])
         except Exception:
             admin_ok = False
+    return admin_ok, user
+
+
+@app.get("/admin", response_class=HTMLResponse)
+async def admin(request: Request):
+    """Solo la sesión admin abre la página. Cualquier otra recibe 403."""
+    admin_ok, user = await _verificar_admin(request)
     if not admin_ok:
-        body = templates.get_template("admin.html").render({"ok": False, "email": "", "vista": {}})
+        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
         return HTMLResponse(body, status_code=403)
     resumen = None
     try:
         resumen = await cuentas.resumen_admin()
     except Exception:
         resumen = None
+    vista = _admin_vista(resumen)
+    vista["hora_art"] = cuentas.ahora_art_texto()
+    vista["mp_configurado"] = cuentas.cobro_on()
     body = templates.get_template("admin.html").render(
-        {"ok": True, "email": user["email"] if user else "", "vista": _admin_vista(resumen)}
+        {"ok": True, "email": user["email"] if user else "", "seccion": "resumen", "vista": vista}
+    )
+    return HTMLResponse(body)
+
+
+@app.get("/admin/usuarios", response_class=HTMLResponse)
+async def admin_usuarios(request: Request):
+    admin_ok, user = await _verificar_admin(request)
+    if not admin_ok:
+        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        return HTMLResponse(body, status_code=403)
+    usuarios = await cuentas.admin_listar_usuarios()
+    body = templates.get_template("admin.html").render(
+        {
+            "ok": True,
+            "email": user["email"] if user else "",
+            "seccion": "usuarios",
+            "usuarios": usuarios,
+            "hora_art": cuentas.ahora_art_texto(),
+        }
+    )
+    return HTMLResponse(body)
+
+
+@app.get("/admin/usuarios/{user_id}", response_class=HTMLResponse)
+async def admin_usuario_detalle(request: Request, user_id: str):
+    admin_ok, user = await _verificar_admin(request)
+    if not admin_ok:
+        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        return HTMLResponse(body, status_code=403)
+    detalle = await cuentas.admin_detalle_usuario(user_id)
+    if not detalle:
+        body = templates.get_template("admin.html").render(
+            {
+                "ok": True,
+                "email": user["email"] if user else "",
+                "seccion": "usuario_no_encontrado",
+                "user_id": user_id,
+            }
+        )
+        return HTMLResponse(body, status_code=404)
+    u_email = detalle["usuario"].get("email") or ""
+    items_lista = [_item_out(r) for r in _lista_rows(u_email)] if u_email and "@" in u_email else []
+    detalle["lista_compra"] = items_lista
+    body = templates.get_template("admin.html").render(
+        {
+            "ok": True,
+            "email": user["email"] if user else "",
+            "seccion": "usuario_detalle",
+            "usuario": detalle["usuario"],
+            "busquedas": detalle["busquedas"],
+            "lista_compra": items_lista,
+            "hora_art": cuentas.ahora_art_texto(),
+        }
+    )
+    return HTMLResponse(body)
+
+
+@app.get("/admin/busquedas", response_class=HTMLResponse)
+async def admin_busquedas(request: Request):
+    admin_ok, user = await _verificar_admin(request)
+    if not admin_ok:
+        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        return HTMLResponse(body, status_code=403)
+    busquedas = await cuentas.admin_listar_busquedas(limit=50)
+    body = templates.get_template("admin.html").render(
+        {
+            "ok": True,
+            "email": user["email"] if user else "",
+            "seccion": "busquedas",
+            "busquedas": busquedas,
+            "hora_art": cuentas.ahora_art_texto(),
+        }
+    )
+    return HTMLResponse(body)
+
+
+@app.get("/admin/pagos", response_class=HTMLResponse)
+async def admin_pagos(request: Request):
+    admin_ok, user = await _verificar_admin(request)
+    if not admin_ok:
+        body = templates.get_template("admin.html").render({"ok": False, "email": "", "seccion": "403", "vista": {}})
+        return HTMLResponse(body, status_code=403)
+    pagos_info = await cuentas.admin_listar_pagos()
+    body = templates.get_template("admin.html").render(
+        {
+            "ok": True,
+            "email": user["email"] if user else "",
+            "seccion": "pagos",
+            "pagos": pagos_info["pagos"],
+            "total_mes": pagos_info["total_mes"],
+            "total_lifetime": pagos_info["total_lifetime"],
+            "mp_configurado": cuentas.cobro_on(),
+            "hora_art": cuentas.ahora_art_texto(),
+        }
     )
     return HTMLResponse(body)
 
@@ -782,15 +884,36 @@ async def sucursales(
 
 @app.get("/api/promos")
 async def promos_bancarias(
+    request: Request,
     cadena: str | None = None,
     dia: str | None = None,
     precio: float | None = None,
     nombre: str | None = None,
     ya_descuento: bool = False,
 ):
-    """Tarjetas vigentes, por día y por banco. Sin ocultas, vencidas ni fechas en conflicto.
+    """Tarjetas vigentes, por día y por banco. Requiere sesión (muro de auth).
     Si se pasa cadena, devuelve las promos de esa cadena para el día elegido con precio final.
     """
+    token = cuentas.token_de(request.headers, request.cookies)
+    if not token:
+        return JSONResponse(
+            {"ok": False, "reason": "auth", "error": "Sin sesión. Creá una cuenta gratis para ver promos y precios."},
+            status_code=401,
+        )
+    if not cuentas.cuentas_on():
+        return JSONResponse(
+            {"ok": False, "reason": "auth", "error": "No se pudo verificar la sesión. No se leyeron promos."},
+            status_code=503,
+        )
+    try:
+        user = await cuentas.usuario(token)
+    except Exception:
+        user = None
+    if not user:
+        return JSONResponse(
+            {"ok": False, "reason": "auth", "error": "La sesión no sirve. Volvé a entrar."},
+            status_code=401,
+        )
     if cadena:
         return promos_para_cadena(
             cadena=cadena,
@@ -1013,6 +1136,11 @@ async def ver_cuenta(request: Request):
         "ok": True,
         "email": user["email"],
         "plan": perfil["plan"],
+        "plan_base": perfil.get("plan_base", "free"),
+        "trial": bool(perfil.get("trial")),
+        "trial_activo": bool(perfil.get("trial_activo")),
+        "trial_ends_at": perfil.get("trial_ends_at"),
+        "trial_ends_at_texto": perfil.get("trial_ends_at_texto") or "",
         "used": perfil["used"],
         "remaining": perfil["remaining"],
         "limit": perfil["limit"],

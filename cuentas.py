@@ -8,10 +8,31 @@ from __future__ import annotations
 
 import os
 import re
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal, ROUND_HALF_UP
 from typing import Any
 
 import httpx
+
+_ART = timezone(timedelta(hours=-3))
+_MESES = "ene feb mar abr may jun jul ago sep oct nov dic".split()
+
+
+def ahora_art_texto() -> str:
+    dt = datetime.now(_ART)
+    return f"{dt.day} {_MESES[dt.month - 1]} {dt.year}, {dt:%H:%M} ART"
+
+
+def formatear_art(iso_str: str | None) -> str:
+    if not iso_str:
+        return "—"
+    try:
+        dt = datetime.fromisoformat(str(iso_str).replace("Z", "+00:00"))
+        dt_art = dt.astimezone(_ART)
+        return f"{dt_art.day} {_MESES[dt_art.month - 1]} {dt_art.year}, {dt_art:%H:%M} ART"
+    except Exception:
+        return str(iso_str)[:19]
+
 
 FREE_LIMIT = 5
 DEFAULT_PLAN_CENTS = 199_000
@@ -92,6 +113,7 @@ def pagina_publica() -> dict[str, Any]:
         "cuentas_on": cuentas_on(),
         "cobro_on": activo,
         "free_limit": FREE_LIMIT,
+        "trial_days": 7,
         "plan_label": plan_label(),
         "plan_price": plan_cents() // 100,
         "plan_cents": plan_cents(),
@@ -183,9 +205,82 @@ def normalizar_prefs(raw: Any) -> dict[str, Any]:
     }
 
 
+def es_trial_activo(trial_ends_at: str | None) -> bool:
+    if not trial_ends_at:
+        return False
+    try:
+        dt = datetime.fromisoformat(str(trial_ends_at).replace("Z", "+00:00"))
+        return datetime.now(timezone.utc) < dt
+    except Exception:
+        return False
+
+
+def calcular_plan_efectivo(
+    plan: str,
+    paid_at: str | None,
+    trial_ends_at: str | None,
+    role: str = "user",
+) -> dict[str, Any]:
+    if role == "admin":
+        return {
+            "plan_efectivo": "paid",
+            "es_paid": True,
+            "es_trial": False,
+            "trial_activo": False,
+            "trial_vencido": False,
+        }
+    if plan == "paid" and paid_at:
+        return {
+            "plan_efectivo": "paid",
+            "es_paid": True,
+            "es_trial": False,
+            "trial_activo": False,
+            "trial_vencido": False,
+        }
+    if es_trial_activo(trial_ends_at):
+        return {
+            "plan_efectivo": "paid",
+            "es_paid": True,
+            "es_trial": True,
+            "trial_activo": True,
+            "trial_vencido": False,
+        }
+    trial_vencido = bool(trial_ends_at and not es_trial_activo(trial_ends_at))
+    return {
+        "plan_efectivo": "free",
+        "es_paid": False,
+        "es_trial": False,
+        "trial_activo": False,
+        "trial_vencido": trial_vencido,
+    }
+
+
+async def activar_trial(user_id: str, days: int = 7) -> str:
+    """Calcula y persiste 7 días de trial Plus para una cuenta nueva."""
+    if not UUID_RE.match(user_id) or not cupo_on():
+        return ""
+    fin = datetime.now(timezone.utc) + timedelta(days=days)
+    fin_iso = fin.isoformat()
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            await client.patch(
+                f"{supabase_url()}/rest/v1/profiles?id=eq.{user_id}",
+                headers=_service_headers(),
+                json={"trial_ends_at": fin_iso},
+            )
+    except Exception:
+        pass
+    return fin_iso
+
+
 def _cuenta_vacia() -> dict[str, Any]:
     return {
         "plan": "free",
+        "plan_base": "free",
+        "trial": False,
+        "trial_activo": False,
+        "trial_ends_at": None,
+        "trial_ends_at_texto": "",
         "used": 0,
         "remaining": FREE_LIMIT,
         "limit": FREE_LIMIT,
@@ -201,9 +296,15 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.get(
             f"{supabase_url()}/rest/v1/profiles",
-            params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role,prefs"},
+            params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role,prefs,trial_ends_at"},
             headers=_user_headers(token),
         )
+        if r.status_code != 200:
+            r = await client.get(
+                f"{supabase_url()}/rest/v1/profiles",
+                params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role,prefs"},
+                headers=_user_headers(token),
+            )
         if r.status_code != 200:
             r = await client.get(
                 f"{supabase_url()}/rest/v1/profiles",
@@ -227,19 +328,44 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
     if used < 0:
         used = 0
     role = row.get("role") if row.get("role") in {"user", "admin"} else "user"
-    if role == "admin" or plan == "paid":
+
+    trial_ends_at = row.get("trial_ends_at")
+    prefs = normalizar_prefs(row.get("prefs"))
+    if not trial_ends_at and isinstance(row.get("prefs"), dict):
+        trial_ends_at = row["prefs"].get("trial_ends_at")
+
+    # Si es cuenta nueva (sin paid_at y sin trial_ends_at) y no es admin, inicializamos 7 días de trial Plus
+    if not trial_ends_at and not row.get("paid_at") and role != "admin":
+        trial_ends_at = (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
+        if cupo_on():
+            try:
+                import asyncio
+                asyncio.create_task(activar_trial(user_id, 7))
+            except Exception:
+                pass
+
+    calc = calcular_plan_efectivo(plan, row.get("paid_at"), trial_ends_at, role)
+    if role == "admin" or calc["plan_efectivo"] == "paid":
         remaining = None
+        limit = None
     else:
         remaining = max(0, FREE_LIMIT - used)
+        limit = FREE_LIMIT
+
     return {
-        "plan": plan,
+        "plan": calc["plan_efectivo"],
+        "plan_base": plan,
+        "trial": calc["es_trial"],
+        "trial_activo": calc["trial_activo"],
+        "trial_ends_at": trial_ends_at,
+        "trial_ends_at_texto": formatear_art(trial_ends_at) if trial_ends_at else "",
         "used": used,
         "remaining": remaining,
-        "limit": None if role == "admin" else FREE_LIMIT,
+        "limit": limit,
         "paid_at": row.get("paid_at"),
         "role": role,
         "admin": role == "admin",
-        "prefs": normalizar_prefs(row.get("prefs")),
+        "prefs": prefs,
     }
 
 
@@ -345,11 +471,275 @@ async def resumen_admin() -> dict[str, Any]:
     return data
 
 
+async def admin_listar_usuarios() -> list[dict[str, Any]]:
+    """Devuelve la lista de usuarios combinando auth.users y public.profiles."""
+    if not cupo_on():
+        return []
+    users_dict: dict[str, dict[str, Any]] = {}
+
+    # 1. Traer auth.users
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            r = await client.get(
+                f"{supabase_url()}/auth/v1/admin/users?per_page=50",
+                headers=_service_headers(),
+            )
+            if r.status_code == 200:
+                raw_users = r.json()
+                items = (
+                    raw_users.get("users")
+                    if isinstance(raw_users, dict)
+                    else (raw_users if isinstance(raw_users, list) else [])
+                )
+                for u in items:
+                    uid = str(u.get("id") or "")
+                    if uid:
+                        users_dict[uid] = {
+                            "id": uid,
+                            "id_corto": uid[:8],
+                            "email": str(u.get("email") or ""),
+                            "created_at": formatear_art(u.get("created_at")),
+                            "created_at_raw": str(u.get("created_at") or ""),
+                            "last_sign_in": formatear_art(u.get("last_sign_in_at")),
+                            "plan": "free",
+                            "searches_used": 0,
+                            "role": "user",
+                            "paid_at": None,
+                        }
+    except Exception:
+        pass
+
+    # 2. Traer profiles
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            r_prof = await client.get(
+                f"{supabase_url()}/rest/v1/profiles?select=*",
+                headers=_service_headers(),
+            )
+            if r_prof.status_code == 200:
+                profiles = r_prof.json()
+                if isinstance(profiles, list):
+                    for p in profiles:
+                        uid = str(p.get("id") or "")
+                        if not uid:
+                            continue
+                        trial_ends = p.get("trial_ends_at") or (p.get("prefs", {}).get("trial_ends_at") if isinstance(p.get("prefs"), dict) else None)
+                        calc = calcular_plan_efectivo(str(p.get("plan") or "free"), p.get("paid_at"), trial_ends, str(p.get("role") or "user"))
+                        if calc["es_paid"] and p.get("paid_at"):
+                            plan_display = "Paid (Plus)"
+                        elif calc["es_trial"]:
+                            plan_display = "Trial Plus"
+                        elif calc["trial_vencido"]:
+                            plan_display = "Free (vencido)"
+                        else:
+                            plan_display = "Free"
+
+                        if uid not in users_dict:
+                            users_dict[uid] = {
+                                "id": uid,
+                                "id_corto": uid[:8],
+                                "email": str(p.get("display_name") or uid[:8]),
+                                "created_at": "—",
+                                "created_at_raw": "",
+                                "last_sign_in": "—",
+                                "plan": str(p.get("plan") or "free"),
+                                "plan_display": plan_display,
+                                "trial_ends_at": formatear_art(trial_ends),
+                                "searches_used": int(p.get("searches_used") or 0),
+                                "role": str(p.get("role") or "user"),
+                                "paid_at": formatear_art(p.get("paid_at")),
+                            }
+                        else:
+                            users_dict[uid]["plan"] = str(p.get("plan") or "free")
+                            users_dict[uid]["plan_display"] = plan_display
+                            users_dict[uid]["trial_ends_at"] = formatear_art(trial_ends)
+                            users_dict[uid]["searches_used"] = int(p.get("searches_used") or 0)
+                            users_dict[uid]["role"] = str(p.get("role") or "user")
+                            users_dict[uid]["paid_at"] = formatear_art(p.get("paid_at"))
+    except Exception:
+        pass
+
+    out = list(users_dict.values())
+    for u in out:
+        if "plan_display" not in u:
+            u["plan_display"] = "Free"
+        if "trial_ends_at" not in u:
+            u["trial_ends_at"] = "—"
+    out.sort(key=lambda x: x.get("created_at_raw") or "", reverse=True)
+    return out
+
+
+async def admin_detalle_usuario(user_id: str) -> dict[str, Any] | None:
+    if not UUID_RE.match(user_id):
+        return None
+    usuarios = await admin_listar_usuarios()
+    target = next((u for u in usuarios if u["id"] == user_id), None)
+    if not target:
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                r = await client.get(
+                    f"{supabase_url()}/rest/v1/profiles?id=eq.{user_id}",
+                    headers=_service_headers(),
+                )
+                if r.status_code == 200:
+                    rows = r.json()
+                    if isinstance(rows, list) and rows:
+                        p = rows[0]
+                        trial_ends = p.get("trial_ends_at") or (p.get("prefs", {}).get("trial_ends_at") if isinstance(p.get("prefs"), dict) else None)
+                        target = {
+                            "id": user_id,
+                            "id_corto": user_id[:8],
+                            "email": str(p.get("display_name") or user_id[:8]),
+                            "created_at": "—",
+                            "last_sign_in": "—",
+                            "plan": str(p.get("plan") or "free"),
+                            "plan_display": "Paid (Plus)" if p.get("paid_at") else ("Trial Plus" if es_trial_activo(trial_ends) else "Free"),
+                            "trial_ends_at": formatear_art(trial_ends),
+                            "searches_used": int(p.get("searches_used") or 0),
+                            "role": str(p.get("role") or "user"),
+                            "paid_at": formatear_art(p.get("paid_at")),
+                        }
+        except Exception:
+            pass
+    if not target:
+        return None
+
+    busquedas = []
+    if cupo_on():
+        try:
+            async with httpx.AsyncClient(timeout=15.0) as client:
+                r_srch = await client.get(
+                    f"{supabase_url()}/rest/v1/searches?user_id=eq.{user_id}&order=created_at.desc&limit=50",
+                    headers=_service_headers(),
+                )
+                if r_srch.status_code == 200:
+                    items = r_srch.json()
+                    if isinstance(items, list):
+                        for s in items:
+                            busquedas.append({
+                                "query": str(s.get("query") or ""),
+                                "created_at": formatear_art(s.get("created_at")),
+                            })
+        except Exception:
+            pass
+
+    return {
+        "usuario": target,
+        "busquedas": busquedas,
+    }
+
+
+async def admin_listar_busquedas(limit: int = 50) -> list[dict[str, Any]]:
+    if not cupo_on():
+        return []
+    usuarios = await admin_listar_usuarios()
+    email_map = {u["id"]: u["email"] for u in usuarios}
+
+    busquedas = []
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            r = await client.get(
+                f"{supabase_url()}/rest/v1/searches?select=*&order=created_at.desc&limit={limit}",
+                headers=_service_headers(),
+            )
+            if r.status_code == 200:
+                rows = r.json()
+                if isinstance(rows, list):
+                    for row in rows:
+                        uid = str(row.get("user_id") or "")
+                        busquedas.append({
+                            "id": str(row.get("id") or ""),
+                            "user_id": uid,
+                            "email": email_map.get(uid, uid[:8] if uid else "Anónimo"),
+                            "query": str(row.get("query") or ""),
+                            "created_at": formatear_art(row.get("created_at")),
+                        })
+    except Exception:
+        pass
+    return busquedas
+
+
+async def admin_listar_pagos() -> dict[str, Any]:
+    if not cupo_on():
+        return {"pagos": [], "total_mes": "$0", "total_lifetime": "$0", "vacio": True}
+    usuarios = await admin_listar_usuarios()
+    email_map = {u["id"]: u["email"] for u in usuarios}
+
+    pagos = []
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            r = await client.get(
+                f"{supabase_url()}/rest/v1/profiles?plan=eq.paid&select=*",
+                headers=_service_headers(),
+            )
+            if r.status_code == 200:
+                rows = r.json()
+                if isinstance(rows, list):
+                    for row in rows:
+                        uid = str(row.get("id") or "")
+                        pagos.append({
+                            "user_id": uid,
+                            "email": email_map.get(uid, uid[:8]),
+                            "payment_id": str(row.get("mp_payment_id") or "Manual/Admin"),
+                            "monto": plan_label(),
+                            "status": "Aprobado",
+                            "fecha": formatear_art(row.get("paid_at")),
+                        })
+    except Exception:
+        pass
+
+    return {
+        "pagos": pagos,
+        "total_mes": f"${len(pagos) * (plan_cents() // 100):,.0f}".replace(",", ".") if pagos else "$0",
+        "total_lifetime": f"${len(pagos) * (plan_cents() // 100):,.0f}".replace(",", ".") if pagos else "$0",
+        "vacio": len(pagos) == 0,
+    }
+
+
 async def consumir(user_id: str, query: str) -> dict[str, Any]:
     if not cupo_on():
         raise RuntimeError("sin service role")
     if not UUID_RE.match(user_id):
         return {"ok": False, "reason": "auth"}
+
+    # Chequear si tiene trial activo o plan paid antes de aplicar límite
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            r_prof = await client.get(
+                f"{supabase_url()}/rest/v1/profiles?id=eq.{user_id}",
+                headers=_service_headers(),
+            )
+            if r_prof.status_code == 200:
+                rows = r_prof.json()
+                if isinstance(rows, list) and rows:
+                    p = rows[0]
+                    plan = str(p.get("plan") or "free")
+                    paid_at = p.get("paid_at")
+                    trial_ends_at = p.get("trial_ends_at")
+                    if not trial_ends_at and isinstance(p.get("prefs"), dict):
+                        trial_ends_at = p["prefs"].get("trial_ends_at")
+                    role = str(p.get("role") or "user")
+                    calc = calcular_plan_efectivo(plan, paid_at, trial_ends_at, role)
+                    if calc["es_trial"]:
+                        # Trial activo: búsquedas sin tope
+                        q_clean = query[:80].strip()
+                        await client.post(
+                            f"{supabase_url()}/rest/v1/searches",
+                            headers=_service_headers(),
+                            json={"user_id": user_id, "query": q_clean},
+                        )
+                        used = int(p.get("searches_used") or 0)
+                        return {
+                            "ok": True,
+                            "plan": "paid",
+                            "trial": True,
+                            "used": used,
+                            "remaining": None,
+                            "limit": None,
+                        }
+    except Exception:
+        pass
+
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.post(
             f"{supabase_url()}/rest/v1/rpc/consume_search",

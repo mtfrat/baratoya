@@ -411,9 +411,13 @@
             <span class="plan-period">/ para siempre</span>
           </div>
           <ul class="plan-features">
+            <li class="strong">
+              <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+              <span><strong>7 días Plus gratis</strong> para probar búsquedas sin tope</span>
+            </li>
             <li>
               <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-              <span><strong>{{ free_limit }} búsquedas</strong> al mes para probar</span>
+              <span>Luego, <strong>{{ free_limit }} búsquedas</strong> al mes en plan free</span>
             </li>
             <li>
               <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
@@ -503,35 +507,41 @@
   <footer>
     <div class="wrap">
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
+      <p>¿Problema o bug? Escribinos a <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a>.</p>
       <p><a href="/">Inicio</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
   </footer>
 
   <!-- Modal entrar / crear cuenta -->
   <dialog class="entrar" id="entrar-dialog">
-    <form id="cuenta-form">
+    <form id="cuenta-form" novalidate>
       <p class="entrar-titulo" id="entrar-titulo">Entrar</p>
-      <p class="plan-note" id="entrar-note" style="text-align:left; margin-bottom:8px;">Iniciá sesión o creá tu cuenta gratis.</p>
-      <p id="cuenta-msg" role="status" style="font-size:13px; color:#991b1b; margin:0 0 8px; font-weight:600;"></p>
+      <p class="plan-note" id="entrar-note" style="text-align:left; margin-bottom:8px;">Iniciá sesión para continuar.</p>
+      <p id="cuenta-msg" role="status" style="font-size:13px; color:#991b1b; margin:0 0 10px; font-weight:600; min-height:18px;"></p>
       <div class="field">
         <label for="cuenta-email">Mail</label>
-        <input id="cuenta-email" type="email" maxlength="200" autocomplete="username" required />
+        <input id="cuenta-email" type="email" maxlength="200" autocomplete="username" placeholder="tu@email.com" required style="min-height:44px;" />
       </div>
       <div class="field">
         <label for="cuenta-pass">Contraseña</label>
-        <input id="cuenta-pass" type="password" minlength="6" maxlength="200" autocomplete="current-password" required />
+        <input id="cuenta-pass" type="password" minlength="6" maxlength="200" autocomplete="current-password" placeholder="Mínimo 6 caracteres" required style="min-height:44px;" />
       </div>
-      <div class="btn-row">
-        <button class="btn lime" type="submit" id="cuenta-entrar">Entrar</button>
-        <button class="btn outline" type="button" id="cuenta-crear">Crear cuenta</button>
+      <div class="btn-row" style="flex-direction:column; gap:8px;">
+        <button class="btn lime" type="submit" id="cuenta-submit" style="width:100%; min-height:44px;">Entrar</button>
+        <button class="btn text" type="button" id="cuenta-toggle-modo" style="font-size:13px; padding:8px 0; min-height:44px; display:inline-flex; align-items:center; justify-content:center;">¿No tenés cuenta? Creá una gratis</button>
       </div>
-      <button class="btn text" type="button" id="cerrar-entrar" style="margin-top:8px;">Cerrar</button>
+      <button class="btn text" type="button" id="cerrar-entrar" style="margin-top:12px; width:100%; text-align:center; min-height:44px; display:inline-flex; align-items:center; justify-content:center;">Cerrar</button>
     </form>
   </dialog>
 
   <script>
+    const CUENTA_URL = {{ supabase_url|tojson }};
+    const CUENTA_ANON = {{ supabase_anon_key|tojson }};
     const COBRO_ON = {{ cobro_on|tojson }};
     const SESION_KEY = "baratoya-sesion";
+
+    let authModo = "login";
+    let intentandoComprar = false;
 
     function leerSesion() {
       try { return JSON.parse(localStorage.getItem(SESION_KEY) || "null"); }
@@ -544,6 +554,170 @@
     const cerrarEntrar = document.getElementById("cerrar-entrar");
     const btnComprar = document.getElementById("btn-comprar-plus");
     const checkoutMsg = document.getElementById("checkout-msg");
+
+    const cuentaForm = document.getElementById("cuenta-form");
+    const cuentaMsg = document.getElementById("cuenta-msg");
+    const entrarTitulo = document.getElementById("entrar-titulo");
+    const entrarNote = document.getElementById("entrar-note");
+    const cuentaSubmit = document.getElementById("cuenta-submit");
+    const cuentaToggleModo = document.getElementById("cuenta-toggle-modo");
+
+    function setAuthModo(modo) {
+      authModo = modo;
+      if (cuentaMsg) {
+        cuentaMsg.textContent = "";
+        cuentaMsg.style.color = "#991b1b";
+      }
+      if (modo === "signup") {
+        if (entrarTitulo) entrarTitulo.textContent = "Crear cuenta gratis";
+        if (entrarNote) entrarNote.textContent = "7 días de BaratoYa Plus gratis. Sin tarjeta.";
+        if (cuentaSubmit) cuentaSubmit.textContent = "Crear cuenta gratis";
+        if (cuentaToggleModo) cuentaToggleModo.textContent = "¿Ya tenés cuenta? Iniciar sesión";
+      } else {
+        authModo = "login";
+        if (entrarTitulo) entrarTitulo.textContent = "Entrar";
+        if (entrarNote) entrarNote.textContent = "Iniciá sesión para continuar.";
+        if (cuentaSubmit) cuentaSubmit.textContent = "Entrar";
+        if (cuentaToggleModo) cuentaToggleModo.textContent = "¿No tenés cuenta? Creá una gratis";
+      }
+    }
+
+    if (cuentaToggleModo) {
+      cuentaToggleModo.addEventListener("click", () => {
+        setAuthModo(authModo === "login" ? "signup" : "login");
+      });
+    }
+
+    async function authPost(path, body) {
+      const r = await fetch(CUENTA_URL + path, {
+        method: "POST",
+        headers: { "apikey": CUENTA_ANON, "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify(body)
+      });
+      let j = null;
+      try { j = await r.json(); } catch (_) { j = null; }
+      return { ok: r.ok, status: r.status, j: j };
+    }
+
+    function msgAuth(j) {
+      const raw = (j && (j.msg || j.error_description || j.message || j.error)) || "";
+      const s = String(raw);
+      if (/already registered|already exists/i.test(s)) return "Ese mail ya tiene cuenta registrada. Podés entrar directamente.";
+      if (/rate limit|security purposes|too many/i.test(s)) return "Muchos intentos seguidos. Esperá unos minutos y probá de nuevo.";
+      if (/invalid login|invalid credentials/i.test(s)) return "No encontramos esa cuenta o la contraseña no coincide.";
+      if (/password/i.test(s) && /short|least/i.test(s)) return "La contraseña debe tener al menos 6 caracteres.";
+      if (s && s.length < 120) return s;
+      return "No se pudo conectar con el servicio de cuentas. Revisá los datos.";
+    }
+
+    function cookieSesion(token, exp) {
+      try {
+        const d = exp ? new Date(exp * 1000).toUTCString() : "";
+        document.cookie = "baratoya_at=" + encodeURIComponent(token) + "; path=/; max-age=" + (30 * 86400) + "; SameSite=Lax" + (location.protocol === "https:" ? "; Secure" : "");
+      } catch (_) {}
+    }
+
+    function guardarSesion(j) {
+      if (!j || !j.access_token) return false;
+      const emailInput = document.getElementById("cuenta-email")?.value.trim() || "";
+      const ses = {
+        access_token: j.access_token,
+        refresh_token: j.refresh_token || "",
+        expires_at: j.expires_at || (Math.floor(Date.now() / 1000) + 3600),
+        user: j.user || { email: emailInput }
+      };
+      localStorage.setItem(SESION_KEY, JSON.stringify(ses));
+      cookieSesion(j.access_token, ses.expires_at);
+      return true;
+    }
+
+    if (cuentaForm) {
+      cuentaForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = (document.getElementById("cuenta-email")?.value || "").trim();
+        const password = document.getElementById("cuenta-pass")?.value || "";
+
+        if (!email || !email.includes("@")) {
+          if (cuentaMsg) {
+            cuentaMsg.style.color = "#991b1b";
+            cuentaMsg.textContent = "Escribí un mail válido.";
+          }
+          document.getElementById("cuenta-email")?.focus();
+          return;
+        }
+        if (!password || password.length < 6) {
+          if (cuentaMsg) {
+            cuentaMsg.style.color = "#991b1b";
+            cuentaMsg.textContent = "La contraseña debe tener al menos 6 caracteres.";
+          }
+          document.getElementById("cuenta-pass")?.focus();
+          return;
+        }
+
+        if (authModo === "signup") {
+          if (cuentaMsg) {
+            cuentaMsg.style.color = "var(--color-charcoal)";
+            cuentaMsg.textContent = "Creando cuenta…";
+          }
+          try {
+            const res = await authPost("/auth/v1/signup", { email: email, password: password });
+            if (res.j && res.j.access_token && guardarSesion(res.j)) {
+              if (cuentaMsg) cuentaMsg.textContent = "";
+              if (entrarDialog && typeof entrarDialog.close === "function") entrarDialog.close();
+              refrescarNav();
+              if (intentandoComprar) {
+                intentandoComprar = false;
+                btnComprar?.click();
+              }
+              return;
+            }
+            if (res.ok) {
+              if (cuentaMsg) {
+                cuentaMsg.style.color = "#166534";
+                cuentaMsg.textContent = "¡Cuenta creada! Te enviamos un mail de confirmación para activarla.";
+              }
+              return;
+            }
+            if (cuentaMsg) {
+              cuentaMsg.style.color = "#991b1b";
+              cuentaMsg.textContent = msgAuth(res.j);
+            }
+          } catch (_) {
+            if (cuentaMsg) {
+              cuentaMsg.style.color = "#991b1b";
+              cuentaMsg.textContent = "No se pudo crear la cuenta. Probá de nuevo.";
+            }
+          }
+        } else {
+          if (cuentaMsg) {
+            cuentaMsg.style.color = "var(--color-charcoal)";
+            cuentaMsg.textContent = "Iniciando sesión…";
+          }
+          try {
+            const res = await authPost("/auth/v1/token?grant_type=password", { email: email, password: password });
+            if (!res.ok || !guardarSesion(res.j)) {
+              if (cuentaMsg) {
+                cuentaMsg.style.color = "#991b1b";
+                cuentaMsg.textContent = msgAuth(res.j);
+              }
+              return;
+            }
+            if (cuentaMsg) cuentaMsg.textContent = "";
+            if (entrarDialog && typeof entrarDialog.close === "function") entrarDialog.close();
+            refrescarNav();
+            if (intentandoComprar) {
+              intentandoComprar = false;
+              btnComprar?.click();
+            }
+          } catch (_) {
+            if (cuentaMsg) {
+              cuentaMsg.style.color = "#991b1b";
+              cuentaMsg.textContent = "No se pudo iniciar sesión. Revisá los datos.";
+            }
+          }
+        }
+      });
+    }
 
     function refrescarNav() {
       const s = leerSesion();
@@ -568,6 +742,7 @@
           refrescarNav();
           location.reload();
         } else {
+          setAuthModo("login");
           if (entrarDialog && typeof entrarDialog.showModal === "function") entrarDialog.showModal();
         }
       });
@@ -584,6 +759,8 @@
         if (checkoutMsg) checkoutMsg.textContent = "";
         const s = leerSesion();
         if (!s || !s.access_token) {
+          intentandoComprar = true;
+          setAuthModo("signup");
           const note = document.getElementById("entrar-note");
           if (note) note.textContent = "Para activar BaratoYa Plus primero iniciá sesión o creá tu cuenta gratis.";
           if (entrarDialog && typeof entrarDialog.showModal === "function") entrarDialog.showModal();
