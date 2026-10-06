@@ -1614,8 +1614,6 @@
           <details class="lista-min" id="mi-lista" hidden>
             <summary>Lista</summary>
             <div class="lista-row">
-              <label class="visually-hidden" for="lista-email">Mail</label>
-              <input id="lista-email" name="lista-email" type="email" maxlength="200" autocomplete="email" placeholder="Mail" />
               <button type="button" class="btn outline" id="ver-lista">Ver</button>
               <button type="button" class="btn outline" id="revisar-alertas">Revisar si bajó</button>
             </div>
@@ -2281,19 +2279,10 @@
     const qInput = document.getElementById("q");
     let mode = "super";
     let lastItems = [];
-    const listaEmailInput = document.getElementById("lista-email");
-    const LISTA_KEY = "baratoya-lista-email";
-    try {
-      const guardado = localStorage.getItem(LISTA_KEY);
-      if (guardado && listaEmailInput) listaEmailInput.value = guardado;
-    } catch (_) {}
-    if (listaEmailInput) {
-      listaEmailInput.addEventListener("change", () => {
-        try { localStorage.setItem(LISTA_KEY, listaEmailInput.value.trim()); } catch (_) {}
-      });
-    }
-    function mailLista() {
-      return (listaEmailInput && listaEmailInput.value || "").trim();
+    // La lista es de la cuenta con sesión: el servidor usa el usuario del token, no un mail escrito.
+    try { localStorage.removeItem("baratoya-lista-email"); } catch (_) {}
+    async function haySesionLista() {
+      try { return !!(await tokenFresco()); } catch (_) { return false; }
     }
     function botonGuardar(p, i) {
       return "";
@@ -2373,13 +2362,12 @@
     }
     async function cargarLista() {
       const msg = document.getElementById("mi-lista-msg");
-      const email = mailLista();
-      if (!email) {
-        msg.textContent = "Escribí un mail arriba. No es un login: no hay contraseña.";
+      if (!(await haySesionLista())) {
+        msg.textContent = "Entrá con tu cuenta para ver tu lista.";
         return;
       }
       msg.textContent = "Leyendo la lista…";
-      const r = await fetch("/api/lista?email=" + encodeURIComponent(email), { headers: { "Accept": "application/json" } });
+      const r = await fetch("/api/lista", { headers: await headersAuth() });
       let j = null;
       try { j = await r.json(); } catch (_) { j = null; }
       if (!r.ok || !j || !j.ok) {
@@ -3209,12 +3197,10 @@
       const i = Number(btn.getAttribute("data-i"));
       const p = lastItems[i];
       const msg = document.getElementById("mi-lista-msg");
-      const email = mailLista();
-      if (!email) {
+      if (!(await haySesionLista())) {
         const det = document.getElementById("mi-lista");
         if (det) det.open = true;
-        if (msg) msg.textContent = "Escribí un mail en la lista.";
-        document.getElementById("lista-email")?.focus();
+        if (msg) msg.textContent = "Entrá con tu cuenta para guardar en tu lista.";
         return;
       }
       if (!p) return;
@@ -3222,8 +3208,8 @@
       try {
         const r = await fetch("/api/lista", {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify(Object.assign({ email: email }, payloadLista(p)))
+          headers: await headersAuth({ "Content-Type": "application/json" }),
+          body: JSON.stringify(payloadLista(p))
         });
         let j = null;
         try { j = await r.json(); } catch (_) { j = null; }
@@ -3234,7 +3220,6 @@
         }
         btn.textContent = j.nuevo === false ? "Ya estaba en la lista" : "En tu lista";
         msg.textContent = j.aviso || "Guardado.";
-        try { localStorage.setItem(LISTA_KEY, email); } catch (_) {}
         await cargarLista();
       } catch (err) {
         msg.textContent = "No se pudo guardar. Este servidor no respondió.";
@@ -3249,19 +3234,18 @@
     });
     document.getElementById("revisar-alertas").addEventListener("click", async () => {
       const msg = document.getElementById("mi-lista-msg");
-      const email = mailLista();
-      if (!email) {
+      if (!(await haySesionLista())) {
         const det = document.getElementById("mi-lista");
         if (det) det.open = true;
-        if (msg) msg.textContent = "Escribí un mail en la lista.";
+        if (msg) msg.textContent = "Entrá con tu cuenta para revisar tu lista.";
         return;
       }
       msg.textContent = "Releyendo precios… no se manda ningún mail.";
       try {
         const r = await fetch("/api/alertas/revisar", {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ email: email })
+          headers: await headersAuth({ "Content-Type": "application/json" }),
+          body: JSON.stringify({})
         });
         let j = null;
         try { j = await r.json(); } catch (_) { j = null; }
@@ -3276,9 +3260,7 @@
         msg.textContent = "No se pudo releer. Este servidor no respondió.";
       }
     });
-    if (mailLista()) {
-      cargarLista().catch(() => {});
-    }
+    haySesionLista().then((ok) => { if (ok) cargarLista().catch(() => {}); });
 
     let authModo = "login";
     const cuentaForm = document.getElementById("cuenta-form");
