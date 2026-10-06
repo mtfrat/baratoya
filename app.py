@@ -630,7 +630,7 @@ async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONRes
     if not quota.get("ok"):
         if quota.get("reason") == "quota":
             if cuentas.cobro_on():
-                msg = "Usaste las 5 búsquedas. Para seguir hace falta el plan, y el cobro tiene que estar activo."
+                msg = "Usaste las 5 búsquedas. Para seguir sin tope, pasate a BaratoYa Plus en Planes (pago con Mercado Pago)."
             else:
                 msg = "Usaste las 5 búsquedas. El cobro todavía no está activo, así que desde acá no se puede pagar."
             return JSONResponse(
@@ -886,17 +886,17 @@ async def planes_page(request: Request):
 
 @app.get("/aviso-precios", response_class=HTMLResponse)
 async def aviso_precios(request: Request):
-    return templates.TemplateResponse(request, "legal.html", {"page": "aviso-precios"})
+    return templates.TemplateResponse(request, "legal.html", {"page": "aviso-precios", "cobro_on": cuentas.cobro_on()})
 
 
 @app.get("/terminos", response_class=HTMLResponse)
 async def terminos(request: Request):
-    return templates.TemplateResponse(request, "legal.html", {"page": "terminos"})
+    return templates.TemplateResponse(request, "legal.html", {"page": "terminos", "cobro_on": cuentas.cobro_on()})
 
 
 @app.get("/privacidad", response_class=HTMLResponse)
 async def privacidad(request: Request):
-    return templates.TemplateResponse(request, "legal.html", {"page": "privacidad"})
+    return templates.TemplateResponse(request, "legal.html", {"page": "privacidad", "cobro_on": cuentas.cobro_on()})
 
 
 @app.get("/api/sucursales")
@@ -1315,10 +1315,27 @@ async def lista_espera(request: Request):
         conn.close()
 
 
-def _leer_payload_lista(payload: dict[str, Any]) -> dict[str, Any] | JSONResponse:
-    email = str(payload.get("email") or "").strip().lower()
-    if not _email_ok(email):
-        return JSONResponse({"ok": False, "error": "Ese mail no sirve. Revisalo."}, status_code=400)
+async def _email_de_sesion(request: Request) -> str | JSONResponse:
+    """Lista y alertas: solo con la sesión de Supabase (igual que /api/cuenta).
+
+    El mail sale del usuario autenticado. ?email= y el email del body se ignoran.
+    """
+    token = cuentas.bearer(request.headers)
+    if not token:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "Sin sesión."}, status_code=401)
+    if not cuentas.cuentas_on():
+        return JSONResponse(
+            {"ok": False, "error": "Las cuentas no están configuradas en este servidor."},
+            status_code=503,
+        )
+    user = await cuentas.usuario(token)
+    email = str((user or {}).get("email") or "").strip().lower()
+    if not user or not _email_ok(email):
+        return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
+    return email
+
+
+def _leer_payload_lista(payload: dict[str, Any], email: str) -> dict[str, Any] | JSONResponse:
     nombre = " ".join(str(payload.get("nombre") or "").split())
     tienda = " ".join(str(payload.get("tienda") or "").split())
     url = str(payload.get("url") or "").strip()
@@ -1352,14 +1369,17 @@ def _leer_payload_lista(payload: dict[str, Any]) -> dict[str, Any] | JSONRespons
 
 @app.post("/api/lista")
 async def guardar_en_lista(request: Request):
-    """Guarda un producto ya visto. El mail es la clave local: no hay contraseña ni cobro."""
+    """Guarda un producto ya visto en la lista del usuario con sesión. No cobra."""
+    email = await _email_de_sesion(request)
+    if isinstance(email, JSONResponse):
+        return email
     try:
         payload = await request.json()
     except Exception:
         payload = None
     if not isinstance(payload, dict):
-        return JSONResponse({"ok": False, "error": "Mandá JSON con email, nombre, tienda, precio y url."}, status_code=400)
-    parsed = _leer_payload_lista(payload)
+        return JSONResponse({"ok": False, "error": "Mandá JSON con nombre, tienda, precio y url."}, status_code=400)
+    parsed = _leer_payload_lista(payload, email)
     if isinstance(parsed, JSONResponse):
         return parsed
     conn = _db()
@@ -1373,7 +1393,7 @@ async def guardar_en_lista(request: Request):
             return {"ok": True, "nuevo": False, "aviso": "Ya estaba en la lista. El precio guardado no se cambió.", "item": _item_out(ya)}
         n = conn.execute("SELECT COUNT(*) AS n FROM lista_compra WHERE email = ?", (parsed["email"],)).fetchone()["n"]
         if n >= 100:
-            return JSONResponse({"ok": False, "error": "Esta lista local llega hasta 100 productos."}, status_code=400)
+            return JSONResponse({"ok": False, "error": "La lista llega hasta 100 productos."}, status_code=400)
         conn.execute(
             """INSERT INTO lista_compra
                (email, product_key, nombre, tienda, precio, url, fuente, created_at)
@@ -1397,7 +1417,7 @@ async def guardar_en_lista(request: Request):
         return {
             "ok": True,
             "nuevo": True,
-            "aviso": "Guardado en este servidor. No es un login y no se cobra.",
+            "aviso": "Guardado en tu lista.",
             "item": _item_out(row),
         }
     finally:
@@ -1405,25 +1425,26 @@ async def guardar_en_lista(request: Request):
 
 
 @app.get("/api/lista")
-async def ver_lista(email: str = Query(..., min_length=3, max_length=200)):
-    email = email.strip().lower()
-    if not _email_ok(email):
-        return JSONResponse({"ok": False, "error": "Ese mail no sirve. Revisalo."}, status_code=400)
+async def ver_lista(request: Request):
+    """Lista del usuario con sesión. ?email= se ignora."""
+    email = await _email_de_sesion(request)
+    if isinstance(email, JSONResponse):
+        return email
     items = [_item_out(r) for r in _lista_rows(email)]
     return {
         "ok": True,
         "email": email,
-        "aviso": "Local. No es un login: no hay contraseña. Quien escriba este mail ve esta lista.",
+        "aviso": "Tu lista. Solo la ve tu cuenta.",
         "items": items,
     }
 
 
 @app.get("/api/alertas")
-async def ver_alertas(email: str = Query(..., min_length=3, max_length=200)):
-    """Filas de alerta ya guardadas, sin releer precios y sin mandar mail."""
-    email = email.strip().lower()
-    if not _email_ok(email):
-        return JSONResponse({"ok": False, "error": "Ese mail no sirve. Revisalo."}, status_code=400)
+async def ver_alertas(request: Request):
+    """Filas de alerta del usuario con sesión, sin releer precios y sin mandar mail. ?email= se ignora."""
+    email = await _email_de_sesion(request)
+    if isinstance(email, JSONResponse):
+        return email
     return {
         "ok": True,
         "email": email,
@@ -1434,17 +1455,17 @@ async def ver_alertas(email: str = Query(..., min_length=3, max_length=200)):
 
 @app.post("/api/alertas/revisar")
 async def alertas_revisar(request: Request):
-    """Relee el precio vigente y marca la fila si bajó. No programa nada y no manda mail."""
+    """Relee el precio vigente y marca la fila si bajó. Solo con sesión; el email del body se ignora."""
+    email = await _email_de_sesion(request)
+    if isinstance(email, JSONResponse):
+        return email
     try:
         payload = await request.json()
     except Exception:
         payload = None
     if not isinstance(payload, dict):
         payload = {}
-    email = str(payload.get("email") or "").strip().lower()
     product_key = str(payload.get("product_key") or "").strip() or None
-    if not _email_ok(email):
-        return JSONResponse({"ok": False, "error": "Ese mail no sirve. Revisalo."}, status_code=400)
     if product_key and len(product_key) > 400:
         return JSONResponse({"ok": False, "error": "La clave del producto es demasiado larga."}, status_code=400)
     alertas = await revisar_alertas(email, product_key)

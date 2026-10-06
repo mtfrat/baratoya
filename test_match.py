@@ -1480,6 +1480,91 @@ class BatchPendientesLoteTest(unittest.TestCase):
             self.assertEqual(res["reason"], "quota")
 
 
+class ListaPrivacidadTest(unittest.TestCase):
+    """P0: /api/lista y /api/alertas solo con sesión; ?email= y el email del body se ignoran."""
+
+    def setUp(self) -> None:
+        import tempfile
+        from pathlib import Path
+        from fastapi.testclient import TestClient
+        import app as app_mod
+        import cuentas
+
+        self.app_mod = app_mod
+        self.cuentas = cuentas
+        self.tmp = tempfile.TemporaryDirectory()
+        self.p_db = patch.object(app_mod, "DB_PATH", Path(self.tmp.name) / "t.sqlite")
+        self.p_db.start()
+        self.client = TestClient(app_mod.app)
+
+        async def fake_usuario(token):
+            return {
+                "tok-a": {"id": "u-a", "email": "a@example.com"},
+                "tok-b": {"id": "u-b", "email": "b@example.com"},
+            }.get(token)
+
+        self.p_on = patch.object(cuentas, "cuentas_on", return_value=True)
+        self.p_user = patch.object(cuentas, "usuario", fake_usuario)
+        self.p_on.start()
+        self.p_user.start()
+
+    def tearDown(self) -> None:
+        self.p_user.stop()
+        self.p_on.stop()
+        self.p_db.stop()
+        self.tmp.cleanup()
+
+    def _item(self, nombre: str, email: str | None = None) -> dict:
+        d = {"nombre": nombre, "tienda": "Dia", "precio": 1000, "url": "https://example.test/x/" + nombre}
+        if email:
+            d["email"] = email
+        return d
+
+    def test_sin_sesion_401(self) -> None:
+        c = self.client
+        for r in (
+            c.get("/api/lista?email=test@example.com"),
+            c.get("/api/lista"),
+            c.post("/api/lista", json=self._item("yerba", "test@example.com")),
+            c.get("/api/alertas?email=test@example.com"),
+            c.post("/api/alertas/revisar", json={"email": "test@example.com"}),
+        ):
+            self.assertEqual(r.status_code, 401, r.text)
+            self.assertEqual(r.json(), {"ok": False, "reason": "auth", "error": "Sin sesión."})
+
+    def test_token_invalido_401(self) -> None:
+        r = self.client.get("/api/lista?email=a@example.com", headers={"Authorization": "Bearer nada"})
+        self.assertEqual(r.status_code, 401)
+        self.assertEqual(r.json()["reason"], "auth")
+
+    def test_sesion_a_no_ve_lista_de_b(self) -> None:
+        c = self.client
+        ha = {"Authorization": "Bearer tok-a"}
+        hb = {"Authorization": "Bearer tok-b"}
+        # B guarda algo; A intenta guardar "a nombre de B" con email en el body: queda en la lista de A.
+        self.assertTrue(c.post("/api/lista", json=self._item("solo-b"), headers=hb).json()["ok"])
+        self.assertTrue(c.post("/api/lista", json=self._item("de-a", "b@example.com"), headers=ha).json()["ok"])
+
+        ra = c.get("/api/lista?email=b@example.com", headers=ha).json()
+        self.assertTrue(ra["ok"])
+        self.assertEqual(ra["email"], "a@example.com")
+        self.assertEqual([i["nombre"] for i in ra["items"]], ["de-a"])
+        self.assertNotIn("Quien escriba", ra["aviso"])
+
+        rb = c.get("/api/lista", headers=hb).json()
+        self.assertEqual([i["nombre"] for i in rb["items"]], ["solo-b"])
+
+        al = c.get("/api/alertas?email=b@example.com", headers=ha).json()
+        self.assertEqual([i["nombre"] for i in al["alertas"]], ["de-a"])
+
+    def test_cliente_no_manda_mail_ni_texto_viejo(self) -> None:
+        from pathlib import Path
+        html = (Path(self.app_mod.__file__).parent / "templates" / "index.html").read_text(encoding="utf-8")
+        self.assertNotIn("/api/lista?email=", html)
+        self.assertNotIn("Quien escriba este mail", html)
+        self.assertNotIn('id="lista-email"', html)
+
+
 if __name__ == "__main__":
     unittest.main()
 

@@ -1585,20 +1585,24 @@
       <div class="wrap">
         <span class="eyebrow">Comparador independiente · Precios de hoy en CABA</span>
         <h1>El mismo producto, en cada cadena, al precio de hoy.</h1>
-        <p class="sub">El número grande es el que se paga ahora. Calculamos los descuentos de tus bancos para que nunca pagues de más en el súper.</p>
+        <p class="sub">El número grande es el que se paga ahora. Si tu banco tiene una promo publicada para hoy, la restamos y te mostramos el precio final.</p>
         <div class="hero-cta-row">
           <a href="#buscar" class="btn lime">Buscar un precio</a>
           <a href="/planes" class="btn outline">Ver planes</a>
         </div>
         <div class="hero-mockup-frame">
-          <img src="/static/baratoya-hero-landing.jpg" alt="Comparativa de precios de supermercado en BaratoYa" class="hero-mockup-img" width="1280" height="720" loading="eager" />
+          <img src="/static/baratoya-hero-landing.jpg" alt="BaratoYa: precios de hoy en CABA" class="hero-mockup-img" width="1280" height="720" loading="eager" />
         </div>
         <p class="sesion-note" id="sesion-note">Para buscar hace falta entrar. Sin sesión no se consulta el precio.</p>
 
+        {# Electro: oculto por ahora, Martin 2026-10-05. Para reactivar, SHOW_ELECTRO = true (/api/electro sigue vivo). #}
+        {% set SHOW_ELECTRO = false %}
+        {% if SHOW_ELECTRO %}
         <div class="modes" role="group" aria-label="Qué comparar">
           <button type="button" class="btn outline on" id="mode-super" data-mode="super">Súper</button>
           <button type="button" class="btn outline" id="mode-electro" data-mode="electro">Electro</button>
         </div>
+        {% endif %}
         <form class="search" id="buscar" action="/api/buscar" method="get">
           <label class="visually-hidden" for="q">Producto</label>
           <input id="q" name="q" type="text" required maxlength="80" placeholder="Yerba, leche, aceite…" autocomplete="off" />
@@ -1614,8 +1618,6 @@
           <details class="lista-min" id="mi-lista" hidden>
             <summary>Lista</summary>
             <div class="lista-row">
-              <label class="visually-hidden" for="lista-email">Mail</label>
-              <input id="lista-email" name="lista-email" type="email" maxlength="200" autocomplete="email" placeholder="Mail" />
               <button type="button" class="btn outline" id="ver-lista">Ver</button>
               <button type="button" class="btn outline" id="revisar-alertas">Revisar si bajó</button>
             </div>
@@ -1665,12 +1667,12 @@
           <article class="step-card">
             <div class="step-num">1</div>
             <h3>Buscás tu producto</h3>
-            <p>Escribí el nombre de lo que necesitás (yerba, leche, aceite…). Consultamos Precios Claros y las cadenas oficiales al instante.</p>
+            <p>Escribí el nombre de lo que necesitás (yerba, leche, aceite…). Consultamos Precios Claros y los catálogos públicos de las cadenas cuando buscás.</p>
           </article>
           <article class="step-card">
             <div class="step-num">2</div>
             <h3>Calculamos promos bancarias</h3>
-            <p>Cruzamos el precio de góndola con las promociones vigentes de tus tarjetas y billeteras del día, deduciendo el descuento exacto.</p>
+            <p>Cruzamos el precio de góndola con las promociones vigentes de tus tarjetas y billeteras del día, y restamos el descuento que publica cada promo.</p>
           </article>
           <article class="step-card">
             <div class="step-num">3</div>
@@ -1737,9 +1739,13 @@
               <span class="plan-period">/ para siempre</span>
             </div>
             <ul class="plan-features">
+              <li class="strong">
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span><strong>7 días Plus gratis</strong>, sin tarjeta, para probar búsquedas sin tope</span>
+              </li>
               <li>
                 <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                <span><strong>{{ free_limit }} búsquedas</strong> al mes para probar</span>
+                <span>Luego, <strong>{{ free_limit }} búsquedas</strong> al mes en plan free</span>
               </li>
               <li>
                 <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
@@ -1755,7 +1761,7 @@
               </li>
             </ul>
             <a href="#buscar" class="btn outline plan-cta">Empezar gratis</a>
-            <p class="plan-note">Sin tarjeta de crédito. Cuenta en segundos.</p>
+            <p class="plan-note">Sin tarjeta de crédito. Plus ({{ plan_label or "$1.990" }}/mes) es aparte y solo si lo elegís.</p>
           </article>
 
           <!-- Card BaratoYa Plus -->
@@ -1808,7 +1814,7 @@
         <div class="faq-list">
           <div class="faq-item">
             <h3 class="faq-q">¿Cómo cancelo la suscripción?</h3>
-            <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en suscripciones o pagos automáticos) o enviando un mail a punatechba@gmail.com. Sin penalizaciones ni permanencia mínima.</p>
+            <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en suscripciones o pagos automáticos) o enviando un mail a baratoyaba@gmail.com. Sin penalizaciones ni permanencia mínima.</p>
           </div>
           <div class="faq-item">
             <h3 class="faq-q">¿Los precios con promociones son exactos?</h3>
@@ -1826,7 +1832,7 @@
   <footer>
     <div class="wrap">
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
-      <p>¿Problema o bug? Escribinos a <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a>.</p>
+      <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
       <p><a href="/">Inicio</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
   </footer>
@@ -2260,7 +2266,7 @@
       const crudo = String((j && j.error) || "");
       const humano = crudo.replace(/HTTP\s*\d+/gi, "").replace(/\b(401|402|503)\b/g, "").replace(/\s+/g, " ").trim();
       if (r.status === 402) {
-        setState("error", "Ya usaste las cinco búsquedas.", humano || "El cobro todavía no está activo. Desde acá no se puede pagar.");
+        setState("error", "Ya usaste las cinco búsquedas.", humano || (CUENTA.cobro ? "Para seguir sin tope, pasate a BaratoYa Plus en Planes (pago con Mercado Pago)." : "El cobro todavía no está activo. Desde acá no se puede pagar."));
         return true;
       }
       if (r.status === 503) {
@@ -2281,19 +2287,10 @@
     const qInput = document.getElementById("q");
     let mode = "super";
     let lastItems = [];
-    const listaEmailInput = document.getElementById("lista-email");
-    const LISTA_KEY = "baratoya-lista-email";
-    try {
-      const guardado = localStorage.getItem(LISTA_KEY);
-      if (guardado && listaEmailInput) listaEmailInput.value = guardado;
-    } catch (_) {}
-    if (listaEmailInput) {
-      listaEmailInput.addEventListener("change", () => {
-        try { localStorage.setItem(LISTA_KEY, listaEmailInput.value.trim()); } catch (_) {}
-      });
-    }
-    function mailLista() {
-      return (listaEmailInput && listaEmailInput.value || "").trim();
+    // La lista es de la cuenta con sesión: el servidor usa el usuario del token, no un mail escrito.
+    try { localStorage.removeItem("baratoya-lista-email"); } catch (_) {}
+    async function haySesionLista() {
+      try { return !!(await tokenFresco()); } catch (_) { return false; }
     }
     function botonGuardar(p, i) {
       return "";
@@ -2373,13 +2370,12 @@
     }
     async function cargarLista() {
       const msg = document.getElementById("mi-lista-msg");
-      const email = mailLista();
-      if (!email) {
-        msg.textContent = "Escribí un mail arriba. No es un login: no hay contraseña.";
+      if (!(await haySesionLista())) {
+        msg.textContent = "Entrá con tu cuenta para ver tu lista.";
         return;
       }
       msg.textContent = "Leyendo la lista…";
-      const r = await fetch("/api/lista?email=" + encodeURIComponent(email), { headers: { "Accept": "application/json" } });
+      const r = await fetch("/api/lista", { headers: await headersAuth() });
       let j = null;
       try { j = await r.json(); } catch (_) { j = null; }
       if (!r.ok || !j || !j.ok) {
@@ -2392,8 +2388,8 @@
 
     function setMode(next) {
       mode = next === "electro" ? "electro" : "super";
-      document.getElementById("mode-super").classList.toggle("on", mode === "super");
-      document.getElementById("mode-electro").classList.toggle("on", mode === "electro");
+      document.getElementById("mode-super")?.classList.toggle("on", mode === "super");
+      document.getElementById("mode-electro")?.classList.toggle("on", mode === "electro");
       if (mode === "electro") {
         qInput.placeholder = "Heladera, televisor, lavarropas…";
         if (qInput.dataset.autofill === "1") {
@@ -2408,8 +2404,8 @@
         }
       }
     }
-    document.getElementById("mode-super").addEventListener("click", () => setMode("super"));
-    document.getElementById("mode-electro").addEventListener("click", () => setMode("electro"));
+    document.getElementById("mode-super")?.addEventListener("click", () => setMode("super"));
+    document.getElementById("mode-electro")?.addEventListener("click", () => setMode("electro"));
     qInput.addEventListener("input", () => {
       if (qInput.dataset.autofill === "1" && qInput.value !== "heladera") delete qInput.dataset.autofill;
     });
@@ -3209,12 +3205,10 @@
       const i = Number(btn.getAttribute("data-i"));
       const p = lastItems[i];
       const msg = document.getElementById("mi-lista-msg");
-      const email = mailLista();
-      if (!email) {
+      if (!(await haySesionLista())) {
         const det = document.getElementById("mi-lista");
         if (det) det.open = true;
-        if (msg) msg.textContent = "Escribí un mail en la lista.";
-        document.getElementById("lista-email")?.focus();
+        if (msg) msg.textContent = "Entrá con tu cuenta para guardar en tu lista.";
         return;
       }
       if (!p) return;
@@ -3222,8 +3216,8 @@
       try {
         const r = await fetch("/api/lista", {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify(Object.assign({ email: email }, payloadLista(p)))
+          headers: await headersAuth({ "Content-Type": "application/json" }),
+          body: JSON.stringify(payloadLista(p))
         });
         let j = null;
         try { j = await r.json(); } catch (_) { j = null; }
@@ -3234,7 +3228,6 @@
         }
         btn.textContent = j.nuevo === false ? "Ya estaba en la lista" : "En tu lista";
         msg.textContent = j.aviso || "Guardado.";
-        try { localStorage.setItem(LISTA_KEY, email); } catch (_) {}
         await cargarLista();
       } catch (err) {
         msg.textContent = "No se pudo guardar. Este servidor no respondió.";
@@ -3249,19 +3242,18 @@
     });
     document.getElementById("revisar-alertas").addEventListener("click", async () => {
       const msg = document.getElementById("mi-lista-msg");
-      const email = mailLista();
-      if (!email) {
+      if (!(await haySesionLista())) {
         const det = document.getElementById("mi-lista");
         if (det) det.open = true;
-        if (msg) msg.textContent = "Escribí un mail en la lista.";
+        if (msg) msg.textContent = "Entrá con tu cuenta para revisar tu lista.";
         return;
       }
       msg.textContent = "Releyendo precios… no se manda ningún mail.";
       try {
         const r = await fetch("/api/alertas/revisar", {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ email: email })
+          headers: await headersAuth({ "Content-Type": "application/json" }),
+          body: JSON.stringify({})
         });
         let j = null;
         try { j = await r.json(); } catch (_) { j = null; }
@@ -3276,9 +3268,7 @@
         msg.textContent = "No se pudo releer. Este servidor no respondió.";
       }
     });
-    if (mailLista()) {
-      cargarLista().catch(() => {});
-    }
+    haySesionLista().then((ok) => { if (ok) cargarLista().catch(() => {}); });
 
     let authModo = "login";
     const cuentaForm = document.getElementById("cuenta-form");
