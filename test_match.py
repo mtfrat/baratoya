@@ -1565,6 +1565,88 @@ class ListaPrivacidadTest(unittest.TestCase):
         self.assertNotIn('id="lista-email"', html)
 
 
+class LogoBTest(unittest.TestCase):
+    """Marca oficial: ícono carrito + wordmark CSS, sin Inter, favicon nuevo."""
+
+    def _client(self):
+        from fastapi.testclient import TestClient
+        from app import app
+
+        return TestClient(app)
+
+    def test_favicon_es_carrito(self) -> None:
+        client = self._client()
+        for path in ("/favicon.svg", "/favicon.ico"):
+            r = client.get(path)
+            self.assertEqual(r.status_code, 200, path)
+            self.assertIn("#163300", r.text)
+            self.assertIn("#9FE870", r.text)
+            self.assertNotIn(">B<", r.text)
+            self.assertNotIn("Inter", r.text)
+
+    def test_lockup_en_paginas_publicas(self) -> None:
+        client = self._client()
+        paths = ("/", "/planes", "/aviso-precios", "/terminos", "/privacidad")
+        for path in paths:
+            r = client.get(path)
+            self.assertEqual(r.status_code, 200, path)
+            self._assert_lockup(r.text, path)
+            self.assertNotIn("googletagmanager.com", r.text)
+        missing = client.get("/no-existe-logo-b", headers={"Accept": "text/html"})
+        self.assertEqual(missing.status_code, 404)
+        self._assert_lockup(missing.text, "404")
+        admin = client.get("/admin")
+        self.assertEqual(admin.status_code, 403)
+        self._assert_lockup(admin.text, "admin")
+
+    def _assert_lockup(self, html: str, path: str) -> None:
+        self.assertIn('aria-label="BaratoYa — inicio"', html, path)
+        self.assertIn("/static/icon-carrito-b.svg", html, path)
+        self.assertIn('class="b">Barato</span>', html, path)
+        self.assertIn('class="y">Ya</span>', html, path)
+        self.assertIn('href="/static/apple-touch-icon.png"', html, path)
+        self.assertIn("/static/icon-32.png", html, path)
+        self.assertNotIn("family=Inter", html, path)
+        self.assertIn("Libre+Baskerville:wght@400;700", html, path)
+        self.assertIn("Atkinson+Hyperlegible:wght@400;700", html, path)
+
+    def test_assets_de_marca(self) -> None:
+        client = self._client()
+        for path in (
+            "/static/icon-carrito-b.svg",
+            "/static/icon-carrito-b-inv.svg",
+            "/static/icon-32.png",
+            "/static/apple-touch-icon.png",
+            "/static/icon-512.png",
+            "/static/baratoya-hero-landing.jpg",
+        ):
+            r = client.get(path)
+            self.assertEqual(r.status_code, 200, path)
+            self.assertGreater(len(r.content), 100, path)
+
+    def test_ga_solo_con_measurement_id_valido(self) -> None:
+        import os
+        from unittest.mock import patch
+
+        client = self._client()
+        with patch.dict(os.environ, {"GA_MEASUREMENT_ID": "G-5X047YX59B"}):
+            for path in ("/", "/planes", "/privacidad"):
+                r = client.get(path)
+                self.assertIn("https://www.googletagmanager.com/gtag/js?id=G-5X047YX59B", r.text, path)
+                self.assertIn("gtag('config', 'G-5X047YX59B')", r.text, path)
+            missing = client.get("/no-existe-ga", headers={"Accept": "text/html"})
+            self.assertIn("G-5X047YX59B", missing.text)
+            admin = client.get("/admin")
+            self.assertEqual(admin.status_code, 403)
+            self.assertIn("gtag('config', 'G-5X047YX59B')", admin.text)
+        with patch.dict(os.environ, {"GA_MEASUREMENT_ID": 'G-5X047YX59B";alert(1)'}):
+            r = client.get("/")
+            self.assertNotIn("googletagmanager", r.text)
+            self.assertNotIn("alert(1)", r.text)
+        with patch.dict(os.environ, {"GA_MEASUREMENT_ID": ""}):
+            self.assertNotIn("googletagmanager", client.get("/").text)
+
+
 if __name__ == "__main__":
     unittest.main()
 
