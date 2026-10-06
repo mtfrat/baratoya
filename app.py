@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 import httpx
 from fastapi import FastAPI, Query, Request
 from fastapi.exception_handlers import http_exception_handler
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -91,6 +91,24 @@ STATIC_DIR = Path(__file__).parent / "static"
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
+CANONICAL_HOST = "baratoya.app"
+VERCEL_APP_HOSTS = frozenset({"baratoya.vercel.app"})
+
+
+@app.middleware("http")
+async def redirect_legacy_vercel_host(request: Request, call_next):
+    """308 baratoya.vercel.app → baratoya.app (same path + query). Preview *.vercel.app untouched."""
+    host = (request.headers.get("host") or "").split(":", 1)[0].lower()
+    if host in VERCEL_APP_HOSTS:
+        target = f"https://{CANONICAL_HOST}{request.url.path}"
+        if request.url.query:
+            target = f"{target}?{request.url.query}"
+        return RedirectResponse(url=target, status_code=308)
+    return await call_next(request)
+
+
+
+
 @app.exception_handler(StarletteHTTPException)
 async def _http_error(request: Request, exc: StarletteHTTPException):
     """Una persona que cae en una ruta que no existe ve una página, no {"detail": ...}.
@@ -116,6 +134,16 @@ async def brand_logo(name: str):
         raise StarletteHTTPException(status_code=404)
     media = "image/svg+xml" if safe.endswith(".svg") else "image/png"
     return FileResponse(path, media_type=media)
+
+
+@app.get("/robots.txt", include_in_schema=False)
+async def robots_txt():
+    return FileResponse(STATIC_DIR / "robots.txt", media_type="text/plain; charset=utf-8")
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap_xml():
+    return FileResponse(STATIC_DIR / "sitemap.xml", media_type="application/xml")
 
 
 @app.get("/favicon.svg", include_in_schema=False)
