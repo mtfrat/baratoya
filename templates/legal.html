@@ -5,6 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <title>{% if page == "aviso-precios" %}Aviso de precios{% elif page == "terminos" %}Términos de uso{% else %}Privacidad{% endif %} — BaratoYa</title>
+  {% if page == "aviso-precios" %}
+  <meta name="description" content="Cómo BaratoYa muestra precios de supermercados: fuente, actualización y límites. No es un carrito de compras ni una oferta vinculante." />
+  <link rel="canonical" href="https://baratoya.app/aviso-precios" />
+  {% elif page == "terminos" %}
+  <meta name="description" content="Términos de uso de BaratoYa: alcance del servicio de comparación de precios, responsabilidades y uso aceptable." />
+  <link rel="canonical" href="https://baratoya.app/terminos" />
+  {% else %}
+  <meta name="description" content="Política de privacidad de BaratoYa: qué datos tratamos (cuenta, alertas, búsquedas) y para qué, en Argentina." />
+  <link rel="canonical" href="https://baratoya.app/privacidad" />
+  {% endif %}
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="BaratoYa" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:title" content="{% if page == "aviso-precios" %}Aviso de precios{% elif page == "terminos" %}Términos de uso{% else %}Privacidad{% endif %} — BaratoYa" />
+  <meta property="og:description" content="{% if page == "aviso-precios" %}Cómo BaratoYa muestra precios de supermercados: fuente, actualización y límites.{% elif page == "terminos" %}Alcance del servicio de comparación de precios, responsabilidades y uso aceptable.{% else %}Qué datos tratamos (cuenta, alertas, búsquedas) y para qué, en Argentina.{% endif %}" />
+  <meta property="og:url" content="{% if page == "aviso-precios" %}https://baratoya.app/aviso-precios{% elif page == "terminos" %}https://baratoya.app/terminos{% else %}https://baratoya.app/privacidad{% endif %}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />

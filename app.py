@@ -118,6 +118,16 @@ async def brand_logo(name: str):
     return FileResponse(path, media_type=media)
 
 
+@app.get("/robots.txt", include_in_schema=False)
+async def robots_txt():
+    return FileResponse(STATIC_DIR / "robots.txt", media_type="text/plain; charset=utf-8")
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap_xml():
+    return FileResponse(STATIC_DIR / "sitemap.xml", media_type="application/xml")
+
+
 @app.get("/favicon.svg", include_in_schema=False)
 @app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
