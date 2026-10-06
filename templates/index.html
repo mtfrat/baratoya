@@ -1585,7 +1585,7 @@
       <div class="wrap">
         <span class="eyebrow">Comparador independiente · Precios de hoy en CABA</span>
         <h1>El mismo producto, en cada cadena, al precio de hoy.</h1>
-        <p class="sub">El número grande es el que se paga ahora. Calculamos los descuentos de tus bancos para que nunca pagues de más en el súper.</p>
+        <p class="sub">El número grande es el que se paga ahora. Si tu banco tiene una promo publicada para hoy, la restamos y te mostramos el precio final.</p>
         <div class="hero-cta-row">
           <a href="#buscar" class="btn lime">Buscar un precio</a>
           <a href="/planes" class="btn outline">Ver planes</a>
@@ -1672,7 +1672,7 @@
           <article class="step-card">
             <div class="step-num">2</div>
             <h3>Calculamos promos bancarias</h3>
-            <p>Cruzamos el precio de góndola con las promociones vigentes de tus tarjetas y billeteras del día, deduciendo el descuento exacto.</p>
+            <p>Cruzamos el precio de góndola con las promociones vigentes de tus tarjetas y billeteras del día, y restamos el descuento que publica cada promo.</p>
           </article>
           <article class="step-card">
             <div class="step-num">3</div>
@@ -1739,9 +1739,13 @@
               <span class="plan-period">/ para siempre</span>
             </div>
             <ul class="plan-features">
+              <li class="strong">
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                <span><strong>7 días Plus gratis</strong>, sin tarjeta, para probar búsquedas sin tope</span>
+              </li>
               <li>
                 <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                <span><strong>{{ free_limit }} búsquedas</strong> al mes para probar</span>
+                <span>Luego, <strong>{{ free_limit }} búsquedas</strong> al mes en plan free</span>
               </li>
               <li>
                 <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
@@ -1757,7 +1761,7 @@
               </li>
             </ul>
             <a href="#buscar" class="btn outline plan-cta">Empezar gratis</a>
-            <p class="plan-note">Sin tarjeta de crédito. Cuenta en segundos.</p>
+            <p class="plan-note">Sin tarjeta de crédito. Plus ({{ plan_label or "$1.990" }}/mes) es aparte y solo si lo elegís.</p>
           </article>
 
           <!-- Card BaratoYa Plus -->
@@ -1810,7 +1814,7 @@
         <div class="faq-list">
           <div class="faq-item">
             <h3 class="faq-q">¿Cómo cancelo la suscripción?</h3>
-            <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en suscripciones o pagos automáticos) o enviando un mail a punatechba@gmail.com. Sin penalizaciones ni permanencia mínima.</p>
+            <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en suscripciones o pagos automáticos) o enviando un mail a baratoyaba@gmail.com. Sin penalizaciones ni permanencia mínima.</p>
           </div>
           <div class="faq-item">
             <h3 class="faq-q">¿Los precios con promociones son exactos?</h3>
@@ -1828,7 +1832,7 @@
   <footer>
     <div class="wrap">
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
-      <p>¿Problema o bug? Escribinos a <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a>.</p>
+      <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
       <p><a href="/">Inicio</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
   </footer>
