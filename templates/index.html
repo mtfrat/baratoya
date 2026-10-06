@@ -1224,6 +1224,45 @@
       { id: "josimar", nombre: "Josimar" },
       { id: "comodin", nombre: "Comodín" }
     ];
+    const CADENA_ALIAS = {
+      "dia": "dia",
+      "día": "dia",
+      "carrefour": "carrefour",
+      "masonline": "masonline",
+      "mas_online": "masonline",
+      "mas online": "masonline",
+      "chango_mas": "masonline",
+      "changomas": "masonline",
+      "chango más": "masonline",
+      "jumbo": "jumbo",
+      "disco": "disco",
+      "vea": "vea",
+      "coto": "cotodigital",
+      "cotodigital": "cotodigital",
+      "coto_digital": "cotodigital",
+      "coto digital": "cotodigital",
+      "cordiez": "cordiez",
+      "toledo": "toledo",
+      "laanonima": "laanonima",
+      "la_anonima": "laanonima",
+      "la anónima": "laanonima",
+      "la anonima": "laanonima",
+      "la-anonima": "laanonima",
+      "makro": "makro",
+      "maxiconsumo": "maxiconsumo",
+      "supermami": "supermami",
+      "super_mami": "supermami",
+      "super mami": "supermami",
+      "super-mami": "supermami",
+      "josimar": "josimar",
+      "comodin": "comodin",
+      "comodín": "comodin",
+      "abastecedor": "abastecedor"
+    };
+    function normalizarCadenaId(s) {
+      const k = String(s || "").toLowerCase().trim();
+      return CADENA_ALIAS[k] || k;
+    }
     const RESET_REDIRECT = "https://baratoya.vercel.app";
     function leerSesion() {
       try { return JSON.parse(localStorage.getItem(SESION_KEY) || "null"); }
@@ -1395,8 +1434,8 @@
         try { localStorage.setItem(PREFS_STORAGE_KEY, JSON.stringify(userPrefs)); } catch (_) {}
         if (promoBrandIds.length === 0 && userPrefs.banks && userPrefs.banks.length > 0) {
           promoBrandIds = userPrefs.banks.slice();
-          if (typeof pintarPromos === "function") pintarPromos();
         }
+        if (typeof pintarPromos === "function" && promoData) pintarPromos();
       }
       if (adminLink) adminLink.hidden = !(cj && cj.admin);
       if (note) {
@@ -1968,6 +2007,31 @@
       if (gs.some((g) => promoBrandIds.indexOf(g) >= 0)) return true;
       return false;
     }
+    function promoCadenaId(c) {
+      if (!c) return "";
+      const raw = normalizarCadenaId(c.chain_id || c.chain || "");
+      if (raw) return raw;
+      return normalizarCadenaId(c.cadena || "");
+    }
+    function hayFiltroSuper() {
+      return Array.isArray(userPrefs.supermarkets) && userPrefs.supermarkets.length > 0;
+    }
+    function favSupersList() {
+      return (userPrefs.supermarkets || []).map(normalizarCadenaId).filter(Boolean);
+    }
+    function cardMatchSuper(c) {
+      if (!hayFiltroSuper()) return true;
+      const favs = favSupersList();
+      if (!favs.length) return true;
+      return favs.indexOf(promoCadenaId(c)) >= 0;
+    }
+    function nombresSupersFav() {
+      const favs = favSupersList();
+      return favs.map((id) => {
+        const item = CADENAS_PREFS.find((x) => x.id === id);
+        return item ? item.nombre : id;
+      }).join(", ");
+    }
     function toggleIn(list, value) {
       const i = list.indexOf(value);
       if (i >= 0) list.splice(i, 1);
@@ -2137,22 +2201,65 @@
           chip("Todos los días", promoDia === "", "dia", "");
       }
       const delDia = todas.filter((c) => promoDia === "" || (promoDia === "hoy" ? c.hoy : c.dia === promoDia));
-      pintarBankFilter(delDia);
-      const visibles = delDia.filter(cardMatchBanco);
+      const filtradas = delDia.filter(cardMatchSuper);
+      pintarBankFilter(filtradas);
+      const visibles = filtradas.filter(cardMatchBanco);
       if (cuenta) {
+        let msg = "";
         if (!hayFiltroBanco()) {
-          cuenta.textContent = delDia.length
-            ? (delDia.length + (promoDia === "hoy" ? " de hoy" : "") + ". Mostramos todas; filtrá si querés.")
+          msg = filtradas.length
+            ? (filtradas.length + (promoDia === "hoy" ? " de hoy" : "") + ".")
             : "No hay promos para ese día.";
         } else {
-          cuenta.textContent = visibles.length
-            ? (visibles.length + " con tu filtro")
+          msg = visibles.length
+            ? (visibles.length + " con tu filtro.")
             : "No hay promos de esos medios para ese día.";
         }
+        if (hayFiltroSuper()) {
+          const supersTxt = nombresSupersFav();
+          cuenta.innerHTML = esc(msg) + " <span class=\"promo-supers-note\">Mostrando promos de tus súpers (" + esc(supersTxt) + "). <button type=\"button\" class=\"btn text promo-link-prefs\" style=\"display:inline; padding:0; text-decoration:underline; font-size:inherit; color:inherit; font-weight:600; cursor:pointer;\">Cambiá en Preferencias</button>.</span>";
+          const link = cuenta.querySelector(".promo-link-prefs");
+          if (link) {
+            link.addEventListener("click", () => {
+              const btn = document.getElementById("abrir-prefs");
+              if (btn) btn.click();
+              else {
+                const dlg = document.getElementById("prefs-dialog");
+                if (dlg) {
+                  if (typeof pintarModalPrefs === "function") pintarModalPrefs();
+                  if (typeof dlg.showModal === "function") dlg.showModal();
+                  else dlg.setAttribute("open", "");
+                }
+              }
+            });
+          }
+        } else {
+          cuenta.textContent = msg + (filtradas.length && !hayFiltroBanco() ? " Mostramos todas; filtrá si querés." : "");
+        }
       }
-      box.innerHTML = visibles.length
-        ? "<div class=\"promo-grid\">" + visibles.map(promoCard).join("") + "</div>"
-        : "";
+      if (visibles.length) {
+        box.innerHTML = "<div class=\"promo-grid\">" + visibles.map(promoCard).join("") + "</div>";
+      } else if (hayFiltroSuper()) {
+        const supersTxt = nombresSupersFav();
+        box.innerHTML = "<div class=\"state\" style=\"margin:16px 0;\"><p class=\"state-title\">No hay promos para " + esc(supersTxt) + (promoDia === "hoy" ? " hoy" : "") + ".</p><p class=\"lista-note\">Podés cambiar tus supermercados en <button type=\"button\" class=\"btn text promo-link-prefs\" style=\"display:inline; padding:0; text-decoration:underline; font-size:inherit; font-weight:600; cursor:pointer;\">Preferencias</button>.</p></div>";
+        const link = box.querySelector(".promo-link-prefs");
+        if (link) {
+          link.addEventListener("click", () => {
+            const btn = document.getElementById("abrir-prefs");
+            if (btn) btn.click();
+            else {
+              const dlg = document.getElementById("prefs-dialog");
+              if (dlg) {
+                if (typeof pintarModalPrefs === "function") pintarModalPrefs();
+                if (typeof dlg.showModal === "function") dlg.showModal();
+                else dlg.setAttribute("open", "");
+              }
+            }
+          });
+        }
+      } else {
+        box.innerHTML = "";
+      }
       if (notas) notas.innerHTML = "";
     }
     function elegirPromoDia(value) {
@@ -2715,14 +2822,32 @@
         } else {
           if (prefsMsg) prefsMsg.textContent = "Guardado en este navegador.";
         }
+        if (typeof pintarPromos === "function" && promoData) {
+          pintarPromos();
+        }
         if (lastItems && lastItems.length && typeof out !== "undefined") {
-          lastItems.forEach((p) => {
-            if (!Array.isArray(p.ofertas) || !p.ofertas.length) return;
-            const marcadas = marcarPorPrecio(p.ofertas);
-            p.ofertas = marcadas;
-            p.mas_barato = marcadas.filter((o) => o.barato).map((o) => o.tienda);
-          });
-          out.innerHTML = lastItems.map((p, i) => {
+          const favs = favSupersList();
+          const filtrados = lastItems.map((p) => {
+            if (Array.isArray(p.ofertas) && p.ofertas.length) {
+              let ofs = p.ofertas;
+              if (favs.length) {
+                ofs = ofs.filter((o) => favs.includes(normalizarCadenaId(o.tienda_id)));
+              }
+              if (!ofs.length) return null;
+              const marcadas = marcarPorPrecio(ofs);
+              return Object.assign({}, p, {
+                ofertas: marcadas,
+                mas_barato: marcadas.filter((o) => o.barato).map((o) => o.tienda)
+              });
+            }
+            if (p.tienda) {
+              if (favs.length && !favs.includes(normalizarCadenaId(p.tienda_id))) return null;
+              return p;
+            }
+            return p;
+          }).filter(Boolean);
+
+          out.innerHTML = filtrados.map((p, i) => {
             if (Array.isArray(p.ofertas) && p.ofertas.length) {
               const cards = p.ofertas.map((o) => tarjetaTienda(o, p.nombre)).join("");
               const tam = p.tamano ? "<p class=\"pres\">" + esc(p.tamano) + "</p>" : "";

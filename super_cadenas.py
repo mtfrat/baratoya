@@ -109,6 +109,47 @@ _TIENDA_ORDEN["laanonima"] = len(_TIENDA_ORDEN)
 _TIENDA_ORDEN["supermami"] = len(_TIENDA_ORDEN)
 _TIENDA_ORDEN["cotodigital"] = len(_TIENDA_ORDEN)
 
+_CADENA_ALIAS = {
+    "dia": "dia",
+    "día": "dia",
+    "carrefour": "carrefour",
+    "masonline": "masonline",
+    "mas_online": "masonline",
+    "mas online": "masonline",
+    "chango_mas": "masonline",
+    "changomas": "masonline",
+    "chango más": "masonline",
+    "jumbo": "jumbo",
+    "disco": "disco",
+    "vea": "vea",
+    "coto": "cotodigital",
+    "cotodigital": "cotodigital",
+    "coto_digital": "cotodigital",
+    "coto digital": "cotodigital",
+    "cordiez": "cordiez",
+    "toledo": "toledo",
+    "laanonima": "laanonima",
+    "la_anonima": "laanonima",
+    "la anónima": "laanonima",
+    "la anonima": "laanonima",
+    "la-anonima": "laanonima",
+    "makro": "makro",
+    "maxiconsumo": "maxiconsumo",
+    "supermami": "supermami",
+    "super_mami": "supermami",
+    "super mami": "supermami",
+    "super-mami": "supermami",
+    "josimar": "josimar",
+    "comodin": "comodin",
+    "comodín": "comodin",
+    "abastecedor": "abastecedor",
+}
+
+
+def normalizar_cadena_id(val: str) -> str:
+    s = (val or "").casefold().strip()
+    return _CADENA_ALIAS.get(s, s)
+
 _PUNCT = re.compile(r"[^\w\s]", re.UNICODE)
 _SIZE_RE = re.compile(
     r"(?<!\d)(\d+(?:\.\d+)?)\s*(kg|kilos?|gramos?|grs?|g|mls?|cc|litros?|lts?|l)\b",
@@ -1489,22 +1530,17 @@ def agrupar_mismo_producto(
         ofertas = list(by_store.values())
         if not ofertas:
             continue
+        if supermercados_permitidos:
+            favs = {normalizar_cadena_id(s) for s in supermercados_permitidos if s and s.strip()}
+            if favs:
+                ofertas = [o for o in ofertas if normalizar_cadena_id(o["tienda_id"]) in favs]
+        if not ofertas:
+            continue
         # La marca es el precio que se paga ahora. Un total de promo no elige la card.
         piso = min(o["precio"] for o in ofertas)
         for o in ofertas:
             o["barato"] = o["precio"] == piso
-        if supermercados_permitidos:
-            favs = {s.casefold().strip() for s in supermercados_permitidos if s.strip()}
-            ofertas.sort(
-                key=lambda o: (
-                    0 if o["tienda_id"].casefold() in favs else 1,
-                    o["precio"],
-                    _TIENDA_ORDEN.get(o["tienda_id"], 50),
-                    o["tienda"],
-                )
-            )
-        else:
-            ofertas.sort(key=lambda o: (o["precio"], _TIENDA_ORDEN.get(o["tienda_id"], 50), o["tienda"]))
+        ofertas.sort(key=lambda o: (o["precio"], _TIENDA_ORDEN.get(o["tienda_id"], 50), o["tienda"]))
         baratos = [o["tienda"] for o in ofertas if o["barato"]]
         elegido = next(o for o in ofertas if o["barato"])
         best = g["best"]

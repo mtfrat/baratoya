@@ -817,9 +817,59 @@ class PreciosLogosTypoTest(unittest.TestCase):
         for o in ofertas_off:
             self.assertIsNone(o.get("promo"))
 
-        # supermercados_permitidos: prioriza Dia primero en ofertas
+        # supermercados_permitidos: filtra y deja solo Dia en ofertas
         g_fav = sc.agrupar_mismo_producto("yerba mate", filas, hoy=d_martes, supermercados_permitidos=["dia"])
+        self.assertEqual(len(g_fav[0]["ofertas"]), 1)
         self.assertEqual(g_fav[0]["ofertas"][0]["tienda_id"], "dia")
+
+    def test_supermercados_preferidos_filtrado_y_promos(self) -> None:
+        import promos_hoy
+        from super_cadenas import normalizar_cadena_id
+
+        # 1. Con supermarkets=["dia"], ofertas de carrefour no aparecen en el grupo
+        filas = [
+            _fila("Yerba Mate 1kg", "Playadito", 10000.0, "dia"),
+            _fila("Yerba Mate 1kg", "Playadito", 9500.0, "carrefour"),
+        ]
+        g1 = sc.agrupar_mismo_producto("yerba mate", filas, supermercados_permitidos=["dia"])
+        self.assertEqual(len(g1), 1)
+        tiendas1 = [o["tienda_id"] for o in g1[0]["ofertas"]]
+        self.assertIn("dia", tiendas1)
+        self.assertNotIn("carrefour", tiendas1)
+
+        # 2. Grupo solo Carrefour + filtro Día -> grupo omitido
+        filas_carrefour = [
+            _fila("Yerba Mate 1kg", "Playadito", 9500.0, "carrefour"),
+        ]
+        g2 = sc.agrupar_mismo_producto("yerba mate", filas_carrefour, supermercados_permitidos=["dia"])
+        self.assertEqual(len(g2), 0)
+
+        # 3. Lista vacía de supers -> sin filtro (muestra todas las cadenas)
+        g_vacio = sc.agrupar_mismo_producto("yerba mate", filas, supermercados_permitidos=[])
+        self.assertEqual(len(g_vacio), 1)
+        self.assertEqual(set(o["tienda_id"] for o in g_vacio[0]["ofertas"]), {"dia", "carrefour"})
+
+        g_none = sc.agrupar_mismo_producto("yerba mate", filas, supermercados_permitidos=None)
+        self.assertEqual(len(g_none), 1)
+        self.assertEqual(set(o["tienda_id"] for o in g_none[0]["ofertas"]), {"dia", "carrefour"})
+
+        # Normalización de alias
+        self.assertEqual(normalizar_cadena_id("Día"), "dia")
+        self.assertEqual(normalizar_cadena_id("coto"), "cotodigital")
+        self.assertEqual(normalizar_cadena_id("la anónima"), "laanonima")
+        self.assertEqual(normalizar_cadena_id("Mas Online"), "masonline")
+
+        # 4. Promos filtradas por cadena preferida
+        cat = promos_hoy.catalogo()
+        por_dia = cat.get("por_dia", [])
+        self.assertTrue(len(por_dia) > 0)
+        todas_las_promos = [item for g in por_dia for item in g.get("items", [])]
+        self.assertTrue(len(todas_las_promos) > 0)
+        promos_dia = [p for p in todas_las_promos if normalizar_cadena_id(p.get("chain_id") or p.get("cadena")) == "dia"]
+        self.assertTrue(len(promos_dia) > 0)
+        self.assertTrue(all(normalizar_cadena_id(p.get("chain_id") or p.get("cadena")) == "dia" for p in promos_dia))
+        # Si filtramos por día, ninguna promo es de carrefour
+        self.assertTrue(all(normalizar_cadena_id(p.get("chain_id") or p.get("cadena")) != "carrefour" for p in promos_dia))
 
     def test_links_tienda_target_blank_y_sin_ruido_legal(self) -> None:
         from pathlib import Path
