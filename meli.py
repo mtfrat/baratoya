@@ -1,6 +1,17 @@
 """Búsqueda oficial de Mercado Libre Argentina. Sin HTML y sin proxy.
 
-Usa la app BaratoYa (client credentials). Si faltan las variables, no inventa precios.
+Usa la app BaratoYa (client credentials) solo si MLA_PUBLIC_SEARCH=true.
+Si faltan las variables, no inventa precios.
+
+Mercado Libre cerró la búsqueda pública de catálogo. GET
+/sites/MLA/search?q= responde 403 desde IPs residenciales y de nube, con
+o sin Authorization. La documentación oficial solo deja búsqueda acotada
+al vendedor, con OAuth de un usuario vinculado. El token client_credentials
+no restaura el listado de todo el marketplace. No scrapear
+listado.mercadolibre.com.ar: ENABLE_PAID_SCRAPERS sigue en false y no se
+inventan precios. Volver a mostrar publicaciones de MLA es una decisión
+de producto (programa partner o OAuth por usuario), no un ajuste de este
+cliente. ENABLE_MLA no reabre ese recurso.
 """
 from __future__ import annotations
 
@@ -12,7 +23,11 @@ from typing import Any
 import httpx
 
 TOKEN_URL = "https://api.mercadolibre.com/oauth/token"
+# Recurso cerrado: 403 para cualquier cliente. Ver el docstring del módulo.
 SEARCH_URL = "https://api.mercadolibre.com/sites/MLA/search"
+AVISO_CATALOGO_CERRADO = (
+    "Mercado Libre cerró la búsqueda pública de su API; por ahora BaratoYa muestra súpers oficiales."
+)
 _STOP = {
     "la", "el", "los", "las", "de", "del", "y", "e", "o", "u",
     "con", "para", "por", "en", "al", "un", "una", "lo", "a",
@@ -40,6 +55,16 @@ def credenciales() -> tuple[str, str]:
         os.getenv("MERCADOLIBRE_CLIENT_ID", "").strip(),
         os.getenv("MERCADOLIBRE_CLIENT_SECRET", "").strip(),
     )
+
+
+def busqueda_publica_habilitada() -> bool:
+    """True solo con MLA_PUBLIC_SEARCH=true.
+
+    Por defecto está apagada. El catálogo público ya no existe: cada búsqueda
+    pegaba a /sites/MLA/search, recibía 403 y la UI lo mostraba como si
+    BaratoYa hubiera fallado. ENABLE_MLA no alcanza para reabrirla.
+    """
+    return os.getenv("MLA_PUBLIC_SEARCH", "false").lower() == "true"
 
 
 def _ean(item: dict[str, Any]) -> str:
@@ -169,6 +194,10 @@ async def buscar_meli(q: str, limit: int = 10) -> dict[str, Any]:
         "productos": [],
         "aviso": "",
     }
+    if not busqueda_publica_habilitada():
+        # No es un error de esta búsqueda: no hay listado público que consultar.
+        vacio["omitido"] = "catalogo_publico_cerrado"
+        return vacio
     if not all(credenciales()):
         vacio["aviso"] = "sin credenciales de la app"
         return vacio
@@ -189,7 +218,8 @@ async def buscar_meli(q: str, limit: int = 10) -> dict[str, Any]:
     vacio["http"] = r.status_code
     if r.status_code != 200:
         if r.status_code == 403:
-            vacio["aviso"] = "Mercado Libre no dejó ver ese listado."
+            # Cerrado para el token de app, para un token de otro vendedor y sin auth.
+            vacio["aviso"] = AVISO_CATALOGO_CERRADO
         else:
             vacio["aviso"] = f"búsqueda http {r.status_code}"
         return vacio

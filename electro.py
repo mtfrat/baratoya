@@ -209,15 +209,20 @@ async def buscar_electro(q: str) -> dict[str, Any]:
             "productos": [],
             "aviso": str(e),
         }
-    rows = meli.get("productos") if isinstance(meli.get("productos"), list) else []
-    if rows:
-        productos.extend(rows)
+    if meli.get("omitido"):
+        # Misma política que /api/buscar: sin fuente, no hay banner de fallo.
+        nota_mla = "catalogo_publico_cerrado"
+    else:
+        rows = meli.get("productos") if isinstance(meli.get("productos"), list) else []
+        if rows:
+            productos.extend(rows)
+        fuentes.append({k: v for k, v in meli.items() if k != "productos"})
+        nota_mla = meli.get("aviso") or ("ok" if meli.get("ok") else "sin resultados")
     productos = ordenar(productos, q)
-    fuentes.append({k: v for k, v in meli.items() if k != "productos"})
     return {
         "q": q,
         "fuente": "vtex_publico",
         "productos": productos,
         "fuentes": fuentes,
-        "mla": meli.get("aviso") or ("ok" if meli.get("ok") else "sin resultados"),
+        "mla": nota_mla,
     }

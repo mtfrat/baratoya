@@ -966,8 +966,10 @@ async def buscar(
     con_promo: bool | None = None,
 ):
     # TODO: if ENABLE_PAID_SCRAPERS: merge VTEX/MLA paid paths
-    if ENABLE_MLA:
-        pass  # cableado off — requiere MLA_ACCESS_TOKEN / IP limpia
+    # ENABLE_MLA no abre el catálogo: Mercado Libre cerró GET /sites/MLA/search
+    # (403 con o sin token de app). buscar_meli no llama a la API salvo
+    # MLA_PUBLIC_SEARCH=true, y entonces el 403 deja un aviso honesto.
+    # No se scrapea listado.mercadolibre.com.ar ni se inventan precios.
     q = _limpia_q(q)
     if not q:
         return JSONResponse({"ok": False, "error": "Escribí un producto."}, status_code=400)
@@ -1029,14 +1031,17 @@ async def buscar(
     except Exception as e:
         meli = {"tienda": "Mercado Libre", "tienda_id": "mla", "http": 0, "ok": False, "n": 0, "productos": [], "aviso": str(e)}
     cadenas = dict(cadenas)
-    rows = meli.get("productos") if isinstance(meli.get("productos"), list) else []
-    if rows:
-        productos_c = list(cadenas.get("productos") or [])
-        productos_c.extend(rows)
-        cadenas["productos"] = productos_c
-    fuentes = list(cadenas.get("fuentes") or [])
-    fuentes.append({k: v for k, v in meli.items() if k != "productos"})
-    cadenas["fuentes"] = fuentes
+    # Catálogo público apagado: no sumar una fuente vacía. La UI la leería
+    # como "Mercado Libre no respondió" y parecería un bug de BaratoYa.
+    if not meli.get("omitido"):
+        rows = meli.get("productos") if isinstance(meli.get("productos"), list) else []
+        if rows:
+            productos_c = list(cadenas.get("productos") or [])
+            productos_c.extend(rows)
+            cadenas["productos"] = productos_c
+        fuentes = list(cadenas.get("fuentes") or [])
+        fuentes.append({k: v for k, v in meli.items() if k != "productos"})
+        cadenas["fuentes"] = fuentes
     leido, leido_texto = _leido_ahora()
 
     def _consulta() -> dict[str, Any]:
