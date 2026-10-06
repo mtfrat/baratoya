@@ -2467,7 +2467,7 @@
     function avisoMercadoLibre(fuentes) {
       const list = Array.isArray(fuentes) ? fuentes : [];
       const ml = list.find((f) => f && (f.tienda_id === "mla" || f.tienda === "Mercado Libre"));
-      if (!ml) return "";
+      if (!ml || ml.omitido) return "";
       const texto = String(ml.aviso || ml.error || "").trim();
       if (ml.ok && !texto) return "";
       return texto || "Mercado Libre no respondió.";

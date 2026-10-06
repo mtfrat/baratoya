@@ -539,7 +539,9 @@ class MeliAvisoTest(unittest.TestCase):
         import app as app_mod
         import electro
 
-        aviso = "Mercado Libre no dejó ver ese listado."
+        from meli import AVISO_CATALOGO_CERRADO
+
+        aviso = AVISO_CATALOGO_CERRADO
         meli_403 = {
             "tienda": "Mercado Libre", "tienda_id": "mla", "http": 403, "ok": False,
             "n": 0, "productos": [], "aviso": aviso,
