@@ -607,29 +607,13 @@
       text-align: center;
     }
 
-    /* Scrollable chips on mobile */
-    .chip-row.scrollable,
+    /* Chips wrap (no horizontal scroll) — Martin 2026-10-05 */
     #promo-dias,
     #promo-bank-pins,
-    #super-promos-days {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      padding-bottom: 4px;
-    }
-    .chip-row.scrollable::-webkit-scrollbar,
-    #promo-dias::-webkit-scrollbar,
-    #promo-bank-pins::-webkit-scrollbar,
-    #super-promos-days::-webkit-scrollbar {
-      height: 4px;
-    }
-    .chip-row.scrollable::-webkit-scrollbar-thumb,
-    #promo-dias::-webkit-scrollbar-thumb,
-    #promo-bank-pins::-webkit-scrollbar-thumb,
-    #super-promos-days::-webkit-scrollbar-thumb {
-      background: var(--color-pebble);
-      border-radius: 4px;
+    #super-promos-days,
+    .chip-row.scrollable {
+      flex-wrap: wrap;
+      overflow-x: visible;
     }
 
     @media (max-width: 480px) {
