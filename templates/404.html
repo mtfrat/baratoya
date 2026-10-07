@@ -13,6 +13,7 @@
   </script>
   {% endif %}
   <title>No está esa página — BaratoYa</title>
+  <meta name="description" content="Esa dirección no está en BaratoYa. Volvé al inicio para comparar precios." />
   <meta name="robots" content="noindex" />
   <meta name="theme-color" content="#163300" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -58,6 +59,15 @@
     .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid var(--fog); }
     footer .wrap { width: min(100% - 32px, 40rem); margin: 0 auto; }
+    .cookie-note {
+      margin: 0 0 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--fog);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
@@ -70,6 +80,7 @@
   </main>
   <footer>
     <div class="wrap">
+      <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
       <p><a href="/">Inicio</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>

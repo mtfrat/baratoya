@@ -713,6 +713,16 @@
       line-height: 1.55;
     }
     footer p { margin: 0 0 8px; }
+    .cookie-note {
+      margin: 0 0 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--color-fog);
+      color: var(--color-charcoal);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .hero-mockup-frame picture { display: block; }
     .paid-on {
       display: inline-block;
       margin-left: 8px;
@@ -1626,7 +1636,10 @@
           <a href="/planes" class="btn outline">Ver planes</a>
         </div>
         <div class="hero-mockup-frame">
-          <img src="/static/baratoya-hero-landing.jpg" alt="BaratoYa: precios de hoy en CABA" class="hero-mockup-img" width="1280" height="720" loading="eager" />
+          <picture>
+            <source srcset="/static/baratoya-hero-landing.webp" type="image/webp" />
+            <img src="/static/baratoya-hero-landing.jpg" alt="BaratoYa: precios de hoy en CABA" class="hero-mockup-img" width="1280" height="720" loading="eager" />
+          </picture>
         </div>
         <p class="sesion-note" id="sesion-note">Para buscar hace falta entrar. Sin sesión no se consulta el precio.</p>
 
@@ -1866,6 +1879,7 @@
 
   <footer>
     <div class="wrap">
+      <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
       <p><a href="/">Inicio</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>

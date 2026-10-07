@@ -78,7 +78,7 @@ Hace falta una cuenta para buscar precios. Sin sesión no se consulta el precio.
 
 Para borrar tu email de la lista, escribinos a punatechba@gmail.com con el asunto “Borrar mi email — BaratoYa”. Lo sacamos de la lista local.
 
-Si más adelante sumamos cookies, analítica u otros datos, actualizamos este texto antes de activarlos.
+La página en `/privacidad` también cuenta la cookie de sesión `baratoya_at` (para mantener la sesión) y Google Analytics (visitas). Hay un aviso corto en el pie, sin bloquear el sitio.
 
 Responsable (dato conocido, sin CUIT ni domicilio todavía): Puna Tech · Martin Fraticelli · punatechba@gmail.com.
 
