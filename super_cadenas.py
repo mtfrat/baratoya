@@ -17,12 +17,14 @@ from urllib.parse import quote
 
 import httpx
 
-from promos_hoy import aplicar_oferta
+from promos_hoy import FUERA_DE_CABA, aplicar_oferta
 
 # Verificado 2026-10-03 ~21:56 ART desde este servidor (Price numérico > 0, sin proxy):
 # Mas Online, Día, Carrefour, Jumbo, Disco, Vea, Cordiez, Toledo y Josimar.
 # Mismo path /api/catalog_system/pub/products/search. Coto sigue en HTML, no entra.
-STORES: list[dict[str, str]] = [
+# BaratoYa es para CABA: las cadenas de FUERA_DE_CABA (promos_hoy) quedan
+# definidas pero no se consultan ni se muestran.
+_STORES_TODAS: list[dict[str, str]] = [
     {
         "id": "dia",
         "nombre": "Día",
@@ -90,6 +92,7 @@ STORES: list[dict[str, str]] = [
         "fuente": "comodin_vtex",
     },
 ]
+STORES: list[dict[str, str]] = [s for s in _STORES_TODAS if s["id"] not in FUERA_DE_CABA]
 
 VTEX_PATH = "/api/catalog_system/pub/products/search"
 # Una página por cadena alcanza para filtrar el mismo producto. No es un barrido.
@@ -642,11 +645,14 @@ async def buscar_super(q: str, consultas: list[str] | None = None) -> dict[str, 
     q_usada = intentos[0]
     async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
         for intento in intentos:
+            extras = [_fetch_coto(client, intento)]
+            if "laanonima" not in FUERA_DE_CABA:
+                extras.append(_fetch_la_anonima(client, intento))
+            if "supermami" not in FUERA_DE_CABA:
+                extras.append(_fetch_super_mami(client, intento))
             rows = await asyncio.gather(
                 *[_one(client, store, intento) for store in STORES],
-                _fetch_la_anonima(client, intento),
-                _fetch_super_mami(client, intento),
-                _fetch_coto(client, intento),
+                *extras,
             )
             fuentes = []
             productos = []

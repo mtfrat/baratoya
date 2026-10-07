@@ -86,6 +86,17 @@ CHAIN_NOMBRE = {
     "maxiconsumo": "Maxiconsumo",
 }
 
+# BaratoYa es para CABA. Estas cadenas no tienen sucursales en CABA
+# (Cordiez y Super Mami: Córdoba; Toledo: Mar del Plata; La Anónima: Patagonia
+# y provincia; Comodín: Jujuy, Salta y Tucumán). No se muestran ni en promos
+# ni en resultados. El código de lectura queda por si se suman otras zonas.
+FUERA_DE_CABA = frozenset({"cordiez", "toledo", "laanonima", "supermami", "comodin"})
+
+
+def es_de_caba(chain_id: str) -> bool:
+    return str(chain_id or "").strip().casefold() not in FUERA_DE_CABA
+
+
 _CACHE: list[dict[str, Any]] | None = None
 
 
@@ -950,20 +961,21 @@ def cargar(forzar: bool = False) -> list[dict[str, Any]]:
     path_semana = DATA / "promos-semana.json"
     if path_semana.exists():
         recs = _cargar_promos_semana()
-        # Josimar y Comodín: sin cambios
+        # Josimar: sin cambios
         recs.extend(_cargar_josimar())
+        recs = [r for r in recs if es_de_caba(r.get("chain_id") or "")]
         _CACHE = recs
         return recs
     recs: list[dict[str, Any]] = []
     for loader in (
-        _cargar_dia, _cargar_mas, _cargar_cordiez, _cargar_toledo,
-        _cargar_josimar, _cargar_la_anonima, _cargar_makro,
+        _cargar_dia, _cargar_mas, _cargar_josimar, _cargar_makro,
         _cargar_carrefour_md, _cargar_coto_md,
     ):
         try:
             recs.extend(loader())
         except Exception:
             continue
+    recs = [r for r in recs if es_de_caba(r.get("chain_id") or "")]
     _marca_conflictos_cruzados(recs)
     _CACHE = recs
     return recs
@@ -1271,7 +1283,7 @@ def catalogo(hoy: date | None = None) -> dict[str, Any]:
         "Una tarjeta oculta, vencida o con dos fechas que no coinciden no se muestra acá.",
         "Josimar: las promos de banco tienen showMessage en falso y no se cuentan como vigentes.",
         "Makro tiene promos de sucursal y no tiene precio de producto: no entra en la búsqueda.",
-        "El Abastecedor y Comodín no tienen un archivo de promos usable: solo precio de góndola.",
+        "El Abastecedor no tiene un archivo de promos usable: solo precio de góndola.",
         "Coto: el porcentaje del sábado en la app es de sucursal y no se resta del precio de Coto Digital.",
     ]
     return {
@@ -1315,10 +1327,19 @@ def _producto_excluido(rec: dict[str, Any], nombre: str) -> str:
 
 
 
+# "no acumulable", "no acumulabe" (typo real), "no es/son acumulable(s)",
+# "no se acumula", "no se superponen ni son acumulativos", "no combinable".
+# Ojo: "acumulable con otras promociones" (sin "no") sí se suma.
+_NO_ACUMULA_RE = re.compile(
+    r"\bno\s+(?:(?:es|son|sera|seran|se|podra|podran|resulta|resultan)\s+)?"
+    r"(?:acum[a-z]*|combinab[a-z]*|superpon[a-z]*)"
+)
+
+
 def _no_acumula(rec: dict[str, Any]) -> bool:
-    """La letra dice que no se suma a otro descuento. Incluye el typo "acumable"."""
+    """La letra dice que no se suma a otro descuento. Incluye typos ("acumable", "acumulabe")."""
     blob = _fold(" ".join(str(rec.get(k) or "") for k in ("legal", "texto", "exclusion")))
-    return re.search(r"no\s+acum(?:ul)?able|no\s+acumula\b|no\s+es\s+acumulable", blob) is not None
+    return _NO_ACUMULA_RE.search(blob) is not None
 
 
 def puede_restar(
@@ -1432,7 +1453,6 @@ def aplicar_oferta(
 def notas_cadenas_sin_promo() -> list[dict[str, Any]]:
     return [
         {"tienda": "El Abastecedor", "ok": False, "nota": "No hay un archivo de promos usable. Solo el precio de góndola.", "items": [], "url": "", "http": 0},
-        {"tienda": "Comodín", "ok": False, "nota": "No hay un archivo de promos usable. Solo el precio de góndola.", "items": [], "url": "", "http": 0},
         {"tienda": "Makro", "ok": False, "nota": "No se muestra en la búsqueda: promos de sucursal y sin precio de producto.", "items": [], "url": "", "http": 0},
     ]
 
