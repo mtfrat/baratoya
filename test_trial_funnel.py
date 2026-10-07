@@ -17,8 +17,11 @@ import cuentas
 class ActivarTrialPersistTest(unittest.TestCase):
     def test_activar_trial_returns_iso_only_on_ok_status(self) -> None:
         class FakeResp:
-            status_code = 204
+            status_code = 200
             text = ""
+
+            def json(self):
+                return {"ok": True, "activado": True, "trial_ends_at": "2099-01-08T00:00:00+00:00"}
 
         class FakeClient:
             def __init__(self, *a, **k):
@@ -30,16 +33,15 @@ class ActivarTrialPersistTest(unittest.TestCase):
             async def __aexit__(self, *a):
                 return False
 
-            async def patch(self, *a, **k):
+            async def post(self, *a, **k):
                 return FakeResp()
 
         uid = "11111111-1111-1111-1111-111111111111"
         with patch.object(cuentas, "cuentas_on", return_value=True), \
-             patch.object(cuentas, "service_key", return_value="svc"), \
+             patch.object(cuentas, "anon_key", return_value="anon"), \
              patch.object(cuentas, "supabase_url", return_value="https://ex.supabase.co"), \
-             patch.object(cuentas, "_service_headers", return_value={"Authorization": "Bearer svc", "apikey": "svc"}), \
              patch.object(cuentas.httpx, "AsyncClient", FakeClient):
-            iso = asyncio.run(cuentas.activar_trial(uid, 7))
+            iso = asyncio.run(cuentas.activar_trial(uid, 7, token="user-tok"))
         self.assertTrue(iso)
         self.assertIn("T", iso)
 
@@ -58,16 +60,15 @@ class ActivarTrialPersistTest(unittest.TestCase):
             async def __aexit__(self, *a):
                 return False
 
-            async def patch(self, *a, **k):
+            async def post(self, *a, **k):
                 return FakeResp()
 
         uid = "11111111-1111-1111-1111-111111111111"
         with patch.object(cuentas, "cuentas_on", return_value=True), \
-             patch.object(cuentas, "service_key", return_value="svc"), \
+             patch.object(cuentas, "anon_key", return_value="anon"), \
              patch.object(cuentas, "supabase_url", return_value="https://ex.supabase.co"), \
-             patch.object(cuentas, "_service_headers", return_value={"Authorization": "Bearer svc", "apikey": "svc"}), \
              patch.object(cuentas.httpx, "AsyncClient", FakeClient):
-            iso = asyncio.run(cuentas.activar_trial(uid, 7))
+            iso = asyncio.run(cuentas.activar_trial(uid, 7, token="user-tok"))
         self.assertEqual(iso, "")
 
     def test_leer_cuenta_awaits_activar_trial_not_create_task(self) -> None:
@@ -167,18 +168,15 @@ class ActivarTrialPersistTest(unittest.TestCase):
 
 
 class ActivarTrialHttpTest(unittest.TestCase):
-    def test_user_jwt_primary_persists(self) -> None:
-        uid = "11111111-1111-1111-1111-111111111111"
-        patches: list[str] = []
+    """activar_trial usa el RPC con el JWT del usuario. Nunca PATCH ni service role."""
 
+    def _fake(self, resp_status: int, payload, calls: list):
         class FakeResp:
-            def __init__(self, status_code: int, payload=None, text: str = "ok"):
-                self.status_code = status_code
-                self._payload = payload
-                self.text = text
+            status_code = resp_status
+            text = str(payload)
 
-            def json(self):
-                return self._payload
+            def json(self_inner):
+                return payload
 
         class FakeClient:
             def __init__(self, *a, **k):
@@ -190,92 +188,54 @@ class ActivarTrialHttpTest(unittest.TestCase):
             async def __aexit__(self, *a):
                 return False
 
-            async def patch(self, url, headers=None, json=None):
-                auth = (headers or {}).get("Authorization", "")
-                if "user-tok" in auth:
-                    patches.append("user")
-                    return FakeResp(200, [{"id": uid, "trial_ends_at": json["trial_ends_at"]}])
-                patches.append("service")
-                return FakeResp(403, text="forbidden")
-
-        with patch.object(cuentas, "cuentas_on", return_value=True), \
-             patch.object(cuentas, "service_key", return_value="svc-key"), \
-             patch.object(cuentas, "anon_key", return_value="anon"), \
-             patch.object(cuentas, "supabase_url", return_value="https://ex.supabase.co"), \
-             patch.object(cuentas.httpx, "AsyncClient", FakeClient):
-            iso = asyncio.run(cuentas.activar_trial(uid, 7, token="user-tok"))
-        self.assertTrue(iso)
-        self.assertEqual(patches, ["user"])
-
-    def test_user_fail_then_service_fallback(self) -> None:
-        uid = "11111111-1111-1111-1111-111111111111"
-        patches: list[str] = []
-
-        class FakeResp:
-            def __init__(self, status_code: int, payload=None, text: str = ""):
-                self.status_code = status_code
-                self._payload = payload
-                self.text = text
-
-            def json(self):
-                return self._payload
-
-        class FakeClient:
-            def __init__(self, *a, **k):
-                pass
-
-            async def __aenter__(self):
-                return self
-
-            async def __aexit__(self, *a):
-                return False
-
-            async def patch(self, url, headers=None, json=None):
-                auth = (headers or {}).get("Authorization", "")
-                if "user-tok" in auth:
-                    patches.append("user")
-                    return FakeResp(403, text="forbidden")
-                patches.append("service")
-                return FakeResp(204)
-
-        with patch.object(cuentas, "cuentas_on", return_value=True), \
-             patch.object(cuentas, "service_key", return_value="svc-key"), \
-             patch.object(cuentas, "anon_key", return_value="anon"), \
-             patch.object(cuentas, "supabase_url", return_value="https://ex.supabase.co"), \
-             patch.object(cuentas.httpx, "AsyncClient", FakeClient):
-            iso = asyncio.run(cuentas.activar_trial(uid, 7, token="user-tok"))
-        self.assertTrue(iso)
-        self.assertEqual(patches, ["user", "service"])
-
-    def test_all_patch_fail_returns_empty(self) -> None:
-        uid = "11111111-1111-1111-1111-111111111111"
-
-        class FakeResp:
-            status_code = 403
-            text = '{"message":"Forbidden"}'
-
-            def json(self):
-                return {"message": "Forbidden"}
-
-        class FakeClient:
-            def __init__(self, *a, **k):
-                pass
-
-            async def __aenter__(self):
-                return self
-
-            async def __aexit__(self, *a):
-                return False
-
-            async def patch(self, *a, **k):
+            async def post(self, url, headers=None, json=None):
+                calls.append(("post", url, (headers or {}).get("Authorization", ""), json))
                 return FakeResp()
 
+            async def patch(self, *a, **k):
+                calls.append(("patch",))
+                raise AssertionError("activar_trial no debe hacer PATCH")
+
+        return FakeClient
+
+    def _run(self, client_cls, token="user-tok"):
         with patch.object(cuentas, "cuentas_on", return_value=True), \
              patch.object(cuentas, "service_key", return_value="svc-key"), \
              patch.object(cuentas, "anon_key", return_value="anon"), \
              patch.object(cuentas, "supabase_url", return_value="https://ex.supabase.co"), \
-             patch.object(cuentas.httpx, "AsyncClient", FakeClient):
-            iso = asyncio.run(cuentas.activar_trial(uid, 7, token="user-tok"))
+             patch.object(cuentas.httpx, "AsyncClient", client_cls):
+            return asyncio.run(cuentas.activar_trial("11111111-1111-1111-1111-111111111111", 7, token=token))
+
+    def test_user_jwt_llama_rpc(self) -> None:
+        calls: list = []
+        iso = self._run(self._fake(200, {"ok": True, "activado": True, "trial_ends_at": "2099-01-08T00:00:00+00:00"}, calls))
+        self.assertEqual(iso, "2099-01-08T00:00:00+00:00")
+        self.assertEqual(len(calls), 1)
+        kind, url, auth, body = calls[0]
+        self.assertEqual(kind, "post")
+        self.assertTrue(url.endswith("/rest/v1/rpc/activar_trial"))
+        self.assertEqual(auth, "Bearer user-tok")
+        self.assertEqual(body, {})
+
+    def test_idempotente_devuelve_trial_existente(self) -> None:
+        calls: list = []
+        iso = self._run(self._fake(200, {"ok": True, "activado": False, "trial_ends_at": "2026-10-14T20:43:03+00:00"}, calls))
+        self.assertEqual(iso, "2026-10-14T20:43:03+00:00")
+
+    def test_sin_token_no_llama_ni_usa_service_role(self) -> None:
+        calls: list = []
+        iso = self._run(self._fake(200, {"ok": True}, calls), token=None)
+        self.assertEqual(iso, "")
+        self.assertEqual(calls, [])
+
+    def test_rpc_falla_devuelve_vacio(self) -> None:
+        calls: list = []
+        iso = self._run(self._fake(403, {"message": "permission denied for function activar_trial"}, calls))
+        self.assertEqual(iso, "")
+
+    def test_rpc_sin_trial_devuelve_vacio(self) -> None:
+        calls: list = []
+        iso = self._run(self._fake(200, {"ok": True, "activado": False, "trial_ends_at": None}, calls))
         self.assertEqual(iso, "")
 
 

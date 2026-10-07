@@ -256,61 +256,36 @@ def calcular_plan_efectivo(
 
 
 async def activar_trial(user_id: str, days: int = 7, token: str | None = None) -> str:
-    """Persiste trial Plus (UTC). Devuelve ISO solo si algún PATCH fue 2xx.
+    """Activa el trial 7d Plus con el RPC public.activar_trial() y el JWT del usuario.
 
-    Orden: JWT del usuario (RLS profiles_update_own) → service role opcional.
-    Nunca inventa trial en memoria si ningún PATCH es 2xx.
+    La base decide (SECURITY DEFINER, auth.uid()): solo pone trial_ends_at = now()+7d
+    si es NULL, sin pago y sin rol admin. Es idempotente. El usuario ya no puede
+    escribir trial_ends_at por PATCH (trigger + grants por columna), así que no hay
+    fallback a PATCH ni a service role. `days` queda por compatibilidad: el plazo lo fija la base.
+    Devuelve el ISO del trial vigente, o "" si no hay trial (nunca inventa uno en memoria).
     """
-    if not UUID_RE.match(user_id):
+    if not UUID_RE.match(user_id) or not cuentas_on() or not token:
         return ""
-    if not cuentas_on():
+    headers = _user_headers(token)
+    headers["Content-Type"] = "application/json"
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            r = await client.post(f"{supabase_url()}/rest/v1/rpc/activar_trial", headers=headers, json={})
+    except Exception as exc:
+        print(f"activar_trial rpc error user={user_id[:8]}…: {type(exc).__name__}")
         return ""
-    fin = datetime.now(timezone.utc) + timedelta(days=days)
-    fin_iso = fin.isoformat()
-    url = f"{supabase_url()}/rest/v1/profiles?id=eq.{user_id}"
-    body = {"trial_ends_at": fin_iso}
-    attempts: list[tuple[str, dict[str, str]]] = []
-    if token:
-        hdr = _user_headers(token)
-        hdr["Content-Type"] = "application/json"
-        # Prefer representation so 2xx with 0 rows (RLS) is visible as []
-        hdr["Prefer"] = "return=representation"
-        attempts.append(("user", hdr))
-    if service_key():
-        attempts.append(("service", _service_headers()))
-    if not attempts:
+    body = (getattr(r, "text", None) or "")[:240]
+    if r.status_code != 200:
+        print(f"activar_trial rpc HTTP {r.status_code} user={user_id[:8]}… body={body!r}")
         return ""
-
-    last_status = 0
-    last_body = ""
-    async with httpx.AsyncClient(timeout=10.0) as client:
-        for label, headers in attempts:
-            try:
-                r = await client.patch(url, headers=headers, json=body)
-            except Exception as exc:
-                print(f"activar_trial {label} error user={user_id[:8]}…: {type(exc).__name__}")
-                continue
-            last_status = r.status_code
-            last_body = (getattr(r, "text", None) or "")[:240]
-            if r.status_code in (200, 204):
-                # representation: empty list means 0 rows updated (RLS / missing row)
-                if label == "user" and r.status_code == 200:
-                    try:
-                        data = r.json()
-                    except Exception:
-                        data = None
-                    if isinstance(data, list) and len(data) == 0:
-                        print(
-                            f"activar_trial user 200 but 0 rows user={user_id[:8]}… body={last_body!r}"
-                        )
-                        continue
-                return fin_iso
-            print(
-                f"activar_trial {label} HTTP {r.status_code} user={user_id[:8]}… body={last_body!r}"
-            )
-    if last_status:
-        print(f"activar_trial FAILED last_http={last_status} user={user_id[:8]}…")
-    return ""
+    try:
+        data = r.json()
+    except Exception:
+        data = None
+    if not isinstance(data, dict) or not data.get("ok"):
+        print(f"activar_trial rpc sin ok user={user_id[:8]}… body={body!r}")
+        return ""
+    return str(data.get("trial_ends_at") or "")
 
 
 def _cuenta_vacia() -> dict[str, Any]:
@@ -369,12 +344,12 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
         used = 0
     role = row.get("role") if row.get("role") in {"user", "admin"} else "user"
 
+    # Solo la columna cuenta. prefs es editable por el usuario: un trial_ends_at
+    # guardado ahí no vale (antes era un fallback y permitía darse Plus).
     trial_ends_at = row.get("trial_ends_at")
     prefs = normalizar_prefs(row.get("prefs"))
-    if not trial_ends_at and isinstance(row.get("prefs"), dict):
-        trial_ends_at = row["prefs"].get("trial_ends_at")
 
-    # Cuenta nueva sin trial ni pago: persistir 7d Plus. Sin inventar trial si el PATCH falla.
+    # Cuenta nueva sin trial ni pago: RPC activar_trial. Sin inventar trial si falla.
     if not trial_ends_at and not row.get("paid_at") and role != "admin":
         persisted = await activar_trial(user_id, 7, token=token)
         if persisted:
@@ -560,7 +535,7 @@ async def admin_listar_usuarios() -> list[dict[str, Any]]:
                         uid = str(p.get("id") or "")
                         if not uid:
                             continue
-                        trial_ends = p.get("trial_ends_at") or (p.get("prefs", {}).get("trial_ends_at") if isinstance(p.get("prefs"), dict) else None)
+                        trial_ends = p.get("trial_ends_at")
                         calc = calcular_plan_efectivo(str(p.get("plan") or "free"), p.get("paid_at"), trial_ends, str(p.get("role") or "user"))
                         if calc["es_paid"] and p.get("paid_at"):
                             plan_display = "Paid (Plus)"
@@ -622,7 +597,7 @@ async def admin_detalle_usuario(user_id: str) -> dict[str, Any] | None:
                     rows = r.json()
                     if isinstance(rows, list) and rows:
                         p = rows[0]
-                        trial_ends = p.get("trial_ends_at") or (p.get("prefs", {}).get("trial_ends_at") if isinstance(p.get("prefs"), dict) else None)
+                        trial_ends = p.get("trial_ends_at")
                         target = {
                             "id": user_id,
                             "id_corto": user_id[:8],
@@ -781,8 +756,6 @@ async def consumir(user_id: str, query: str) -> dict[str, Any]:
                     plan = str(p.get("plan") or "free")
                     paid_at = p.get("paid_at")
                     trial_ends_at = p.get("trial_ends_at")
-                    if not trial_ends_at and isinstance(p.get("prefs"), dict):
-                        trial_ends_at = p["prefs"].get("trial_ends_at")
                     role = str(p.get("role") or "user")
                     calc = calcular_plan_efectivo(plan, paid_at, trial_ends_at, role)
                     if calc["es_trial"]:
