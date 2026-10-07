@@ -256,20 +256,22 @@ def calcular_plan_efectivo(
 
 
 async def activar_trial(user_id: str, days: int = 7) -> str:
-    """Calcula y persiste 7 días de trial Plus para una cuenta nueva."""
+    """Persiste trial Plus (UTC). Devuelve ISO si el PATCH OK; "" si falló."""
     if not UUID_RE.match(user_id) or not cupo_on():
         return ""
     fin = datetime.now(timezone.utc) + timedelta(days=days)
     fin_iso = fin.isoformat()
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
-            await client.patch(
+            r = await client.patch(
                 f"{supabase_url()}/rest/v1/profiles?id=eq.{user_id}",
                 headers=_service_headers(),
                 json={"trial_ends_at": fin_iso},
             )
+        if r.status_code not in (200, 204):
+            return ""
     except Exception:
-        pass
+        return ""
     return fin_iso
 
 
@@ -334,15 +336,14 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
     if not trial_ends_at and isinstance(row.get("prefs"), dict):
         trial_ends_at = row["prefs"].get("trial_ends_at")
 
-    # Si es cuenta nueva (sin paid_at y sin trial_ends_at) y no es admin, inicializamos 7 días de trial Plus
+    # Cuenta nueva sin trial ni pago: persistir 7d Plus (await — no fire-and-forget)
     if not trial_ends_at and not row.get("paid_at") and role != "admin":
-        trial_ends_at = (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
-        if cupo_on():
-            try:
-                import asyncio
-                asyncio.create_task(activar_trial(user_id, 7))
-            except Exception:
-                pass
+        persisted = await activar_trial(user_id, 7)
+        if persisted:
+            trial_ends_at = persisted
+        else:
+            # Fallback en memoria solo si el PATCH falló; el próximo /api/cuenta reintenta
+            trial_ends_at = (datetime.now(timezone.utc) + timedelta(days=7)).isoformat()
 
     calc = calcular_plan_efectivo(plan, row.get("paid_at"), trial_ends_at, role)
     if role == "admin" or calc["plan_efectivo"] == "paid":
@@ -852,7 +853,11 @@ async def crear_preferencia(user_id: str, email: str) -> dict[str, Any]:
             "status": 502,
             "error": "Mercado Pago no devolvió un link de pago. No se marcó ningún pago.",
         }
-    return {"ok": True, "status": 200, "init_point": str(init)}
+    pref_id = data.get("id")
+    out = {"ok": True, "status": 200, "init_point": str(init)}
+    if pref_id is not None and str(pref_id).strip():
+        out["preference_id"] = str(pref_id)
+    return out
 
 
 def _payment_id(query: dict[str, Any], body: dict[str, Any]) -> str:

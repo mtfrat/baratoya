@@ -1621,11 +1621,11 @@
     <section class="hero">
       <div class="wrap">
         <span class="eyebrow">Comparador independiente · Precios de hoy en CABA</span>
-        <h1>El mismo producto, en cada cadena, al precio de hoy.</h1>
-        <p class="sub">El número grande es el que se paga ahora. Si tu banco tiene una promo publicada para hoy, la restamos y te mostramos el precio final.</p>
+        <h1>Probar 7d Plus gratis</h1>
+        <p class="sub">Creá tu cuenta y durante 7 días buscás sin tope, sin tarjeta. Después seguís en plan gratis (5 búsquedas) o te pasás a Plus si querés.</p>
         <div class="hero-cta-row">
-          <a href="#buscar" class="btn lime">Buscar un precio</a>
-          <a href="/planes" class="btn outline">Ver planes</a>
+          <button type="button" class="btn lime" id="hero-cta-trial">Empezar 7d gratis</button>
+          <a href="#planes" class="btn outline" id="hero-cta-subscribe">Suscribirme · {{ plan_label or "$1.990" }}</a>
         </div>
         <div class="hero-mockup-frame">
           <picture>
@@ -1766,8 +1766,8 @@
       <div class="wrap">
         <div class="planes-header">
           <span class="planes-badge">Planes y suscripciones</span>
-          <h2 class="sec">Elegí cómo ahorrar en el súper</h2>
-          <p class="lead">Probá gratis con tu cupo de bienvenida o desbloqueá búsquedas ilimitadas con BaratoYa Plus.</p>
+          <h2 class="sec">Empezá con 7 días Plus gratis</h2>
+          <p class="lead">Creá tu cuenta y probá búsquedas sin tope durante 7 días, sin tarjeta. Después seguís gratis (5 búsquedas) o elegís Plus.</p>
         </div>
         <div class="landing-plans-grid">
           <!-- Card Gratis -->
@@ -1800,8 +1800,8 @@
                 <span>Listas de compras básicas</span>
               </li>
             </ul>
-            <a href="#buscar" class="btn outline plan-cta">Empezar gratis</a>
-            <p class="plan-note">Sin tarjeta de crédito. Plus ({{ plan_label or "$1.990" }}/mes) es aparte y solo si lo elegís.</p>
+            <button type="button" class="btn outline plan-cta" id="landing-cta-trial">Empezar 7d gratis</button>
+            <p class="plan-note">Sin tarjeta. Al crear la cuenta activás 7 días Plus. Plus pago ({{ plan_label or "$1.990" }}/mes) es aparte y solo si lo elegís.</p>
           </article>
 
           <!-- Card BaratoYa Plus -->
@@ -1832,7 +1832,7 @@
               </li>
             </ul>
             <button type="button" class="btn lime plan-cta" id="btn-landing-comprar-plus">
-              Pagar con Mercado Pago <span aria-hidden="true">↗</span>
+              Suscribirme · {{ plan_label or "$1.990" }} <span aria-hidden="true">↗</span>
             </button>
             {% if not cobro_on %}
             <p class="plan-note warn">El cobro con Mercado Pago se está configurando en producción. Próximamente disponible.</p>
@@ -1852,6 +1852,10 @@
       <div class="wrap">
         <h2 class="sec" style="text-align:center;">Preguntas frecuentes</h2>
         <div class="faq-list">
+          <div class="faq-item">
+            <h3 class="faq-q">¿El trial cobra solo?</h3>
+            <p class="faq-a">No. Los 7 días Plus son gratis y sin tarjeta. No hay cobro automático el día 8: pasás al plan gratis (5 búsquedas). Solo se cobra si elegís suscribirte a Plus con Mercado Pago.</p>
+          </div>
           <div class="faq-item">
             <h3 class="faq-q">¿Cómo cancelo la suscripción?</h3>
             <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en suscripciones o pagos automáticos) o enviando un mail a baratoyaba@gmail.com. Sin penalizaciones ni permanencia mínima.</p>
@@ -2019,6 +2023,7 @@
       anon: {{ supabase_anon_key|tojson }},
       on: {{ cuentas_on|tojson }},
       cobro: {{ cobro_on|tojson }},
+      planLabel: {{ (plan_label or '$1.990')|tojson }},
       limit: {{ free_limit|tojson }}
     };
     const SESION_KEY = "baratoya-sesion";
@@ -2120,6 +2125,40 @@
     function borrarCookieSesion() {
       const secure = location.protocol === "https:" ? "; Secure" : "";
       document.cookie = "baratoya_at=; Path=/; SameSite=Lax; Max-Age=0" + secure;
+    }
+    function trackEvent(name, params) {
+      try {
+        if (typeof gtag === "function") gtag("event", name, params || {});
+      } catch (_) {}
+    }
+    function trackTrialIfNeeded(cj) {
+      if (!cj || !(cj.trial || cj.trial_activo) || !cj.trial_ends_at) return;
+      try {
+        if (sessionStorage.getItem("by_trial_start") === cj.trial_ends_at) return;
+        sessionStorage.setItem("by_trial_start", cj.trial_ends_at);
+      } catch (_) {}
+      trackEvent("trial_start", { method: "signup", trial_ends_at: cj.trial_ends_at });
+    }
+    function trackMpReturn() {
+      try {
+        const u = new URL(location.href);
+        if (u.searchParams.get("mp") !== "vuelta") return;
+        const status = (u.searchParams.get("collection_status") || u.searchParams.get("status") || "").toLowerCase();
+        const tid = u.searchParams.get("payment_id") || u.searchParams.get("collection_id") || u.searchParams.get("preference_id") || sessionStorage.getItem("by_mp_pref") || "";
+        if (status === "approved" || status === "success") {
+          trackEvent("purchase", { transaction_id: String(tid || "mp"), value: 1990, currency: "ARS", items: [{ item_id: "baratoya_plus", item_name: "BaratoYa Plus", price: 1990, quantity: 1 }] });
+          trackEvent("subscribe", { transaction_id: String(tid || "mp"), value: 1990, currency: "ARS" });
+        }
+      } catch (_) {}
+    }
+    trackMpReturn();
+    function abrirSignupTrial(source) {
+      trackEvent("cta_click", { cta: "empezar_7d_gratis", source: source || "unknown" });
+      if (typeof setAuthModo === "function") setAuthModo("signup");
+      const dlg = document.getElementById("entrar-dialog");
+      const note = document.getElementById("entrar-note");
+      if (note) note.textContent = "7 días Plus gratis, sin tarjeta.";
+      if (dlg && typeof dlg.showModal === "function" && !dlg.open) dlg.showModal();
     }
     function guardarSesion(j) {
       if (!j || !j.access_token) return false;
@@ -2289,6 +2328,7 @@
         if (typeof pintarPromos === "function" && promoData) pintarPromos();
       }
       if (adminLink) adminLink.hidden = !(cj && cj.admin);
+      if (cj) trackTrialIfNeeded(cj);
       if (note) {
         if (cj && cj.trial) note.textContent = "Trial BaratoYa Plus activo (sin tope de búsquedas).";
         else if (cj && (cj.admin || cj.plan === "paid")) note.textContent = "Esta cuenta no tiene tope de búsquedas.";
@@ -3328,8 +3368,8 @@
       }
       if (modo === "signup") {
         if (entrarTitulo) entrarTitulo.textContent = "Crear cuenta gratis";
-        if (entrarNote) entrarNote.textContent = "7 días de BaratoYa Plus gratis. Sin tarjeta.";
-        if (cuentaSubmit) cuentaSubmit.textContent = "Crear cuenta gratis";
+        if (entrarNote) entrarNote.textContent = "7 días Plus gratis, sin tarjeta.";
+        if (cuentaSubmit) cuentaSubmit.textContent = "Empezar 7d gratis";
         if (cuentaToggleModo) cuentaToggleModo.textContent = "¿Ya tenés cuenta? Iniciar sesión";
         if (cuentaOlvide) cuentaOlvide.hidden = true;
       } else {
@@ -3382,6 +3422,10 @@
               if (cuentaMsg) cuentaMsg.textContent = "";
               const dlg = document.getElementById("entrar-dialog");
               if (dlg && typeof dlg.close === "function") dlg.close();
+              trackEvent("sign_up", { method: "email" });
+              try {
+                await fetch("/api/cuenta/activar-trial", { method: "POST", headers: await headersAuth() });
+              } catch (_) {}
               await refrescarCuenta();
               await cargarPromosSiHaySesion();
               return;
@@ -4095,8 +4139,16 @@
       });
     }
 
+    document.getElementById("hero-cta-trial")?.addEventListener("click", () => abrirSignupTrial("hero"));
+    document.getElementById("landing-cta-trial")?.addEventListener("click", () => abrirSignupTrial("landing_gratis"));
+    document.getElementById("hero-cta-subscribe")?.addEventListener("click", () => {
+      trackEvent("cta_click", { cta: "suscribirme", source: "hero" });
+      trackEvent("view_plans", { source: "hero" });
+    });
+
     const btnLandingComprar = document.getElementById("btn-landing-comprar-plus");
     const landingCheckoutMsg = document.getElementById("landing-checkout-msg");
+    const PLUS_CTA_HTML = "Suscribirme · " + (CUENTA.planLabel || "$1.990") + " <span aria-hidden=\"true\">↗</span>";
 
     if (btnLandingComprar) {
       btnLandingComprar.addEventListener("click", async () => {
@@ -4120,12 +4172,14 @@
         btnLandingComprar.textContent = "Conectando con Mercado Pago...";
 
         try {
+          trackEvent("begin_checkout", { currency: "ARS", value: 1990, items: [{ item_id: "baratoya_plus", item_name: "BaratoYa Plus", price: 1990, quantity: 1 }] });
           const res = await fetch("/api/cuenta/checkout", {
             method: "POST",
             headers: await headersAuth()
           });
           const data = await res.json();
           if (res.ok && data.init_point) {
+            try { if (data.preference_id) sessionStorage.setItem("by_mp_pref", String(data.preference_id)); } catch (_) {}
             location.href = data.init_point;
           } else if (data.already) {
             if (landingCheckoutMsg) landingCheckoutMsg.textContent = "Tu cuenta ya tiene búsquedas ilimitadas.";
@@ -4133,12 +4187,12 @@
           } else {
             if (landingCheckoutMsg) landingCheckoutMsg.textContent = data.error || "No se pudo iniciar el pago. Probá de nuevo.";
             btnLandingComprar.disabled = false;
-            btnLandingComprar.innerHTML = "Pagar con Mercado Pago <span aria-hidden=\"true\">↗</span>";
+            btnLandingComprar.innerHTML = PLUS_CTA_HTML;
           }
         } catch (err) {
           if (landingCheckoutMsg) landingCheckoutMsg.textContent = "Ocurrió un error al contactar al servidor.";
           btnLandingComprar.disabled = false;
-          btnLandingComprar.innerHTML = "Pagar con Mercado Pago <span aria-hidden=\"true\">↗</span>";
+          btnLandingComprar.innerHTML = PLUS_CTA_HTML;
         }
       });
     }
