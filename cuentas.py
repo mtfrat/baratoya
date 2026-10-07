@@ -733,6 +733,34 @@ async def admin_listar_pagos() -> dict[str, Any]:
     }
 
 
+async def _registrar_busqueda(client: httpx.AsyncClient, user_id: str, query: str) -> bool:
+    """Guarda la búsqueda con el rol de servicio. Si PostgREST no da 2xx, lo deja en el log.
+
+    Antes el resultado se ignoraba: sin GRANT INSERT para service_role en public.searches
+    PostgREST respondía 401/403 (42501) y las búsquedas de trial no quedaban guardadas.
+    """
+    q_clean = (query or "")[:80].strip()
+    if not q_clean:
+        return False
+    headers = _service_headers()
+    headers["Prefer"] = "return=minimal"
+    try:
+        r = await client.post(
+            f"{supabase_url()}/rest/v1/searches",
+            headers=headers,
+            json={"user_id": user_id, "query": q_clean},
+        )
+    except Exception as exc:
+        print(f"searches insert error user={user_id[:8]}…: {type(exc).__name__}")
+        return False
+    status = int(getattr(r, "status_code", 0) or 0)
+    if 200 <= status < 300:
+        return True
+    body = (getattr(r, "text", None) or "")[:240]
+    print(f"searches insert HTTP {status} user={user_id[:8]}… body={body!r}")
+    return False
+
+
 async def consumir(user_id: str, query: str) -> dict[str, Any]:
     if not cupo_on():
         raise RuntimeError("sin service role")
@@ -758,13 +786,9 @@ async def consumir(user_id: str, query: str) -> dict[str, Any]:
                     role = str(p.get("role") or "user")
                     calc = calcular_plan_efectivo(plan, paid_at, trial_ends_at, role)
                     if calc["es_trial"]:
-                        # Trial activo: búsquedas sin tope
-                        q_clean = query[:80].strip()
-                        await client.post(
-                            f"{supabase_url()}/rest/v1/searches",
-                            headers=_service_headers(),
-                            json={"user_id": user_id, "query": q_clean},
-                        )
+                        # Trial activo: búsquedas sin tope. Si el insert falla, se busca
+                        # igual (no se castiga al usuario) pero queda en el log.
+                        await _registrar_busqueda(client, user_id, query)
                         used = int(p.get("searches_used") or 0)
                         return {
                             "ok": True,
@@ -774,8 +798,11 @@ async def consumir(user_id: str, query: str) -> dict[str, Any]:
                             "remaining": None,
                             "limit": None,
                         }
-    except Exception:
-        pass
+            else:
+                body = (getattr(r_prof, "text", None) or "")[:240]
+                print(f"consumir profile HTTP {r_prof.status_code} user={user_id[:8]}… body={body!r}")
+    except Exception as exc:
+        print(f"consumir trial check error user={user_id[:8]}…: {type(exc).__name__}")
 
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.post(
