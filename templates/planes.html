@@ -458,9 +458,9 @@
   <main>
     <section class="planes-hero">
       <div class="wrap">
-        <span class="planes-badge">Precios transparentes</span>
-        <h1>Elegí cómo querés usar BaratoYa</h1>
-        <p class="sub">El comparador es gratis. Si querés buscar sin límite de cupo y tener alertas de precios bajos, pasate a Plus.</p>
+        <span class="planes-badge">7 días Plus gratis</span>
+        <h1>Probar 7d Plus gratis</h1>
+        <p class="sub">Creá tu cuenta y durante 7 días buscás sin tope, sin tarjeta. Después seguís en plan gratis (5 búsquedas) o te suscribís a Plus si querés.</p>
       </div>
     </section>
 
@@ -496,8 +496,8 @@
               <span>Acceso a listas de compras básicas</span>
             </li>
           </ul>
-          <a href="/#buscar" class="btn outline plan-cta">Empezar gratis</a>
-          <p class="plan-note">Sin tarjeta de crédito. Creás tu cuenta en segundos.</p>
+          <button type="button" class="btn outline plan-cta" id="planes-cta-trial">Empezar 7d gratis</button>
+          <p class="plan-note">Sin tarjeta. Al crear la cuenta activás 7 días Plus. Después: plan gratis (5 búsquedas) o Plus aparte.</p>
         </article>
 
         <!-- Plan BaratoYa Plus -->
@@ -533,7 +533,7 @@
           </ul>
 
           <button type="button" class="btn lime plan-cta" id="btn-comprar-plus">
-            Pagar con Mercado Pago <span aria-hidden="true">↗</span>
+            Suscribirme · {{ plan_label or "$1.990" }} <span aria-hidden="true">↗</span>
           </button>
 
           {% if not cobro_on %}
@@ -551,6 +551,10 @@
       <div class="wrap">
         <h2>Preguntas frecuentes</h2>
         <div class="faq-list">
+          <div class="faq-item">
+            <h3 class="faq-q">¿El trial cobra solo?</h3>
+            <p class="faq-a">No. Los 7 días Plus son gratis y sin tarjeta. No hay cobro automático el día 8: pasás al plan gratis (5 búsquedas). Solo se cobra si elegís suscribirte a Plus con Mercado Pago.</p>
+          </div>
           <div class="faq-item">
             <h3 class="faq-q">¿Cómo cancelo la suscripción?</h3>
             <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en la sección de suscripciones o pagos automáticos) o escribiéndonos a baratoyaba@gmail.com. No hay permanencia mínima ni penalizaciones.</p>
@@ -603,6 +607,31 @@
     const CUENTA_URL = {{ supabase_url|tojson }};
     const CUENTA_ANON = {{ supabase_anon_key|tojson }};
     const COBRO_ON = {{ cobro_on|tojson }};
+    const PLAN_LABEL = {{ (plan_label or "$1.990")|tojson }};
+    const PLUS_CTA_HTML = "Suscribirme · " + (PLAN_LABEL || "$1.990") + " <span aria-hidden=\"true\">↗</span>";
+    function trackEvent(name, params) {
+      try {
+        if (typeof gtag === "function") gtag("event", name, params || {});
+      } catch (_) {}
+    }
+    function trackTrialIfNeeded(cj) {
+      if (!cj || !(cj.trial || cj.trial_activo) || !cj.trial_ends_at) return;
+      try {
+        if (sessionStorage.getItem("by_trial_start") === cj.trial_ends_at) return;
+        sessionStorage.setItem("by_trial_start", cj.trial_ends_at);
+      } catch (_) {}
+      trackEvent("trial_start", { method: "signup", trial_ends_at: cj.trial_ends_at });
+    }
+    function abrirSignupTrial(source) {
+      trackEvent("cta_click", { cta: "empezar_7d_gratis", source: source || "planes" });
+      setAuthModo("signup");
+      const note = document.getElementById("entrar-note");
+      if (note) note.textContent = "7 días Plus gratis, sin tarjeta.";
+      const dlg = document.getElementById("entrar-dialog");
+      if (dlg && typeof dlg.showModal === "function" && !dlg.open) dlg.showModal();
+    }
+    document.getElementById("planes-cta-trial")?.addEventListener("click", () => abrirSignupTrial("planes_gratis"));
+    trackEvent("view_plans", { page: "planes" });
     const SESION_KEY = "baratoya-sesion";
 
     let authModo = "login";
@@ -635,8 +664,8 @@
       }
       if (modo === "signup") {
         if (entrarTitulo) entrarTitulo.textContent = "Crear cuenta gratis";
-        if (entrarNote) entrarNote.textContent = "7 días de BaratoYa Plus gratis. Sin tarjeta.";
-        if (cuentaSubmit) cuentaSubmit.textContent = "Crear cuenta gratis";
+        if (entrarNote) entrarNote.textContent = "7 días Plus gratis, sin tarjeta.";
+        if (cuentaSubmit) cuentaSubmit.textContent = "Empezar 7d gratis";
         if (cuentaToggleModo) cuentaToggleModo.textContent = "¿Ya tenés cuenta? Iniciar sesión";
       } else {
         authModo = "login";
@@ -729,6 +758,15 @@
             if (res.j && res.j.access_token && guardarSesion(res.j)) {
               if (cuentaMsg) cuentaMsg.textContent = "";
               if (entrarDialog && typeof entrarDialog.close === "function") entrarDialog.close();
+              trackEvent("sign_up", { method: "email" });
+              try {
+                const tr = await fetch("/api/cuenta/activar-trial", {
+                  method: "POST",
+                  headers: { "Accept": "application/json", "Authorization": "Bearer " + (leerSesion()?.access_token || "") }
+                });
+                const tj = await tr.json().catch(() => null);
+                if (tj) trackTrialIfNeeded(tj);
+              } catch (_) {}
               refrescarNav();
               if (intentandoComprar) {
                 intentandoComprar = false;
@@ -843,6 +881,7 @@
         btnComprar.textContent = "Conectando con Mercado Pago...";
 
         try {
+          trackEvent("begin_checkout", { currency: "ARS", value: 1990, items: [{ item_id: "baratoya_plus", item_name: "BaratoYa Plus", price: 1990, quantity: 1 }] });
           const res = await fetch("/api/cuenta/checkout", {
             method: "POST",
             headers: {
@@ -852,6 +891,7 @@
           });
           const data = await res.json();
           if (res.ok && data.init_point) {
+            try { if (data.preference_id) sessionStorage.setItem("by_mp_pref", String(data.preference_id)); } catch (_) {}
             location.href = data.init_point;
           } else if (data.already) {
             if (checkoutMsg) checkoutMsg.textContent = "Tu cuenta ya tiene búsquedas ilimitadas.";
@@ -859,12 +899,12 @@
           } else {
             if (checkoutMsg) checkoutMsg.textContent = data.error || "No se pudo iniciar el pago. Probá de nuevo.";
             btnComprar.disabled = false;
-            btnComprar.innerHTML = "Pagar con Mercado Pago <span aria-hidden=\"true\">↗</span>";
+            btnComprar.innerHTML = PLUS_CTA_HTML;
           }
         } catch (err) {
           if (checkoutMsg) checkoutMsg.textContent = "Ocurrió un error al contactar al servidor.";
           btnComprar.disabled = false;
-          btnComprar.innerHTML = "Pagar con Mercado Pago <span aria-hidden=\"true\">↗</span>";
+          btnComprar.innerHTML = PLUS_CTA_HTML;
         }
       });
     }

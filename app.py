@@ -1205,6 +1205,32 @@ async def ver_cuenta(request: Request):
     }
 
 
+@app.post("/api/cuenta/activar-trial")
+async def activar_trial_cuenta(request: Request):
+    """Persiste trial 7d Plus tras signup. Idempotente si ya hay trial_ends_at o paid_at."""
+    if not cuentas.cuentas_on():
+        return JSONResponse(
+            {"ok": False, "error": "Las cuentas no están configuradas en este servidor."},
+            status_code=503,
+        )
+    token = cuentas.bearer(request.headers)
+    if not token:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "Sin sesión."}, status_code=401)
+    user = await cuentas.usuario(token)
+    if not user:
+        return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
+    perfil = await cuentas.leer_cuenta(token, user["id"])
+    return {
+        "ok": True,
+        "trial": bool(perfil.get("trial")),
+        "trial_activo": bool(perfil.get("trial_activo")),
+        "trial_ends_at": perfil.get("trial_ends_at"),
+        "trial_ends_at_texto": perfil.get("trial_ends_at_texto") or "",
+        "plan": perfil.get("plan"),
+        "plan_base": perfil.get("plan_base", "free"),
+    }
+
+
 @app.get("/api/cuenta/preferencias")
 async def ver_preferencias(request: Request):
     if not cuentas.cuentas_on():
@@ -1263,7 +1289,10 @@ async def checkout_cuenta(request: Request):
     if not user:
         return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
     perfil = await cuentas.leer_cuenta(token, user["id"])
-    if perfil.get("plan") == "paid":
+    # Solo bloquear si ya pagó Plus real. Trial (plan efectivo paid) sí puede suscribirse.
+    if perfil.get("paid_at") or (
+        perfil.get("plan_base") == "paid" and not perfil.get("trial")
+    ):
         return {"ok": True, "already": True, "error": "Esta cuenta ya tiene búsquedas ilimitadas."}
     result = await cuentas.crear_preferencia(user["id"], user["email"])
     status = int(result.pop("status", 200))
