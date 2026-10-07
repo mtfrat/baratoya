@@ -1621,6 +1621,7 @@ class LogoBTest(unittest.TestCase):
             "/static/apple-touch-icon.png",
             "/static/icon-512.png",
             "/static/baratoya-hero-landing.jpg",
+            "/static/baratoya-hero-landing.webp",
         ):
             r = client.get(path)
             self.assertEqual(r.status_code, 200, path)
@@ -1647,6 +1648,58 @@ class LogoBTest(unittest.TestCase):
             self.assertNotIn("alert(1)", r.text)
         with patch.dict(os.environ, {"GA_MEASUREMENT_ID": ""}):
             self.assertNotIn("googletagmanager", client.get("/").text)
+
+
+class PrivacidadHeroTest(unittest.TestCase):
+    """Cookie de sesión + GA4 en /privacidad, aviso liviano, hero WebP y og en legales."""
+
+    OG_JPG = 'property="og:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg"'
+    AVISO = "Usamos cookies de sesión y Google Analytics."
+
+    def setUp(self) -> None:
+        from fastapi.testclient import TestClient
+        from app import app
+
+        self.client = TestClient(app)
+
+    def test_privacidad_documenta_cookie_y_analytics(self) -> None:
+        html = self.client.get("/privacidad").text
+        self.assertIn("baratoya_at", html)
+        self.assertIn("Google Analytics", html)
+        self.assertIn("cookie de sesión", html)
+        self.assertIn("_ga", html)
+        self.assertNotIn("cuando exista", html)
+
+    def test_aviso_de_cookies_no_bloquea_y_enlaza_privacidad(self) -> None:
+        for path in ("/", "/planes", "/privacidad", "/terminos", "/aviso-precios"):
+            html = self.client.get(path).text
+            self.assertIn(self.AVISO, html, path)
+            self.assertIn('class="cookie-note"', html, path)
+            self.assertIn('href="/privacidad"', html, path)
+        missing = self.client.get("/no-existe-aviso", headers={"Accept": "text/html"})
+        self.assertEqual(missing.status_code, 404)
+        self.assertIn(self.AVISO, missing.text)
+        self.assertIn('<meta name="description" content="Esa dirección no está en BaratoYa. Volvé al inicio para comparar precios." />', missing.text)
+
+    def test_hero_webp_en_home_y_og_sigue_jpg(self) -> None:
+        html = self.client.get("/").text
+        self.assertIn('srcset="/static/baratoya-hero-landing.webp"', html)
+        self.assertIn('type="image/webp"', html)
+        self.assertIn('src="/static/baratoya-hero-landing.jpg"', html)
+        self.assertIn(self.OG_JPG, html)
+        self.assertNotIn("baratoya-hero-landing.webp", html.split("</head>", 1)[0])
+
+    def test_webp_se_sirve(self) -> None:
+        r = self.client.get("/static/baratoya-hero-landing.webp")
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.headers.get("content-type", "").startswith("image/webp"), r.headers.get("content-type"))
+        self.assertGreater(len(r.content), 1000)
+        self.assertTrue(r.content.startswith(b"RIFF"))
+
+    def test_legales_tienen_og_image_jpg(self) -> None:
+        for path in ("/terminos", "/privacidad", "/aviso-precios"):
+            html = self.client.get(path).text
+            self.assertEqual(html.count(self.OG_JPG), 1, path)
 
 
 if __name__ == "__main__":

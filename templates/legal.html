@@ -23,15 +23,16 @@
   <meta name="description" content="Términos de uso de BaratoYa: alcance del servicio de comparación de precios, responsabilidades y uso aceptable." />
   <link rel="canonical" href="https://baratoya.app/terminos" />
   {% else %}
-  <meta name="description" content="Política de privacidad de BaratoYa: qué datos tratamos (cuenta, alertas, búsquedas) y para qué, en Argentina." />
+  <meta name="description" content="Política de privacidad de BaratoYa: cuenta, búsquedas, cookie de sesión y Google Analytics, en Argentina." />
   <link rel="canonical" href="https://baratoya.app/privacidad" />
   {% endif %}
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="BaratoYa" />
   <meta property="og:locale" content="es_AR" />
   <meta property="og:title" content="{% if page == "aviso-precios" %}Aviso de precios{% elif page == "terminos" %}Términos de uso{% else %}Privacidad{% endif %} — BaratoYa" />
-  <meta property="og:description" content="{% if page == "aviso-precios" %}Cómo BaratoYa muestra precios de supermercados: fuente, actualización y límites.{% elif page == "terminos" %}Alcance del servicio de comparación de precios, responsabilidades y uso aceptable.{% else %}Qué datos tratamos (cuenta, alertas, búsquedas) y para qué, en Argentina.{% endif %}" />
+  <meta property="og:description" content="{% if page == "aviso-precios" %}Cómo BaratoYa muestra precios de supermercados: fuente, actualización y límites.{% elif page == "terminos" %}Alcance del servicio de comparación de precios, responsabilidades y uso aceptable.{% else %}Qué datos tratamos: cuenta, búsquedas, cookie de sesión y Google Analytics, en Argentina.{% endif %}" />
   <meta property="og:url" content="{% if page == "aviso-precios" %}https://baratoya.app/aviso-precios{% elif page == "terminos" %}https://baratoya.app/terminos{% else %}https://baratoya.app/privacidad{% endif %}" />
+  <meta property="og:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" />
@@ -72,6 +73,15 @@
     li { margin: 0 0 8px; }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
     footer .wrap { width: min(100% - 32px, 40rem); margin: 0 auto; }
+    .cookie-note {
+      margin: 0 0 12px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--fog);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
   </style>
 </head>
 <body>
@@ -103,6 +113,9 @@
     {% else %}
       <h1>Privacidad</h1>
       <p>No se puede buscar sin una cuenta. Si creás una, guardamos el mail y la contraseña a través del proveedor de cuentas (Supabase). El texto de cada búsqueda hecha con sesión, y la fecha, se guardan para contar el cupo y para mostrar las búsquedas anteriores de esa cuenta.</p>
+      <h2>Cookies</h2>
+      <p>Al entrar, el navegador guarda una cookie de sesión llamada baratoya_at. Sirve para reconocerte en BaratoYa mientras seguís adentro, sin volver a pedir la contraseña en cada página. No la usamos para publicidad. Se borra cuando salís; si no salís, vence sola.</p>
+      <p>Además medimos las visitas con Google Analytics (GA4): cuánta gente entra, qué páginas abre y desde dónde llega. Google puede guardar sus propias cookies (suelen empezar con _ga) y recibir datos técnicos del navegador. No vendemos esa información ni la cruzamos con tu mail para mostrarte avisos.</p>
       <p>No guardamos números de tarjeta. {% if cobro_on %}El cobro lo hace Mercado Pago.{% else %}El cobro todavía no está activo; cuando lo esté, lo va a hacer Mercado Pago.{% endif %} Volver de esa página no marca la cuenta como paga: solo lo hace el aviso que Mercado Pago manda al servidor.</p>
       <p>No vendemos la lista de mails. Para borrar la cuenta, escribinos a <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a> con el asunto “Borrar mi cuenta — BaratoYa”.</p>
       <p>Responsable: Puna Tech · Martin Fraticelli · <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a>.</p>
@@ -110,6 +123,7 @@
   </main>
   <footer>
     <div class="wrap">
+      <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
       <p><a href="/">Inicio</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
