@@ -773,10 +773,16 @@ class PreciosLogosTypoTest(unittest.TestCase):
         from pathlib import Path
 
         tpl = (Path(__file__).parent / "templates" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("Atkinson+Hyperlegible", tpl)
-        self.assertIn("Libre+Baskerville", tpl)
+        faces = (Path(__file__).parent / "templates" / "_font_faces.css").read_text(encoding="utf-8")
         self.assertIn("--font-ui: \"Atkinson Hyperlegible\"", tpl)
         self.assertIn("--font-serif: \"Libre Baskerville\"", tpl)
+        self.assertIn("font-display: swap", faces)
+        self.assertIn("/static/fonts/atkinson-hyperlegible-400.woff2", faces)
+        self.assertIn("/static/fonts/atkinson-hyperlegible-700.woff2", faces)
+        self.assertIn("/static/fonts/libre-baskerville-400.woff2", faces)
+        self.assertIn("/static/fonts/libre-baskerville-700.woff2", faces)
+        self.assertNotIn("fonts.googleapis.com", tpl)
+        self.assertNotIn("fonts.googleapis.com", faces)
         self.assertIn("#163300", tpl.casefold())
         self.assertIn("#9fe870", tpl.casefold())
 
@@ -1124,6 +1130,28 @@ class LandingPlanesMercadoPagoTest(unittest.TestCase):
         self.assertIn("BaratoYa Plus", r.text)
         self.assertIn("$1.990", r.text)
         self.assertIn("Mercado Pago", r.text)
+        import json
+        import re
+
+        blocks = re.findall(
+            r'<script type="application/ld\+json">(.*?)</script>',
+            r.text,
+            flags=re.S,
+        )
+        self.assertEqual(len(blocks), 1)
+        data = json.loads(blocks[0])
+        self.assertEqual(data["@context"], "https://schema.org")
+        self.assertEqual(data["@type"], "SoftwareApplication")
+        self.assertEqual(data["name"], "BaratoYa")
+        offers = {item["name"]: item for item in data["offers"]}
+        self.assertEqual(offers["Gratis"]["@type"], "Offer")
+        self.assertEqual(offers["Gratis"]["price"], "0")
+        self.assertEqual(offers["Gratis"]["priceCurrency"], "ARS")
+        self.assertEqual(offers["BaratoYa Plus"]["@type"], "Offer")
+        self.assertEqual(offers["BaratoYa Plus"]["price"], "1990")
+        self.assertEqual(offers["BaratoYa Plus"]["priceCurrency"], "ARS")
+        self.assertNotIn("aggregateRating", data)
+        self.assertNotIn("review", data)
 
     def test_static_hero_landing_asset(self) -> None:
         from fastapi.testclient import TestClient
@@ -1609,8 +1637,12 @@ class LogoBTest(unittest.TestCase):
         self.assertIn('href="/static/apple-touch-icon.png"', html, path)
         self.assertIn("/static/icon-32.png", html, path)
         self.assertNotIn("family=Inter", html, path)
-        self.assertIn("Libre+Baskerville:wght@400;700", html, path)
-        self.assertIn("Atkinson+Hyperlegible:wght@400;700", html, path)
+        self.assertNotIn("fonts.googleapis.com", html, path)
+        self.assertIn('font-family: "Libre Baskerville"', html, path)
+        self.assertIn('font-family: "Atkinson Hyperlegible"', html, path)
+        self.assertIn("font-display: swap", html, path)
+        self.assertIn("/static/fonts/libre-baskerville-400.woff2", html, path)
+        self.assertIn("/static/fonts/atkinson-hyperlegible-700.woff2", html, path)
 
     def test_assets_de_marca(self) -> None:
         client = self._client()
@@ -1622,6 +1654,12 @@ class LogoBTest(unittest.TestCase):
             "/static/icon-512.png",
             "/static/baratoya-hero-landing.jpg",
             "/static/baratoya-hero-landing.webp",
+            "/static/baratoya-hero-landing-640.webp",
+            "/static/baratoya-hero-landing-720.webp",
+            "/static/fonts/atkinson-hyperlegible-400.woff2",
+            "/static/fonts/atkinson-hyperlegible-700.woff2",
+            "/static/fonts/libre-baskerville-400.woff2",
+            "/static/fonts/libre-baskerville-700.woff2",
         ):
             r = client.get(path)
             self.assertEqual(r.status_code, 200, path)
@@ -1637,6 +1675,8 @@ class LogoBTest(unittest.TestCase):
                 r = client.get(path)
                 self.assertIn("https://www.googletagmanager.com/gtag/js?id=G-5X047YX59B", r.text, path)
                 self.assertIn("gtag('config', 'G-5X047YX59B')", r.text, path)
+                self.assertIn("requestIdleCallback", r.text, path)
+                self.assertNotIn('<script async src="https://www.googletagmanager.com/gtag/js', r.text, path)
             missing = client.get("/no-existe-ga", headers={"Accept": "text/html"})
             self.assertIn("G-5X047YX59B", missing.text)
             admin = client.get("/admin")
@@ -1683,11 +1723,31 @@ class PrivacidadHeroTest(unittest.TestCase):
 
     def test_hero_webp_en_home_y_og_sigue_jpg(self) -> None:
         html = self.client.get("/").text
-        self.assertIn('srcset="/static/baratoya-hero-landing.webp"', html)
+        self.assertIn('srcset="/static/baratoya-hero-landing.webp 1280w', html)
+        self.assertIn("/static/baratoya-hero-landing-640.webp 640w", html)
+        self.assertIn("/static/baratoya-hero-landing-720.webp 720w", html)
         self.assertIn('type="image/webp"', html)
         self.assertIn('src="/static/baratoya-hero-landing.jpg"', html)
+        self.assertIn('fetchpriority="high"', html)
+        self.assertIn('rel="preload"', html)
+        self.assertIn('as="image"', html)
+        self.assertIn('alt="BaratoYa: precios de hoy en CABA"', html)
+        self.assertIn('width="1280"', html)
+        self.assertIn('height="720"', html)
         self.assertIn(self.OG_JPG, html)
-        self.assertNotIn("baratoya-hero-landing.webp", html.split("</head>", 1)[0])
+        head = html.split("</head>", 1)[0]
+        self.assertIn(self.OG_JPG, head)
+        self.assertIn('name="twitter:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg"', head)
+        self.assertNotIn('og:image" content="https://baratoya.app/static/baratoya-hero-landing.webp"', head)
+        title = html.split("<title>", 1)[1].split("</title>", 1)[0]
+        desc = html.split('<meta name="description" content="', 1)[1].split('"', 1)[0]
+        self.assertLessEqual(len(title), 60)
+        self.assertGreaterEqual(len(desc), 140)
+        self.assertLessEqual(len(desc), 155)
+        self.assertIn(f'property="og:title" content="{title}"', html)
+        self.assertIn(f'property="og:description" content="{desc}"', html)
+        self.assertIn(f'name="twitter:title" content="{title}"', html)
+        self.assertIn(f'name="twitter:description" content="{desc}"', html)
 
     def test_webp_se_sirve(self) -> None:
         r = self.client.get("/static/baratoya-hero-landing.webp")
