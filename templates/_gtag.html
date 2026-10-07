@@ -6,6 +6,7 @@
   gtag('config', '{{ ga_id }}');
   (function () {
     var src = "https://www.googletagmanager.com/gtag/js?id={{ ga_id }}";
+    var scheduled = false;
     function loadGtag() {
       if (window.__baratoyaGtag) return;
       window.__baratoyaGtag = true;
@@ -15,11 +16,15 @@
       document.head.appendChild(s);
     }
     function onIdle() {
-      if ("requestIdleCallback" in window) requestIdleCallback(loadGtag, {timeout: 3000});
-      else setTimeout(loadGtag, 1);
+      if (scheduled) return;
+      scheduled = true;
+      if ("requestIdleCallback" in window) requestIdleCallback(loadGtag, {timeout: 2000});
+      else loadGtag();
     }
-    if (document.readyState === "complete") onIdle();
-    else window.addEventListener("load", onIdle, {once: true});
+    ["pointerdown", "keydown", "scroll", "touchstart"].forEach(function (name) {
+      window.addEventListener(name, onIdle, {once: true, passive: true});
+    });
+    window.addEventListener("load", function () { setTimeout(onIdle, 4000); }, {once: true});
   })();
 </script>
 {% endif %}
