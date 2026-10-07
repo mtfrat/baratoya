@@ -3,15 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  {% if ga_id %}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ ga_id }}');
-  </script>
-  {% endif %}
+  {% include "_fonts.html" %}
+  {% include "_gtag.html" %}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/static/icon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
@@ -33,17 +26,15 @@
   <meta property="og:description" content="{% if page == "aviso-precios" %}Cómo BaratoYa muestra precios de supermercados: fuente, actualización y límites.{% elif page == "terminos" %}Alcance del servicio de comparación de precios, responsabilidades y uso aceptable.{% else %}Qué datos tratamos: cuenta, búsquedas, cookie de sesión y Google Analytics, en Argentina.{% endif %}" />
   <meta property="og:url" content="{% if page == "aviso-precios" %}https://baratoya.app/aviso-precios{% elif page == "terminos" %}https://baratoya.app/terminos{% else %}https://baratoya.app/privacidad{% endif %}" />
   <meta property="og:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+{% include "_font_faces.css" %}
     :root {
       --ink: #163300;
       --paper: #fff;
       --muted: #454745;
       --fog: #e8ebe6;
-      --font-ui: "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-      --font-serif: "Libre Baskerville", Georgia, serif;
+      --font-ui: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --font-serif: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif;
     }
     * { box-sizing: border-box; }
     body { margin: 0; color: var(--muted); background: var(--paper); font: 16px/1.6 var(--font-ui); }
@@ -62,8 +53,8 @@
     .logo:hover { text-decoration: none; }
     .logo img { width: 32px; height: 32px; display: block; flex: none; }
     .logo .wm { font-size: 26px; line-height: 1; letter-spacing: -0.01em; font-weight: 400; }
-    .logo .b { font-family: "Libre Baskerville", Georgia, serif; font-weight: 400; color: #163300; }
-    .logo .y { font-family: "Atkinson Hyperlegible", sans-serif; font-weight: 700; color: #4E8A1E; }
+    .logo .b { font-family: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif; font-weight: 400; color: #163300; }
+    .logo .y { font-family: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", sans-serif; font-weight: 700; color: #4E8A1E; }
     main { width: min(100% - 32px, 40rem); margin: 0 auto; padding: 48px 0 64px; }
     h1, h2 { color: var(--ink); line-height: 1.2; letter-spacing: -0.02em; }
     h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); font-weight: 600; }

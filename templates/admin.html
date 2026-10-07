@@ -3,24 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  {% if ga_id %}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ ga_id }}');
-  </script>
-  {% endif %}
+  {% include "_fonts.html" %}
+  {% include "_gtag.html" %}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/static/icon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
   <title>{% if ok %}Admin — BaratoYa{% else %}Acceso denegado — BaratoYa{% endif %}</title>
   <meta name="robots" content="noindex" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+{% include "_font_faces.css" %}
     :root {
       --color-forest-ink: #163300;
       --color-lime-voltage: #9fe870;
@@ -31,8 +22,8 @@
       --color-paper: #ffffff;
       --radius: 12px;
       --radius-sm: 8px;
-      --font-ui: "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, sans-serif;
-      --font-serif: "Libre Baskerville", Georgia, serif;
+      --font-ui: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-serif: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif;
     }
     * { box-sizing: border-box; }
     body {
@@ -80,12 +71,12 @@
       letter-spacing: -0.01em;
     }
     .logo .b {
-      font-family: "Libre Baskerville", Georgia, serif;
+      font-family: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif;
       font-weight: 400;
       color: #163300;
     }
     .logo .y {
-      font-family: "Atkinson Hyperlegible", sans-serif;
+      font-family: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", sans-serif;
       font-weight: 700;
       color: #4E8A1E;
     }

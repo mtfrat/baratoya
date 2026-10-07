@@ -3,31 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  {% if ga_id %}
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ ga_id }}"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ ga_id }}');
-  </script>
-  {% endif %}
+  <link rel="preload" as="image" type="image/webp" fetchpriority="high" href="/static/baratoya-hero-landing-720.webp" imagesrcset="/static/baratoya-hero-landing.webp 1280w, /static/baratoya-hero-landing-720.webp 720w, /static/baratoya-hero-landing-640.webp 640w" imagesizes="(max-width: 672px) calc(100vw - 34px), 638px" />
+  {% include "_fonts.html" %}
+  {% include "_gtag.html" %}
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/static/icon-32.png" type="image/png" sizes="32x32" />
   <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
-  <title>BaratoYa — compará el mismo producto en cada cadena al precio de hoy</title>
-  <meta name="description" content="Compará precios del mismo producto en supermercados de Argentina. BaratoYa muestra el precio de hoy por cadena. No vendemos ni entregamos: solo información para decidir." />
+  <title>Compará precios del súper, hoy por cadena | BaratoYa</title>
+  <meta name="description" content="Compará el mismo producto en supermercados de Argentina. El precio de hoy por cadena. No vendemos ni entregamos: solo información para decidir." />
   <link rel="canonical" href="https://baratoya.app/" />
-  <meta property="og:title" content="BaratoYa — compará el mismo producto en cada cadena al precio de hoy" />
-  <meta property="og:description" content="Compará precios del mismo producto en supermercados de Argentina. BaratoYa muestra el precio de hoy por cadena." />
+  <meta property="og:title" content="Compará precios del súper, hoy por cadena | BaratoYa" />
+  <meta property="og:description" content="Compará el mismo producto en supermercados de Argentina. El precio de hoy por cadena. No vendemos ni entregamos: solo información para decidir." />
   <meta property="og:url" content="https://baratoya.app/" />
   <meta property="og:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg" />
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="es_AR" />
   <meta property="og:site_name" content="BaratoYa" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="BaratoYa — compará el mismo producto en cada cadena al precio de hoy" />
-  <meta name="twitter:description" content="Compará precios del mismo producto en supermercados de Argentina. BaratoYa muestra el precio de hoy por cadena." />
+  <meta name="twitter:title" content="Compará precios del súper, hoy por cadena | BaratoYa" />
+  <meta name="twitter:description" content="Compará el mismo producto en supermercados de Argentina. El precio de hoy por cadena. No vendemos ni entregamos: solo información para decidir." />
   <meta name="twitter:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg" />
   <meta name="theme-color" content="#163300" />
   <script type="application/ld+json">
@@ -38,7 +32,7 @@
         "@type": "WebSite",
         "name": "BaratoYa",
         "url": "https://baratoya.app/",
-        "description": "Compará el mismo producto en cada cadena al precio de hoy.",
+        "description": "Compará el mismo producto en supermercados de Argentina. El precio de hoy por cadena. No vendemos ni entregamos: solo información para decidir.",
         "inLanguage": "es-AR"
       },
       {
@@ -49,10 +43,8 @@
     ]
   }
   </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+{% include "_font_faces.css" %}
     :root {
       --color-forest-ink: #163300;
       --color-lime-voltage: #9fe870;
@@ -66,8 +58,8 @@
       --color-slate: #6a6c6a;
       --color-fog: #e8ebe6;
       --color-paper: #ffffff;
-      --font-ui: "Atkinson Hyperlegible", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      --font-serif: "Libre Baskerville", Georgia, serif;
+      --font-ui: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --font-serif: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif;
       --font-inter: var(--font-ui);
       --font-wise-sans: var(--font-ui);
       --shadow-subtle: rgba(14, 15, 12, 0.12) 0px 0px 0px 1px;
@@ -130,12 +122,12 @@
       letter-spacing: -0.01em;
     }
     .logo .b {
-      font-family: "Libre Baskerville", Georgia, serif;
+      font-family: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif;
       font-weight: 400;
       color: #163300;
     }
     .logo .y {
-      font-family: "Atkinson Hyperlegible", sans-serif;
+      font-family: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", sans-serif;
       font-weight: 700;
       color: #4E8A1E;
     }
@@ -1637,8 +1629,8 @@
         </div>
         <div class="hero-mockup-frame">
           <picture>
-            <source srcset="/static/baratoya-hero-landing.webp" type="image/webp" />
-            <img src="/static/baratoya-hero-landing.jpg" alt="BaratoYa: precios de hoy en CABA" class="hero-mockup-img" width="1280" height="720" loading="eager" />
+            <source type="image/webp" srcset="/static/baratoya-hero-landing.webp 1280w, /static/baratoya-hero-landing-720.webp 720w, /static/baratoya-hero-landing-640.webp 640w" sizes="(max-width: 672px) calc(100vw - 34px), 638px" />
+            <img src="/static/baratoya-hero-landing.jpg" alt="BaratoYa: precios de hoy en CABA" class="hero-mockup-img" width="1280" height="720" loading="eager" fetchpriority="high" />
           </picture>
         </div>
         <p class="sesion-note" id="sesion-note">Para buscar hace falta entrar. Sin sesión no se consulta el precio.</p>
