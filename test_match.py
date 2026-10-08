@@ -1616,7 +1616,7 @@ class LogoBTest(unittest.TestCase):
 
     def test_lockup_en_paginas_publicas(self) -> None:
         client = self._client()
-        paths = ("/", "/planes", "/aviso-precios", "/terminos", "/privacidad")
+        paths = ("/", "/planes", "/promos-bancarias-supermercados", "/aviso-precios", "/terminos", "/privacidad")
         for path in paths:
             r = client.get(path)
             self.assertEqual(r.status_code, 200, path)
@@ -1671,7 +1671,7 @@ class LogoBTest(unittest.TestCase):
 
         client = self._client()
         with patch.dict(os.environ, {"GA_MEASUREMENT_ID": "G-5X047YX59B"}):
-            for path in ("/", "/planes", "/privacidad"):
+            for path in ("/", "/planes", "/promos-bancarias-supermercados", "/privacidad"):
                 r = client.get(path)
                 self.assertIn("https://www.googletagmanager.com/gtag/js?id=G-5X047YX59B", r.text, path)
                 self.assertIn("gtag('config', 'G-5X047YX59B')", r.text, path)
@@ -1711,7 +1711,7 @@ class PrivacidadHeroTest(unittest.TestCase):
         self.assertNotIn("cuando exista", html)
 
     def test_aviso_de_cookies_no_bloquea_y_enlaza_privacidad(self) -> None:
-        for path in ("/", "/planes", "/privacidad", "/terminos", "/aviso-precios"):
+        for path in ("/", "/planes", "/promos-bancarias-supermercados", "/privacidad", "/terminos", "/aviso-precios"):
             html = self.client.get(path).text
             self.assertIn(self.AVISO, html, path)
             self.assertIn('class="cookie-note"', html, path)
