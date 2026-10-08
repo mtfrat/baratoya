@@ -1653,3 +1653,267 @@ def promos_para_cadena(
         "promos": items,
     }
 
+
+# Página pública. Mismos registros que el catálogo de la cuenta (activas +
+# tarjeta_publica). No calcula el precio de un producto.
+SEO_PATH = "/promos-bancarias-supermercados"
+SEO_URL = "https://baratoya.app" + SEO_PATH
+SEO_TITLE = "Promos bancarias supermercados hoy | BaratoYa"
+SEO_DESCRIPTION = (
+    "Qué promos bancarias hay hoy en los supermercados de CABA: banco o tarjeta, "
+    "porcentaje o cuotas, tope y día, por cadena. BaratoYa no vende ni entrega."
+)
+_ORDEN_CADENA = (
+    "dia", "carrefour", "cotodigital", "jumbo", "disco", "vea",
+    "masonline", "makro", "maxiconsumo", "josimar", "abastecedor",
+)
+_MESES_LARGO = (
+    "", "enero", "febrero", "marzo", "abril", "mayo", "junio",
+    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+)
+
+
+def fecha_larga(d: date) -> str:
+    return f"{d.day} de {_MESES_LARGO[d.month]} de {d.year}"
+
+
+def fecha_datos_promos() -> date | None:
+    """Fecha que está en el archivo. No es un timestamp inventado.
+
+    Si el JSON trae fetched_at, se usa esa fecha. promos-semana.json es una
+    lista sin ese campo: queda el valid_from más nuevo del archivo.
+    """
+    path = DATA / "promos-semana.json"
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if isinstance(data, dict):
+        raw = data.get("fetched_at") or data.get("updated_at")
+        if raw:
+            try:
+                return date.fromisoformat(str(raw)[:10])
+            except ValueError:
+                pass
+        rows = data.get("promos") if isinstance(data.get("promos"), list) else []
+    elif isinstance(data, list):
+        rows = data
+    else:
+        return None
+    fechas: list[date] = []
+    for row in rows:
+        if not isinstance(row, dict) or not row.get("valid_from"):
+            continue
+        try:
+            fechas.append(date.fromisoformat(str(row["valid_from"])[:10]))
+        except ValueError:
+            continue
+    return max(fechas) if fechas else None
+
+
+def faq_promos_publicas() -> list[dict[str, str]]:
+    """Hechos del cálculo que ya hace la cuenta. Sin cifras de ahorro."""
+    return [
+        {
+            "q": "¿Cómo se calcula el descuento?",
+            "a": (
+                "En la búsqueda, BaratoYa toma el precio de góndola y resta un porcentaje "
+                "solo si la promo está vigente ese día, tiene un tope en pesos, aplica a "
+                "online o a online y sucursal, y la letra no dice que no acumula. Si dice "
+                "sin tope, o el tope no está publicado, no se resta. Si trae una nota de "
+                "por qué no se aplica, tampoco. Las de sucursal se listan y no se restan "
+                "del precio online. Las cuotas no se restan: no son un porcentaje. El "
+                "precio de un producto se ve con la cuenta. Esta página lista las promos, "
+                "no ese precio."
+            ),
+        },
+        {
+            "q": "¿Qué es el tope?",
+            "a": (
+                "Es el máximo de reintegro que publica la promo, en pesos. Si el dato dice "
+                "sin tope, se muestra así. Si no hay tope en el archivo, no inventamos uno "
+                "y esa promo no se descuenta en la búsqueda."
+            ),
+        },
+        {
+            "q": "¿Qué días aplica cada promo?",
+            "a": (
+                "Los días que publicó la cadena o el banco. Una promo entra en un día si "
+                "ese día está en su lista y la fecha cae entre el inicio y el fin de "
+                "vigencia. El día se cuenta con la hora de Argentina."
+            ),
+        },
+        {
+            "q": "¿Las promos se acumulan?",
+            "a": (
+                "Si la letra dice que no acumula con otros descuentos, BaratoYa no la suma. "
+                "En la búsqueda se aplica una sola de las promos que sí se pueden restar: "
+                "la que deja el precio más bajo. No se suman dos porcentajes."
+            ),
+        },
+        {
+            "q": "¿BaratoYa vende los productos del súper?",
+            "a": (
+                "No. BaratoYa no vende ni entrega. Muestra precios y promos para comparar. "
+                "La compra se hace en la tienda de la cadena."
+            ),
+        },
+    ]
+
+
+def _url_http(url: str) -> str:
+    from urllib.parse import urlparse
+
+    raw = (url or "").strip()
+    if not raw:
+        return ""
+    parsed = urlparse(raw)
+    if parsed.scheme in {"http", "https"} and parsed.netloc:
+        return raw
+    return ""
+
+
+def _item_publico(rec: dict[str, Any]) -> dict[str, Any] | None:
+    card = tarjeta_publica(rec)
+    banco = str(card.get("banco") or "").strip()
+    oferta = str(card.get("oferta") or "").strip()
+    if not banco or not oferta or oferta == "sin porcentaje":
+        return None
+    dias = str(card.get("dias") or "").strip()
+    if dias == "día no publicado":
+        dias = ""
+    item: dict[str, Any] = {
+        "chain_id": rec.get("chain_id") or "",
+        "cadena": rec.get("cadena") or "",
+        "banco": banco,
+        "oferta": oferta,
+        "dias": dias,
+        "day_ids": sorted(int(d) for d in (rec.get("days") or [])),
+    }
+    if rec.get("sin_tope"):
+        item["tope"] = "sin tope"
+    elif rec.get("cap"):
+        item["tope"] = "tope " + _tope_txt(rec)
+    if rec.get("minimo"):
+        item["minimo"] = _min_txt(rec)
+    canal = str(rec.get("canal") or "").strip()
+    if canal and canal != "no indicado":
+        item["canal"] = canal
+    if isinstance(rec.get("inicio"), date) or isinstance(rec.get("fin"), date):
+        vig = _vigencia_txt(rec)
+        if vig and vig != "Vigencia no publicada":
+            item["vigencia"] = vig
+    nota = str(rec.get("do_not_apply") or "").strip().rstrip(".")
+    if nota:
+        item["nota"] = nota
+    fuente = _url_http(str(rec.get("source_url") or ""))
+    if fuente:
+        item["fuente"] = fuente
+    return item
+
+
+def _orden_cadena(chain_id: str) -> tuple[int, str]:
+    try:
+        return (_ORDEN_CADENA.index(chain_id), chain_id)
+    except ValueError:
+        return (len(_ORDEN_CADENA), chain_id)
+
+
+def _agrupar_cadenas(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grupos: dict[str, dict[str, Any]] = {}
+    for it in items:
+        cid = str(it.get("chain_id") or "")
+        if not cid:
+            continue
+        grupo = grupos.get(cid)
+        if grupo is None:
+            grupo = {
+                "chain_id": cid,
+                "cadena": it.get("cadena") or cid,
+                "fuentes": [],
+                "promos": [],
+            }
+            grupos[cid] = grupo
+        grupo["promos"].append(it)
+        fuente = it.get("fuente")
+        if fuente and fuente not in grupo["fuentes"]:
+            grupo["fuentes"].append(fuente)
+    salida = [grupos[cid] for cid in sorted(grupos, key=_orden_cadena)]
+    for grupo in salida:
+        grupo["promos"].sort(key=lambda it: ((it.get("banco") or "").casefold(), it.get("oferta") or ""))
+    return salida
+
+
+def _ld(data: dict[str, Any]) -> str:
+    return json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
+
+
+def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
+    """Vista de /promos-bancarias-supermercados. Solo campos presentes."""
+    hoy = hoy or hoy_art()
+    items = []
+    for rec in activas(hoy):
+        item = _item_publico(rec)
+        if item is not None:
+            items.append(item)
+    wd = hoy.weekday()
+    hoy_items = [it for it in items if wd in it["day_ids"]]
+    por_dia = []
+    for i, nombre in DIAS:
+        cadenas = _agrupar_cadenas([it for it in items if i in it["day_ids"]])
+        if not cadenas:
+            continue
+        por_dia.append({"dia": nombre, "hoy": i == wd, "cadenas": cadenas})
+    hoy_cadenas = _agrupar_cadenas(hoy_items)
+    cadenas_n = len({it["chain_id"] for it in items})
+    actualizado = fecha_datos_promos()
+    faq = faq_promos_publicas()
+    return {
+        "title": SEO_TITLE,
+        "description": SEO_DESCRIPTION,
+        "canonical": SEO_URL,
+        "path": SEO_PATH,
+        "hoy_iso": hoy.isoformat(),
+        "dia": NOMBRE_DIA[wd],
+        "fecha": fecha_larga(hoy),
+        "actualizado": fecha_larga(actualizado) if actualizado else "",
+        "n": len(items),
+        "n_hoy": len(hoy_items),
+        "cadenas_n": cadenas_n,
+        "hoy_cadenas": hoy_cadenas,
+        "por_dia": por_dia,
+        "faq": faq,
+        "ld_faq": _ld({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": item["q"],
+                    "acceptedAnswer": {"@type": "Answer", "text": item["a"]},
+                }
+                for item in faq
+            ],
+        }),
+        "ld_breadcrumb": _ld({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Inicio",
+                    "item": "https://baratoya.app/",
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Promos bancarias supermercados",
+                    "item": SEO_URL,
+                },
+            ],
+        }),
+    }
+

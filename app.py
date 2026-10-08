@@ -32,6 +32,7 @@ try:
     from baratoya.super_cadenas import buscar_promos
     from baratoya.super_cadenas import buscar_super
     from baratoya.promos_hoy import catalogo as catalogo_promos
+    from baratoya.promos_hoy import pagina_seo as pagina_promos_seo
     from baratoya.promos_hoy import promos_para_cadena
     from baratoya import cuentas
 except ImportError:
@@ -44,6 +45,7 @@ except ImportError:
     from super_cadenas import buscar_promos
     from super_cadenas import buscar_super
     from promos_hoy import catalogo as catalogo_promos
+    from promos_hoy import pagina_seo as pagina_promos_seo
     from promos_hoy import promos_para_cadena
     import cuentas
 
@@ -918,6 +920,12 @@ async def terminos(request: Request):
 @app.get("/privacidad", response_class=HTMLResponse)
 async def privacidad(request: Request):
     return templates.TemplateResponse(request, "legal.html", {"page": "privacidad", "cobro_on": cuentas.cobro_on()})
+
+
+@app.get("/promos-bancarias-supermercados", response_class=HTMLResponse)
+async def promos_bancarias_page(request: Request):
+    """Listado público. El mismo archivo que /api/promos, sin sesión y sin precio de producto."""
+    return templates.TemplateResponse(request, "promos_bancarias.html", pagina_promos_seo())
 
 
 @app.get("/api/sucursales")
