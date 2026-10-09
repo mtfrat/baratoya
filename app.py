@@ -32,7 +32,9 @@ try:
     from baratoya.super_cadenas import buscar_promos
     from baratoya.super_cadenas import buscar_super
     from baratoya.promos_hoy import catalogo as catalogo_promos
+    from baratoya.promos_hoy import cadenas_indexables as cadenas_promos_publicas
     from baratoya.promos_hoy import pagina_seo as pagina_promos_seo
+    from baratoya.promos_hoy import pagina_seo_cadena as pagina_promo_cadena
     from baratoya.promos_hoy import promos_para_cadena
     from baratoya import cuentas
 except ImportError:
@@ -45,7 +47,9 @@ except ImportError:
     from super_cadenas import buscar_promos
     from super_cadenas import buscar_super
     from promos_hoy import catalogo as catalogo_promos
+    from promos_hoy import cadenas_indexables as cadenas_promos_publicas
     from promos_hoy import pagina_seo as pagina_promos_seo
+    from promos_hoy import pagina_seo_cadena as pagina_promo_cadena
     from promos_hoy import promos_para_cadena
     import cuentas
 
@@ -891,6 +895,7 @@ async def home(request: Request):
             "lng": CABA_LNG,
             "paid_scrapers": ENABLE_PAID,
             "mla": ENABLE_MLA,
+            "promos_cadenas": cadenas_promos_publicas(),
             **cuentas.pagina_publica(),
         },
     )
@@ -926,6 +931,15 @@ async def privacidad(request: Request):
 async def promos_bancarias_page(request: Request):
     """Listado público. El mismo archivo que /api/promos, sin sesión y sin precio de producto."""
     return templates.TemplateResponse(request, "promos_bancarias.html", pagina_promos_seo())
+
+
+@app.get("/promos-bancarias-supermercados/{slug}", response_class=HTMLResponse)
+async def promos_bancarias_cadena(request: Request, slug: str):
+    """Una cadena, el mismo archivo que el hub. Sin sesión y sin precio de producto."""
+    vista = pagina_promo_cadena(slug)
+    if vista is None:
+        raise StarletteHTTPException(status_code=404)
+    return templates.TemplateResponse(request, "promos_cadena.html", vista)
 
 
 @app.get("/api/sucursales")

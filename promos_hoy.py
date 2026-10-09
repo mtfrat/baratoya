@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from collections import Counter
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -1667,6 +1668,22 @@ _ORDEN_CADENA = (
     "dia", "carrefour", "cotodigital", "jumbo", "disco", "vea",
     "masonline", "makro", "maxiconsumo", "josimar", "abastecedor",
 )
+# Slug público y nombre de la URL. Coto se llama Coto en el título (cabe en
+# 60 caracteres y es la búsqueda); el archivo sigue diciendo Coto Digital.
+_CADENAS_SEO = (
+    ("dia", "dia", "Día"),
+    ("carrefour", "carrefour", "Carrefour"),
+    ("cotodigital", "coto", "Coto"),
+    ("jumbo", "jumbo", "Jumbo"),
+    ("disco", "disco", "Disco"),
+    ("vea", "vea", "Vea"),
+    ("masonline", "mas-online", "Mas Online"),
+    ("makro", "makro", "Makro"),
+    ("maxiconsumo", "maxiconsumo", "Maxiconsumo"),
+)
+_SLUG_POR_ID = {cid: slug for cid, slug, _nombre in _CADENAS_SEO}
+_ID_POR_SLUG = {slug: cid for cid, slug, _nombre in _CADENAS_SEO}
+_NOMBRE_SEO = {cid: nombre for cid, _slug, nombre in _CADENAS_SEO}
 _MESES_LARGO = (
     "", "enero", "febrero", "marzo", "abril", "mayo", "junio",
     "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
@@ -1829,9 +1846,12 @@ def _agrupar_cadenas(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
             continue
         grupo = grupos.get(cid)
         if grupo is None:
+            slug = _SLUG_POR_ID.get(cid, "")
             grupo = {
                 "chain_id": cid,
                 "cadena": it.get("cadena") or cid,
+                "slug": slug,
+                "href": f"{SEO_PATH}/{slug}" if slug else "",
                 "fuentes": [],
                 "promos": [],
             }
@@ -1850,14 +1870,20 @@ def _ld(data: dict[str, Any]) -> str:
     return json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
 
 
-def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
-    """Vista de /promos-bancarias-supermercados. Solo campos presentes."""
-    hoy = hoy or hoy_art()
+def _items_publicos(hoy: date) -> list[dict[str, Any]]:
+    """Las mismas tarjetas que lista el hub. Sin precio de producto."""
     items = []
     for rec in activas(hoy):
         item = _item_publico(rec)
         if item is not None:
             items.append(item)
+    return items
+
+
+def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
+    """Vista de /promos-bancarias-supermercados. Solo campos presentes."""
+    hoy = hoy or hoy_art()
+    items = _items_publicos(hoy)
     wd = hoy.weekday()
     hoy_items = [it for it in items if wd in it["day_ids"]]
     por_dia = []
@@ -1912,6 +1938,282 @@ def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
                     "position": 2,
                     "name": "Promos bancarias supermercados",
                     "item": SEO_URL,
+                },
+            ],
+        }),
+    }
+
+
+def _unir(partes: list[str]) -> str:
+    if not partes:
+        return ""
+    if len(partes) == 1:
+        return partes[0]
+    if len(partes) == 2:
+        return f"{partes[0]} y {partes[1]}"
+    return ", ".join(partes[:-1]) + " y " + partes[-1]
+
+
+def _n_promos(n: int) -> str:
+    return "1 promo" if n == 1 else f"{n} promos"
+
+
+def titulo_cadena(nombre: str) -> str:
+    """≤60. El patrón del hub de cadena; si no entra, se acorta sin cortar palabras."""
+    preferido = f"Promos bancarias {nombre} hoy: bancos y días | BaratoYa"
+    if len(preferido) <= 60:
+        return preferido
+    corto = f"Promos {nombre} hoy: bancos y días | BaratoYa"
+    if len(corto) <= 60:
+        return corto
+    minimo = f"Promos {nombre} hoy | BaratoYa"
+    if len(minimo) <= 60:
+        return minimo
+    raise ValueError(f"titulo de {nombre} no entra en 60")
+
+
+def descripcion_cadena(nombre: str, dia: str) -> str:
+    opciones = (
+        (
+            f"Promos bancarias de {nombre} hoy ({dia}) en CABA: banco o tarjeta, "
+            f"días y tope si está publicado. BaratoYa no vende ni entrega."
+        ),
+        (
+            f"Promos bancarias de {nombre} hoy ({dia}) en CABA: bancos, días y tope "
+            f"si está publicado. BaratoYa no vende ni entrega."
+        ),
+        (
+            f"Promos de {nombre} hoy ({dia}) en CABA. Bancos, días y tope si está "
+            f"publicado. BaratoYa no vende ni entrega."
+        ),
+    )
+    for texto in opciones:
+        if len(texto) <= 155:
+            return texto
+    raise ValueError(f"descripcion de {nombre} no entra en 155")
+
+
+def notas_honestidad() -> list[dict[str, str]]:
+    """Las mismas respuestas del hub sobre tope, sucursal y conflictos."""
+    por_q = {item["q"]: item["a"] for item in faq_promos_publicas()}
+    claves = (
+        "¿Qué es el tope?",
+        "¿Cómo se calcula el descuento?",
+        "¿Las promos se acumulan?",
+    )
+    return [{"q": q, "a": por_q[q]} for q in claves]
+
+
+def cadenas_indexables(hoy: date | None = None) -> list[dict[str, str]]:
+    """Cadenas con al menos una promo pública, en el orden del hub."""
+    hoy = hoy or hoy_art()
+    presentes = {it["chain_id"] for it in _items_publicos(hoy)}
+    salida = []
+    for chain_id, slug, nombre in _CADENAS_SEO:
+        if chain_id not in presentes:
+            continue
+        href = f"{SEO_PATH}/{slug}"
+        salida.append({
+            "chain_id": chain_id,
+            "slug": slug,
+            "nombre": nombre,
+            "href": href,
+            "url": "https://baratoya.app" + href,
+        })
+    return salida
+
+
+def _faq_cadena(
+    nombre: str,
+    dia_hoy: str,
+    fecha: str,
+    items: list[dict[str, Any]],
+    conteo_dias: Counter[int],
+    n_hoy: int,
+) -> list[dict[str, str]]:
+    """Preguntas que se responden contando el archivo. Sin cifras inventadas."""
+    faq: list[dict[str, str]] = []
+    if n_hoy:
+        faq.append({
+            "q": f"¿Hay promos bancarias de {nombre} hoy?",
+            "a": (
+                f"Hoy es {dia_hoy} {fecha}. En el archivo hay {_n_promos(n_hoy)} "
+                f"de {nombre} para ese día."
+            ),
+        })
+    else:
+        faq.append({
+            "q": f"¿Hay promos bancarias de {nombre} hoy?",
+            "a": (
+                f"Hoy es {dia_hoy} {fecha}. En el archivo no hay promos de {nombre} "
+                f"para ese día."
+            ),
+        })
+
+    if conteo_dias:
+        maximo = max(conteo_dias.values())
+        top = [NOMBRE_DIA[i] for i, _nombre in DIAS if conteo_dias.get(i) == maximo]
+        vacios = [NOMBRE_DIA[i] for i, _nombre in DIAS if not conteo_dias.get(i)]
+        if len(top) == 1:
+            frase = (
+                f"En el archivo, el {top[0]} tiene {_n_promos(maximo)} de {nombre}. "
+                f"Es el día con más promos."
+            )
+        else:
+            frase = (
+                f"En el archivo, {_unir([f'el {d}' for d in top])} tienen "
+                f"{_n_promos(maximo)} de {nombre} cada uno. Empatan como los días con más promos."
+            )
+        if vacios:
+            frase += f" No hay promos cargadas para {_unir([f'el {d}' for d in vacios])}."
+        faq.append({
+            "q": f"¿Qué día tiene más promos en {nombre}?",
+            "a": frase,
+        })
+
+    bancos = sorted({it["banco"] for it in items if it.get("banco")}, key=str.casefold)
+    if bancos:
+        faq.append({
+            "q": f"¿Qué bancos o billeteras figuran en {nombre}?",
+            "a": f"En el archivo, las promos de {nombre} figuran a nombre de {_unir(bancos)}.",
+        })
+
+    canales = Counter(it["canal"] for it in items if it.get("canal"))
+    if canales:
+        orden = ("online", "online y sucursal", "sucursal")
+        partes = []
+        for canal in orden:
+            n = canales.pop(canal, 0)
+            if n:
+                verbo = "figura" if n == 1 else "figuran"
+                partes.append(f"{_n_promos(n)} {verbo} como {canal}")
+        for canal, n in sorted(canales.items()):
+            verbo = "figura" if n == 1 else "figuran"
+            partes.append(f"{_n_promos(n)} {verbo} como {canal}")
+        texto = f"En el archivo, {_unir(partes)}."
+        if any(it.get("canal") == "sucursal" for it in items):
+            texto += " Las de sucursal se listan y no se restan del precio online."
+        faq.append({
+            "q": f"¿Las promos de {nombre} son online o de sucursal?",
+            "a": texto,
+        })
+    return faq
+
+
+def _ld_faq(faq: list[dict[str, str]]) -> str:
+    return _ld({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": item["q"],
+                "acceptedAnswer": {"@type": "Answer", "text": item["a"]},
+            }
+            for item in faq
+        ],
+    })
+
+
+_COLUMNAS_CADENA = (
+    ("banco", "Banco"),
+    ("oferta", "Promo"),
+    ("tope", "Tope"),
+    ("minimo", "Mínimo"),
+    ("canal", "Canal"),
+    ("vigencia", "Vigencia"),
+    ("nota", "Nota"),
+)
+
+
+def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
+    """Vista de /promos-bancarias-supermercados/<slug>. None si no hay datos."""
+    chain_id = _ID_POR_SLUG.get((slug or "").strip())
+    if not chain_id:
+        return None
+    hoy = hoy or hoy_art()
+    items = [it for it in _items_publicos(hoy) if it.get("chain_id") == chain_id]
+    if not items:
+        return None
+    nombre = _NOMBRE_SEO[chain_id]
+    nombre_archivo = str(items[0].get("cadena") or nombre)
+    wd = hoy.weekday()
+    dia = NOMBRE_DIA[wd]
+    items.sort(key=lambda it: ((it.get("banco") or "").casefold(), it.get("oferta") or ""))
+    hoy_promos = [it for it in items if wd in it.get("day_ids", [])]
+    filas: list[dict[str, str]] = []
+    conteo: Counter[int] = Counter()
+    for i, nombre_dia in DIAS:
+        for it in items:
+            if i not in it.get("day_ids", []):
+                continue
+            fila = {"dia": nombre_dia, "banco": it["banco"], "oferta": it["oferta"]}
+            for key in ("tope", "minimo", "canal", "vigencia", "nota"):
+                valor = it.get(key)
+                if valor:
+                    fila[key] = valor
+            filas.append(fila)
+            conteo[i] += 1
+    columnas = [
+        {"key": key, "label": label}
+        for key, label in _COLUMNAS_CADENA
+        if key in {"banco", "oferta"} or any(fila.get(key) for fila in filas)
+    ]
+    fuentes: list[str] = []
+    for it in items:
+        fuente = it.get("fuente")
+        if fuente and fuente not in fuentes:
+            fuentes.append(fuente)
+    faq = _faq_cadena(nombre, dia, fecha_larga(hoy), items, conteo, len(hoy_promos))
+    href = f"{SEO_PATH}/{_SLUG_POR_ID[chain_id]}"
+    canonical = "https://baratoya.app" + href
+    actualizado = fecha_datos_promos()
+    otras = [c for c in cadenas_indexables(hoy) if c["chain_id"] != chain_id]
+    return {
+        "title": titulo_cadena(nombre),
+        "description": descripcion_cadena(nombre, dia),
+        "canonical": canonical,
+        "h1": f"Promos bancarias en {nombre} hoy",
+        "path": href,
+        "slug": _SLUG_POR_ID[chain_id],
+        "nombre": nombre,
+        "nombre_archivo": nombre_archivo,
+        "hoy_iso": hoy.isoformat(),
+        "dia": dia,
+        "fecha": fecha_larga(hoy),
+        "actualizado": fecha_larga(actualizado) if actualizado else "",
+        "n": len(items),
+        "n_hoy": len(hoy_promos),
+        "fuentes": fuentes,
+        "hoy_promos": hoy_promos,
+        "filas": filas,
+        "columnas": columnas,
+        "faq": faq,
+        "notas": notas_honestidad(),
+        "otras": otras,
+        "hub_href": SEO_PATH,
+        "ld_faq": _ld_faq(faq),
+        "ld_breadcrumb": _ld({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Inicio",
+                    "item": "https://baratoya.app/",
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Promos bancarias supermercados",
+                    "item": SEO_URL,
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": nombre,
+                    "item": canonical,
                 },
             ],
         }),

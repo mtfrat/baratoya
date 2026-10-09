@@ -409,6 +409,10 @@
       letter-spacing: -0.02em;
     }
     .lead { margin: 0 0 24px; max-width: 40rem; font-size: 18px; }
+    .promos-cadenas-title { margin: 0 0 8px; color: var(--color-forest-ink); font-weight: 700; font-size: 18px; }
+    .promos-cadenas { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 24px; padding: 0; max-width: 40rem; }
+    .promos-cadenas li { margin: 0; }
+    .promos-cadenas a { font-weight: 700; }
     .hero-cta-row {
       display: flex;
       flex-wrap: wrap;
@@ -1737,6 +1741,14 @@
         <h2 class="sec">Promos de banco, juntas.</h2>
         <p class="lead" id="promos-lead">Las mismas tarjetas, cortadas por día o por banco. No entran las ocultas, las vencidas ni las que publican dos fechas distintas.</p>
         <p class="lead"><a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a>: las de hoy en CABA, por cadena y por día.</p>
+        {% if promos_cadenas %}
+        <h3 class="promos-cadenas-title" id="promos-por-super">Promos por supermercado</h3>
+        <ul class="promos-cadenas">
+          {% for c in promos_cadenas %}
+          <li><a href="{{ c.href }}">Promos bancarias {{ c.nombre }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
         <!-- Muro de login para anónimos -->
         <div id="promos-wall" class="promos-wall-card">
           <div class="promos-wall-icon" aria-hidden="true">🏷️</div>
@@ -1889,6 +1901,9 @@
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
       <p><a href="/">Inicio</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      {% if promos_cadenas %}
+      <p>Promos por supermercado:{% for c in promos_cadenas %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
+      {% endif %}
     </div>
   </footer>
 
