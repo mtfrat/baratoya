@@ -144,9 +144,9 @@
       <a href="/">Inicio</a> · <a href="{{ hub_href }}">Promos bancarias supermercados</a> · {{ nombre }}
     </nav>
     <h1>{{ h1 }}</h1>
-    <p>¿Qué promos bancarias hay hoy en {{ nombre }}? Las de esta página: banco o tarjeta, porcentaje o cuotas, tope si está publicado, y los días. Son las mismas que usa la cuenta de BaratoYa. Si un campo no está en el archivo, no lo completamos.</p>
+    <p>¿Qué promos bancarias hay hoy en {{ nombre }}? Las de esta página: banco o tarjeta, porcentaje o cuotas, tope si está publicado, y los días. Son las mismas que usa la cuenta de BaratoYa. Si la cadena no publica ese dato, no lo completamos.</p>
     {% if nombre_archivo != nombre %}
-    <p>En el archivo, la cadena figura como {{ nombre_archivo }}.</p>
+    <p>Esta semana, según lo publicado por la cadena, figura como {{ nombre_archivo }}.</p>
     {% endif %}
     <p>Hoy es {{ dia }} {{ fecha }}.</p>
     {% if actualizado %}
@@ -192,7 +192,7 @@
     <h2>Por día de la semana</h2>
     <div class="tabla-wrap">
       <table>
-        <caption>Promos de {{ nombre }} por día. Solo los campos que están en el archivo.</caption>
+        <caption>Promos de {{ nombre }} por día. Solo los datos que publica la cadena.</caption>
         <thead>
           <tr>
             <th scope="col">Día</th>
