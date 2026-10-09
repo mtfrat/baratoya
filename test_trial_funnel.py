@@ -310,7 +310,7 @@ class CopyAndGaTest(unittest.TestCase):
 
     def test_planes_trial_first(self) -> None:
         html = TestClient(app_mod.app).get("/planes").text
-        self.assertIn("Probar 7d Plus gratis", html)
+        self.assertIn("BaratoYa Plus: probalo gratis 7 días", html)
         self.assertIn("Empezar 7d gratis", html)
         self.assertIn("view_plans", html)
         self.assertIn("begin_checkout", html)
