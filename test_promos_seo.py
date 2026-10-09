@@ -464,6 +464,24 @@ class DescuentosPorDiaTest(unittest.TestCase):
         ):
             self.assertIn(f"<loc>{url}</loc>", site.text)
 
+    def test_no_dice_archivo(self) -> None:
+        paths = [SEO_PATH, DESCUENTOS_PATH]
+        paths += [c["href"] for c in cadenas_indexables()]
+        paths += [d["href"] for d in self.nav]
+        for path in paths:
+            html = self.client.get(path).text
+            self.assertNotIn("archivo", html.casefold(), path)
+        hub = self.client.get(SEO_PATH).text
+        self.assertIn("Si la cadena no publica ese dato, no lo completamos", hub)
+        self.assertIn("Si la cadena no publica un tope", hub)
+        cadena = self.client.get(cadenas_indexables()[0]["href"]).text
+        self.assertIn("Esta semana, según lo publicado por", cadena)
+        self.assertIn("Si la cadena no publica un tope", cadena)
+        dia = self.client.get(f"{DESCUENTOS_PATH}/miercoles").text
+        self.assertIn("Esta semana, según lo publicado por cada cadena", dia)
+        self.assertIn("Si la cadena no publica ese dato, no lo completamos", dia)
+        self.assertIn("Si la cadena no publica un tope", dia)
+
     def test_planes_y_admin_nofollow(self) -> None:
         titulo = "BaratoYa Plus: planes y prueba gratis 7 días"
         h1 = "BaratoYa Plus: probalo gratis 7 días"

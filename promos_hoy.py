@@ -1750,7 +1750,7 @@ def faq_promos_publicas() -> list[dict[str, str]]:
             "q": "¿Qué es el tope?",
             "a": (
                 "Es el máximo de reintegro que publica la promo, en pesos. Si el dato dice "
-                "sin tope, se muestra así. Si no hay tope en el archivo, no inventamos uno "
+                "sin tope, se muestra así. Si la cadena no publica un tope, no inventamos uno "
                 "y esa promo no se descuenta en la búsqueda."
             ),
         },
@@ -2035,22 +2035,22 @@ def _faq_cadena(
     conteo_dias: Counter[int],
     n_hoy: int,
 ) -> list[dict[str, str]]:
-    """Preguntas que se responden contando el archivo. Sin cifras inventadas."""
+    """Preguntas que se responden con lo publicado por la cadena. Sin cifras inventadas."""
     faq: list[dict[str, str]] = []
     if n_hoy:
         faq.append({
             "q": f"¿Hay promos bancarias de {nombre} hoy?",
             "a": (
-                f"Hoy es {dia_hoy} {fecha}. En el archivo hay {_n_promos(n_hoy)} "
-                f"de {nombre} para ese día."
+                f"Hoy es {dia_hoy} {fecha}. Esta semana, según lo publicado por {nombre}, "
+                f"hay {_n_promos(n_hoy)} para ese día."
             ),
         })
     else:
         faq.append({
             "q": f"¿Hay promos bancarias de {nombre} hoy?",
             "a": (
-                f"Hoy es {dia_hoy} {fecha}. En el archivo no hay promos de {nombre} "
-                f"para ese día."
+                f"Hoy es {dia_hoy} {fecha}. Esta semana, según lo publicado por {nombre}, "
+                f"no hay promos para ese día."
             ),
         })
 
@@ -2060,13 +2060,14 @@ def _faq_cadena(
         vacios = [NOMBRE_DIA[i] for i, _nombre in DIAS if not conteo_dias.get(i)]
         if len(top) == 1:
             frase = (
-                f"En el archivo, el {top[0]} tiene {_n_promos(maximo)} de {nombre}. "
-                f"Es el día con más promos."
+                f"Esta semana, según lo publicado por {nombre}, el {top[0]} tiene "
+                f"{_n_promos(maximo)}. Es el día con más promos."
             )
         else:
             frase = (
-                f"En el archivo, {_unir([f'el {d}' for d in top])} tienen "
-                f"{_n_promos(maximo)} de {nombre} cada uno. Empatan como los días con más promos."
+                f"Esta semana, según lo publicado por {nombre}, "
+                f"{_unir([f'el {d}' for d in top])} tienen {_n_promos(maximo)} cada uno. "
+                f"Empatan como los días con más promos."
             )
         if vacios:
             frase += f" No hay promos cargadas para {_unir([f'el {d}' for d in vacios])}."
@@ -2079,7 +2080,10 @@ def _faq_cadena(
     if bancos:
         faq.append({
             "q": f"¿Qué bancos o billeteras figuran en {nombre}?",
-            "a": f"En el archivo, las promos de {nombre} figuran a nombre de {_unir(bancos)}.",
+            "a": (
+                f"Esta semana, según lo publicado por {nombre}, las promos figuran "
+                f"a nombre de {_unir(bancos)}."
+            ),
         })
 
     canales = Counter(it["canal"] for it in items if it.get("canal"))
@@ -2094,7 +2098,7 @@ def _faq_cadena(
         for canal, n in sorted(canales.items()):
             verbo = "figura" if n == 1 else "figuran"
             partes.append(f"{_n_promos(n)} {verbo} como {canal}")
-        texto = f"En el archivo, {_unir(partes)}."
+        texto = f"Esta semana, según lo publicado por {nombre}, {_unir(partes)}."
         if any(it.get("canal") == "sucursal" for it in items):
             texto += " Las de sucursal se listan y no se restan del precio online."
         faq.append({
@@ -2295,15 +2299,15 @@ def descripcion_dia(plural: str, n: int, cadenas_n: int, top_pct: float | None) 
     if n <= 0:
         return _meta_120((
             f"Los {plural} no hay promos bancarias cargadas para los supermercados de CABA. "
-            f"BaratoYa no completa lo que no está en el archivo y no vende ni entrega.",
+            f"Si la cadena no publica ese dato, no lo completamos. BaratoYa no vende.",
             f"No hay descuentos cargados los {plural} en supermercados de CABA. "
-            f"BaratoYa muestra solo el archivo y no vende ni entrega productos.",
+            f"Mostramos solo lo publicado por cada cadena. BaratoYa no vende ni entrega.",
         ), f"descripcion de {plural}")
     promo = "1 promo bancaria" if n == 1 else f"{n} promos bancarias"
     lugar = "1 supermercado" if cadenas_n == 1 else f"{cadenas_n} supermercados"
     if top_pct is None:
         return _meta_120((
-            f"Los {plural} hay {promo} en {lugar} de CABA. Ese día el archivo no publica "
+            f"Los {plural} hay {promo} en {lugar} de CABA. Ese día las cadenas no publican "
             f"un porcentaje. BaratoYa no vende ni entrega.",
             f"Descuentos los {plural} en supermercados de CABA: {promo} en {lugar}. "
             f"Sin un porcentaje publicado ese día. BaratoYa no vende ni entrega.",
@@ -2398,7 +2402,10 @@ def _resumen_dia(spec: dict[str, Any], items: list[dict[str, Any]]) -> dict[str,
     n = len(dia_items)
     plural = spec["plural"]
     if n == 0:
-        linea = f"En el archivo no hay promos vigentes para los {plural}."
+        linea = (
+            f"Esta semana, según lo publicado por cada cadena, no hay promos "
+            f"vigentes para los {plural}."
+        )
     else:
         linea = f"Hay {_n_promos(n)} en {_cadenas_txt(len(cadenas))}."
         if top_txt:
@@ -2433,8 +2440,8 @@ def _faq_dia(resumen: dict[str, Any]) -> list[dict[str, str]]:
         faq.append({
             "q": f"¿Hay descuentos en supermercados los {plural}?",
             "a": (
-                f"En el archivo no hay promos vigentes para los {plural} "
-                f"en supermercados de CABA."
+                f"Esta semana, según lo publicado por cada cadena, no hay promos "
+                f"vigentes para los {plural} en supermercados de CABA."
             ),
         })
         return faq
@@ -2444,16 +2451,16 @@ def _faq_dia(resumen: dict[str, Any]) -> list[dict[str, str]]:
         faq.append({
             "q": f"¿Qué supermercado tiene más descuento los {plural}?",
             "a": (
-                f"En el archivo, el mayor porcentaje publicado los {plural} es "
-                f"{resumen['top_txt']}%{donde_txt}."
+                f"Esta semana, según lo publicado por cada cadena, el mayor porcentaje "
+                f"los {plural} es {resumen['top_txt']}%{donde_txt}."
             ),
         })
     else:
         faq.append({
             "q": f"¿Hay un porcentaje de descuento publicado los {plural}?",
             "a": (
-                f"En el archivo, las promos de los {plural} no traen un porcentaje. "
-                f"Hay {_n_promos(int(resumen['cuotas_n']))} de cuotas."
+                f"Esta semana, según lo publicado por cada cadena, las promos de los "
+                f"{plural} no traen un porcentaje. Hay {_n_promos(int(resumen['cuotas_n']))} de cuotas."
             ),
         })
     conteo = resumen["conteo"]
@@ -2462,13 +2469,14 @@ def _faq_dia(resumen: dict[str, Any]) -> list[dict[str, str]]:
         top = [slot["cadena"] for slot in conteo if int(slot["n"]) == maximo]
         if len(top) == 1:
             frase = (
-                f"En el archivo, {top[0]} tiene {_n_promos(maximo)} los {plural}. "
-                f"Es la cadena con más promos ese día."
+                f"Esta semana, según lo publicado por cada cadena, {top[0]} tiene "
+                f"{_n_promos(maximo)} los {plural}. Es la cadena con más promos ese día."
             )
         else:
             frase = (
-                f"En el archivo, {_unir(top)} tienen {_n_promos(maximo)} los {plural} "
-                f"cada una. Empatan como las cadenas con más promos ese día."
+                f"Esta semana, según lo publicado por cada cadena, {_unir(top)} tienen "
+                f"{_n_promos(maximo)} los {plural} cada una. "
+                f"Empatan como las cadenas con más promos ese día."
             )
         faq.append({
             "q": f"¿Qué supermercado tiene más promos los {plural}?",
@@ -2485,8 +2493,8 @@ def _faq_dia(resumen: dict[str, Any]) -> list[dict[str, str]]:
     faq.append({
         "q": f"¿Cuántos descuentos de supermercado hay los {plural}?",
         "a": (
-            f"En el archivo hay {_n_promos(n)} los {plural}, en "
-            f"{_cadenas_txt(int(resumen['cadenas_n']))} de CABA.{cierre}"
+            f"Esta semana, según lo publicado por cada cadena, hay {_n_promos(n)} "
+            f"los {plural}, en {_cadenas_txt(int(resumen['cadenas_n']))} de CABA.{cierre}"
         ),
     })
     return faq
@@ -2498,20 +2506,20 @@ def _faq_dias(resumenes: list[dict[str, Any]], dia_hoy: str) -> list[dict[str, s
     if not con_promos:
         faq.append({
             "q": "¿Qué día hay descuentos en los supermercados?",
-            "a": "En el archivo no hay promos vigentes de lunes a domingo.",
+            "a": "Esta semana, según lo publicado por cada cadena, no hay promos vigentes de lunes a domingo.",
         })
         return faq
     maximo = max(int(r["n"]) for r in con_promos)
     top = [r for r in resumenes if int(r["n"]) == maximo]
     if len(top) == 1:
         frase = (
-            f"En el archivo, los {top[0]['plural']} tienen {_n_promos(maximo)}. "
-            f"Es el día con más promos."
+            f"Esta semana, según lo publicado por cada cadena, los {top[0]['plural']} "
+            f"tienen {_n_promos(maximo)}. Es el día con más promos."
         )
     else:
         nombres = _unir([f"los {r['plural']}" for r in top])
         frase = (
-            f"En el archivo, {nombres} tienen "
+            f"Esta semana, según lo publicado por cada cadena, {nombres} tienen "
             f"{_n_promos(maximo)} cada uno. Empatan como los días con más promos."
         )
     faq.append({
@@ -2527,12 +2535,15 @@ def _faq_dias(resumenes: list[dict[str, Any]], dia_hoy: str) -> list[dict[str, s
             r = dias_top[0]
             donde = f" En {r['top_donde']}." if r["top_donde"] else ""
             texto = (
-                f"En el archivo, el mayor porcentaje es {pct}%, los {r['plural']}."
-                f"{donde}"
+                f"Esta semana, según lo publicado por cada cadena, el mayor porcentaje "
+                f"es {pct}%, los {r['plural']}.{donde}"
             )
         else:
             nombres = _unir([f"los {r['plural']}" for r in dias_top])
-            texto = f"En el archivo, el mayor porcentaje es {pct}%, {nombres}."
+            texto = (
+                f"Esta semana, según lo publicado por cada cadena, el mayor porcentaje "
+                f"es {pct}%, {nombres}."
+            )
         faq.append({
             "q": "¿Qué día tiene el mayor porcentaje de descuento?",
             "a": texto,
@@ -2600,8 +2611,8 @@ def pagina_seo_dias(hoy: date | None = None) -> dict[str, Any]:
     else:
         promos_txt = f"{len(items)} promos vigentes"
     intro = (
-        f"En el archivo hay {promos_txt} en {_cadenas_txt(cadenas_n)} de CABA, "
-        f"de lunes a domingo. Hoy es {dia} {fecha}."
+        f"Esta semana, según lo publicado por cada cadena, hay {promos_txt} en "
+        f"{_cadenas_txt(cadenas_n)} de CABA, de lunes a domingo. Hoy es {dia} {fecha}."
     )
     return {
         "title": DESCUENTOS_TITLE,
