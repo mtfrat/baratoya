@@ -56,19 +56,21 @@
     .logo .wm { font-size: 26px; line-height: 1; letter-spacing: -0.01em; font-weight: 400; }
     .logo .b { font-family: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif; font-weight: 400; color: #163300; }
     .logo .y { font-family: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", sans-serif; font-weight: 700; color: #4E8A1E; }
-    main { width: min(100% - 32px, 42rem); margin: 0 auto; padding: 32px 0 64px; }
+    main { width: min(100% - 32px, 48rem); margin: 0 auto; padding: 32px 0 64px; }
     .crumbs { margin: 0 0 16px; font-size: 14px; color: var(--slate); }
     .crumbs a { font-weight: 600; }
-    h1, h2, h3, h4 { color: var(--ink); line-height: 1.25; letter-spacing: -0.02em; }
+    h1, h2, h3 { color: var(--ink); line-height: 1.25; letter-spacing: -0.02em; }
     h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); font-weight: 600; }
     h2 { margin: 36px 0 8px; font-size: 22px; }
     h3 { margin: 24px 0 4px; font-size: 18px; }
-    h4 { margin: 16px 0 4px; font-size: 16px; }
     p { margin: 0 0 16px; }
     .actualizado { font-weight: 700; color: var(--ink); }
     .fuente { margin: 0 0 8px; font-size: 14px; word-break: break-word; }
     ul { margin: 0 0 8px; padding-left: 1.2rem; }
     li { margin: 0 0 10px; }
+    .otras { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 0; margin: 0 0 8px; }
+    .otras li { margin: 0; }
+    .otras a { font-weight: 700; }
     .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 8px; }
     .btn {
       display: inline-flex;
@@ -85,8 +87,14 @@
     .btn.outline { background: var(--paper); border: 1px solid var(--ink); }
     .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .nota { color: var(--slate); font-size: 15px; }
+    .tabla-wrap { overflow-x: auto; margin: 0 0 16px; max-width: 100%; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    caption { caption-side: bottom; padding-top: 8px; text-align: left; color: var(--slate); font-size: 13px; }
+    th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--fog); }
+    th { color: var(--ink); font-size: 13px; }
+    td { overflow-wrap: anywhere; }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
-    footer .wrap { width: min(100% - 32px, 42rem); margin: 0 auto; }
+    footer .wrap { width: min(100% - 32px, 48rem); margin: 0 auto; }
     footer p { margin: 0 0 8px; }
     .cookie-note {
       margin: 0 0 12px;
@@ -97,6 +105,33 @@
       font-size: 13px;
       line-height: 1.45;
     }
+    @media (max-width: 720px) {
+      .tabla-wrap { overflow: visible; }
+      table, thead, tbody, tr, th, td { display: block; width: 100%; }
+      thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+      tr { padding: 10px 0; border-bottom: 1px solid var(--fog); }
+      td { border: 0; padding: 2px 0 2px 6.5rem; position: relative; min-height: 1.6em; }
+      td:empty { display: none; }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 6rem;
+        color: var(--ink);
+        font-weight: 700;
+        font-size: 13px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -106,13 +141,19 @@
   </header>
   <main>
     <nav class="crumbs" aria-label="Migas de pan">
-      <a href="/">Inicio</a> · Promos bancarias supermercados
+      <a href="/">Inicio</a> · <a href="{{ hub_href }}">Promos bancarias supermercados</a> · {{ nombre }}
     </nav>
-    <h1>Promos bancarias supermercados hoy en CABA</h1>
-    <p>¿Qué promos bancarias hay hoy en los supermercados de CABA? Las de esta página: banco o tarjeta, porcentaje o cuotas, tope si está publicado, y los días. Son las mismas que usa la cuenta de BaratoYa. Si un campo no está en el archivo, no lo completamos.</p>
+    <h1>{{ h1 }}</h1>
+    <p>¿Qué promos bancarias hay hoy en {{ nombre }}? Las de esta página: banco o tarjeta, porcentaje o cuotas, tope si está publicado, y los días. Son las mismas que usa la cuenta de BaratoYa. Si un campo no está en el archivo, no lo completamos.</p>
+    {% if nombre_archivo != nombre %}
+    <p>En el archivo, la cadena figura como {{ nombre_archivo }}.</p>
+    {% endif %}
     <p>Hoy es {{ dia }} {{ fecha }}.</p>
     {% if actualizado %}
     <p class="actualizado">Actualizado el {{ actualizado }}.</p>
+    {% endif %}
+    {% if fuentes %}
+    <p class="fuente">Fuente:{% for f in fuentes %} <a href="{{ f }}" rel="noopener noreferrer">{{ f }}</a>{% endfor %}</p>
     {% endif %}
     <div class="cta">
       <a class="btn" href="/">Empezar 7d gratis</a>
@@ -120,45 +161,60 @@
     </div>
     <p class="nota">Los 7 días Plus gratis se activan al crear la cuenta, en el inicio. No pide tarjeta. El precio de un producto con la promo se calcula ahí. Plus, si lo querés, está en Planes.</p>
 
-    {% if hoy_cadenas %}
+    <h2>Otras cadenas</h2>
+    <ul class="otras">
+      <li><a href="{{ hub_href }}">Todas las cadenas</a></li>
+      {% for c in otras %}
+      <li><a href="{{ c.href }}">{{ c.nombre }}</a></li>
+      {% endfor %}
+    </ul>
+
+    {% if hoy_promos %}
     <h2 id="hoy">Hoy, {{ dia }} {{ fecha }}</h2>
-    {% for grupo in hoy_cadenas %}
-    <section>
-      <h3>{% if grupo.href %}<a href="{{ grupo.href }}">{{ grupo.cadena }}</a>{% else %}{{ grupo.cadena }}{% endif %}</h3>
-      {% if grupo.fuentes %}
-      <p class="fuente">Fuente:{% for f in grupo.fuentes %} <a href="{{ f }}" rel="noopener noreferrer">{{ f }}</a>{% endfor %}</p>
-      {% endif %}
-      <ul>
-        {% for it in grupo.promos %}
-        <li><strong>{{ it.banco }}</strong>: {{ it.oferta }}{% if it.dias %}, {{ it.dias }}{% endif %}{% if it.tope %}, {{ it.tope }}{% endif %}{% if it.minimo %}, mínimo {{ it.minimo }}{% endif %}{% if it.canal %}, {{ it.canal }}{% endif %}{% if it.vigencia %}, vigencia {{ it.vigencia }}{% endif %}{% if it.nota %}. {{ it.nota }}{% endif %}.</li>
-        {% endfor %}
-      </ul>
-    </section>
-    {% endfor %}
+    <ul>
+      {% for it in hoy_promos %}
+      <li><strong>{{ it.banco }}</strong>: {{ it.oferta }}{% if it.dias %}, {{ it.dias }}{% endif %}{% if it.tope %}, {{ it.tope }}{% endif %}{% if it.minimo %}, mínimo {{ it.minimo }}{% endif %}{% if it.canal %}, {{ it.canal }}{% endif %}{% if it.vigencia %}, vigencia {{ it.vigencia }}{% endif %}{% if it.nota %}. {{ it.nota }}{% endif %}.</li>
+      {% endfor %}
+    </ul>
     {% else %}
     <h2 id="hoy">Hoy, {{ dia }} {{ fecha }}</h2>
     <p>No hay promos vigentes cargadas para hoy.</p>
     {% endif %}
 
-    {% if por_dia %}
+    {% if filas %}
     <h2>Por día de la semana</h2>
-    {% for bloque in por_dia %}
-    <section id="{{ bloque.dia }}">
-      <h3>{{ bloque.dia }}{% if bloque.hoy %} (hoy){% endif %}</h3>
-      {% for grupo in bloque.cadenas %}
-      <h4>{% if grupo.href %}<a href="{{ grupo.href }}">{{ grupo.cadena }}</a>{% else %}{{ grupo.cadena }}{% endif %}</h4>
-      {% if grupo.fuentes %}
-      <p class="fuente">Fuente:{% for f in grupo.fuentes %} <a href="{{ f }}" rel="noopener noreferrer">{{ f }}</a>{% endfor %}</p>
-      {% endif %}
-      <ul>
-        {% for it in grupo.promos %}
-        <li><strong>{{ it.banco }}</strong>: {{ it.oferta }}{% if it.dias %}, {{ it.dias }}{% endif %}{% if it.tope %}, {{ it.tope }}{% endif %}{% if it.minimo %}, mínimo {{ it.minimo }}{% endif %}{% if it.canal %}, {{ it.canal }}{% endif %}{% if it.vigencia %}, vigencia {{ it.vigencia }}{% endif %}{% if it.nota %}. {{ it.nota }}{% endif %}.</li>
-        {% endfor %}
-      </ul>
-      {% endfor %}
+    <div class="tabla-wrap">
+      <table>
+        <caption>Promos de {{ nombre }} por día. Solo los campos que están en el archivo.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Día</th>
+            {% for col in columnas %}
+            <th scope="col">{{ col.label }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for fila in filas %}
+          <tr>
+            <td data-label="Día">{{ fila.dia }}</td>
+            {% for col in columnas %}
+            <td data-label="{{ col.label }}">{% if fila[col.key] %}{{ fila[col.key] }}{% endif %}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    <h2>Notas</h2>
+    {% for item in notas %}
+    <section>
+      <h3>{{ item.q }}</h3>
+      <p>{{ item.a }}</p>
     </section>
     {% endfor %}
-    {% endif %}
 
     <h2>Para ver el precio con la promo</h2>
     <p>Esta página no calcula el precio de un producto. Eso queda en la cuenta, con la promo que sí se puede restar.</p>
@@ -167,7 +223,7 @@
       <a class="btn outline" href="/planes">Ver planes</a>
     </div>
 
-    <h2>Preguntas frecuentes</h2>
+    <h2>Preguntas sobre {{ nombre }}</h2>
     {% for item in faq %}
     <section>
       <h3>{{ item.q }}</h3>
@@ -180,7 +236,8 @@
       <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
-      <p><a href="/">Inicio</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      <p><a href="/">Inicio</a> · <a href="{{ hub_href }}">Promos bancarias supermercados</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      <p>Promos por supermercado:{% for c in otras %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
     </div>
   </footer>
 </body>
