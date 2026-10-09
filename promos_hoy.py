@@ -1828,6 +1828,9 @@ def _item_publico(rec: dict[str, Any]) -> dict[str, Any] | None:
     fuente = _url_http(str(rec.get("source_url") or ""))
     if fuente:
         item["fuente"] = fuente
+    pct = rec.get("percent")
+    if isinstance(pct, (int, float)) and not isinstance(pct, bool) and pct > 0:
+        item["percent"] = float(pct)
     return item
 
 
@@ -1910,6 +1913,7 @@ def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
         "cadenas_n": cadenas_n,
         "hoy_cadenas": hoy_cadenas,
         "por_dia": por_dia,
+        "dias_nav": nav_dias(hoy),
         "faq": faq,
         "ld_faq": _ld({
             "@context": "https://schema.org",
@@ -2191,6 +2195,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
         "faq": faq,
         "notas": notas_honestidad(),
         "otras": otras,
+        "dias_nav": nav_dias(hoy),
         "hub_href": SEO_PATH,
         "ld_faq": _ld_faq(faq),
         "ld_breadcrumb": _ld({
@@ -2217,5 +2222,453 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
                 },
             ],
         }),
+    }
+
+
+# Páginas por día de la semana. El slug "dia" ya es la cadena Día, así que
+# estas URLs viven en /descuentos-supermercados y no bajo el hub de cadenas.
+DESCUENTOS_PATH = "/descuentos-supermercados"
+DESCUENTOS_URL = "https://baratoya.app" + DESCUENTOS_PATH
+DESCUENTOS_TITLE = "Descuentos en supermercados por día | BaratoYa"
+DESCUENTOS_H1 = "Descuentos en supermercados por día en CABA"
+_DIAS_SEO = (
+    {"idx": 0, "slug": "lunes", "nombre": "lunes", "plural": "lunes"},
+    {"idx": 1, "slug": "martes", "nombre": "martes", "plural": "martes"},
+    {"idx": 2, "slug": "miercoles", "nombre": "miércoles", "plural": "miércoles"},
+    {"idx": 3, "slug": "jueves", "nombre": "jueves", "plural": "jueves"},
+    {"idx": 4, "slug": "viernes", "nombre": "viernes", "plural": "viernes"},
+    {"idx": 5, "slug": "sabado", "nombre": "sábado", "plural": "sábados"},
+    {"idx": 6, "slug": "domingo", "nombre": "domingo", "plural": "domingos"},
+)
+_DIA_POR_SLUG = {d["slug"]: d for d in _DIAS_SEO}
+
+
+def _meta_120(opciones: tuple[str, ...], que: str) -> str:
+    for texto in opciones:
+        if 120 <= len(texto) <= 155 and '"' not in texto and "<" not in texto:
+            return texto
+    largos = ", ".join(str(len(t)) for t in opciones)
+    raise ValueError(f"{que} no entra en 120-155 ({largos})")
+
+
+def _pct_publico(n: float) -> str:
+    if float(n) == int(n):
+        return str(int(n))
+    return str(n).replace(".", ",")
+
+
+def _cadenas_txt(n: int) -> str:
+    return "1 cadena" if n == 1 else f"{n} cadenas"
+
+
+def nav_dias(hoy: date | None = None) -> list[dict[str, Any]]:
+    """Los 7 días, con el de hoy marcado en America/Argentina/Buenos_Aires."""
+    hoy = hoy or hoy_art()
+    wd = hoy.weekday()
+    salida = []
+    for spec in _DIAS_SEO:
+        href = f"{DESCUENTOS_PATH}/{spec['slug']}"
+        salida.append({
+            "idx": spec["idx"],
+            "slug": spec["slug"],
+            "nombre": spec["nombre"],
+            "plural": spec["plural"],
+            "href": href,
+            "url": "https://baratoya.app" + href,
+            "hoy": spec["idx"] == wd,
+        })
+    return salida
+
+
+def titulo_dia(plural: str) -> str:
+    texto = f"Descuentos en supermercados los {plural} | BaratoYa"
+    if len(texto) > 60:
+        raise ValueError(f"titulo de {plural} no entra en 60 ({len(texto)})")
+    return texto
+
+
+def h1_dia(plural: str) -> str:
+    return f"Descuentos en supermercados los {plural} en CABA"
+
+
+def descripcion_dia(plural: str, n: int, cadenas_n: int, top_pct: float | None) -> str:
+    if n <= 0:
+        return _meta_120((
+            f"Los {plural} no hay promos bancarias cargadas para los supermercados de CABA. "
+            f"BaratoYa no completa lo que no está en el archivo y no vende ni entrega.",
+            f"No hay descuentos cargados los {plural} en supermercados de CABA. "
+            f"BaratoYa muestra solo el archivo y no vende ni entrega productos.",
+        ), f"descripcion de {plural}")
+    promo = "1 promo bancaria" if n == 1 else f"{n} promos bancarias"
+    lugar = "1 supermercado" if cadenas_n == 1 else f"{cadenas_n} supermercados"
+    if top_pct is None:
+        return _meta_120((
+            f"Los {plural} hay {promo} en {lugar} de CABA. Ese día el archivo no publica "
+            f"un porcentaje. BaratoYa no vende ni entrega.",
+            f"Descuentos los {plural} en supermercados de CABA: {promo} en {lugar}. "
+            f"Sin un porcentaje publicado ese día. BaratoYa no vende ni entrega.",
+        ), f"descripcion de {plural}")
+    pct = _pct_publico(top_pct)
+    return _meta_120((
+        f"Los {plural} hay {promo} en {lugar} de CABA. El mayor porcentaje publicado "
+        f"es {pct}%. BaratoYa no vende ni entrega.",
+        f"Descuentos los {plural} en supermercados de CABA: {promo} en {lugar}. "
+        f"El mayor porcentaje publicado es {pct}%. BaratoYa no vende ni entrega.",
+    ), f"descripcion de {plural}")
+
+
+def descripcion_dias(n: int, cadenas_n: int, dia_nombre: str) -> str:
+    if n == 1:
+        promos = "1 promo vigente"
+    else:
+        promos = f"{n} promos vigentes"
+    if cadenas_n == 1:
+        lugar = "1 cadena"
+    else:
+        lugar = f"{cadenas_n} cadenas"
+    return _meta_120((
+        f"Descuentos de supermercados en CABA, de lunes a domingo: {promos} en {lugar}. "
+        f"Hoy es {dia_nombre}. BaratoYa no vende ni entrega.",
+        f"Hay {promos} en {lugar} de supermercados de CABA, separadas por día. "
+        f"Hoy es {dia_nombre}. BaratoYa no vende ni entrega.",
+    ), "descripcion del hub por día")
+
+
+def _top_descuento(items: list[dict[str, Any]]) -> tuple[float | None, list[dict[str, Any]]]:
+    con = [it for it in items if isinstance(it.get("percent"), (int, float)) and it["percent"] > 0]
+    if not con:
+        return None, []
+    mx = max(float(it["percent"]) for it in con)
+    return mx, [it for it in con if float(it["percent"]) == mx]
+
+
+def _frase_top(ties: list[dict[str, Any]]) -> str:
+    por: dict[str, dict[str, Any]] = {}
+    for it in ties:
+        cid = str(it.get("chain_id") or "")
+        if not cid:
+            continue
+        slot = por.get(cid)
+        if slot is None:
+            slot = {"cadena": it.get("cadena") or cid, "bancos": []}
+            por[cid] = slot
+        banco = str(it.get("banco") or "").strip()
+        if banco and banco not in slot["bancos"]:
+            slot["bancos"].append(banco)
+    partes = []
+    for cid in sorted(por, key=_orden_cadena):
+        slot = por[cid]
+        bancos = sorted(slot["bancos"], key=str.casefold)
+        if bancos:
+            partes.append(f"{slot['cadena']} ({_unir(bancos)})")
+        else:
+            partes.append(str(slot["cadena"]))
+    return _unir(partes)
+
+
+def _conteo_cadenas(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    conteo: dict[str, dict[str, Any]] = {}
+    for it in items:
+        cid = str(it.get("chain_id") or "")
+        if not cid:
+            continue
+        slot = conteo.get(cid)
+        if slot is None:
+            conteo[cid] = {"chain_id": cid, "cadena": it.get("cadena") or cid, "n": 0}
+            slot = conteo[cid]
+        slot["n"] += 1
+    ordenados = [conteo[cid] for cid in sorted(conteo, key=_orden_cadena)]
+    ordenados.sort(key=lambda s: (-int(s["n"]), _orden_cadena(s["chain_id"])))
+    return ordenados
+
+
+def _items_de(items: list[dict[str, Any]], idx: int) -> list[dict[str, Any]]:
+    return [it for it in items if idx in it.get("day_ids", [])]
+
+
+def _resumen_dia(spec: dict[str, Any], items: list[dict[str, Any]]) -> dict[str, Any]:
+    """Mismos ítems que el bloque de ese día en el hub de promos."""
+    dia_items = _items_de(items, int(spec["idx"]))
+    cadenas = _agrupar_cadenas(dia_items)
+    top_pct, ties = _top_descuento(dia_items)
+    top_txt = _pct_publico(top_pct) if top_pct is not None else ""
+    top_donde = _frase_top(ties) if ties else ""
+    conteo = _conteo_cadenas(dia_items)
+    cuotas_n = sum(1 for it in dia_items if "percent" not in it)
+    n = len(dia_items)
+    plural = spec["plural"]
+    if n == 0:
+        linea = f"En el archivo no hay promos vigentes para los {plural}."
+    else:
+        linea = f"Hay {_n_promos(n)} en {_cadenas_txt(len(cadenas))}."
+        if top_txt:
+            linea += f" El mayor porcentaje publicado es {top_txt}%"
+            if top_donde:
+                linea += f", en {top_donde}"
+            linea += "."
+    return {
+        "idx": spec["idx"],
+        "slug": spec["slug"],
+        "nombre": spec["nombre"],
+        "plural": plural,
+        "href": f"{DESCUENTOS_PATH}/{spec['slug']}",
+        "url": "https://baratoya.app" + f"{DESCUENTOS_PATH}/{spec['slug']}",
+        "n": n,
+        "cadenas_n": len(cadenas),
+        "top_pct": top_pct,
+        "top_txt": top_txt,
+        "top_donde": top_donde,
+        "cuotas_n": cuotas_n,
+        "conteo": conteo,
+        "linea": linea,
+        "cadenas": cadenas,
+    }
+
+
+def _faq_dia(resumen: dict[str, Any]) -> list[dict[str, str]]:
+    plural = resumen["plural"]
+    n = int(resumen["n"])
+    faq: list[dict[str, str]] = []
+    if n <= 0:
+        faq.append({
+            "q": f"¿Hay descuentos en supermercados los {plural}?",
+            "a": (
+                f"En el archivo no hay promos vigentes para los {plural} "
+                f"en supermercados de CABA."
+            ),
+        })
+        return faq
+    if resumen["top_txt"]:
+        donde = resumen["top_donde"]
+        donde_txt = f", en {donde}" if donde else ""
+        faq.append({
+            "q": f"¿Qué supermercado tiene más descuento los {plural}?",
+            "a": (
+                f"En el archivo, el mayor porcentaje publicado los {plural} es "
+                f"{resumen['top_txt']}%{donde_txt}."
+            ),
+        })
+    else:
+        faq.append({
+            "q": f"¿Hay un porcentaje de descuento publicado los {plural}?",
+            "a": (
+                f"En el archivo, las promos de los {plural} no traen un porcentaje. "
+                f"Hay {_n_promos(int(resumen['cuotas_n']))} de cuotas."
+            ),
+        })
+    conteo = resumen["conteo"]
+    if conteo:
+        maximo = int(conteo[0]["n"])
+        top = [slot["cadena"] for slot in conteo if int(slot["n"]) == maximo]
+        if len(top) == 1:
+            frase = (
+                f"En el archivo, {top[0]} tiene {_n_promos(maximo)} los {plural}. "
+                f"Es la cadena con más promos ese día."
+            )
+        else:
+            frase = (
+                f"En el archivo, {_unir(top)} tienen {_n_promos(maximo)} los {plural} "
+                f"cada una. Empatan como las cadenas con más promos ese día."
+            )
+        faq.append({
+            "q": f"¿Qué supermercado tiene más promos los {plural}?",
+            "a": frase,
+        })
+    cuotas = int(resumen["cuotas_n"])
+    if cuotas:
+        cierre = (
+            f" De esas, {_n_promos(cuotas)} son cuotas y no un porcentaje. "
+            f"Las cuotas no se restan del precio."
+        )
+    else:
+        cierre = ""
+    faq.append({
+        "q": f"¿Cuántos descuentos de supermercado hay los {plural}?",
+        "a": (
+            f"En el archivo hay {_n_promos(n)} los {plural}, en "
+            f"{_cadenas_txt(int(resumen['cadenas_n']))} de CABA.{cierre}"
+        ),
+    })
+    return faq
+
+
+def _faq_dias(resumenes: list[dict[str, Any]], dia_hoy: str) -> list[dict[str, str]]:
+    faq: list[dict[str, str]] = []
+    con_promos = [r for r in resumenes if r["n"]]
+    if not con_promos:
+        faq.append({
+            "q": "¿Qué día hay descuentos en los supermercados?",
+            "a": "En el archivo no hay promos vigentes de lunes a domingo.",
+        })
+        return faq
+    maximo = max(int(r["n"]) for r in con_promos)
+    top = [r for r in resumenes if int(r["n"]) == maximo]
+    if len(top) == 1:
+        frase = (
+            f"En el archivo, los {top[0]['plural']} tienen {_n_promos(maximo)}. "
+            f"Es el día con más promos."
+        )
+    else:
+        nombres = _unir([f"los {r['plural']}" for r in top])
+        frase = (
+            f"En el archivo, {nombres} tienen "
+            f"{_n_promos(maximo)} cada uno. Empatan como los días con más promos."
+        )
+    faq.append({
+        "q": "¿Qué día hay más promos de supermercado?",
+        "a": frase,
+    })
+    con_pct = [r for r in resumenes if r["top_pct"] is not None]
+    if con_pct:
+        mejor = max(float(r["top_pct"]) for r in con_pct)
+        dias_top = [r for r in con_pct if float(r["top_pct"]) == mejor]
+        pct = _pct_publico(mejor)
+        if len(dias_top) == 1:
+            r = dias_top[0]
+            donde = f" En {r['top_donde']}." if r["top_donde"] else ""
+            texto = (
+                f"En el archivo, el mayor porcentaje es {pct}%, los {r['plural']}."
+                f"{donde}"
+            )
+        else:
+            nombres = _unir([f"los {r['plural']}" for r in dias_top])
+            texto = f"En el archivo, el mayor porcentaje es {pct}%, {nombres}."
+        faq.append({
+            "q": "¿Qué día tiene el mayor porcentaje de descuento?",
+            "a": texto,
+        })
+    faq.append({
+        "q": "¿Qué día es hoy para estas promos?",
+        "a": (
+            f"Hoy es {dia_hoy}, con la hora de Argentina. "
+            f"Una promo entra en un día si ese día está en su lista y la fecha "
+            f"cae entre el inicio y el fin de vigencia."
+        ),
+    })
+    return faq
+
+
+def _breadcrumb_dias(extra: dict[str, str] | None = None) -> str:
+    items = [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Inicio",
+            "item": "https://baratoya.app/",
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Descuentos en supermercados",
+            "item": DESCUENTOS_URL,
+        },
+    ]
+    if extra:
+        items.append({
+            "@type": "ListItem",
+            "position": 3,
+            "name": extra["name"],
+            "item": extra["item"],
+        })
+    return _ld({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": items,
+    })
+
+
+def _vista_listados(hoy: date) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Ítems públicos del hub y el resumen de cada día, con la misma fecha."""
+    items = _items_publicos(hoy)
+    return items, [_resumen_dia(spec, items) for spec in _DIAS_SEO]
+
+
+def pagina_seo_dias(hoy: date | None = None) -> dict[str, Any]:
+    """Vista de /descuentos-supermercados. Enlaza los 7 días y marca el de hoy."""
+    hoy = hoy or hoy_art()
+    items, resumenes = _vista_listados(hoy)
+    wd = hoy.weekday()
+    for resumen, spec in zip(resumenes, _DIAS_SEO):
+        resumen["hoy"] = spec["idx"] == wd
+    dia = NOMBRE_DIA[wd]
+    faq = _faq_dias(resumenes, dia)
+    actualizado = fecha_datos_promos()
+    cadenas_n = len({it["chain_id"] for it in items})
+    fecha = fecha_larga(hoy)
+    if len(items) == 1:
+        promos_txt = "1 promo vigente"
+    else:
+        promos_txt = f"{len(items)} promos vigentes"
+    intro = (
+        f"En el archivo hay {promos_txt} en {_cadenas_txt(cadenas_n)} de CABA, "
+        f"de lunes a domingo. Hoy es {dia} {fecha}."
+    )
+    return {
+        "title": DESCUENTOS_TITLE,
+        "description": descripcion_dias(len(items), cadenas_n, dia),
+        "canonical": DESCUENTOS_URL,
+        "h1": DESCUENTOS_H1,
+        "path": DESCUENTOS_PATH,
+        "hoy_iso": hoy.isoformat(),
+        "dia": dia,
+        "fecha": fecha,
+        "intro": intro,
+        "actualizado": fecha_larga(actualizado) if actualizado else "",
+        "n": len(items),
+        "cadenas_n": cadenas_n,
+        "dias": resumenes,
+        "dias_nav": nav_dias(hoy),
+        "cadenas": cadenas_indexables(hoy),
+        "hub_promos": SEO_PATH,
+        "faq": faq,
+        "notas": notas_honestidad(),
+        "ld_faq": _ld_faq(faq),
+        "ld_breadcrumb": _breadcrumb_dias(),
+    }
+
+
+def pagina_seo_dia(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
+    """Vista de /descuentos-supermercados/<dia>. None si el slug no es un día."""
+    spec = _DIA_POR_SLUG.get((slug or "").strip())
+    if spec is None:
+        return None
+    hoy = hoy or hoy_art()
+    _items, resumenes = _vista_listados(hoy)
+    resumen = next(r for r in resumenes if r["slug"] == spec["slug"])
+    wd = hoy.weekday()
+    for row in resumenes:
+        row["hoy"] = row["idx"] == wd
+    plural = spec["plural"]
+    faq = _faq_dia(resumen)
+    actualizado = fecha_datos_promos()
+    canonical = resumen["url"]
+    return {
+        "title": titulo_dia(plural),
+        "description": descripcion_dia(plural, resumen["n"], resumen["cadenas_n"], resumen["top_pct"]),
+        "canonical": canonical,
+        "h1": h1_dia(plural),
+        "path": resumen["href"],
+        "slug": spec["slug"],
+        "nombre": spec["nombre"],
+        "plural": plural,
+        "es_hoy": spec["idx"] == wd,
+        "hoy_iso": hoy.isoformat(),
+        "dia_hoy": NOMBRE_DIA[wd],
+        "fecha": fecha_larga(hoy),
+        "actualizado": fecha_larga(actualizado) if actualizado else "",
+        "n": resumen["n"],
+        "cadenas_n": resumen["cadenas_n"],
+        "top_txt": resumen["top_txt"],
+        "top_donde": resumen["top_donde"],
+        "linea": resumen["linea"],
+        "cadenas": resumen["cadenas"],
+        "dias_nav": nav_dias(hoy),
+        "otras_cadenas": cadenas_indexables(hoy),
+        "hub_promos": SEO_PATH,
+        "hub_dias": DESCUENTOS_PATH,
+        "faq": faq,
+        "notas": notas_honestidad(),
+        "ld_faq": _ld_faq(faq),
+        "ld_breadcrumb": _breadcrumb_dias({"name": spec["nombre"], "item": canonical}),
     }
 

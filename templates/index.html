@@ -1620,7 +1620,7 @@
       <a href="/planes">Planes</a>
       {% if cuentas_on %}
       <button type="button" class="btn outline" id="abrir-entrar">Entrar</button>
-      <a href="/admin" id="nav-admin" hidden>Admin</a>
+      <a href="/admin" id="nav-admin" hidden rel="nofollow">Admin</a>
       <span class="nav-sesion" id="nav-sesion" hidden>
         <button type="button" class="btn text" id="abrir-prefs" title="Preferencias de tu cuenta"><span id="nav-nombre"></span> ⚙</button>
         <button type="button" class="btn text" id="cuenta-salir">Salir</button>
@@ -1900,7 +1900,7 @@
       <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
-      <p><a href="/">Inicio</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      <p><a href="/">Inicio</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/descuentos-supermercados">Descuentos por día</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
       {% if promos_cadenas %}
       <p>Promos por supermercado:{% for c in promos_cadenas %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
       {% endif %}

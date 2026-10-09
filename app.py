@@ -35,6 +35,8 @@ try:
     from baratoya.promos_hoy import cadenas_indexables as cadenas_promos_publicas
     from baratoya.promos_hoy import pagina_seo as pagina_promos_seo
     from baratoya.promos_hoy import pagina_seo_cadena as pagina_promo_cadena
+    from baratoya.promos_hoy import pagina_seo_dia as pagina_promo_dia
+    from baratoya.promos_hoy import pagina_seo_dias as pagina_promos_dias
     from baratoya.promos_hoy import promos_para_cadena
     from baratoya import cuentas
 except ImportError:
@@ -50,6 +52,8 @@ except ImportError:
     from promos_hoy import cadenas_indexables as cadenas_promos_publicas
     from promos_hoy import pagina_seo as pagina_promos_seo
     from promos_hoy import pagina_seo_cadena as pagina_promo_cadena
+    from promos_hoy import pagina_seo_dia as pagina_promo_dia
+    from promos_hoy import pagina_seo_dias as pagina_promos_dias
     from promos_hoy import promos_para_cadena
     import cuentas
 
@@ -940,6 +944,21 @@ async def promos_bancarias_cadena(request: Request, slug: str):
     if vista is None:
         raise StarletteHTTPException(status_code=404)
     return templates.TemplateResponse(request, "promos_cadena.html", vista)
+
+
+@app.get("/descuentos-supermercados", response_class=HTMLResponse)
+async def descuentos_supermercados(request: Request):
+    """Los 7 días. El de hoy se marca con la fecha de Argentina."""
+    return templates.TemplateResponse(request, "descuentos_dias.html", pagina_promos_dias())
+
+
+@app.get("/descuentos-supermercados/{dia}", response_class=HTMLResponse)
+async def descuentos_supermercados_dia(request: Request, dia: str):
+    """Un día de la semana. El mismo archivo que el hub de promos, sin precio de producto."""
+    vista = pagina_promo_dia(dia)
+    if vista is None:
+        raise StarletteHTTPException(status_code=404)
+    return templates.TemplateResponse(request, "descuentos_dia.html", vista)
 
 
 @app.get("/api/sucursales")

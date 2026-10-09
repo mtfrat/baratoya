@@ -169,6 +169,13 @@
       {% endfor %}
     </ul>
 
+    <h2>Por día</h2>
+    <ul class="otras">
+      {% for d in dias_nav %}
+      <li><a href="{{ d.href }}">Descuentos los {{ d.plural }}</a>{% if d.hoy %} (hoy){% endif %}</li>
+      {% endfor %}
+    </ul>
+
     {% if hoy_promos %}
     <h2 id="hoy">Hoy, {{ dia }} {{ fecha }}</h2>
     <ul>
@@ -236,7 +243,8 @@
       <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
-      <p><a href="/">Inicio</a> · <a href="{{ hub_href }}">Promos bancarias supermercados</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      <p><a href="/">Inicio</a> · <a href="{{ hub_href }}">Promos bancarias supermercados</a> · <a href="/descuentos-supermercados">Descuentos por día</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      <p>Descuentos por día:{% for d in dias_nav %} <a href="{{ d.href }}">{{ d.plural }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
       <p>Promos por supermercado:{% for c in otras %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
     </div>
   </footer>

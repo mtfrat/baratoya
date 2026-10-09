@@ -10,6 +10,10 @@ from fastapi.testclient import TestClient
 
 import app as app_mod
 from promos_hoy import (
+    DESCUENTOS_H1,
+    DESCUENTOS_PATH,
+    DESCUENTOS_TITLE,
+    DESCUENTOS_URL,
     SEO_DESCRIPTION,
     SEO_PATH,
     SEO_TITLE,
@@ -18,9 +22,12 @@ from promos_hoy import (
     descripcion_cadena,
     fecha_datos_promos,
     fecha_larga,
+    nav_dias,
     notas_honestidad,
     pagina_seo,
     pagina_seo_cadena,
+    pagina_seo_dia,
+    pagina_seo_dias,
     titulo_cadena,
 )
 
@@ -275,6 +282,212 @@ class PromosPorCadenaTest(unittest.TestCase):
         parser = _H1()
         parser.feed(html)
         self.assertEqual(parser.h1, ["Promos bancarias supermercados hoy en CABA"])
+
+
+def _claves_grupos(grupos: list[dict]) -> list:
+    return [
+        (
+            g["chain_id"],
+            [
+                (p["banco"], p["oferta"], p.get("tope"), p.get("canal"), p.get("vigencia"), p.get("fuente"))
+                for p in g["promos"]
+            ],
+        )
+        for g in grupos
+    ]
+
+
+class DescuentosPorDiaTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.client = TestClient(app_mod.app)
+        cls.nav = nav_dias()
+        cls.hub = pagina_seo_dias()
+        cls.fecha = fecha_datos_promos()
+
+    def test_siete_dias_200_y_slug_desconocido_404(self) -> None:
+        self.assertEqual([d["slug"] for d in self.nav], [
+            "lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo",
+        ])
+        self.assertEqual(sum(1 for d in self.nav if d["hoy"]), 1)
+        for dia in self.nav:
+            res = self.client.get(dia["href"])
+            self.assertEqual(res.status_code, 200, dia["slug"])
+            self.assertIn("text/html", res.headers.get("content-type", ""))
+        for malo in ("dia", "hoy", "miércoles", "sábado", "Miercoles", "lunes-2", "miercolesx"):
+            res = self.client.get(f"{DESCUENTOS_PATH}/{malo}")
+            self.assertEqual(res.status_code, 404, malo)
+        self.assertEqual(self.client.get(f"{SEO_PATH}/dia").status_code, 200)
+        hub = self.client.get(DESCUENTOS_PATH)
+        self.assertEqual(hub.status_code, 200)
+        self.assertIn("text/html", hub.headers.get("content-type", ""))
+
+    def test_mismo_filtro_que_el_hub_de_promos(self) -> None:
+        bloques = {b["dia"]: b for b in pagina_seo()["por_dia"]}
+        for dia in self.nav:
+            vista = pagina_seo_dia(dia["slug"])
+            self.assertIsNotNone(vista)
+            bloque = bloques.get(dia["nombre"])
+            self.assertIsNotNone(bloque, dia["slug"])
+            self.assertEqual(_claves_grupos(vista["cadenas"]), _claves_grupos(bloque["cadenas"]))
+            self.assertGreater(vista["n"], 0, dia["slug"])
+            self.assertGreater(vista["cadenas_n"], 0, dia["slug"])
+
+    def test_seo_de_cada_dia(self) -> None:
+        titulos = []
+        for dia in self.nav:
+            vista = pagina_seo_dia(dia["slug"])
+            self.assertLessEqual(len(vista["title"]), 60)
+            self.assertGreaterEqual(len(vista["description"]), 120)
+            self.assertLessEqual(len(vista["description"]), 155)
+            self.assertTrue(vista["title"].startswith("Descuentos en supermercados los "))
+            self.assertIn("| BaratoYa", vista["title"])
+            self.assertEqual(vista["h1"], f"Descuentos en supermercados los {dia['plural']} en CABA")
+            self.assertTrue(vista["h1"].endswith("en CABA"))
+            self.assertEqual(vista["canonical"], dia["url"])
+            self.assertTrue(vista["canonical"].startswith("https://baratoya.app/descuentos-supermercados/"))
+            titulos.append(vista["title"])
+            html = self.client.get(dia["href"]).text
+            self.assertIn(f"<title>{vista['title']}</title>", html)
+            self.assertIn(f'<meta name="description" content="{vista["description"]}" />', html)
+            self.assertIn(f'<link rel="canonical" href="{vista["canonical"]}" />', html)
+            self.assertIn(f'property="og:title" content="{vista["title"]}"', html)
+            self.assertIn(f'property="og:description" content="{vista["description"]}"', html)
+            self.assertIn(f'property="og:url" content="{vista["canonical"]}"', html)
+            self.assertIn('property="og:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg"', html)
+            parser = _H1()
+            parser.feed(html)
+            self.assertEqual(parser.h1, [vista["h1"]])
+            self.assertIn(vista["linea"], html)
+            self.assertIn("precio final estimado", html)
+            self.assertIn("no acumula", html)
+            self.assertIn(f'href="{SEO_PATH}"', html)
+            self.assertIn(f'href="{DESCUENTOS_PATH}"', html)
+            for cadena in vista["otras_cadenas"]:
+                self.assertIn(f'href="{cadena["href"]}"', html)
+            for otro in self.nav:
+                self.assertIn(f'href="{otro["href"]}"', html)
+            if self.fecha:
+                self.assertIn(f"Actualizado el {fecha_larga(self.fecha)}.", html)
+            self.assertNotIn("Tope no publicado", html)
+            self.assertNotIn("Sin mínimo publicado", html)
+            self.assertNotIn("día no publicado", html)
+            self.assertNotIn("Vigencia no publicada", html)
+            for fuera in ("Cordiez", "Toledo", "La Anónima", "Super Mami", "Comodín"):
+                self.assertNotIn(f"<h3>{fuera}</h3>", html)
+            fuente = next(
+                (it["fuente"] for grupo in vista["cadenas"] for it in grupo["promos"] if it.get("fuente")),
+                "",
+            )
+            self.assertTrue(fuente, dia["slug"])
+            self.assertIn(f'href="{fuente}"', html)
+            bloques = _ld_json(html)
+            tipos = {b.get("@type") for b in bloques}
+            self.assertEqual(tipos, {"FAQPage", "BreadcrumbList"})
+            faq = next(b for b in bloques if b["@type"] == "FAQPage")
+            self.assertEqual([q["name"] for q in faq["mainEntity"]], [item["q"] for item in vista["faq"]])
+            self.assertTrue(any(q.startswith("¿Qué supermercado tiene más descuento los ") for q in (item["q"] for item in vista["faq"])))
+            for item in vista["faq"]:
+                self.assertIn(item["q"], html)
+                self.assertIn(item["a"], html)
+                respuesta = next(q for q in faq["mainEntity"] if q["name"] == item["q"])
+                self.assertEqual(respuesta["acceptedAnswer"]["text"], item["a"])
+            crumbs = next(b for b in bloques if b["@type"] == "BreadcrumbList")
+            self.assertEqual(
+                [c["item"] for c in crumbs["itemListElement"]],
+                ["https://baratoya.app/", DESCUENTOS_URL, vista["canonical"]],
+            )
+            self.assertEqual(crumbs["itemListElement"][2]["name"], dia["nombre"])
+            self.assertIn("Migas de pan", html)
+        self.assertEqual(len(titulos), len(set(titulos)))
+
+    def test_hub_marca_hoy_y_enlaza_los_siete(self) -> None:
+        self.assertLessEqual(len(DESCUENTOS_TITLE), 60)
+        self.assertGreaterEqual(len(self.hub["description"]), 120)
+        self.assertLessEqual(len(self.hub["description"]), 155)
+        self.assertEqual(self.hub["h1"], DESCUENTOS_H1)
+        html = self.client.get(DESCUENTOS_PATH).text
+        self.assertIn(f"<title>{self.hub['title']}</title>", html)
+        self.assertIn(f'<link rel="canonical" href="{DESCUENTOS_URL}" />', html)
+        parser = _H1()
+        parser.feed(html)
+        self.assertEqual(parser.h1, [DESCUENTOS_H1])
+        nav = html.split('id="por-dia"', 1)[1].split("</ul>", 1)[0]
+        self.assertEqual(nav.count("(hoy)"), 1)
+        hoy = next(d for d in self.nav if d["hoy"])
+        self.assertIn(f'href="{hoy["href"]}"', nav)
+        self.assertIn('aria-current="date"', nav)
+        for dia in self.nav:
+            self.assertIn(f'href="{dia["href"]}"', nav)
+        for bloque in self.hub["dias"]:
+            self.assertIn(bloque["linea"], html)
+        for cadena in cadenas_indexables():
+            self.assertIn(f'href="{cadena["href"]}"', html)
+        self.assertIn(f'href="{SEO_PATH}"', html)
+        bloques = _ld_json(html)
+        tipos = {b.get("@type") for b in bloques}
+        self.assertEqual(tipos, {"FAQPage", "BreadcrumbList"})
+        faq = next(b for b in bloques if b["@type"] == "FAQPage")
+        self.assertEqual([q["name"] for q in faq["mainEntity"]], [item["q"] for item in self.hub["faq"]])
+        crumbs = next(b for b in bloques if b["@type"] == "BreadcrumbList")
+        self.assertEqual(
+            [c["item"] for c in crumbs["itemListElement"]],
+            ["https://baratoya.app/", DESCUENTOS_URL],
+        )
+
+    def test_links_internos_y_sitemap(self) -> None:
+        hub_promos = self.client.get(SEO_PATH).text
+        for dia in self.nav:
+            self.assertIn(f'href="{dia["href"]}"', hub_promos)
+        for cadena in cadenas_indexables():
+            html = self.client.get(cadena["href"]).text
+            for dia in self.nav:
+                self.assertIn(f'href="{dia["href"]}"', html, cadena["slug"])
+        home = self.client.get("/").text
+        self.assertIn('href="/descuentos-supermercados"', home)
+        site = self.client.get("/sitemap.xml")
+        self.assertEqual(site.status_code, 200)
+        self.assertIsNotNone(self.fecha)
+        fecha = self.fecha.isoformat()
+        self.assertIn(f"<loc>{DESCUENTOS_URL}</loc><lastmod>{fecha}</lastmod>", site.text)
+        for dia in self.nav:
+            self.assertIn(f"<loc>{dia['url']}</loc><lastmod>{fecha}</lastmod>", site.text)
+        for cadena in cadenas_indexables():
+            self.assertIn(f"<loc>{cadena['url']}</loc>", site.text)
+        for url in (
+            "https://baratoya.app/",
+            SEO_URL,
+            "https://baratoya.app/planes",
+            "https://baratoya.app/aviso-precios",
+            "https://baratoya.app/privacidad",
+            "https://baratoya.app/terminos",
+        ):
+            self.assertIn(f"<loc>{url}</loc>", site.text)
+
+    def test_planes_y_admin_nofollow(self) -> None:
+        titulo = "BaratoYa Plus: planes y prueba gratis 7 días"
+        h1 = "BaratoYa Plus: probalo gratis 7 días"
+        desc = (
+            "Planes de BaratoYa: probá Plus gratis 7 días, sin tarjeta. "
+            "Después seguís gratis o te suscribís. Compará precios del súper en CABA."
+        )
+        self.assertLessEqual(len(titulo), 60)
+        self.assertGreaterEqual(len(desc), 120)
+        self.assertLessEqual(len(desc), 155)
+        html = self.client.get("/planes").text
+        self.assertIn(f"<title>{titulo}</title>", html)
+        self.assertIn(f'<meta name="description" content="{desc}" />', html)
+        self.assertIn(f'property="og:title" content="{titulo}"', html)
+        self.assertIn(f'property="og:description" content="{desc}"', html)
+        parser = _H1()
+        parser.feed(html)
+        self.assertEqual(parser.h1, [h1])
+        self.assertIn("Empezar 7d gratis", html)
+        self.assertIn('id="planes-cta-trial"', html)
+        self.assertIn("7 días Plus gratis", html)
+        with open("templates/index.html", encoding="utf-8") as fh:
+            src = fh.read()
+        self.assertIn('<a href="/admin" id="nav-admin" hidden rel="nofollow">', src)
 
 
 if __name__ == "__main__":
