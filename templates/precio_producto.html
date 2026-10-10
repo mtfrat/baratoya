@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {% include "_fonts.html" %}
+  {% include "_gtag.html" %}
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/static/icon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" />
+  <title>{{ title }}</title>
+  <meta name="description" content="{{ description }}" />
+  <link rel="canonical" href="{{ canonical }}" />
+  <meta property="og:title" content="{{ title }}" />
+  <meta property="og:description" content="{{ description }}" />
+  <meta property="og:url" content="{{ canonical }}" />
+  <meta property="og:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:site_name" content="BaratoYa" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="{{ title }}" />
+  <meta name="twitter:description" content="{{ description }}" />
+  <meta name="twitter:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg" />
+  <meta name="theme-color" content="#163300" />
+  <script type="application/ld+json">{{ ld_product | safe }}</script>
+  <script type="application/ld+json">{{ ld_faq | safe }}</script>
+  <script type="application/ld+json">{{ ld_breadcrumb | safe }}</script>
+  <style>
+{% include "_font_faces.css" %}
+    :root {
+      --ink: #163300;
+      --lime: #9fe870;
+      --paper: #fff;
+      --muted: #454745;
+      --slate: #6a6c6a;
+      --fog: #e8ebe6;
+      --font-ui: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--muted); background: var(--paper); font: 16px/1.6 var(--font-ui); }
+    a { color: var(--ink); }
+    .nav { min-height: 64px; display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #d9ddd8; }
+    .nav a { font-weight: 700; text-decoration: none; letter-spacing: -0.02em; }
+    .logo { display: inline-flex; align-items: center; gap: 10px; color: #163300; text-decoration: none; line-height: 1; }
+    .logo img { width: 32px; height: 32px; display: block; flex: none; }
+    .logo .wm { font-size: 26px; line-height: 1; }
+    .logo .b { font-family: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif; font-weight: 400; }
+    .logo .y { font-weight: 700; color: #4E8A1E; }
+    main { width: min(100% - 32px, 46rem); margin: 0 auto; padding: 32px 0 64px; }
+    .crumbs { margin: 0 0 16px; font-size: 14px; color: var(--slate); }
+    .crumbs a { font-weight: 600; }
+    h1, h2, h3 { color: var(--ink); line-height: 1.25; letter-spacing: -0.02em; }
+    h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); font-weight: 600; }
+    h2 { margin: 36px 0 8px; font-size: 22px; }
+    h3 { margin: 20px 0 4px; font-size: 18px; }
+    p { margin: 0 0 16px; }
+    .actualizado, .resumen { font-weight: 700; color: var(--ink); }
+    .tabla-wrap { overflow-x: auto; margin: 0 0 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--fog); vertical-align: top; }
+    th { color: var(--ink); font-size: 13px; }
+    td.num, th.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    tr.barato { background: #f3fbe9; }
+    .tag {
+      display: inline-block; margin-left: 6px; padding: 0 8px; border-radius: 999px;
+      background: var(--lime); color: var(--ink); font-size: 12px; font-weight: 700;
+    }
+    .en-catalogo { color: var(--slate); font-size: 13px; font-weight: 400; }
+    ul { margin: 0 0 8px; padding-left: 1.2rem; }
+    li { margin: 0 0 8px; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 8px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; padding: 0 20px; border-radius: 9999px;
+      background: var(--lime); color: var(--ink); font-weight: 700; text-decoration: none;
+    }
+    .btn.outline { background: var(--paper); border: 1px solid var(--ink); }
+    .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+    .nota { color: var(--slate); font-size: 15px; }
+    footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
+    footer .wrap { width: min(100% - 32px, 46rem); margin: 0 auto; }
+    footer p { margin: 0 0 8px; }
+    .cookie-note { margin: 0 0 12px; padding: 8px 12px; border-radius: 8px; background: var(--fog); color: var(--muted); font-size: 13px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <a class="logo" href="/" aria-label="BaratoYa — inicio"><img src="/static/icon-carrito-b.svg" alt="" width="32" height="32" /><span class="wm"><span class="b">Barato</span><span class="y">Ya</span></span></a>
+    <nav style="margin-left:auto;"><a href="/planes" style="font-size:14px; font-weight:600; text-decoration:none; padding:8px 12px;">Planes</a></nav>
+  </header>
+  <main>
+    <nav class="crumbs" aria-label="Migas de pan">
+      <a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · {{ nombre }}
+    </nav>
+    <h1>{{ h1 }}</h1>
+    <p class="resumen">{{ resumen }}</p>
+    <p class="actualizado">Capturado el {{ capturado_texto }}.</p>
+    <p>Precio de góndola en los catálogos públicos. No es el precio con promo bancaria ni el de una sucursal puntual: es el que cada cadena publica online.</p>
+    <div class="tabla-wrap">
+      <table>
+        <caption class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Precio de {{ nombre }} por supermercado</caption>
+        <thead>
+          <tr>
+            <th scope="col">Supermercado</th>
+            <th scope="col" class="num">Precio</th>
+            <th scope="col">Captura</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in ofertas %}
+          <tr{% if o.barato %} class="barato"{% endif %}>
+            <th scope="row">
+              {% if o.url %}<a href="{{ o.url }}" rel="noopener noreferrer">{{ o.tienda }}</a>{% else %}{{ o.tienda }}{% endif %}
+              {% if o.nombre %}<div class="en-catalogo">{{ o.nombre }}</div>{% endif %}
+            </th>
+            <td class="num">{{ o.precio_txt }}{% if o.barato %} <span class="tag">Más barato</span>{% endif %}</td>
+            <td>{{ o.fecha }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="cta">
+      <a class="btn" href="/">Comparar en BaratoYa</a>
+      <a class="btn outline" href="/planes">Ver planes</a>
+    </div>
+    <p class="nota">Los 7 días Plus gratis se activan al crear la cuenta, en el inicio. No pide tarjeta.</p>
+
+    {% if promos %}
+    <h2>Promos bancarias de estas cadenas</h2>
+    <ul>
+      {% for p in promos %}
+      <li><a href="{{ p.href }}">Promos bancarias {{ p.nombre }}</a></li>
+      {% endfor %}
+    </ul>
+    <p><a href="/promos-bancarias-supermercados">Todas las promos bancarias de supermercados</a></p>
+    {% else %}
+    <p><a href="/promos-bancarias-supermercados">Promos bancarias de supermercados</a></p>
+    {% endif %}
+
+    {% if otros %}
+    <h2>Otros productos</h2>
+    <ul>
+      {% for p in otros %}
+      <li><a href="{{ p.href }}">{{ p.nombre }}</a></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <h2>Preguntas frecuentes</h2>
+    {% for item in faq %}
+    <section>
+      <h3>{{ item.q }}</h3>
+      <p>{{ item.a }}</p>
+    </section>
+    {% endfor %}
+  </main>
+  <footer>
+    <div class="wrap">
+      <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
+      <p>BaratoYa muestra el precio que cada cadena publica. No es un sitio oficial y no pone un precio propio.</p>
+      <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
+      <p><a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/descuentos-supermercados">Descuentos por día</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,2175 @@
+{
+  "fuente": "catalogos_publicos",
+  "nota": "Precios de góndola leídos con buscar_super, el mismo camino que la búsqueda de la app (catálogos VTEX públicos). No hay precios escritos a mano. Un producto con menos de dos cadenas no entra.",
+  "productos": [
+    {
+      "slug": "leche-la-serenisima-sachet-1l",
+      "categoria": "Lácteos",
+      "nombre": "Leche Entera 3% Sachet 1 Lts La Serenísima",
+      "marca": "LA SERENISIMA",
+      "tamano": "1 L",
+      "ean": "7790742348302",
+      "capturado": "2026-10-10T09:01:45-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 1955.0,
+          "nombre": "Leche Ultra Entera Multidefensa 3% La Serenisima Sachet 1 lt",
+          "url": "https://www.josimar.com.ar/leche-ultra-entera-multidefensa-3-la-serenisima-sachet-1-lt/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2049.0,
+          "nombre": "Leche La Serenísima ultra entera multivit 3% sachet 1 lt",
+          "url": "https://www.carrefour.com.ar/leche-la-serenisima-ultra-entera-multivit-3-sachet-1-lt-679521/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 2050.0,
+          "nombre": "Leche Entera 3% Sachet 1 Lts La Serenísima",
+          "url": "https://www.disco.com.ar/leche-entera-3-sachet-1lt-la-serenisima/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 2050.0,
+          "nombre": "Leche Entera 3% Sachet 1 Lts La Serenísima",
+          "url": "https://www.jumbo.com.ar/leche-entera-3-sachet-1lt-la-serenisima/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2050.0,
+          "nombre": "Leche Entera 3% Sachet 1 Lts La Serenísima",
+          "url": "https://www.vea.com.ar/leche-entera-3-sachet-1lt-la-serenisima/p"
+        }
+      ]
+    },
+    {
+      "slug": "leche-la-serenisima-clasica-1l",
+      "categoria": "Lácteos",
+      "nombre": "Leche La serenisima clásica 3% 1L",
+      "marca": "La Serenísima",
+      "tamano": "1 L",
+      "ean": "7790742363008",
+      "capturado": "2026-10-10T09:01:45-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 2499.0,
+          "nombre": "Leche Larga Vida Entera Ua Clasica 3% LA SERENISIMA 1l",
+          "url": "https://www.abastecedor.com.ar/la-sere-leche-uat-ent-3--c-vit-x1l-1/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2915.0,
+          "nombre": "Leche La serenisima clásica 3% 1L",
+          "url": "https://www.carrefour.com.ar/leche-la-serenisima-clasica-3-1l-720719/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 2915.0,
+          "nombre": "Leche Larga Vida Clásica 3% La Serenisima 1 Lt.",
+          "url": "https://diaonline.supermercadosdia.com.ar/leche-larga-vida-clasica-3--la-serenisima-1-lt-295999/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 2919.0,
+          "nombre": "Leche Entera La Serenisima Larga Vida Clásica 1 L",
+          "url": "https://www.masonline.com.ar/leche-la-serenisima-larga-vida-clasica-1-l-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "leche-la-serenisima-descremada-1l",
+      "categoria": "Lácteos",
+      "nombre": "Leche Descremada 1 Lts La Serenisima",
+      "marca": "LA SERENISIMA",
+      "tamano": "1 L",
+      "ean": "7790742335302",
+      "capturado": "2026-10-10T09:01:45-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 3060.0,
+          "nombre": "Leche La Serenísima UAT descremada 0% pet 1lt",
+          "url": "https://www.carrefour.com.ar/leche-la-serenisima-uat-descremada-0-pet-1-lt-661341/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 3060.0,
+          "nombre": "Leche Descremada 1 Lts La Serenisima",
+          "url": "https://www.vea.com.ar/leche-uat-descremada-la-serenisima-0-3/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 3069.0,
+          "nombre": "Leche Descremada La Serenísima Larga Vida Menos Calorías 1 L",
+          "url": "https://www.masonline.com.ar/leche-larga-vida-la-serenisima-menos-calorias-1-l-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 3200.0,
+          "nombre": "Leche Descremada 1 Lts La Serenisima",
+          "url": "https://www.disco.com.ar/leche-uat-descremada-la-serenisima-0-3/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 3200.0,
+          "nombre": "Leche Descremada 1 Lts La Serenisima",
+          "url": "https://www.jumbo.com.ar/leche-uat-descremada-la-serenisima-0-3/p"
+        }
+      ]
+    },
+    {
+      "slug": "leche-la-serenisima-descremada-sachet-1l",
+      "categoria": "Lácteos",
+      "nombre": "Leche Descremada La Serenísima 1sachet 1lt",
+      "marca": "LA SERENISIMA",
+      "tamano": "1 L",
+      "ean": "7790742348005",
+      "capturado": "2026-10-10T09:01:46-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2049.0,
+          "nombre": "Leche La Serenísima ultra parc descremada multivit 1% sachet 1 lt",
+          "url": "https://www.carrefour.com.ar/leche-la-serenisima-ultra-parc-descremada-multivit-1-sachet-1-lt-663213/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 2049.0,
+          "nombre": "Leche Descremada La Serenísima Multivitaminas 1% 1 L",
+          "url": "https://www.masonline.com.ar/leche-multivitaminas-1-la-serenisima-sachet-1-l-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 2050.0,
+          "nombre": "Leche Descremada La Serenísima 1sachet 1lt",
+          "url": "https://www.disco.com.ar/leche-descremada-la-serenisima-1sachet-1lt/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 2050.0,
+          "nombre": "Leche Descremada La Serenísima 1sachet 1lt",
+          "url": "https://www.jumbo.com.ar/leche-descremada-la-serenisima-1sachet-1lt/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2050.0,
+          "nombre": "Leche Descremada La Serenísima 1sachet 1lt",
+          "url": "https://www.vea.com.ar/leche-descremada-la-serenisima-1sachet-1lt/p"
+        }
+      ]
+    },
+    {
+      "slug": "leche-tregar-entera-1l",
+      "categoria": "Lácteos",
+      "nombre": "Leche Entera 1 Lts Tregar",
+      "marca": "TREGAR",
+      "tamano": "1 L",
+      "ean": "7793913001822",
+      "capturado": "2026-10-10T09:01:46-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 2345.0,
+          "nombre": "Leche Entera Larga Vida Tregar Uat x 1 Lt",
+          "url": "https://www.abastecedor.com.ar/tregar-leche-entera-uat-x1lt-1/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 2390.0,
+          "nombre": "Leche Entera UAT Tregar 1 lt",
+          "url": "https://www.josimar.com.ar/leche-entera-tregar-uat-1-lt/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2400.0,
+          "nombre": "Leche Entera 1 Lts Tregar",
+          "url": "https://www.vea.com.ar/leche-tregar-enterax-1-litro/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2550.0,
+          "nombre": "Leche entera larga vida Tregar 1 l.",
+          "url": "https://www.carrefour.com.ar/leche-entera-larga-vida-tregar-1-l/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 2550.0,
+          "nombre": "Leche Entera Tregar Larga Vida 1 Lt.",
+          "url": "https://diaonline.supermercadosdia.com.ar/leche-entera-tregar-larga-vida-1-lt-275781/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 2550.0,
+          "nombre": "Leche Entera 1 Lts Tregar",
+          "url": "https://www.jumbo.com.ar/leche-tregar-enterax-1-litro/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 2559.0,
+          "nombre": "Leche Entera Tregar Larga Vida 1 L",
+          "url": "https://www.masonline.com.ar/leche-entera-uat-tregar-1lt-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "leche-ilolay-entera-1l",
+      "categoria": "Lácteos",
+      "nombre": "Leche  Entera Ilolay U.a.t. Brik  1 Lt",
+      "marca": "ILOLAY",
+      "tamano": "1 L",
+      "ean": "7790787002528",
+      "capturado": "2026-10-10T09:01:46-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2590.0,
+          "nombre": "Leche  Entera Ilolay U.a.t. Brik  1 Lt",
+          "url": "https://www.vea.com.ar/leche-entera-ilolay-u-a-t-2/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2799.0,
+          "nombre": "Leche entera larga vida Ilolay 1 l.",
+          "url": "https://www.carrefour.com.ar/leche-entera-larga-vida-ilolay-1-l/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 2850.0,
+          "nombre": "Leche  Entera Ilolay U.a.t. Brik  1 Lt",
+          "url": "https://www.jumbo.com.ar/leche-entera-ilolay-u-a-t-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 2900.0,
+          "nombre": "Leche  Entera Ilolay U.a.t. Brik  1 Lt",
+          "url": "https://www.disco.com.ar/leche-entera-ilolay-u-a-t-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "manteca-la-serenisima-200g",
+      "categoria": "Lácteos",
+      "nombre": "Manteca La Serenísima 200 Gr.",
+      "marca": "LA SERENISIMA",
+      "tamano": "200 g",
+      "ean": "7793940054006",
+      "capturado": "2026-10-10T09:01:47-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 3750.0,
+          "nombre": "Manteca La Serenísima 200 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/manteca-la-serenisima-200-gr-14938/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 3764.25,
+          "nombre": "Manteca La Serenisima Clásica 200 G",
+          "url": "https://www.masonline.com.ar/manteca-la-serenisima-200-gr-2/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 4290.0,
+          "nombre": "Manteca Clasica La Serenisima 200 Gr",
+          "url": "https://www.josimar.com.ar/manteca-clasica-la-serenisima-200-gr/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 4399.0,
+          "nombre": "Manteca La Serenisima Clásica 200gr",
+          "url": "https://www.abastecedor.com.ar/manteca-la-serenisima-clasica-x200gr/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 4990.0,
+          "nombre": "Manteca Clásica 200 Grs La Serenisima",
+          "url": "https://www.vea.com.ar/manteca-ls-bienestar-animal-200-g/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 5010.0,
+          "nombre": "Manteca La Serenísima extra para untar 200 g.",
+          "url": "https://www.carrefour.com.ar/manteca-la-serenisima-extra-para-untar-200-g/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 5010.0,
+          "nombre": "Manteca Clásica 200 Grs La Serenisima",
+          "url": "https://www.disco.com.ar/manteca-ls-bienestar-animal-200-g/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 5010.0,
+          "nombre": "Manteca Clásica 200 Grs La Serenisima",
+          "url": "https://www.jumbo.com.ar/manteca-ls-bienestar-animal-200-g/p"
+        }
+      ]
+    },
+    {
+      "slug": "dulce-de-leche-la-serenisima-400g",
+      "categoria": "Lácteos",
+      "nombre": "Dulce de Leche La Serenisima Clasico 400 Gr.",
+      "marca": "LA SERENISIMA",
+      "tamano": "400 g",
+      "ean": "7790742625304",
+      "capturado": "2026-10-10T09:01:47-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 3011.25,
+          "nombre": "Dulce de Leche La Serenisima Clasico 400 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/dulce-de-leche-la-serenisima-clasico-400-gr-273372/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 3014.25,
+          "nombre": "Dulce De Leche La Serenísima Clásico 400 G",
+          "url": "https://www.masonline.com.ar/dulce-de-leche-clasico-la-serenisima-400gr-2-2/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 3400.0,
+          "nombre": "Dulce de Leche con Calcio La Serenisima 400 gr",
+          "url": "https://www.josimar.com.ar/dulce-de-leche/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 3499.0,
+          "nombre": "Dulce de Leche La Serenisima Clasico 400gr",
+          "url": "https://www.abastecedor.com.ar/dulce-de-leche-la-serenisima-clasico-x400gr/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 3990.0,
+          "nombre": "Dulce de Leche Clásico 400 Grs La Serenisima",
+          "url": "https://www.vea.com.ar/dulce-de-leche-la-serenisima-clasico-400g-2/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 4015.0,
+          "nombre": "Dulce de leche clásico La Serenísima 400 g.",
+          "url": "https://www.carrefour.com.ar/dulce-de-leche-clasico-la-serenisima-400-g/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 4150.0,
+          "nombre": "Dulce de Leche Clásico 400 Grs La Serenisima",
+          "url": "https://www.jumbo.com.ar/dulce-de-leche-la-serenisima-clasico-400g-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 4250.0,
+          "nombre": "Dulce de Leche Clásico 400 Grs La Serenisima",
+          "url": "https://www.disco.com.ar/dulce-de-leche-la-serenisima-clasico-400g-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "yogur-ser-frutilla-190g",
+      "categoria": "Lácteos",
+      "nombre": "Yogur Firme Ser Sabor Frutilla 190 G",
+      "marca": "Ser",
+      "tamano": "190 g",
+      "ean": "7791337007864",
+      "capturado": "2026-10-10T09:01:48-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2985.0,
+          "nombre": "Yogur firme sabor frutilla Ser 190 grs",
+          "url": "https://www.carrefour.com.ar/yogur-firme-sabor-frutilla-ser-190-grs-717782/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 2985.0,
+          "nombre": "Yogur Firme Sabor Frutilla Ser 190 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/yogur-firme-sabor-frutilla-ser-190-gr-294611/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 2989.0,
+          "nombre": "Yogur Firme Ser Sabor Frutilla 190 G",
+          "url": "https://www.masonline.com.ar/yofur-ser-firme-sabor-frutilla-190g-2/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2990.0,
+          "nombre": "Yogur Firme Sabor Frutilla 190 Grs Ser",
+          "url": "https://www.vea.com.ar/yogur-firme-sabor-frutilla-190-grs-ser-2/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 3290.0,
+          "nombre": "Yogur Descremado Firme Frutilla Ser 190 gr",
+          "url": "https://www.josimar.com.ar/yogur-fortificado-firme-frutilla-ser-190-gr/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 3299.0,
+          "nombre": "Yogur Colágeno Firme Frutilla SER 190gr",
+          "url": "https://www.abastecedor.com.ar/ser-yogur-c-prob-colag-frut-x190g-1/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 3300.0,
+          "nombre": "Yogur Firme Sabor Frutilla 190 Grs Ser",
+          "url": "https://www.jumbo.com.ar/yogur-firme-sabor-frutilla-190-grs-ser-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 3350.0,
+          "nombre": "Yogur Firme Sabor Frutilla 190 Grs Ser",
+          "url": "https://www.disco.com.ar/yogur-firme-sabor-frutilla-190-grs-ser-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "queso-rallado-la-serenisima-130g",
+      "categoria": "Lácteos",
+      "nombre": "Queso Rallado La Serenisima 130 gr",
+      "marca": "La Serenisima",
+      "tamano": "130 g",
+      "ean": "7790742223104",
+      "capturado": "2026-10-10T09:01:48-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 5699.0,
+          "nombre": "Queso Rallado La Serenísima x 130 g",
+          "url": "https://www.abastecedor.com.ar/la-sere-queso-rallado-x130g-1/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 6200.0,
+          "nombre": "Queso Rallado La Serenisima 130 gr",
+          "url": "https://www.josimar.com.ar/ls-queso-rallado-150gr-2/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 6584.0,
+          "nombre": "Queso Reggianito rallado La Serenisima 130 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/queso-reggianito-rallado-la-serenisima-130-gr-273230/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 6585.0,
+          "nombre": "Queso rallado reggianito La Serenísima bolsa 130 g",
+          "url": "https://www.carrefour.com.ar/queso-rallado-reggianito-la-serenisima-bolsa-130-g/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 6590.0,
+          "nombre": "Queso Reggianito Rallado 0.130 Kg x 1 Un La Serenisima",
+          "url": "https://www.vea.com.ar/queso-reggianito-rallado-la-serenisima-130-gr/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 6600.0,
+          "nombre": "Queso Reggianito Rallado 0.130 Kg x 1 Un La Serenisima",
+          "url": "https://www.disco.com.ar/queso-reggianito-rallado-la-serenisima-130-gr/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 6600.0,
+          "nombre": "Queso Reggianito Rallado 0.130 Kg x 1 Un La Serenisima",
+          "url": "https://www.jumbo.com.ar/queso-reggianito-rallado-la-serenisima-130-gr/p"
+        }
+      ]
+    },
+    {
+      "slug": "aceite-natura-girasol-1-5l",
+      "categoria": "Almacén",
+      "nombre": "Aceite de Girasol Natura 1,5 Lt.",
+      "marca": "NATURA",
+      "tamano": "1500 ml",
+      "ean": "7790272001029",
+      "capturado": "2026-10-10T09:01:50-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 5890.0,
+          "nombre": "Aceite de Girasol Natura 1,5 Lt.",
+          "url": "https://diaonline.supermercadosdia.com.ar/aceite-de-girasol-natura-15-lt-78856/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 6975.0,
+          "nombre": "Aceite Girasol NATURA Botella 1.5 L",
+          "url": "https://www.abastecedor.com.ar/natura-aceite-pet-x1-5l-1/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 6975.0,
+          "nombre": "Aceite de Girasol Natura 1.5 lt",
+          "url": "https://www.josimar.com.ar/natura-aceite-1-5l-pet/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 7390.0,
+          "nombre": "Aceite de Girasol 1,5 Lts Natura",
+          "url": "https://www.vea.com.ar/aceite-de-girasol1-5-l-natura/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 7460.0,
+          "nombre": "Aceite de Girasol 1,5 Lts Natura",
+          "url": "https://www.jumbo.com.ar/aceite-de-girasol1-5-l-natura/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 7463.0,
+          "nombre": "Aceite de Girasol 1,5 Lts Natura",
+          "url": "https://www.disco.com.ar/aceite-de-girasol1-5-l-natura/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 7469.0,
+          "nombre": "Aceite De Girasol Natura 1.5 L",
+          "url": "https://www.masonline.com.ar/aceite-de-girasol-natura-1-5-lt-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "aceite-cocinero-girasol-900ml",
+      "categoria": "Almacén",
+      "nombre": "Aceite de Girasol Cocinero 900 Ml.",
+      "marca": "COCINERO",
+      "tamano": "900 ml",
+      "ean": "7790070012050",
+      "capturado": "2026-10-10T09:01:50-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 3713.65,
+          "nombre": "Aceite De Girasol Cocinero 900 Ml",
+          "url": "https://www.masonline.com.ar/aceite-de-girasol-cocinero-900-ml-3/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 3890.0,
+          "nombre": "Aceite De Girasol 900 Ml Cocinero",
+          "url": "https://www.vea.com.ar/aceite-de-girasol-900-ml-cocinero/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 4369.0,
+          "nombre": "Aceite de girasol Cocinero 900 cc",
+          "url": "https://www.carrefour.com.ar/aceite-de-girasol-cocinero-900-cc/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 4370.0,
+          "nombre": "Aceite de Girasol Cocinero 900 Ml.",
+          "url": "https://diaonline.supermercadosdia.com.ar/aceite-de-girasol-cocinero-900-ml-48605/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 4600.0,
+          "nombre": "Aceite De Girasol 900 Ml Cocinero",
+          "url": "https://www.disco.com.ar/aceite-de-girasol-900-ml-cocinero/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 4700.0,
+          "nombre": "Aceite De Girasol 900 Ml Cocinero",
+          "url": "https://www.jumbo.com.ar/aceite-de-girasol-900-ml-cocinero/p"
+        }
+      ]
+    },
+    {
+      "slug": "aceite-canuelas-girasol-900ml",
+      "categoria": "Almacén",
+      "nombre": "Aceite de Girasol Cañuelas 900 Ml.",
+      "marca": "CAÑUELAS",
+      "tamano": "900 ml",
+      "ean": "7792180001641",
+      "capturado": "2026-10-10T09:01:50-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 3990.0,
+          "nombre": "Aceite de Girasol 900 Ml Cañuelas",
+          "url": "https://www.vea.com.ar/aceite-de-girasol-canuelas-900-ml/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 3999.0,
+          "nombre": "Aceite Girasol CAÑUELAS Botella 900 Ml",
+          "url": "https://www.abastecedor.com.ar/canuelas-aceite-girasol-pet-x900cc-1/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 4115.0,
+          "nombre": "Aceite de girasol Cañuelas 900 cc",
+          "url": "https://www.carrefour.com.ar/aceite-de-girasol-canuelas-900-cc/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 4115.0,
+          "nombre": "Aceite de Girasol Cañuelas 900 Ml.",
+          "url": "https://diaonline.supermercadosdia.com.ar/aceite-de-girasol-canuelas-900-ml-48604/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 4115.0,
+          "nombre": "Aceite de Girasol Cañuelas 900 cc",
+          "url": "https://www.josimar.com.ar/canuelas-aceite-900cc/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 4400.0,
+          "nombre": "Aceite de Girasol 900 Ml Cañuelas",
+          "url": "https://www.jumbo.com.ar/aceite-de-girasol-canuelas-900-ml/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 4409.0,
+          "nombre": "Aceite De Girasol Cañuelas 900 Ml",
+          "url": "https://www.masonline.com.ar/aceite-de-girasol-canuelas-900-ml-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 4550.0,
+          "nombre": "Aceite de Girasol 900 Ml Cañuelas",
+          "url": "https://www.disco.com.ar/aceite-de-girasol-canuelas-900-ml/p"
+        }
+      ]
+    },
+    {
+      "slug": "aceite-oliva-natura-500ml",
+      "categoria": "Almacén",
+      "nombre": "Aceite De Oliva Suave Natura 500 Ml.",
+      "marca": "NATURA",
+      "tamano": "500 ml",
+      "ean": "7790272008394",
+      "capturado": "2026-10-10T09:01:51-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 11000.0,
+          "nombre": "Aceite De Oliva Suave Natura 500 Ml.",
+          "url": "https://diaonline.supermercadosdia.com.ar/aceite-de-oliva-suave-natura-500-ml-304972/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 11181.75,
+          "nombre": "Aceite De Oliva Natura Virgen Extra Suave 500 Ml",
+          "url": "https://www.masonline.com.ar/aceite-de-oliva-natura-virgen-extra-suave-500-ml-2/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 13899.0,
+          "nombre": "Aceite de Oliva Virgen Extra Suave Bivarietal 500 Ml Natura",
+          "url": "https://www.vea.com.ar/aceite-natura-oliva-suave-bivarietal-500-ml/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 14475.0,
+          "nombre": "Aceite de oliva virgen Natura extra suave 500 cc",
+          "url": "https://www.carrefour.com.ar/aceite-de-oliva-virgen-natura-extra-suave-500-cc-732142/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 15220.0,
+          "nombre": "Aceite de Oliva Suave Natura 500 cc PET",
+          "url": "https://www.josimar.com.ar/aceite-de-oliva-suave-natura-500-cc-pet/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 15600.0,
+          "nombre": "Aceite de Oliva Virgen Extra Suave Bivarietal 500 Ml Natura",
+          "url": "https://www.jumbo.com.ar/aceite-natura-oliva-suave-bivarietal-500-ml/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 15900.0,
+          "nombre": "Aceite de Oliva Virgen Extra Suave Bivarietal 500 Ml Natura",
+          "url": "https://www.disco.com.ar/aceite-natura-oliva-suave-bivarietal-500-ml/p"
+        }
+      ]
+    },
+    {
+      "slug": "azucar-ledesma-1kg",
+      "categoria": "Almacén",
+      "nombre": "Azúcar Molida 1 Kg Ledesma",
+      "marca": "LEDESMA",
+      "tamano": "1 kg",
+      "ean": "7792540250450",
+      "capturado": "2026-10-10T09:01:52-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 1569.0,
+          "nombre": "Azúcar Ledesma molida superior bolsa 1 kg.",
+          "url": "https://www.carrefour.com.ar/azucar-ledesma-molida-superior-bolsa-1-kg/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 1590.0,
+          "nombre": "Azúcar Molida 1 Kg Ledesma",
+          "url": "https://www.vea.com.ar/azucar-ledesma-superior-x/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 1620.0,
+          "nombre": "Azúcar Molida 1 Kg Ledesma",
+          "url": "https://www.disco.com.ar/azucar-ledesma-superior-x/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 1622.0,
+          "nombre": "Azúcar Molida 1 Kg Ledesma",
+          "url": "https://www.jumbo.com.ar/azucar-ledesma-superior-x/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1639.0,
+          "nombre": "Azúcar Ledesma Refinado Superior 1 Kg.",
+          "url": "https://diaonline.supermercadosdia.com.ar/azucar-ledesma-refinado-superior-1-kg-129208/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1639.0,
+          "nombre": "Azúcar Ledesma Superior Refinada 1 Kg",
+          "url": "https://www.masonline.com.ar/azucar-superior-ledesma-1-kg-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "harina-pureza-0000-1kg",
+      "categoria": "Almacén",
+      "nombre": "Harina de trigo Pureza 0000 1 kg.",
+      "marca": "Pureza",
+      "tamano": "1 kg",
+      "ean": "7792180004871",
+      "capturado": "2026-10-10T09:01:52-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 1590.0,
+          "nombre": "Harina de trigo Pureza 0000 1 kg.",
+          "url": "https://www.carrefour.com.ar/harina-de-trigo-pureza-0000-1-kg-551284/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1590.0,
+          "nombre": "Harina 0000 Pureza Ultra Refinada 1 Kg.",
+          "url": "https://diaonline.supermercadosdia.com.ar/harina-0000-pureza-ultra-refinada-1-kg-167177/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1689.0,
+          "nombre": "Harina 0000 Pureza Ultra Refinada 1 Kg",
+          "url": "https://www.masonline.com.ar/harina-0000-pureza-ultra-refinada-1-kg-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "harina-favorita-000-1kg",
+      "categoria": "Almacén",
+      "nombre": "Harina 000 1 Kg Favorita",
+      "marca": "FAVORITA",
+      "tamano": "1 kg",
+      "ean": "7790070562258",
+      "capturado": "2026-10-10T09:01:52-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 990.0,
+          "nombre": "Harina 000 1 Kg Favorita",
+          "url": "https://www.vea.com.ar/harina-000-vit-x-1-kg-favorita/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 1299.0,
+          "nombre": "Harina de trigo 000 Favorita con vitaminas 1 kg.",
+          "url": "https://www.carrefour.com.ar/harina-de-trigo-000-favorita-con-vitaminas-1-kg-732147/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1299.0,
+          "nombre": "Harina De Trigo Favorita 000 1 Kg",
+          "url": "https://www.masonline.com.ar/harina-de-trigo-favorita-000-1-kg-2/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1300.0,
+          "nombre": "Harina 000 con Vitaminas Favorita 1 Kg.",
+          "url": "https://diaonline.supermercadosdia.com.ar/harina-000-con-vitaminas-favorita-1-kg-300780/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 1300.0,
+          "nombre": "Harina Vitazinc 000 Favorita 1 kg",
+          "url": "https://www.josimar.com.ar/favorita-000-vitazinc-1kg-2/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 1350.0,
+          "nombre": "Harina 000 1 Kg Favorita",
+          "url": "https://www.jumbo.com.ar/harina-000-vit-x-1-kg-favorita/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 1400.0,
+          "nombre": "Harina 000 1 Kg Favorita",
+          "url": "https://www.disco.com.ar/harina-000-vit-x-1-kg-favorita/p"
+        }
+      ]
+    },
+    {
+      "slug": "harina-favorita-0000-1kg",
+      "categoria": "Almacén",
+      "nombre": "Harina de trigo 0000 Favorita fortificada 1 kg.",
+      "marca": "Favorita",
+      "tamano": "1 kg",
+      "ean": "7790070562265",
+      "capturado": "2026-10-10T09:01:53-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1189.3,
+          "nombre": "Harina De Trigo Favorita 0000 1 Kg",
+          "url": "https://www.masonline.com.ar/harina-de-trigo-favorita-0000-1-kg-2/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 1590.0,
+          "nombre": "Harina 0000 1 Kg Favorita",
+          "url": "https://www.vea.com.ar/harina-0000-vit-x-1-kg-favorita/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 1639.0,
+          "nombre": "Harina Vitazinc 0000 Favorita 1 kg",
+          "url": "https://www.josimar.com.ar/favorita-0000-vitazinc-kg/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 1699.0,
+          "nombre": "Harina de trigo 0000 Favorita fortificada 1 kg.",
+          "url": "https://www.carrefour.com.ar/harina-de-trigo-0000-favorita-fortificada-1-kg-733197/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1700.0,
+          "nombre": "Harina 0000 con Vitaminas Favorita 1 Kg.",
+          "url": "https://diaonline.supermercadosdia.com.ar/harina-0000-con-vitaminas-favorita-1-kg-300779/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 1800.0,
+          "nombre": "Harina 0000 1 Kg Favorita",
+          "url": "https://www.jumbo.com.ar/harina-0000-vit-x-1-kg-favorita/p"
+        }
+      ]
+    },
+    {
+      "slug": "yerba-taragui-1kg",
+      "categoria": "Almacén",
+      "nombre": "Yerba Mate Taragui 1 Kg",
+      "marca": "Taragui",
+      "tamano": "1 kg",
+      "ean": "7790387013610",
+      "capturado": "2026-10-10T09:01:53-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 3790.0,
+          "nombre": "Yerba Mate Taragüi 4 Flex 1 Kg.",
+          "url": "https://diaonline.supermercadosdia.com.ar/yerba-mate-taragui-4-flex-1-kg-269666/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 4311.75,
+          "nombre": "Yerba Mate Taragui 1 Kg",
+          "url": "https://www.masonline.com.ar/yerba-mate-4f-taragui-1-kg-2/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 4890.0,
+          "nombre": "Yerba Mate con Palo 1 Kg Taragui",
+          "url": "https://www.vea.com.ar/yerba-mate-4flex-taragui-1-kg/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 4990.0,
+          "nombre": "Yerba Flex Taragüi 1 kg",
+          "url": "https://www.josimar.com.ar/yerba-flex-tarag-i-1-kg/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 5350.0,
+          "nombre": "Yerba mate Taragüi con palo origen controlado 1 kg.",
+          "url": "https://www.carrefour.com.ar/yerba-mate-taragui-con-palo-origen-controlado-1-kg/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 5650.0,
+          "nombre": "Yerba Mate con Palo 1 Kg Taragui",
+          "url": "https://www.jumbo.com.ar/yerba-mate-4flex-taragui-1-kg/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 5750.0,
+          "nombre": "Yerba Mate con Palo 1 Kg Taragui",
+          "url": "https://www.disco.com.ar/yerba-mate-4flex-taragui-1-kg/p"
+        }
+      ]
+    },
+    {
+      "slug": "yerba-playadito-1kg",
+      "categoria": "Almacén",
+      "nombre": "Yerba Suave Playadito 1 kg",
+      "marca": "Playadito",
+      "tamano": "1 kg",
+      "ean": "7793704000928",
+      "capturado": "2026-10-10T09:01:54-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 4190.0,
+          "nombre": "Yerba Mate Playadito Suave 1 Kg.",
+          "url": "https://diaonline.supermercadosdia.com.ar/yerba-mate-playadito-suave-1-kg-269577/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 4950.0,
+          "nombre": "Yerba Mate Suave PLAYADITO 1 Kg",
+          "url": "https://www.abastecedor.com.ar/playadito-yerba-suave-x1kg-1/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 5190.0,
+          "nombre": "Yerba Mate Suave 1 Kg Playadito",
+          "url": "https://www.vea.com.ar/yerba-mate-playadito-suave-1-kg/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 5202.0,
+          "nombre": "Yerba Mate Suave 1 Kg Playadito",
+          "url": "https://www.disco.com.ar/yerba-mate-playadito-suave-1-kg/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 5208.0,
+          "nombre": "Yerba Mate Suave 1 Kg Playadito",
+          "url": "https://www.jumbo.com.ar/yerba-mate-playadito-suave-1-kg/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 5209.0,
+          "nombre": "Yerba mate Playadito suave con palo 1 kg.",
+          "url": "https://www.carrefour.com.ar/yerba-mate-playadito-suave-con-palo-1-kg/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 5275.0,
+          "nombre": "Yerba Suave Playadito 1 kg",
+          "url": "https://www.josimar.com.ar/yerba-suave-playadito-1-kg/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 5289.0,
+          "nombre": "Yerba Mate Suave Playadito 1kg",
+          "url": "https://www.masonline.com.ar/yerba-mate-suave-playadito-1kg-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "yerba-union-suave-1kg",
+      "categoria": "Almacén",
+      "nombre": "Yerba Mate Unión Suave Original 1 Kg",
+      "marca": "Union",
+      "tamano": "1 kg",
+      "ean": "7790387014617",
+      "capturado": "2026-10-10T09:01:54-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 5369.0,
+          "nombre": "Yerba mate suave Unión 4flex 1 kg.",
+          "url": "https://www.carrefour.com.ar/yerba-mate-suave-union-4flex-1-kg/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 5700.0,
+          "nombre": "Yerba Mate con Palo Suave 1 Kg Union",
+          "url": "https://www.jumbo.com.ar/yerba-mate-4flex-union-1-kg/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 5749.0,
+          "nombre": "Yerba Mate Unión Suave Original 1 Kg",
+          "url": "https://www.masonline.com.ar/yerba-mate-union-con-palo-4flex-1kg-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 5750.0,
+          "nombre": "Yerba Mate con Palo Suave 1 Kg Union",
+          "url": "https://www.disco.com.ar/yerba-mate-4flex-union-1-kg/p"
+        }
+      ]
+    },
+    {
+      "slug": "fideos-matarazzo-spaghetti-500g",
+      "categoria": "Almacén",
+      "nombre": "Fideos Matarazzo Spaghetti N°3 500g",
+      "marca": "Matarazzo",
+      "tamano": "500 g",
+      "ean": "7790070336309",
+      "capturado": "2026-10-10T09:01:55-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1259.4,
+          "nombre": "Fideos Spaghetti N3 Matarazzo 500 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/fideos-spaghetti-n3-matarazzo-500-gr-38576/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 1424.25,
+          "nombre": "Fideos Spaghetti MATARAZZO 500g",
+          "url": "https://www.abastecedor.com.ar/matarazzo-fideos-spaghetti-x-500g-1/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 1990.0,
+          "nombre": "Fideos Spaghetti N°3 500 Grs Matarazzo",
+          "url": "https://www.vea.com.ar/fideos-matarazzo-spaghetti-n7-500gr/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2099.0,
+          "nombre": "Fideos spaghetti N3 Matarazzo 500 g.",
+          "url": "https://www.carrefour.com.ar/fideos-spaghetti-n3-matarazzo-500-g-729399/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 2099.0,
+          "nombre": "Fideos Matarazzo Spaghetti N°3 500g",
+          "url": "https://www.masonline.com.ar/spaghetti-n-3-matarazzo-500gr-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 2200.0,
+          "nombre": "Fideos Spaghetti N°3 500 Grs Matarazzo",
+          "url": "https://www.disco.com.ar/fideos-matarazzo-spaghetti-n7-500gr/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 2200.0,
+          "nombre": "Fideos Spaghetti N°3 500 Grs Matarazzo",
+          "url": "https://www.jumbo.com.ar/fideos-matarazzo-spaghetti-n7-500gr/p"
+        }
+      ]
+    },
+    {
+      "slug": "fideos-lucchetti-spaghetti-500g",
+      "categoria": "Almacén",
+      "nombre": "Fideos Spaghetti N°7 500 Grs Lucchetti",
+      "marca": "LUCCHETTI",
+      "tamano": "500 g",
+      "ean": "7790070336385",
+      "capturado": "2026-10-10T09:01:56-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 1590.0,
+          "nombre": "Fideos Spaghetti N° 7 LUCCHETTI 500g",
+          "url": "https://www.abastecedor.com.ar/lucchetti-spaguetti-x500g-1/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 1749.0,
+          "nombre": "Fideos spaghetti N7 Lucchetti 500 g.",
+          "url": "https://www.carrefour.com.ar/fideos-spaghetti-n7-lucchetti-500-g-729396/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1749.0,
+          "nombre": "Fideos Luchetti Spaghetti N° 7 500g",
+          "url": "https://www.masonline.com.ar/spaghetti-n-7-lucchetti-500gr-2/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1750.0,
+          "nombre": "Fideos Spaghetti N7 Luchetti 500 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/fideos-spaghetti-n7-luchetti-500-gr-40877/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 1790.0,
+          "nombre": "Fideos Spaghetti N°7 500 Grs Lucchetti",
+          "url": "https://www.vea.com.ar/fideos-guiser-lucchetti-spaghetti-500gr/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 1850.0,
+          "nombre": "Fideos Spaghetti N°7 500 Grs Lucchetti",
+          "url": "https://www.jumbo.com.ar/fideos-guiser-lucchetti-spaghetti-500gr/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 1900.0,
+          "nombre": "Fideos Spaghetti N°7 500 Grs Lucchetti",
+          "url": "https://www.disco.com.ar/fideos-guiser-lucchetti-spaghetti-500gr/p"
+        }
+      ]
+    },
+    {
+      "slug": "arroz-gallo-largo-fino-1kg",
+      "categoria": "Almacén",
+      "nombre": "Arroz Largo Fino Gallo 1 kg",
+      "marca": "Gallo",
+      "tamano": "1 kg",
+      "ean": "7790070431448",
+      "capturado": "2026-10-10T09:01:56-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2490.0,
+          "nombre": "Arroz Grano Largo Fino 1 Kg Gallo",
+          "url": "https://www.vea.com.ar/arroz-gallo-largo-fino-1kg/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2619.0,
+          "nombre": "Arroz largo fino Gallo 00000 en bolsa 1 kg",
+          "url": "https://www.carrefour.com.ar/arroz-largo-fino-gallo-00000-en-bolsa-1-kg-718789/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 2619.0,
+          "nombre": "Arroz Gallo Largo Fino 1 Kg",
+          "url": "https://www.masonline.com.ar/arroz-gallo-largo-fino-1-kg-4/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 2620.0,
+          "nombre": "Arroz Largo Fino Gallo 1 kg",
+          "url": "https://www.josimar.com.ar/gallo-largo-fino-grano-bolsa-1kg-2/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 2800.0,
+          "nombre": "Arroz Grano Largo Fino 1 Kg Gallo",
+          "url": "https://www.jumbo.com.ar/arroz-gallo-largo-fino-1kg/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 2850.0,
+          "nombre": "Arroz Grano Largo Fino 1 Kg Gallo",
+          "url": "https://www.disco.com.ar/arroz-gallo-largo-fino-1kg/p"
+        }
+      ]
+    },
+    {
+      "slug": "arroz-gallo-oro-1kg",
+      "categoria": "Almacén",
+      "nombre": "Arroz Parboil Gallo Oro 1 kg",
+      "marca": "Gallo",
+      "tamano": "1 kg",
+      "ean": "7790070431417",
+      "capturado": "2026-10-10T09:01:57-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 2599.0,
+          "nombre": "Arroz Parboil Gallo Oro 1kg",
+          "url": "https://www.abastecedor.com.ar/gallo-oro-arroz-parboil-bsa-x1kg-1/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2790.0,
+          "nombre": "Arroz Grano Largo Parboil 1 Kg Gallo Oro",
+          "url": "https://www.vea.com.ar/arroz-parboil-en-bolsa-1-kg-gallo-oro/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2979.0,
+          "nombre": "Arroz parboil Gallo oro en bolsa 1 kg",
+          "url": "https://www.carrefour.com.ar/arroz-parboil-gallo-oro-en-bolsa-1-kg-718787/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 2980.0,
+          "nombre": "Arroz Parboil Gallo Oro 1 kg",
+          "url": "https://www.josimar.com.ar/gallo-oro-parboll-bolsa-kg-2/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 3000.0,
+          "nombre": "Arroz Grano Largo Parboil 1 Kg Gallo Oro",
+          "url": "https://www.jumbo.com.ar/arroz-parboil-en-bolsa-1-kg-gallo-oro/p"
+        }
+      ]
+    },
+    {
+      "slug": "cafe-la-virginia-500g",
+      "categoria": "Almacén",
+      "nombre": "Café Molido La Virginia 500 Gr",
+      "marca": "LA VIRGINIA",
+      "tamano": "500 g",
+      "ean": "7790150006351",
+      "capturado": "2026-10-10T09:01:58-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 12350.0,
+          "nombre": "Cafe Molido Torrado Equilibrado LA VIRGINIA Paquete 500g",
+          "url": "https://www.abastecedor.com.ar/la-virginia-cafe-mol-equil-x500g-1/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 14490.0,
+          "nombre": "Café Molido La Virginia 500 Gr",
+          "url": "https://www.vea.com.ar/cafe-molido-la-virginia-500-gr-2/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 14569.0,
+          "nombre": "Café molido torrado equilibrado La Virginia 500 g.",
+          "url": "https://www.carrefour.com.ar/cafe-molido-torrado-equilibrado-la-virginia-500-g/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 14569.0,
+          "nombre": "Café Molido La Virginia Torrado 500gr",
+          "url": "https://www.masonline.com.ar/cafe-molido-la-virginia-torrado-500gr-2/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 14575.0,
+          "nombre": "Café Clásico La Virginia 500 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/cafe-clasico-la-virginia-500-gr-140811/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 15000.0,
+          "nombre": "Café Molido La Virginia 500 Gr",
+          "url": "https://www.jumbo.com.ar/cafe-molido-la-virginia-500-gr-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 15300.0,
+          "nombre": "Café Molido La Virginia 500 Gr",
+          "url": "https://www.disco.com.ar/cafe-molido-la-virginia-500-gr-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "sal-fina-celusal-500g",
+      "categoria": "Almacén",
+      "nombre": "Sal Fina en Paquete Celusal 500 Gr.",
+      "marca": "CELUSAL",
+      "tamano": "500 g",
+      "ean": "7790072001014",
+      "capturado": "2026-10-10T09:01:58-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 1399.0,
+          "nombre": "Sal Fina CELUSAL 500g",
+          "url": "https://www.abastecedor.com.ar/celusal-sal-fina-paquete-x500g-1/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 1549.0,
+          "nombre": "Sal fina Celusal paquete 500 g.",
+          "url": "https://www.carrefour.com.ar/sal-fina-celusal-paquete-500-g/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 1549.0,
+          "nombre": "Sal Fina 500 Grs Celusal",
+          "url": "https://www.vea.com.ar/sal-fina-celusal-500-gr/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 1590.0,
+          "nombre": "Sal Fina Celusal Paquete 500 gr",
+          "url": "https://www.josimar.com.ar/sal-fina-celusal-paquete-500-gr-2/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 1650.0,
+          "nombre": "Sal Fina 500 Grs Celusal",
+          "url": "https://www.jumbo.com.ar/sal-fina-celusal-500-gr/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1669.0,
+          "nombre": "Sal Fina Celusal Paquete 500 Gr",
+          "url": "https://www.masonline.com.ar/sal-fina-celusal-paquete-500-gr-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 1700.0,
+          "nombre": "Sal Fina 500 Grs Celusal",
+          "url": "https://www.disco.com.ar/sal-fina-celusal-500-gr/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1790.0,
+          "nombre": "Sal Fina en Paquete Celusal 500 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/sal-fina-en-paquete-celusal-500-gr-47582/p"
+        }
+      ]
+    },
+    {
+      "slug": "atun-la-campagnola-aceite-170g",
+      "categoria": "Almacén",
+      "nombre": "Atún en Aceite La Campagnola 170 Gr.",
+      "marca": "CAMPAGNOLA",
+      "tamano": "170 g",
+      "ean": "7790580131357",
+      "capturado": "2026-10-10T09:01:59-03:00",
+      "capturado_texto": "10 oct 2026, 09:01 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 6278.0,
+          "nombre": "Lomo de Atún en Aceite 170 Grs La Campagnola",
+          "url": "https://www.disco.com.ar/atun-la-campagnola-en-aceite-170gr/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 6278.0,
+          "nombre": "Atún en Aceite La Campagnola 170 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/atun-en-aceite-la-campagnola-170-gr-14796/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 6278.0,
+          "nombre": "Lomo de Atún en Aceite 170 Grs La Campagnola",
+          "url": "https://www.jumbo.com.ar/atun-la-campagnola-en-aceite-170gr/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 6279.0,
+          "nombre": "Atún en aceite La campagnola lomitos 170 g.",
+          "url": "https://www.carrefour.com.ar/atun-en-aceite-la-campagnola-lomitos-170-g-699549-699549/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 6290.0,
+          "nombre": "Lomo de Atún en Aceite 170 Grs La Campagnola",
+          "url": "https://www.vea.com.ar/atun-la-campagnola-en-aceite-170gr/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 7055.0,
+          "nombre": "Atun En Lomos Aceite sin TACC La Campagnola 170 gr",
+          "url": "https://www.josimar.com.ar/atun-natural-lc-170-gr-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "mayonesa-natura-475g",
+      "categoria": "Almacén",
+      "nombre": "Mayonesa Natura 475 g.",
+      "marca": "Natura",
+      "tamano": "475 g",
+      "ean": "7791866001364",
+      "capturado": "2026-10-10T09:02:00-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 2281.5,
+          "nombre": "Mayonesa NATURA Pouch 475 Gr",
+          "url": "https://www.abastecedor.com.ar/natura-mayonesa-d-p-x500g-1/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2990.0,
+          "nombre": "Mayonesa Clásica 475 Grs Natura",
+          "url": "https://www.vea.com.ar/aderezo-mayonesa-475-gr-natura/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 3039.0,
+          "nombre": "Mayonesa Natura 475 g.",
+          "url": "https://www.carrefour.com.ar/mayonesa-natura-475-g/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 3054.0,
+          "nombre": "Mayonesa Clásica 475 Grs Natura",
+          "url": "https://www.jumbo.com.ar/aderezo-mayonesa-475-gr-natura/p"
+        }
+      ]
+    },
+    {
+      "slug": "galletitas-criollitas-300g",
+      "categoria": "Almacén",
+      "nombre": "Galletitas Crackers CRIOLLITAS 300g",
+      "marca": "Inventariables",
+      "tamano": "300 g",
+      "ean": "7790040377806",
+      "capturado": "2026-10-10T09:02:00-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1979.0,
+          "nombre": "Galletitas De Agua Familiar Criollitas 300 Gr",
+          "url": "https://www.masonline.com.ar/galletitas-de-agua-familiar-criollitas-300-gr-2/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 2149.0,
+          "nombre": "Galletitas Crackers CRIOLLITAS 300g",
+          "url": "https://www.abastecedor.com.ar/criollitas-gall-3u-x100g-1/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 2190.0,
+          "nombre": "Galletitas De Agua Criollitas Originales 300 Gr",
+          "url": "https://www.vea.com.ar/galletitas-de-agua-criollitas-originales-300-gr-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 2200.0,
+          "nombre": "Galletitas De Agua Criollitas Originales 300 Gr",
+          "url": "https://www.disco.com.ar/galletitas-de-agua-criollitas-originales-300-gr-2/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 2200.0,
+          "nombre": "Galletitas De Agua Criollitas Originales 300 Gr",
+          "url": "https://www.jumbo.com.ar/galletitas-de-agua-criollitas-originales-300-gr-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "arvejas-secas-arcor-300g",
+      "categoria": "Almacén",
+      "nombre": "Arvejas Secas 300 Grs Arcor",
+      "marca": "ARCOR",
+      "tamano": "300 g",
+      "ean": "7790580132392",
+      "capturado": "2026-10-10T09:02:01-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 1290.0,
+          "nombre": "Arvejas Secas 300 Grs Arcor",
+          "url": "https://www.vea.com.ar/arvejas-seca-arcor-x300gr-2/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 1345.0,
+          "nombre": "Arvejas secas remojadas Arcor 300 g.",
+          "url": "https://www.carrefour.com.ar/arvejas-secas-remojadas-arcor-300-g-697805/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 1346.0,
+          "nombre": "Arvejas Secas 300 Grs Arcor",
+          "url": "https://www.disco.com.ar/arvejas-seca-arcor-x300gr-2/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1346.0,
+          "nombre": "Arvejas Remojadas Arcor 300 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/arvejas-remojadas-arcor-300-gr-14199/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 1346.0,
+          "nombre": "Arvejas Secas 300 Grs Arcor",
+          "url": "https://www.jumbo.com.ar/arvejas-seca-arcor-x300gr-2/p"
+        }
+      ]
+    },
+    {
+      "slug": "mermelada-durazno-la-campagnola-454g",
+      "categoria": "Almacén",
+      "nombre": "Mermelada Sabor Durazno 454 Grs La Campagnola",
+      "marca": "LA CAMPAGNOLA",
+      "tamano": "454 g",
+      "ean": "7793360131400",
+      "capturado": "2026-10-10T09:02:01-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 4020.0,
+          "nombre": "Mermelada La Campagnola Durazno 454 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/mermelada-la-campagnola-durazno-454-gr-14788/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 4025.0,
+          "nombre": "Mermelada La Campagnola de durazno 454 g.",
+          "url": "https://www.carrefour.com.ar/mermelada-la-campagnola-de-durazno-454-g/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 4062.15,
+          "nombre": "Mermelada de Durazno La Campagnola 454 gr",
+          "url": "https://www.josimar.com.ar/lc-merme-durazno-454gr-2/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 4300.0,
+          "nombre": "Mermelada Sabor Durazno 454 Grs La Campagnola",
+          "url": "https://www.jumbo.com.ar/mermelada-la-campagnola-durazno-454gr/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 4400.0,
+          "nombre": "Mermelada Sabor Durazno 454 Grs La Campagnola",
+          "url": "https://www.disco.com.ar/mermelada-la-campagnola-durazno-454gr/p"
+        }
+      ]
+    },
+    {
+      "slug": "agua-villavicencio-sin-gas-2l",
+      "categoria": "Bebidas",
+      "nombre": "Agua Sin Gas Villavicencio 2 Lt.",
+      "marca": "VILLAVICENCIO",
+      "tamano": "2 L",
+      "ean": "7799155000197",
+      "capturado": "2026-10-10T09:02:02-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1980.0,
+          "nombre": "Agua Sin Gas Villavicencio 2 Lt.",
+          "url": "https://diaonline.supermercadosdia.com.ar/agua-sin-gas-villavicencio-2-lt-298974/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 3046.15,
+          "nombre": "Agua mineral sin gas Villavicencio 2 lts",
+          "url": "https://www.carrefour.com.ar/agua-mineral-sin-gas-villavicencio-2-lts-727428/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 3190.0,
+          "nombre": "Agua Sin Gas Villavicencio 2 L",
+          "url": "https://www.vea.com.ar/agua-sin-gas-villavicencio-2-l/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 3199.0,
+          "nombre": "Agua Mineral Villavicencio Sin Gas 2 L",
+          "url": "https://www.masonline.com.ar/agua-mineral-villavicencio-sin-gas-2-l-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 3200.0,
+          "nombre": "Agua Sin Gas Villavicencio 2 L",
+          "url": "https://www.disco.com.ar/agua-sin-gas-villavicencio-2-l/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 3200.0,
+          "nombre": "Agua Sin Gas Villavicencio 2 L",
+          "url": "https://www.jumbo.com.ar/agua-sin-gas-villavicencio-2-l/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 3290.0,
+          "nombre": "Agua Mineral sin Gas Villavicencio 2 lt",
+          "url": "https://www.josimar.com.ar/agua-sin-gas-villavicencio-2l/p"
+        }
+      ]
+    },
+    {
+      "slug": "coca-cola-original-2-25l",
+      "categoria": "Bebidas",
+      "nombre": "Gaseosa Coca-Cola Sabor Original 2.25 Lt.",
+      "marca": "COKE/COCACOLA",
+      "tamano": "2250 ml",
+      "ean": "7790895000997",
+      "capturado": "2026-10-10T09:02:02-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 4290.0,
+          "nombre": "Gaseosa Coca-Cola Sabor Original 2,25 Lt",
+          "url": "https://www.abastecedor.com.ar/coca-cola-gaseosa-pet-x2-25l-1/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 5930.0,
+          "nombre": "Gaseosa Cola Sabor Original 2.25 Lts Coca Cola",
+          "url": "https://www.jumbo.com.ar/gaseosa-coca-cola-sabor-original-2-25-l/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 5990.0,
+          "nombre": "Gaseosa Cola Sabor Original 2.25 Lts Coca Cola",
+          "url": "https://www.vea.com.ar/gaseosa-coca-cola-sabor-original-2-25-l/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 5999.0,
+          "nombre": "Gaseosa Coca Cola Sabor Original Menos Azúcares 2,25 L",
+          "url": "https://www.masonline.com.ar/gaseosa-coca-cola-sabor-original-2-25-lt-2/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 6000.0,
+          "nombre": "Gaseosa cola Coca Cola sabor original 2,25 lts",
+          "url": "https://www.carrefour.com.ar/gaseosa-cola-coca-cola-sabor-original-225-lts-30138/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 6000.0,
+          "nombre": "Gaseosa Cola Sabor Original 2.25 Lts Coca Cola",
+          "url": "https://www.disco.com.ar/gaseosa-coca-cola-sabor-original-2-25-l/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 6000.0,
+          "nombre": "Gaseosa Coca-Cola Sabor Original 2.25 Lt.",
+          "url": "https://diaonline.supermercadosdia.com.ar/gaseosa-coca-cola-sabor-original-225-lt-14837/p"
+        }
+      ]
+    },
+    {
+      "slug": "cerveza-quilmes-1l",
+      "categoria": "Bebidas",
+      "nombre": "Cerveza QUILMES Botella 1 L",
+      "marca": "Inventariables",
+      "tamano": "1 L",
+      "ean": "7792798007387",
+      "capturado": "2026-10-10T09:02:04-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 3254.3,
+          "nombre": "Cerveza Clasica Quilmes Retornable 1 L",
+          "url": "https://www.masonline.com.ar/cerveza-clasica-quilmes-retornable-1-lt-2/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 3940.0,
+          "nombre": "Cerveza QUILMES Botella 1 L",
+          "url": "https://www.abastecedor.com.ar/quilmes-cerveza-x1lt-1/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 4649.0,
+          "nombre": "Cerveza rubia clásica Quilmes 1 lt",
+          "url": "https://www.carrefour.com.ar/cerveza-rubia-clasica-quilmes-1-lt-505983/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 4649.0,
+          "nombre": "Cerveza Rubia 1 Lts Quilmes",
+          "url": "https://www.disco.com.ar/cerveza-quilmes-clasica-1lt-ret/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 4649.0,
+          "nombre": "Cerveza Rubia 1 Lts Quilmes",
+          "url": "https://www.jumbo.com.ar/cerveza-quilmes-clasica-1lt-ret/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 4649.0,
+          "nombre": "Cerveza Rubia 1 Lts Quilmes",
+          "url": "https://www.vea.com.ar/cerveza-quilmes-clasica-1lt-ret/p"
+        }
+      ]
+    },
+    {
+      "slug": "te-la-virginia-comun",
+      "categoria": "Bebidas",
+      "nombre": "Te Común La Virginia 25saq",
+      "marca": "La Virginia",
+      "tamano": "pack x25, 50 g",
+      "ean": "7790150211908",
+      "capturado": "2026-10-10T09:02:04-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 969.0,
+          "nombre": "Te X25 Saquitos LA VIRGINIA Caja 50 Grm",
+          "url": "https://www.abastecedor.com.ar/la-virginia-te-x25-saq-1/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 995.0,
+          "nombre": "Té negro La Virginia en saquitos x 25 uni",
+          "url": "https://www.carrefour.com.ar/te-negro-la-virginia-en-saquitos-x-25-uni-685100/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1049.0,
+          "nombre": "Te Común La Virginia 25saq",
+          "url": "https://www.masonline.com.ar/te-comun-la-virginia-25saq-2/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1050.0,
+          "nombre": "Té Clásico La Virginia Naturalidad Intacta 25 Ud.",
+          "url": "https://diaonline.supermercadosdia.com.ar/te-clasico-la-virginia-naturalidad-intacta-25-ud-280379/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 1190.0,
+          "nombre": "Té Negro Naturalidad Intacta 50 Grs x 25 Un La Virginia",
+          "url": "https://www.vea.com.ar/te-naturalidad-intacta-la-virginia-25-saquitos/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 1200.0,
+          "nombre": "Té Negro Naturalidad Intacta 50 Grs x 25 Un La Virginia",
+          "url": "https://www.disco.com.ar/te-naturalidad-intacta-la-virginia-25-saquitos/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 1200.0,
+          "nombre": "Té Negro Naturalidad Intacta 50 Grs x 25 Un La Virginia",
+          "url": "https://www.jumbo.com.ar/te-naturalidad-intacta-la-virginia-25-saquitos/p"
+        }
+      ]
+    },
+    {
+      "slug": "lavandina-ayudin-original-1l",
+      "categoria": "Limpieza",
+      "nombre": "Lavandina Ayudín Original 1 Lt.",
+      "marca": "AYUDIN",
+      "tamano": "1 L",
+      "ean": "7790132098459",
+      "capturado": "2026-10-10T09:02:05-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 1149.75,
+          "nombre": "Lavandina Ayudín Original 1 Lt.",
+          "url": "https://diaonline.supermercadosdia.com.ar/lavandina-ayudin-original-1-lt-15128/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 1250.0,
+          "nombre": "Lavandina Liquida Ayudín Botella 1 Lt",
+          "url": "https://www.abastecedor.com.ar/lavandina-liquida-ayudin-botella-x1lt/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 1290.0,
+          "nombre": "Lavandina Líquida 1 Lts Ayudín",
+          "url": "https://www.vea.com.ar/lavandina-ayudin-clasica-1-l/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 1369.0,
+          "nombre": "Lavandina Ayudín original 1 l.",
+          "url": "https://www.carrefour.com.ar/lavandina-ayudin-original-1-l/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 1369.0,
+          "nombre": "Lavandina Líquida 1 Lts Ayudín",
+          "url": "https://www.disco.com.ar/lavandina-ayudin-clasica-1-l/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 1369.0,
+          "nombre": "Lavandina Líquida 1 Lts Ayudín",
+          "url": "https://www.jumbo.com.ar/lavandina-ayudin-clasica-1-l/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 1649.0,
+          "nombre": "Lavandina Ayudín Original 1 Lt",
+          "url": "https://www.masonline.com.ar/lavandina-tradicional-ayudin-1-lt-2/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 1999.0,
+          "nombre": "Lavandina Original Ayudin 1 lt...",
+          "url": "https://www.josimar.com.ar/lavandina-ayudin-tradicional-1lt/p"
+        }
+      ]
+    },
+    {
+      "slug": "jabon-en-polvo-ala-bicarbonato-800g",
+      "categoria": "Limpieza",
+      "nombre": "Jabon en polvo ALA Bicarbonato 800 Gr.",
+      "marca": "ALA",
+      "tamano": "800 g",
+      "ean": "7791290796829",
+      "capturado": "2026-10-10T09:02:05-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 2157.35,
+          "nombre": "Jabón en polvo Ala Bicarbonato 800 grs",
+          "url": "https://www.carrefour.com.ar/jabon-en-polvo-ala-bicarbonato-800-grs-778331/p"
+        },
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 3290.0,
+          "nombre": "Jabon En Polvo Ala Matic Dual Con Bicarbonato",
+          "url": "https://www.vea.com.ar/jabon-en-polvo-ala-matic-dual-con-bicarbonato-2/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 3320.0,
+          "nombre": "Jabon en polvo ALA Bicarbonato 800 Gr.",
+          "url": "https://diaonline.supermercadosdia.com.ar/jabon-en-polvo-ala-bicarbonato-800-gr-161161/p"
+        },
+        {
+          "tienda": "Mas Online",
+          "tienda_id": "masonline",
+          "precio": 3329.0,
+          "nombre": "Jabón En Polvo Ala Con Bicarbonato 800 G",
+          "url": "https://www.masonline.com.ar/jabon-en-polvo-ala-con-bicarbonato-800-g/p"
+        },
+        {
+          "tienda": "Jumbo",
+          "tienda_id": "jumbo",
+          "precio": 3650.0,
+          "nombre": "Jabon En Polvo Ala Matic Dual Con Bicarbonato",
+          "url": "https://www.jumbo.com.ar/jabon-en-polvo-ala-matic-dual-con-bicarbonato-2/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 3700.0,
+          "nombre": "Jabon En Polvo Ala Matic Dual Con Bicarbonato",
+          "url": "https://www.disco.com.ar/jabon-en-polvo-ala-matic-dual-con-bicarbonato-2/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 3999.0,
+          "nombre": "Jabon en Polvo Dual con Bicarbonato Ala 800 gr",
+          "url": "https://www.josimar.com.ar/jabon-en-polvo-dual-con-bicarbonato-ala-800-gr/p"
+        }
+      ]
+    },
+    {
+      "slug": "papel-higienico-higienol-4un",
+      "categoria": "Limpieza",
+      "nombre": "Papel Higiénico Doble Hoja Fusion Higienol 4 Ud.",
+      "marca": "HIGIENOL",
+      "tamano": "pack x4",
+      "ean": "7790250015536",
+      "capturado": "2026-10-10T09:02:06-03:00",
+      "capturado_texto": "10 oct 2026, 09:02 (Buenos Aires)",
+      "ofertas": [
+        {
+          "tienda": "Vea",
+          "tienda_id": "vea",
+          "precio": 3190.0,
+          "nombre": "Papel Higiénico Plus Doble Hoja 30 Mts x 4 Un Higienol",
+          "url": "https://www.vea.com.ar/papel-higienico-plus-fusion-doble-hoja-30-m-x-4-un-higienol/p"
+        },
+        {
+          "tienda": "Josimar",
+          "tienda_id": "josimar",
+          "precio": 3679.2,
+          "nombre": "Papel Higienico Doble Hoja Plus Fusion Higienol 30 mt 4U",
+          "url": "https://www.josimar.com.ar/papel-higienico-higienol-max-manzanilla-80m-x-6un/p"
+        },
+        {
+          "tienda": "El Abastecedor",
+          "tienda_id": "abastecedor",
+          "precio": 3900.0,
+          "nombre": "Papel Higiénico HIGIENOL Plus Fusión Doble Hoja 30 M 4 Un",
+          "url": "https://www.abastecedor.com.ar/higienol-papel-hig-dh-plus-4x30m-1/p"
+        },
+        {
+          "tienda": "Carrefour",
+          "tienda_id": "carrefour",
+          "precio": 4550.0,
+          "nombre": "Papel higiénico doble hoja Higienol plus x4 30 mts",
+          "url": "https://www.carrefour.com.ar/papel-higienico-doble-hoja-higienol-plus-x4-30-mts-736162/p"
+        },
+        {
+          "tienda": "Día",
+          "tienda_id": "dia",
+          "precio": 4550.0,
+          "nombre": "Papel Higiénico Doble Hoja Fusion Higienol 4 Ud.",
+          "url": "https://diaonline.supermercadosdia.com.ar/papel-higienico-doble-hoja-fusion-higienol-4-ud-301701/p"
+        },
+        {
+          "tienda": "Disco",
+          "tienda_id": "disco",
+          "precio": 4650.0,
+          "nombre": "Papel Higiénico Plus Doble Hoja 30 Mts x 4 Un Higienol",
+          "url": "https://www.disco.com.ar/papel-higienico-plus-fusion-doble-hoja-30-m-x-4-un-higienol/p"
+        }
+      ]
+    }
+  ]
+}

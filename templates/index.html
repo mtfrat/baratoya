@@ -1736,6 +1736,20 @@
       </div>
     </section>
 
+    <section class="section" id="precios-publicos">
+      <div class="wrap">
+        <h2 class="sec">Comparar precios de supermercados</h2>
+        <p class="lead"><a href="/precios">Precios de hoy</a>, por producto y por cadena. Leche, aceite, yerba y otros básicos, con la fecha en que se leyó cada precio.</p>
+        {% if precios_muestra %}
+        <ul class="promos-cadenas">
+          {% for p in precios_muestra %}
+          <li><a href="{{ p.href }}">{{ p.nombre }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+    </section>
+
     <section class="section" id="promos-bancarias">
       <div class="wrap">
         <h2 class="sec">Promos de banco, juntas.</h2>
@@ -1900,7 +1914,7 @@
       <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
-      <p><a href="/">Inicio</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/descuentos-supermercados">Descuentos por día</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      <p><a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/descuentos-supermercados">Descuentos por día</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
       {% if promos_cadenas %}
       <p>Promos por supermercado:{% for c in promos_cadenas %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
       {% endif %}
