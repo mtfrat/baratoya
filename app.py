@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 import httpx
 from fastapi import FastAPI, Query, Request
 from fastapi.exception_handlers import http_exception_handler
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -38,6 +38,7 @@ try:
     from baratoya.promos_hoy import pagina_seo_dia as pagina_promo_dia
     from baratoya.promos_hoy import pagina_seo_dias as pagina_promos_dias
     from baratoya.promos_hoy import promos_para_cadena
+    from baratoya import precios_seo
     from baratoya import cuentas
 except ImportError:
     from electro import buscar_electro
@@ -55,6 +56,7 @@ except ImportError:
     from promos_hoy import pagina_seo_dia as pagina_promo_dia
     from promos_hoy import pagina_seo_dias as pagina_promos_dias
     from promos_hoy import promos_para_cadena
+    import precios_seo
     import cuentas
 
 BASE = os.getenv("PRECIOS_CLAROS_BASE", "https://d3e6htiiul5ek9.cloudfront.net/prod").rstrip("/")
@@ -174,7 +176,14 @@ async def robots_txt():
 
 @app.get("/sitemap.xml", include_in_schema=False)
 async def sitemap_xml():
-    return FileResponse(STATIC_DIR / "sitemap.xml", media_type="application/xml")
+    base = (STATIC_DIR / "sitemap.xml").read_text(encoding="utf-8")
+    extra = "".join(
+        f"  <url><loc>{loc}</loc><lastmod>{last}</lastmod></url>\n"
+        for loc, last in precios_seo.urls_sitemap()
+    )
+    if extra and "</urlset>" in base:
+        base = base.replace("</urlset>", extra + "</urlset>")
+    return Response(content=base, media_type="application/xml")
 
 
 @app.get("/favicon.svg", include_in_schema=False)
@@ -900,6 +909,7 @@ async def home(request: Request):
             "paid_scrapers": ENABLE_PAID,
             "mla": ENABLE_MLA,
             "promos_cadenas": cadenas_promos_publicas(),
+            "precios_muestra": precios_seo.muestra_home(),
             **cuentas.pagina_publica(),
         },
     )
@@ -959,6 +969,33 @@ async def descuentos_supermercados_dia(request: Request, dia: str):
     if vista is None:
         raise StarletteHTTPException(status_code=404)
     return templates.TemplateResponse(request, "descuentos_dia.html", vista)
+
+
+@app.get("/precios", response_class=HTMLResponse)
+async def precios_hub(request: Request):
+    """Comparación pública por producto. El número sale del catálogo, sin sesión."""
+    await precios_seo.asegurar_hub()
+    return templates.TemplateResponse(
+        request,
+        "precios.html",
+        precios_seo.pagina_precios(),
+        headers={"Cache-Control": precios_seo.CACHE_CONTROL},
+    )
+
+
+@app.get("/precios/{slug}", response_class=HTMLResponse)
+async def precios_producto(request: Request, slug: str):
+    """Un producto, un precio por cadena. Menos de dos cadenas: no se publica."""
+    await precios_seo.asegurar_producto(slug)
+    vista = precios_seo.pagina_producto(slug)
+    if vista is None:
+        raise StarletteHTTPException(status_code=404)
+    return templates.TemplateResponse(
+        request,
+        "precio_producto.html",
+        vista,
+        headers={"Cache-Control": precios_seo.CACHE_CONTROL},
+    )
 
 
 @app.get("/api/sucursales")

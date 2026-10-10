@@ -35,74 +35,42 @@
       --slate: #6a6c6a;
       --fog: #e8ebe6;
       --font-ui: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-      --font-serif: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif;
     }
     * { box-sizing: border-box; }
     body { margin: 0; color: var(--muted); background: var(--paper); font: 16px/1.6 var(--font-ui); }
     a { color: var(--ink); }
     .nav { min-height: 64px; display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid #d9ddd8; }
     .nav a { font-weight: 700; text-decoration: none; letter-spacing: -0.02em; }
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: #163300;
-      text-decoration: none;
-      line-height: 1;
-      letter-spacing: normal;
-    }
-    .logo:hover { text-decoration: none; }
+    .logo { display: inline-flex; align-items: center; gap: 10px; color: #163300; text-decoration: none; line-height: 1; }
     .logo img { width: 32px; height: 32px; display: block; flex: none; }
-    .logo .wm { font-size: 26px; line-height: 1; letter-spacing: -0.01em; font-weight: 400; }
-    .logo .b { font-family: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif; font-weight: 400; color: #163300; }
-    .logo .y { font-family: "Atkinson Hyperlegible", "Atkinson Hyperlegible Fallback", sans-serif; font-weight: 700; color: #4E8A1E; }
-    main { width: min(100% - 32px, 48rem); margin: 0 auto; padding: 32px 0 64px; }
+    .logo .wm { font-size: 26px; line-height: 1; }
+    .logo .b { font-family: "Libre Baskerville", "Libre Baskerville Fallback", Georgia, serif; font-weight: 400; }
+    .logo .y { font-weight: 700; color: #4E8A1E; }
+    main { width: min(100% - 32px, 42rem); margin: 0 auto; padding: 32px 0 64px; }
     .crumbs { margin: 0 0 16px; font-size: 14px; color: var(--slate); }
     .crumbs a { font-weight: 600; }
     h1, h2, h3 { color: var(--ink); line-height: 1.25; letter-spacing: -0.02em; }
     h1 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 40px); font-weight: 600; }
     h2 { margin: 36px 0 8px; font-size: 22px; }
-    h3 { margin: 24px 0 4px; font-size: 18px; }
+    h3 { margin: 0 0 4px; font-size: 18px; }
     p { margin: 0 0 16px; }
     .actualizado { font-weight: 700; color: var(--ink); }
-    ul { margin: 0 0 8px; padding-left: 1.2rem; }
-    li { margin: 0 0 10px; }
-    .otras { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 0; margin: 0 0 8px; }
-    .otras li { margin: 0; }
-    .otras a { font-weight: 700; }
-    .hoy a, a[aria-current="date"] {
-      background: var(--lime);
-      border-radius: 999px;
-      padding: 2px 10px;
-    }
+    ul { margin: 0 0 8px; padding: 0; list-style: none; }
+    li { margin: 0 0 14px; }
+    .desde { display: block; color: var(--slate); font-size: 15px; }
     .cta { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 8px; }
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      padding: 0 20px;
-      border-radius: 9999px;
-      background: var(--lime);
-      color: var(--ink);
-      font-weight: 700;
-      text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 44px; padding: 0 20px; border-radius: 9999px;
+      background: var(--lime); color: var(--ink); font-weight: 700; text-decoration: none;
     }
     .btn.outline { background: var(--paper); border: 1px solid var(--ink); }
     .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .nota { color: var(--slate); font-size: 15px; }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
-    footer .wrap { width: min(100% - 32px, 48rem); margin: 0 auto; }
+    footer .wrap { width: min(100% - 32px, 42rem); margin: 0 auto; }
     footer p { margin: 0 0 8px; }
-    .cookie-note {
-      margin: 0 0 12px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: var(--fog);
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
+    .cookie-note { margin: 0 0 12px; padding: 8px 12px; border-radius: 8px; background: var(--fog); color: var(--muted); font-size: 13px; line-height: 1.45; }
   </style>
 </head>
 <body>
@@ -112,52 +80,32 @@
   </header>
   <main>
     <nav class="crumbs" aria-label="Migas de pan">
-      <a href="/">Inicio</a> · Descuentos en supermercados
+      <a href="/">Inicio</a> · Comparar precios
     </nav>
     <h1>{{ h1 }}</h1>
-    <p>{{ intro }}</p>
-    <p>Cada día tiene su página, con las promos de ese día agrupadas por cadena. Son las mismas que usa la cuenta de BaratoYa. Si la cadena no publica ese dato, no lo completamos. El precio final estimado se calcula en la cuenta. Si la letra dice que no acumula, no se suma a otro descuento.</p>
+    <p>El precio de góndola de productos de todos los días, leído de los catálogos públicos que ya consulta BaratoYa. Cada ficha tiene al menos dos cadenas. Si un precio no está publicado, no lo completamos.</p>
     {% if actualizado %}
-    <p class="actualizado">Actualizado el {{ actualizado }}.</p>
+    <p class="actualizado">Captura más reciente: {{ actualizado }}.</p>
     {% endif %}
     <div class="cta">
       <a class="btn" href="/">Empezar 7d gratis</a>
-      <a class="btn outline" href="/planes">Ver planes</a>
+      <a class="btn outline" href="/promos-bancarias-supermercados">Ver promos bancarias</a>
     </div>
-    <p class="nota">Los 7 días Plus gratis se activan al crear la cuenta, en el inicio. No pide tarjeta. El precio de un producto con la promo se calcula ahí. Plus, si lo querés, está en Planes.</p>
+    <p class="nota">El número de esta página es el de góndola, sin promo de banco. Los 7 días Plus se activan al crear la cuenta, en el inicio.</p>
 
-    <h2 id="por-dia">Por día</h2>
-    <ul class="otras">
-      {% for d in dias_nav %}
-      <li{% if d.hoy %} class="hoy"{% endif %}><a href="{{ d.href }}"{% if d.hoy %} aria-current="date"{% endif %}>Descuentos los {{ d.plural }}</a>{% if d.hoy %} (hoy){% endif %}</li>
+    {% for grupo in grupos %}
+    <h2>{{ grupo.categoria }}</h2>
+    <ul>
+      {% for p in grupo.productos %}
+      <li>
+        <h3><a href="{{ p.href }}">{{ p.nombre }}</a></h3>
+        <span class="desde">{{ p.resumen }} Capturado el {{ p.fecha }}.</span>
+      </li>
       {% endfor %}
     </ul>
-
-    {% for d in dias %}
-    <section id="{{ d.slug }}"{% if d.hoy %} class="hoy"{% endif %}>
-      <h2>{{ d.nombre }}{% if d.hoy %} (hoy){% endif %}</h2>
-      <p>{{ d.linea }}</p>
-      <p><a href="{{ d.href }}">Ver descuentos los {{ d.plural }}</a></p>
-    </section>
     {% endfor %}
 
-    <h2>Cadenas</h2>
-    <ul class="otras">
-      <li><a href="{{ hub_promos }}">Promos bancarias supermercados</a></li>
-      {% for c in cadenas %}
-      <li><a href="{{ c.href }}">{{ c.nombre }}</a></li>
-      {% endfor %}
-    </ul>
-
-    <h2>Notas</h2>
-    {% for item in notas %}
-    <section>
-      <h3>{{ item.q }}</h3>
-      <p>{{ item.a }}</p>
-    </section>
-    {% endfor %}
-
-    <h2>Preguntas por día</h2>
+    <h2>Preguntas frecuentes</h2>
     {% for item in faq %}
     <section>
       <h3>{{ item.q }}</h3>
@@ -168,11 +116,9 @@
   <footer>
     <div class="wrap">
       <p class="cookie-note" role="note">Usamos cookies de sesión y Google Analytics. <a href="/privacidad">Privacidad</a></p>
-      <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
+      <p>BaratoYa muestra el precio que cada cadena publica. No es un sitio oficial y no pone un precio propio.</p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
-      <p><a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · <a href="{{ hub_promos }}">Promos bancarias supermercados</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
-      <p>Descuentos por día:{% for d in dias_nav %} <a href="{{ d.href }}">{{ d.plural }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
-      <p>Promos por supermercado:{% for c in cadenas %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
+      <p><a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/descuentos-supermercados">Descuentos por día</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
     </div>
   </footer>
 </body>
