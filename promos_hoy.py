@@ -1659,11 +1659,8 @@ def promos_para_cadena(
 # tarjeta_publica). No calcula el precio de un producto.
 SEO_PATH = "/promos-bancarias-supermercados"
 SEO_URL = "https://baratoya.app" + SEO_PATH
-SEO_TITLE = "Promos bancarias supermercados hoy | BaratoYa"
-SEO_DESCRIPTION = (
-    "Qué promos bancarias hay hoy en los supermercados de CABA: banco o tarjeta, "
-    "porcentaje o cuotas, tope y día, por cadena. BaratoYa no vende ni entrega."
-)
+# ≤60. Conserva "promos bancarias supermercados" y suma CABA, que es el alcance real.
+SEO_TITLE = "Promos bancarias supermercados hoy en CABA | BaratoYa"
 _ORDEN_CADENA = (
     "dia", "carrefour", "cotodigital", "jumbo", "disco", "vea",
     "masonline", "makro", "maxiconsumo", "josimar", "abastecedor",
@@ -1730,9 +1727,39 @@ def fecha_datos_promos() -> date | None:
     return max(fechas) if fechas else None
 
 
-def faq_promos_publicas() -> list[dict[str, str]]:
+def _respuesta_promos_hoy(n_hoy: int | None, cadenas_hoy: int | None) -> str:
+    """Apunta a la sección Hoy. Sin un porcentaje de ahorro inventado."""
+    detalle = (
+        "banco o tarjeta, porcentaje o cuotas, los días y el tope si está publicado. "
+        "Si la cadena no publica un dato, no lo completamos."
+    )
+    if n_hoy is None:
+        return "En la sección Hoy de esta página, por cada cadena de supermercado de CABA: " + detalle
+    if n_hoy <= 0:
+        return (
+            "Hoy no hay promos vigentes cargadas. La sección Hoy las lista por cadena "
+            "cuando las hay: " + detalle
+        )
+    promo = "1 promo" if n_hoy == 1 else f"{n_hoy} promos"
+    if cadenas_hoy is None:
+        donde = "supermercados de CABA"
+    elif cadenas_hoy == 1:
+        donde = "1 cadena de supermercados de CABA"
+    else:
+        donde = f"{cadenas_hoy} cadenas de supermercados de CABA"
+    return f"Hoy hay {promo} en {donde}. La sección Hoy las lista por cadena: {detalle}"
+
+
+def faq_promos_publicas(
+    n_hoy: int | None = None,
+    cadenas_hoy: int | None = None,
+) -> list[dict[str, str]]:
     """Hechos del cálculo que ya hace la cuenta. Sin cifras de ahorro."""
     return [
+        {
+            "q": "¿Cuáles son las promos bancarias de supermercados hoy?",
+            "a": _respuesta_promos_hoy(n_hoy, cadenas_hoy),
+        },
         {
             "q": "¿Cómo se calcula el descuento?",
             "a": (
@@ -1883,6 +1910,42 @@ def _items_publicos(hoy: date) -> list[dict[str, Any]]:
     return items
 
 
+def descripcion_hub(n: int, cadenas_n: int, n_hoy: int) -> str:
+    """Meta del hub. Arranca con el conteo de la semana. ≤155. Sin un % inventado."""
+    cierre = "BaratoYa no vende ni entrega."
+    if n <= 0:
+        opciones = (
+            f"No hay promos bancarias cargadas esta semana en supermercados de CABA. {cierre}",
+        )
+    else:
+        promos = "1 promo bancaria" if n == 1 else f"{n} promos bancarias"
+        cadenas = "1 supermercado" if cadenas_n == 1 else f"{cadenas_n} supermercados"
+        if n_hoy <= 0:
+            opciones = (
+                f"{promos} en {cadenas} de CABA esta semana. Hoy no hay promos cargadas. {cierre}",
+                f"{promos} en {cadenas} de CABA. Hoy no hay promos cargadas. {cierre}",
+                f"{promos} en {cadenas} de CABA. {cierre}",
+            )
+        else:
+            hoy = "Hoy hay 1 promo" if n_hoy == 1 else f"Hoy hay {n_hoy} promos"
+            opciones = (
+                (
+                    f"{promos} en {cadenas} de CABA esta semana. {hoy}: banco o tarjeta, "
+                    f"días y tope por cadena. {cierre}"
+                ),
+                (
+                    f"{promos} en {cadenas} de CABA esta semana. {hoy}. "
+                    f"Banco o tarjeta, días y tope. {cierre}"
+                ),
+                f"{promos} en {cadenas} de CABA. {hoy}. {cierre}",
+                f"{promos} en {cadenas} de CABA. {cierre}",
+            )
+    for texto in opciones:
+        if len(texto) <= 155 and '"' not in texto and "<" not in texto:
+            return texto
+    raise ValueError(f"descripcion del hub no entra en 155 ({n}, {cadenas_n}, {n_hoy})")
+
+
 def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
     """Vista de /promos-bancarias-supermercados. Solo campos presentes."""
     hoy = hoy or hoy_art()
@@ -1897,11 +1960,12 @@ def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
         por_dia.append({"dia": nombre, "hoy": i == wd, "cadenas": cadenas})
     hoy_cadenas = _agrupar_cadenas(hoy_items)
     cadenas_n = len({it["chain_id"] for it in items})
+    cadenas_hoy = len(hoy_cadenas)
     actualizado = fecha_datos_promos()
-    faq = faq_promos_publicas()
+    faq = faq_promos_publicas(len(hoy_items), cadenas_hoy)
     return {
         "title": SEO_TITLE,
-        "description": SEO_DESCRIPTION,
+        "description": descripcion_hub(len(items), cadenas_n, len(hoy_items)),
         "canonical": SEO_URL,
         "path": SEO_PATH,
         "hoy_iso": hoy.isoformat(),
@@ -1911,6 +1975,10 @@ def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
         "n": len(items),
         "n_hoy": len(hoy_items),
         "cadenas_n": cadenas_n,
+        "cadenas": [
+            {"nombre": c["nombre"], "href": c["href"]}
+            for c in cadenas_indexables(hoy)
+        ],
         "hoy_cadenas": hoy_cadenas,
         "por_dia": por_dia,
         "dias_nav": nav_dias(hoy),
@@ -1963,21 +2031,30 @@ def _n_promos(n: int) -> str:
 
 
 def titulo_cadena(nombre: str) -> str:
-    """≤60. El patrón del hub de cadena; si no entra, se acorta sin cortar palabras."""
-    preferido = f"Promos bancarias {nombre} hoy: bancos y días | BaratoYa"
-    if len(preferido) <= 60:
-        return preferido
-    corto = f"Promos {nombre} hoy: bancos y días | BaratoYa"
-    if len(corto) <= 60:
-        return corto
-    minimo = f"Promos {nombre} hoy | BaratoYa"
-    if len(minimo) <= 60:
-        return minimo
+    """≤60. "promos bancarias {cadena}" y, si entra, la palabra supermercado."""
+    opciones = (
+        f"Promos bancarias {nombre} supermercado hoy | BaratoYa",
+        f"Promos bancarias {nombre} hoy: bancos y días | BaratoYa",
+        f"Promos bancarias {nombre} hoy | BaratoYa",
+        f"Promos {nombre} hoy: bancos y días | BaratoYa",
+        f"Promos {nombre} hoy | BaratoYa",
+    )
+    for texto in opciones:
+        if len(texto) <= 60:
+            return texto
     raise ValueError(f"titulo de {nombre} no entra en 60")
 
 
 def descripcion_cadena(nombre: str, dia: str) -> str:
     opciones = (
+        (
+            f"Promos bancarias del supermercado {nombre} hoy ({dia}) en CABA: "
+            f"banco o tarjeta, días y tope si está publicado. BaratoYa no vende ni entrega."
+        ),
+        (
+            f"Promos bancarias del supermercado {nombre} hoy ({dia}) en CABA: "
+            f"banco, días y tope si está publicado. BaratoYa no vende ni entrega."
+        ),
         (
             f"Promos bancarias de {nombre} hoy ({dia}) en CABA: banco o tarjeta, "
             f"días y tope si está publicado. BaratoYa no vende ni entrega."

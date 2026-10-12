@@ -14,12 +14,12 @@ from promos_hoy import (
     DESCUENTOS_PATH,
     DESCUENTOS_TITLE,
     DESCUENTOS_URL,
-    SEO_DESCRIPTION,
     SEO_PATH,
     SEO_TITLE,
     SEO_URL,
     cadenas_indexables,
     descripcion_cadena,
+    descripcion_hub,
     fecha_datos_promos,
     fecha_larga,
     nav_dias,
@@ -87,12 +87,31 @@ class PromosPublicasTest(unittest.TestCase):
     def test_seo_basico(self) -> None:
         self.assertLessEqual(len(SEO_TITLE), 60)
         self.assertTrue(SEO_TITLE.lower().startswith("promos bancarias supermercados"))
-        self.assertLessEqual(len(SEO_DESCRIPTION), 155)
+        self.assertIn("CABA", SEO_TITLE)
+        desc = self.vista["description"]
+        self.assertEqual(desc, descripcion_hub(self.vista["n"], self.vista["cadenas_n"], self.vista["n_hoy"]))
+        self.assertLessEqual(len(desc), 155)
+        self.assertTrue(desc.startswith(f"{self.vista['n']} promos") or desc.startswith("1 promo"))
+        lugar = "1 supermercado" if self.vista["cadenas_n"] == 1 else f"{self.vista['cadenas_n']} supermercados"
+        self.assertIn(lugar, desc)
+        self.assertIn("BaratoYa no vende ni entrega", desc)
+        self.assertNotIn("%", desc)
+        for n, cadenas_n, n_hoy in ((0, 0, 0), (1, 1, 0), (1, 1, 1), (271, 9, 120), (9999, 40, 4000)):
+            texto = descripcion_hub(n, cadenas_n, n_hoy)
+            self.assertLessEqual(len(texto), 155)
+            self.assertIn("BaratoYa no vende ni entrega", texto)
+            self.assertNotIn("%", texto)
+        self.assertEqual(self.vista["faq"][0]["q"], "¿Cuáles son las promos bancarias de supermercados hoy?")
+        self.assertIn("sección Hoy", self.vista["faq"][0]["a"])
+        self.assertNotIn("%", self.vista["faq"][0]["a"])
         self.assertIn(f"<title>{SEO_TITLE}</title>", self.html)
-        self.assertIn(f'<meta name="description" content="{SEO_DESCRIPTION}" />', self.html)
+        self.assertIn(f'<meta name="description" content="{desc}" />', self.html)
         self.assertIn(f'<link rel="canonical" href="{SEO_URL}" />', self.html)
         self.assertIn(f'property="og:title" content="{SEO_TITLE}"', self.html)
-        self.assertIn(f'property="og:description" content="{SEO_DESCRIPTION}"', self.html)
+        self.assertIn(f'property="og:description" content="{desc}"', self.html)
+        self.assertIn("Esta página lista las promos bancarias de hoy", self.html)
+        for cadena in self.vista["cadenas"]:
+            self.assertIn(f'<a href="{cadena["href"]}">{cadena["nombre"]}</a>', self.html)
         self.assertIn(f'property="og:url" content="{SEO_URL}"', self.html)
         self.assertIn('property="og:image"', self.html)
         parser = _H1()
@@ -203,6 +222,11 @@ class PromosPorCadenaTest(unittest.TestCase):
             self.assertEqual(vista["title"], titulo_cadena(cadena["nombre"]))
             self.assertTrue(vista["title"].startswith("Promos bancarias "))
             self.assertIn(cadena["nombre"], vista["title"])
+            self.assertIn("supermercado", vista["title"].casefold())
+            self.assertIn("supermercado", vista["description"].casefold())
+            self.assertIn("bancarias", vista["description"].casefold())
+            self.assertNotIn("%", vista["title"])
+            self.assertNotIn("%", vista["description"])
             self.assertLessEqual(len(descripcion_cadena(cadena["nombre"], "miércoles")), 155)
             self.assertEqual(vista["h1"], f"Promos bancarias en {cadena['nombre']} hoy")
             self.assertEqual(vista["canonical"], cadena["url"])

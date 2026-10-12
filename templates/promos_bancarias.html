@@ -110,6 +110,9 @@
     </nav>
     <h1>Promos bancarias supermercados hoy en CABA</h1>
     <p>¿Qué promos bancarias hay hoy en los supermercados de CABA? Las de esta página: banco o tarjeta, porcentaje o cuotas, tope si está publicado, y los días. Son las mismas que usa la cuenta de BaratoYa. Si la cadena no publica ese dato, no lo completamos.</p>
+    {% if cadenas %}
+    <p>Esta página lista las promos bancarias de hoy en {% if cadenas|length == 1 %}esta cadena de supermercado{% else %}estas cadenas de supermercados{% endif %} de CABA:{% for c in cadenas %}{% if loop.first %}{% elif loop.last %} y{% else %},{% endif %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% endfor %}.</p>
+    {% endif %}
     <p>Para el precio de un producto (leche, aceite, yerba), mirá <a href="/precios">comparar precios de supermercados</a>.</p>
     <p>Hoy es {{ dia }} {{ fecha }}.</p>
     {% if actualizado %}
