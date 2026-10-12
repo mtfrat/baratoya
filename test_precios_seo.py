@@ -184,29 +184,112 @@ class PreciosPublicosTest(unittest.TestCase):
         }))
 
     def test_titulo_corto_conserva_nombre_y_marca(self) -> None:
-        nombre = "Yerba Suave Playadito 1 kg"
-        titulo = precios_seo._titulo(nombre)
-        self.assertEqual(titulo, f"Precio {nombre} hoy | BaratoYa")
-        self.assertLessEqual(len(titulo), 60)
-        self.assertTrue(titulo.endswith(" | BaratoYa"))
+        for nombre in ("Yerba Suave Playadito 1 kg", "Lavandina Ayudín Original 1 Lt."):
+            titulo = precios_seo._titulo(nombre)
+            self.assertEqual(titulo, f"Precio {nombre} hoy | BaratoYa")
+            self.assertLessEqual(len(titulo), 60)
+            self.assertTrue(titulo.endswith(" | BaratoYa"))
 
-    def test_titulo_largo_trunca_y_conserva_marca(self) -> None:
-        nombres = (
-            "Leche Entera 3% Sachet 1 Lts La Serenísima",
-            "Gaseosa Coca-Cola Sabor Original 2.25 Lt.",
-        )
-        for nombre in nombres:
+    def test_titulo_largo_saca_relleno_y_conserva_marca(self) -> None:
+        casos = {
+            "Leche Entera 3% Sachet 1 Lts La Serenísima": "Leche Sachet 1 Lts La Serenísima",
+            "Gaseosa Coca-Cola Sabor Original 2.25 Lt.": "Coca-Cola 2.25 Lt.",
+            "Gaseosa Coca-Cola Sabor Original 2.25 L": "Coca-Cola 2.25 L",
+            "Mermelada Sabor Durazno 454 Grs La Campagnola": "Mermelada Durazno La Campagnola",
+            "Dulce de Leche La Serenisima Clasico 400 Gr.": "Dulce de Leche La Serenisima 400 Gr.",
+            "Harina de trigo 0000 Favorita fortificada 1 kg.": "Harina de trigo 0000 Favorita 1 kg.",
+        }
+        for nombre, esperado in casos.items():
             titulo = precios_seo._titulo(nombre)
             self.assertLessEqual(len(titulo), 60, titulo)
             self.assertTrue(titulo.endswith(" | BaratoYa"), titulo)
             self.assertTrue(titulo.startswith("Precio "), titulo)
-            self.assertIn(" hoy | BaratoYa", titulo)
             corto = titulo.removeprefix("Precio ").removesuffix(" hoy | BaratoYa")
-            self.assertTrue(nombre.startswith(corto), (nombre, corto))
-            self.assertLess(len(corto), len(nombre))
-            resto = nombre[len(corto):]
-            self.assertTrue(resto.startswith(" ") or " " not in nombre, (nombre, corto))
+            self.assertEqual(corto, esperado, titulo)
             self.assertNotEqual(titulo, f"Precio {nombre} hoy")
+
+    def test_titulo_no_termina_en_token_suelto(self) -> None:
+        nombres = (
+            "Leche Entera 3% Sachet 1 Lts La Serenísima",
+            "Mermelada Sabor Durazno 454 Grs La Campagnola",
+            "Queso Cremoso Untable Marca Propia Extra La",
+            "Caja Grande Familiar Economica Pack De ColaLargaQueNoEntra",
+            "Galletitas Dulces Rellenas Chocolate Y RellenoExtra",
+            "Fideos Especiales Integrales Seleccion Premium Grande El",
+        )
+        for nombre in nombres:
+            titulo = precios_seo._titulo(nombre)
+            corto = titulo.removeprefix("Precio ").removesuffix(" hoy | BaratoYa")
+            self.assertLessEqual(len(titulo), 60, titulo)
+            self.assertFalse(precios_seo._cierra_mal(corto.split()), titulo)
+            self.assertNotIn(corto.split()[-1].casefold().strip(".,"), {"la", "de", "el", "y"})
+
+    def test_titulo_no_separa_numero_de_unidad(self) -> None:
+        casos = (
+            ("Gaseosa Coca-Cola Sabor Original 2.25 L", "2.25 L"),
+            ("Gaseosa Coca-Cola Sabor Original 2.25 Lt.", "2.25 Lt."),
+            ("Leche Entera 3% Sachet 1 Lts La Serenísima", "1 Lts"),
+            ("Harina de trigo 0000 Favorita fortificada 1 kg.", "1 kg."),
+            ("Dulce de Leche La Serenisima Clasico 400 Gr.", "400 Gr."),
+            ("Bebida Energia Maxima Fresh 2.25 L ExtraGrande", "2.25 L"),
+            ("Yerba Mate Seleccion Especial 1 kg PaqueteGrande", "1 kg"),
+            ("Leche Parcial Descremada Sachet 1 Lts BotellaExtra", "1 Lts"),
+        )
+        for nombre, pegado in casos:
+            titulo = precios_seo._titulo(nombre)
+            self.assertIn(pegado, titulo, titulo)
+            self.assertLessEqual(len(titulo), 60, titulo)
+            corto = titulo.removeprefix("Precio ").removesuffix(" hoy | BaratoYa").split()
+            for i, tok in enumerate(nombre.split()[:-1]):
+                if not precios_seo._es_numero(tok) or not precios_seo._es_unidad(nombre.split()[i + 1]):
+                    continue
+                if tok not in corto:
+                    continue
+                j = corto.index(tok)
+                self.assertEqual(corto[j + 1], nombre.split()[i + 1], titulo)
+
+    def test_titulo_prioriza_marca_sobre_descriptor(self) -> None:
+        leche = precios_seo._titulo("Leche Entera 3% Sachet 1 Lts La Serenísima")
+        self.assertIn("La Serenísima", leche)
+        self.assertNotIn("Entera", leche)
+        self.assertNotIn("3%", leche)
+
+        coca = precios_seo._titulo("Gaseosa Coca-Cola Sabor Original 2.25 Lt.", "COKE/COCACOLA")
+        self.assertIn("Coca-Cola", coca)
+        self.assertNotIn("Sabor", coca)
+        self.assertNotIn("Original", coca)
+        self.assertNotIn("Gaseosa", coca)
+
+        papel = precios_seo._titulo("Papel Higiénico Doble Hoja Fusion Higienol 4 Ud.", "HIGIENOL")
+        self.assertIn("Higienol", papel)
+        self.assertNotIn("Fusion", papel)
+        self.assertLessEqual(len(papel), 60)
+
+        playadito = precios_seo._titulo(
+            "Yerba Mate Seleccion Especial Suave Playadito 1 kg",
+            "Playadito",
+        )
+        self.assertIn("Playadito", playadito)
+        self.assertLessEqual(len(playadito), 60)
+        corto = playadito.removeprefix("Precio ").removesuffix(" hoy | BaratoYa")
+        self.assertNotEqual(corto.split()[-1], "1")
+
+    def test_hub_y_jsonld_no_cambian_con_el_titulo(self) -> None:
+        self.assertEqual(HUB_TITLE, "Comparar precios de supermercados hoy | BaratoYa")
+        self.assertEqual(self.hub["title"], HUB_TITLE)
+        self.assertLessEqual(len(HUB_TITLE), 60)
+        for slug in (
+            "leche-la-serenisima-sachet-1l",
+            "coca-cola-original-2-25l",
+            "yerba-playadito-1kg",
+        ):
+            vista = next(p for p in self.productos if p["slug"] == slug)
+            product = json.loads(vista["ld_product"])
+            self.assertEqual(product["name"], vista["nombre"])
+            self.assertIn(vista["nombre"], vista["h1"])
+            self.assertLessEqual(len(vista["title"]), 60)
+            self.assertTrue(vista["title"].endswith(" | BaratoYa"))
+            self.assertNotEqual(product["name"], vista["title"])
 
     def test_resumen_sale_de_los_numeros(self) -> None:
         ofertas = [
