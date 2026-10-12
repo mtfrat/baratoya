@@ -84,6 +84,7 @@ class PreciosPublicosTest(unittest.TestCase):
     def test_hub_seo(self) -> None:
         self.assertEqual(self.res.status_code, 200)
         self.assertIn("text/html", self.res.headers.get("content-type", ""))
+        self.assertEqual(HUB_TITLE, "Comparar precios de supermercados hoy | BaratoYa")
         self.assertLessEqual(len(HUB_TITLE), 60)
         self.assertLessEqual(len(self.hub["description"]), 155)
         self.assertIn(f"<title>{HUB_TITLE}</title>", self.html)
@@ -104,6 +105,7 @@ class PreciosPublicosTest(unittest.TestCase):
     def test_cada_producto(self) -> None:
         for vista in self.productos:
             self.assertLessEqual(len(vista["title"]), 60, vista["slug"])
+            self.assertTrue(vista["title"].endswith(" | BaratoYa"), vista["title"])
             self.assertLessEqual(len(vista["description"]), 155, vista["slug"])
             self.assertTrue(vista["h1"].startswith("Precio de "), vista["slug"])
             self.assertIn("hoy en supermercados", vista["h1"])
@@ -134,6 +136,7 @@ class PreciosPublicosTest(unittest.TestCase):
             tipos = {b.get("@type") for b in bloques}
             self.assertEqual(tipos, {"Product", "FAQPage", "BreadcrumbList"})
             product = next(b for b in bloques if b["@type"] == "Product")
+            self.assertEqual(product["name"], vista["nombre"])
             offer = product["offers"]
             self.assertEqual(offer["@type"], "AggregateOffer")
             self.assertEqual(offer["priceCurrency"], "ARS")
@@ -179,6 +182,31 @@ class PreciosPublicosTest(unittest.TestCase):
             "capturado_texto": crudo["capturado_texto"],
             "ofertas": crudo["ofertas"][:1],
         }))
+
+    def test_titulo_corto_conserva_nombre_y_marca(self) -> None:
+        nombre = "Yerba Suave Playadito 1 kg"
+        titulo = precios_seo._titulo(nombre)
+        self.assertEqual(titulo, f"Precio {nombre} hoy | BaratoYa")
+        self.assertLessEqual(len(titulo), 60)
+        self.assertTrue(titulo.endswith(" | BaratoYa"))
+
+    def test_titulo_largo_trunca_y_conserva_marca(self) -> None:
+        nombres = (
+            "Leche Entera 3% Sachet 1 Lts La Serenísima",
+            "Gaseosa Coca-Cola Sabor Original 2.25 Lt.",
+        )
+        for nombre in nombres:
+            titulo = precios_seo._titulo(nombre)
+            self.assertLessEqual(len(titulo), 60, titulo)
+            self.assertTrue(titulo.endswith(" | BaratoYa"), titulo)
+            self.assertTrue(titulo.startswith("Precio "), titulo)
+            self.assertIn(" hoy | BaratoYa", titulo)
+            corto = titulo.removeprefix("Precio ").removesuffix(" hoy | BaratoYa")
+            self.assertTrue(nombre.startswith(corto), (nombre, corto))
+            self.assertLess(len(corto), len(nombre))
+            resto = nombre[len(corto):]
+            self.assertTrue(resto.startswith(" ") or " " not in nombre, (nombre, corto))
+            self.assertNotEqual(titulo, f"Precio {nombre} hoy")
 
     def test_resumen_sale_de_los_numeros(self) -> None:
         ofertas = [

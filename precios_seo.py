@@ -149,12 +149,18 @@ def resumen_precios(ofertas: list[dict[str, Any]]) -> str:
 
 
 def _titulo(nombre: str) -> str:
-    for texto in (f"Precio {nombre} hoy | BaratoYa", f"Precio {nombre} hoy"):
-        if len(texto) <= 60:
-            return texto
-    lugar = 60 - len("Precio ") - len(" hoy")
-    corto = nombre[:lugar].rsplit(" ", 1)[0].strip() or nombre[:lugar].strip()
-    return f"Precio {corto} hoy"
+    """Precio {nombre} hoy | BaratoYa, siempre con marca y a lo sumo 60 caracteres."""
+    marca = " | BaratoYa"
+    completo = f"Precio {nombre} hoy{marca}"
+    if len(completo) <= 60:
+        return completo
+    lugar = 60 - len("Precio ") - len(" hoy") - len(marca)
+    recorte = nombre[:lugar]
+    if lugar < len(nombre) and nombre[lugar] == " ":
+        corto = recorte.strip()
+    else:
+        corto = recorte.rsplit(" ", 1)[0].strip() or recorte.strip()
+    return f"Precio {corto} hoy{marca}"
 
 
 def _descripcion(nombre: str, ofertas: list[dict[str, Any]], resumen: str) -> str:
