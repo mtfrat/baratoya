@@ -148,19 +148,215 @@ def resumen_precios(ofertas: list[dict[str, Any]]) -> str:
     return f"Hoy el más barato es {quienes} a {monto}, {pct}% menos que el más caro."
 
 
-def _titulo(nombre: str) -> str:
-    """Precio {nombre} hoy | BaratoYa, siempre con marca y a lo sumo 60 caracteres."""
-    marca = " | BaratoYa"
-    completo = f"Precio {nombre} hoy{marca}"
-    if len(completo) <= 60:
+# Relleno de góndola: se saca sólo si el título no entra en 60.
+# No son la marca ni el tamaño (Sabor, Entera, Gaseosa, Original, 3%).
+_RELLENO = frozenset({
+    "sabor", "sabores",
+    "entera", "entero",
+    "gaseosa", "gaseosas",
+    "original", "originales",
+    "clasico", "clasica",
+    "fortificada", "fortificado",
+})
+_UNIDADES = frozenset({
+    "l", "lt", "lts", "litro", "litros",
+    "ml", "cc",
+    "g", "gr", "grs", "kg", "kgs", "kilo", "kilos",
+    "ud", "uds",
+})
+# Token corto que no puede cerrar el título: La, De, El, Y.
+_SUELTO = frozenset({
+    "la", "de", "el", "y", "e", "o", "al", "del",
+    "las", "los", "lo", "le", "en", "con", "sin", "por",
+})
+_ARTICULO_MARCA = frozenset({"la", "el", "los", "las"})
+_PCT = re.compile(r"^\d+(?:[.,]\d+)?%$")
+_NUM = re.compile(r"^\d+(?:[.,]\d+)?$")
+_SUFIJO_TITULO = " | BaratoYa"
+_TOPE_TITULO = 60
+
+
+def _bare(tok: str) -> str:
+    return _fold(tok).strip(".,;:()[]\"'«»")
+
+
+def _clave(tok: str) -> str:
+    return _bare(tok).replace("-", "")
+
+
+def _es_relleno(tok: str) -> bool:
+    bare = _bare(tok)
+    return bare in _RELLENO or bool(_PCT.fullmatch(bare))
+
+
+def _es_numero(tok: str) -> bool:
+    return bool(_NUM.fullmatch(_bare(tok)))
+
+
+def _es_unidad(tok: str) -> bool:
+    return _bare(tok) in _UNIDADES
+
+
+def _es_suelto(tok: str, es_marca: bool = False) -> bool:
+    """True si el token no puede quedar al final (La, De, El, Y, o ≤3 letras)."""
+    bare = _bare(tok)
+    if not bare or bare in _SUELTO:
+        return True
+    if es_marca or _es_unidad(tok) or _es_numero(tok):
+        return False
+    letras = re.sub(r"[^a-z]", "", bare)
+    return bool(letras) and letras == bare and len(letras) <= 3
+
+
+def _es_marca_guion(tok: str) -> bool:
+    partes = [p for p in tok.split("-") if p]
+    if len(partes) < 2:
+        return False
+    return all(len(re.sub(r"[^a-z]", "", _fold(p))) >= 2 for p in partes)
+
+
+def _claves_marca(marca: str) -> list[str]:
+    texto = _fold(marca).replace("/", " ").replace("-", " ")
+    return [p.strip(".,;:") for p in texto.split() if p.strip(".,;:")]
+
+
+def _indices_marca(tokens: list[str], marca: str) -> set[int]:
+    """Dónde está la marca en el nombre: el campo `marca`, un guion (Coca-Cola) o La + palabra."""
+    claves = [_clave(t) for t in tokens]
+    idxs: set[int] = set()
+    keys = _claves_marca(marca)
+    if keys:
+        n, m = len(claves), len(keys)
+        for i in range(n - m + 1):
+            if claves[i:i + m] == keys:
+                idxs.update(range(i, i + m))
+        if not idxs:
+            for i, clave in enumerate(claves):
+                if any(len(key) >= 4 and clave == key for key in keys):
+                    idxs.add(i)
+    for i, tok in enumerate(tokens):
+        if _es_marca_guion(tok):
+            idxs.add(i)
+    for i in range(len(tokens) - 1):
+        letras = re.sub(r"[^a-z]", "", claves[i + 1])
+        if claves[i] in _ARTICULO_MARCA and len(letras) > 3:
+            idxs.add(i)
+            idxs.add(i + 1)
+    return idxs
+
+
+def _cierra_mal(partes: list[str], es_marca: bool = False) -> bool:
+    """El título no puede cerrar en La/De/El/Y ni en una unidad sin su número."""
+    if not partes:
+        return False
+    last = partes[-1]
+    if _es_unidad(last):
+        prev = partes[-2] if len(partes) > 1 else ""
+        return not _es_numero(prev)
+    return _es_suelto(last, es_marca)
+
+
+def _corte_duro(texto: str, budget: int) -> str:
+    """Último recurso: corta en un espacio y no deja número sin unidad ni token suelto."""
+    if len(texto) <= budget:
+        return texto.strip()
+    recorte = texto[:budget]
+    if budget < len(texto) and not texto[budget].isspace():
+        recorte = recorte.rsplit(" ", 1)[0] or texto[:budget]
+    partes = recorte.split()
+    resto = texto[len(" ".join(partes)):].strip() if partes else ""
+    while _cierra_mal(partes):
+        partes.pop()
+    if partes and _es_numero(partes[-1]):
+        siguiente = resto.split()[0] if resto else ""
+        if siguiente and _es_unidad(siguiente):
+            partes.pop()
+    while _cierra_mal(partes):
+        partes.pop()
+    return " ".join(partes).strip()
+
+
+def _acortar_nombre(nombre: str, marca: str, budget: int) -> str:
+    tokens = nombre.split()
+    if not tokens:
+        return ""
+    marca_idx = _indices_marca(tokens, marca)
+    items: list[dict[str, Any]] = []
+    for i, tok in enumerate(tokens):
+        items.append({"t": tok, "brand": i in marca_idx, "pair": None})
+    for i in range(len(items) - 1):
+        if _es_numero(items[i]["t"]) and _es_unidad(items[i + 1]["t"]):
+            items[i]["pair"] = i
+            items[i + 1]["pair"] = i
+    # 1) Sacar relleno antes de cortar. La marca y el par número+unidad se quedan.
+    sin_relleno = [
+        it for it in items
+        if it["brand"] or it["pair"] is not None or not _es_relleno(it["t"])
+    ]
+    if sin_relleno:
+        items = sin_relleno
+
+    def texto() -> str:
+        return " ".join(it["t"] for it in items)
+
+    def drop_index(idx: int) -> None:
+        it = items[idx]
+        if it["pair"] is not None:
+            pid = it["pair"]
+            items[:] = [x for x in items if x["pair"] != pid]
+            return
+        if it["brand"]:
+            a = idx
+            while a > 0 and items[a - 1]["brand"]:
+                a -= 1
+            b = idx
+            while b + 1 < len(items) and items[b + 1]["brand"]:
+                b += 1
+            del items[a:b + 1]
+            return
+        del items[idx]
+
+    # 2) Si sigue largo, soltar descriptores desde el final. La marca espera.
+    #    Un número y su unidad salen juntos (2.25 L, 1 kg, 1 Lts).
+    while items and len(texto()) > budget:
+        idx = next((i for i in range(len(items) - 1, -1, -1) if not items[i]["brand"]), None)
+        if idx is None:
+            idx = len(items) - 1
+        drop_index(idx)
+
+    while _cierra_mal([it["t"] for it in items], bool(items and items[-1]["brand"])):
+        items.pop()
+    while items and _es_numero(items[-1]["t"]) and items[-1]["pair"] is not None:
+        if any(x is not items[-1] and x["pair"] == items[-1]["pair"] for x in items):
+            break
+        items.pop()
+
+    corto = texto()
+    if len(corto) > budget:
+        corto = _corte_duro(corto, budget)
+    return corto
+
+
+def _titulo(nombre: str, marca: str = "") -> str:
+    """Precio {nombre} hoy | BaratoYa, siempre con la marca BaratoYa y a lo sumo 60 caracteres.
+
+    Si no entra, primero saca relleno genérico y después recorta. No termina en un
+    token suelto (La, De, El, Y), no separa un número de su unidad y prefiere
+    conservar la marca del producto antes que un descriptor.
+    """
+    completo = f"Precio {nombre} hoy{_SUFIJO_TITULO}"
+    if len(completo) <= _TOPE_TITULO:
         return completo
-    lugar = 60 - len("Precio ") - len(" hoy") - len(marca)
-    recorte = nombre[:lugar]
-    if lugar < len(nombre) and nombre[lugar] == " ":
-        corto = recorte.strip()
-    else:
-        corto = recorte.rsplit(" ", 1)[0].strip() or recorte.strip()
-    return f"Precio {corto} hoy{marca}"
+    budget = _TOPE_TITULO - len("Precio ") - len(" hoy") - len(_SUFIJO_TITULO)
+    corto = _acortar_nombre(nombre, marca, budget).strip()
+    if not corto:
+        base = nombre.split()
+        corto = (base[0] if base else nombre)[:budget].strip()
+    titulo = f"Precio {corto} hoy{_SUFIJO_TITULO}"
+    if len(titulo) > _TOPE_TITULO:
+        corto = _corte_duro(corto, budget)
+        titulo = f"Precio {corto} hoy{_SUFIJO_TITULO}"
+    return titulo
 
 
 def _descripcion(nombre: str, ofertas: list[dict[str, Any]], resumen: str) -> str:
@@ -340,9 +536,9 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
     faq = _faq(nombre, resumen, len(ofertas), texto, promos)
     href = f"{PATH_HUB}/{spec['slug']}"
     canonical = ORIGEN + href
-    title = _titulo(nombre)
-    description = _descripcion(nombre, ofertas, resumen)
     marca = str(raw.get("marca") or "").strip()
+    title = _titulo(nombre, marca)
+    description = _descripcion(nombre, ofertas, resumen)
     product: dict[str, Any] = {
         "@context": "https://schema.org",
         "@type": "Product",
