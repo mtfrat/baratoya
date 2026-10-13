@@ -136,7 +136,10 @@ class PreciosPublicosTest(unittest.TestCase):
             tipos = {b.get("@type") for b in bloques}
             self.assertEqual(tipos, {"Product", "FAQPage", "BreadcrumbList"})
             product = next(b for b in bloques if b["@type"] == "Product")
-            self.assertEqual(product["name"], vista["nombre"])
+            self.assertEqual(product["name"], vista["nombre_visible"])
+            self.assertIn(vista["nombre_visible"], vista["h1"])
+            self.assertIn(vista["nombre_visible"], vista["description"])
+            self.assertNotEqual(vista["nombre_visible"], vista["title"])
             offer = product["offers"]
             self.assertEqual(offer["@type"], "AggregateOffer")
             self.assertEqual(offer["priceCurrency"], "ARS")
@@ -184,20 +187,25 @@ class PreciosPublicosTest(unittest.TestCase):
         }))
 
     def test_titulo_corto_conserva_nombre_y_marca(self) -> None:
-        for nombre in ("Yerba Suave Playadito 1 kg", "Lavandina Ayudín Original 1 Lt."):
+        casos = {
+            "Yerba Suave Playadito 1 kg": "Yerba Suave Playadito 1 kg",
+            "Lavandina Ayudín Original 1 Lt.": "Lavandina Ayudín Original 1 L",
+        }
+        for nombre, visible in casos.items():
             titulo = precios_seo._titulo(nombre)
-            self.assertEqual(titulo, f"Precio {nombre} hoy | BaratoYa")
+            self.assertEqual(titulo, f"Precio {visible} hoy | BaratoYa")
             self.assertLessEqual(len(titulo), 60)
             self.assertTrue(titulo.endswith(" | BaratoYa"))
+            self.assertIn("Ayudín" if "Ayudín" in visible else "Playadito", titulo)
 
     def test_titulo_largo_saca_relleno_y_conserva_marca(self) -> None:
         casos = {
-            "Leche Entera 3% Sachet 1 Lts La Serenísima": "Leche Sachet 1 Lts La Serenísima",
-            "Gaseosa Coca-Cola Sabor Original 2.25 Lt.": "Coca-Cola 2.25 Lt.",
+            "Leche Entera 3% Sachet 1 Lts La Serenísima": "Leche Sachet 1 L La Serenísima",
+            "Gaseosa Coca-Cola Sabor Original 2.25 Lt.": "Coca-Cola 2.25 L",
             "Gaseosa Coca-Cola Sabor Original 2.25 L": "Coca-Cola 2.25 L",
-            "Mermelada Sabor Durazno 454 Grs La Campagnola": "Mermelada Durazno La Campagnola",
-            "Dulce de Leche La Serenisima Clasico 400 Gr.": "Dulce de Leche La Serenisima 400 Gr.",
-            "Harina de trigo 0000 Favorita fortificada 1 kg.": "Harina de trigo 0000 Favorita 1 kg.",
+            "Mermelada Sabor Durazno 454 Grs La Campagnola": "Mermelada Durazno 454 g La Campagnola",
+            "Dulce de Leche La Serenisima Clasico 400 Gr.": "Dulce de Leche La Serenísima 400 g",
+            "Harina de trigo 0000 Favorita fortificada 1 kg.": "Harina de trigo 0000 Favorita 1 kg",
         }
         for nombre, esperado in casos.items():
             titulo = precios_seo._titulo(nombre)
@@ -227,26 +235,28 @@ class PreciosPublicosTest(unittest.TestCase):
     def test_titulo_no_separa_numero_de_unidad(self) -> None:
         casos = (
             ("Gaseosa Coca-Cola Sabor Original 2.25 L", "2.25 L"),
-            ("Gaseosa Coca-Cola Sabor Original 2.25 Lt.", "2.25 Lt."),
-            ("Leche Entera 3% Sachet 1 Lts La Serenísima", "1 Lts"),
-            ("Harina de trigo 0000 Favorita fortificada 1 kg.", "1 kg."),
-            ("Dulce de Leche La Serenisima Clasico 400 Gr.", "400 Gr."),
+            ("Gaseosa Coca-Cola Sabor Original 2.25 Lt.", "2.25 L"),
+            ("Leche Entera 3% Sachet 1 Lts La Serenísima", "1 L"),
+            ("Harina de trigo 0000 Favorita fortificada 1 kg.", "1 kg"),
+            ("Dulce de Leche La Serenisima Clasico 400 Gr.", "400 g"),
             ("Bebida Energia Maxima Fresh 2.25 L ExtraGrande", "2.25 L"),
             ("Yerba Mate Seleccion Especial 1 kg PaqueteGrande", "1 kg"),
-            ("Leche Parcial Descremada Sachet 1 Lts BotellaExtra", "1 Lts"),
+            ("Leche Parcial Descremada Sachet 1 Lts BotellaExtra", "1 L"),
         )
         for nombre, pegado in casos:
             titulo = precios_seo._titulo(nombre)
             self.assertIn(pegado, titulo, titulo)
             self.assertLessEqual(len(titulo), 60, titulo)
             corto = titulo.removeprefix("Precio ").removesuffix(" hoy | BaratoYa").split()
-            for i, tok in enumerate(nombre.split()[:-1]):
-                if not precios_seo._es_numero(tok) or not precios_seo._es_unidad(nombre.split()[i + 1]):
+            partes = precios_seo._nombre_visible(nombre).split()
+            for i, tok in enumerate(partes[:-1]):
+                if not precios_seo._es_numero(tok) or not precios_seo._es_unidad(partes[i + 1]):
                     continue
                 if tok not in corto:
                     continue
                 j = corto.index(tok)
-                self.assertEqual(corto[j + 1], nombre.split()[i + 1], titulo)
+                self.assertEqual(corto[j + 1], partes[i + 1], titulo)
+                self.assertNotEqual(corto[-1], tok, titulo)
 
     def test_titulo_prioriza_marca_sobre_descriptor(self) -> None:
         leche = precios_seo._titulo("Leche Entera 3% Sachet 1 Lts La Serenísima")
@@ -285,11 +295,129 @@ class PreciosPublicosTest(unittest.TestCase):
         ):
             vista = next(p for p in self.productos if p["slug"] == slug)
             product = json.loads(vista["ld_product"])
-            self.assertEqual(product["name"], vista["nombre"])
-            self.assertIn(vista["nombre"], vista["h1"])
+            self.assertEqual(product["name"], vista["nombre_visible"])
+            self.assertIn(vista["nombre_visible"], vista["h1"])
             self.assertLessEqual(len(vista["title"]), 60)
             self.assertTrue(vista["title"].endswith(" | BaratoYa"))
             self.assertNotEqual(product["name"], vista["title"])
+            self.assertNotIn(" | BaratoYa", product["name"])
+
+    def test_nombre_visible_ejemplos_serp(self) -> None:
+        """Los títulos flojos del 2026-10-13 salen prolijos, sin tocar el dato."""
+        casos = {
+            "Leche La serenisima clásica 3% 1L": (
+                "Leche La Serenísima clásica 3% 1 L",
+                "Precio Leche La Serenísima clásica 3% 1 L hoy | BaratoYa",
+            ),
+            "Leche Descremada 1 Lts La Serenisima": (
+                "Leche Descremada 1 L La Serenísima",
+                "Precio Leche Descremada 1 L La Serenísima hoy | BaratoYa",
+            ),
+            "Dulce de Leche La Serenisima Clasico 400 Gr.": (
+                "Dulce de Leche La Serenísima Clásico 400 g",
+                "Precio Dulce de Leche La Serenísima 400 g hoy | BaratoYa",
+            ),
+            "Queso Rallado La Serenisima 130 gr": (
+                "Queso Rallado La Serenísima 130 g",
+                "Precio Queso Rallado La Serenísima 130 g hoy | BaratoYa",
+            ),
+            "Galletitas Crackers CRIOLLITAS 300g": (
+                "Galletitas Crackers Criollitas 300 g",
+                "Precio Galletitas Crackers Criollitas 300 g hoy | BaratoYa",
+            ),
+            "Cerveza QUILMES Botella 1 L": (
+                "Cerveza Quilmes Botella 1 L",
+                "Precio Cerveza Quilmes Botella 1 L hoy | BaratoYa",
+            ),
+            "Jabon en polvo ALA Bicarbonato 800 Gr.": (
+                "Jabón en polvo Ala Bicarbonato 800 g",
+                "Precio Jabón en polvo Ala Bicarbonato 800 g hoy | BaratoYa",
+            ),
+            "Leche Descremada La Serenísima 1sachet 1lt": (
+                "Leche Descremada La Serenísima 1 sachet 1 L",
+                "Precio Leche Descremada La Serenísima 1 L hoy | BaratoYa",
+            ),
+            "Te Común La Virginia 25saq": (
+                "Té Común La Virginia 25 saquitos",
+                "Precio Té Común La Virginia 25 saquitos hoy | BaratoYa",
+            ),
+            "Leche  Entera Ilolay U.a.t. Brik  1 Lt": (
+                "Leche Entera Ilolay UAT Brik 1 L",
+                "Precio Leche Entera Ilolay UAT Brik 1 L hoy | BaratoYa",
+            ),
+            "Yerba Mate Taragui 1 Kg": (
+                "Yerba Mate Taragüí 1 kg",
+                "Precio Yerba Mate Taragüí 1 kg hoy | BaratoYa",
+            ),
+            "Atun al natural": (
+                "Atún al natural",
+                "Precio Atún al natural hoy | BaratoYa",
+            ),
+            "Azucar Ledesma 1 kg": (
+                "Azúcar Ledesma 1 kg",
+                "Precio Azúcar Ledesma 1 kg hoy | BaratoYa",
+            ),
+        }
+        for crudo, (visible, titulo) in casos.items():
+            self.assertEqual(precios_seo._nombre_visible(crudo), visible, crudo)
+            self.assertEqual(precios_seo._nombre_visible(visible), visible, crudo)
+            self.assertEqual(precios_seo._titulo(crudo), titulo, crudo)
+            self.assertLessEqual(len(titulo), 60, titulo)
+            self.assertTrue(titulo.endswith("| BaratoYa"), titulo)
+            self.assertNotIn("1sachet", titulo)
+            self.assertNotIn("25saq", titulo)
+        # Taragui y Taragüí escriben la misma marca oficial.
+        self.assertEqual(
+            precios_seo._nombre_visible("Yerba Mate Taragüí 1 kg"),
+            "Yerba Mate Taragüí 1 kg",
+        )
+        self.assertEqual(
+            precios_seo._nombre_visible("Yerba Mate Taragui 1 Kg"),
+            precios_seo._nombre_visible("Yerba Mate Taragüí 1 kg"),
+        )
+        # El dato guardado y el slug no cambian. El SEO usa el nombre visible.
+        por_slug = {p["slug"]: p for p in self.productos}
+        self.assertEqual(len(CATALOGO), 39)
+        self.assertEqual(len(self.productos), 39)
+        crudo = json.loads((precios_seo.RUTA).read_text(encoding="utf-8"))
+        guardado = {p["slug"]: p["nombre"] for p in crudo["productos"]}
+        for spec in CATALOGO:
+            vista = por_slug[spec["slug"]]
+            self.assertEqual(vista["slug"], spec["slug"])
+            # El nombre de la vista es el de la captura (espacios ya colapsados).
+            # La grafía prolija vive en nombre_visible, no en el dato.
+            self.assertEqual(
+                vista["nombre"],
+                " ".join(guardado[spec["slug"]].split()),
+                spec["slug"],
+            )
+            self.assertLessEqual(len(vista["title"]), 60, vista["title"])
+            self.assertTrue(vista["title"].endswith("| BaratoYa"), vista["title"])
+            self.assertEqual(vista["nombre_visible"], precios_seo._nombre_visible(vista["nombre"]))
+            product = json.loads(vista["ld_product"])
+            self.assertEqual(product["name"], vista["nombre_visible"])
+            self.assertEqual(vista["h1"], f"Precio de {vista['nombre_visible']} hoy en supermercados")
+            self.assertIn(vista["nombre_visible"], vista["description"])
+        jabon = por_slug["jabon-en-polvo-ala-bicarbonato-800g"]
+        self.assertEqual(jabon["nombre"], "Jabon en polvo ALA Bicarbonato 800 Gr.")
+        self.assertEqual(jabon["title"], "Precio Jabón en polvo Ala Bicarbonato 800 g hoy | BaratoYa")
+        self.assertNotIn("ALA", json.loads(jabon["ld_product"])["name"])
+        self.assertIn(jabon["nombre_visible"], self.html)
+        self.assertNotIn("Jabon en polvo ALA", self.html)
+        te = por_slug["te-la-virginia-comun"]
+        self.assertIn("Té", te["title"])
+        self.assertIn("25 saquitos", te["title"])
+        self.assertNotIn("25saq", te["h1"])
+        serenisima = [
+            por_slug["leche-la-serenisima-clasica-1l"],
+            por_slug["leche-la-serenisima-descremada-1l"],
+            por_slug["dulce-de-leche-la-serenisima-400g"],
+            por_slug["queso-rallado-la-serenisima-130g"],
+        ]
+        for vista in serenisima:
+            self.assertIn("La Serenísima", vista["title"], vista["slug"])
+            self.assertNotIn("Serenisima", vista["title"], vista["slug"])
+            self.assertNotIn("serenisima", vista["title"], vista["slug"])
 
     def test_resumen_sale_de_los_numeros(self) -> None:
         ofertas = [

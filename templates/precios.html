@@ -98,7 +98,7 @@
     <ul>
       {% for p in grupo.productos %}
       <li>
-        <h3><a href="{{ p.href }}">{{ p.nombre }}</a></h3>
+        <h3><a href="{{ p.href }}">{{ p.nombre_visible }}</a></h3>
         <span class="desde">{{ p.resumen }} Capturado el {{ p.fecha }}.</span>
       </li>
       {% endfor %}
