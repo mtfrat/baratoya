@@ -223,9 +223,72 @@ _RELLENO = frozenset({
 _UNIDADES = frozenset({
     "l", "lt", "lts", "litro", "litros",
     "ml", "cc",
-    "g", "gr", "grs", "kg", "kgs", "kilo", "kilos",
-    "ud", "uds",
+    "g", "gr", "grs", "gramo", "gramos", "grm",
+    "kg", "kgs", "kilo", "kilos",
+    "ud", "uds", "un", "uni", "unidad", "unidades",
 })
+# Forma corta única en el título visible. El dato guardado no se reescribe.
+_UNIDAD_CANON = {
+    "l": "L", "lt": "L", "lts": "L", "litro": "L", "litros": "L",
+    "ml": "ml", "cc": "ml",
+    "g": "g", "gr": "g", "grs": "g", "gramo": "g", "gramos": "g", "grm": "g",
+    "kg": "kg", "kgs": "kg", "kilo": "kg", "kilos": "kg",
+    "ud": "un", "uds": "un", "un": "un", "uni": "un",
+    "unidad": "un", "unidades": "un",
+}
+# Conteo de empaque: se separa del número, pero se suelta antes que g/kg/ml/L/un.
+_CONTEO = frozenset({"sachet", "sachets", "saquito", "saquitos"})
+_SAQ = frozenset({"saq", "saqs"})
+_ACRONIMOS = frozenset({"uat", "uht", "pet"})
+# Acentos que las cadenas suelen perder. La marca va en _MARCAS.
+_ACENTOS = {
+    "jabon": "Jabón",
+    "te": "Té",
+    "azucar": "Azúcar",
+    "atun": "Atún",
+    "clasico": "Clásico",
+    "clasica": "Clásica",
+    "comun": "Común",
+    "cafe": "Café",
+    "higienico": "Higiénico",
+}
+# Grafía oficial. La clave está plegada (sin acento, sin guion).
+# Taragüí es la marca; en el buscador también se escribe Taragui.
+_MARCAS: tuple[tuple[tuple[str, ...], str], ...] = (
+    (("la", "serenisima"), "La Serenísima"),
+    (("la", "virginia"), "La Virginia"),
+    (("la", "campagnola"), "La Campagnola"),
+    (("coca", "cola"), "Coca-Cola"),
+    (("cocacola",), "Coca-Cola"),
+    (("serenisima",), "Serenísima"),
+    (("campagnola",), "Campagnola"),
+    (("taragui",), "Taragüí"),
+    (("ilolay",), "Ilolay"),
+    (("tregar",), "Tregar"),
+    (("natura",), "Natura"),
+    (("cocinero",), "Cocinero"),
+    (("canuelas",), "Cañuelas"),
+    (("ledesma",), "Ledesma"),
+    (("pureza",), "Pureza"),
+    (("favorita",), "Favorita"),
+    (("playadito",), "Playadito"),
+    (("union",), "Unión"),
+    (("matarazzo",), "Matarazzo"),
+    (("lucchetti",), "Lucchetti"),
+    (("luchetti",), "Lucchetti"),
+    (("gallo",), "Gallo"),
+    (("celusal",), "Celusal"),
+    (("criollitas",), "Criollitas"),
+    (("arcor",), "Arcor"),
+    (("villavicencio",), "Villavicencio"),
+    (("quilmes",), "Quilmes"),
+    (("ayudin",), "Ayudín"),
+    (("ala",), "Ala"),
+    (("higienol",), "Higienol"),
+)
+_MARCAS_ORD = tuple(sorted(_MARCAS, key=lambda it: len(it[0]), reverse=True))
+_UAT_PUNTEADO = re.compile(r"(?i)\bu\.a\.t\.?")
+_PEGADO = re.compile(r"(\d+(?:[.,]\d+)?)(?=[A-Za-zÁÉÍÓÚÜÑáéíóúüñ])")
 # Token corto que no puede cerrar el título: La, De, El, Y.
 _SUELTO = frozenset({
     "la", "de", "el", "y", "e", "o", "al", "del",
@@ -257,6 +320,95 @@ def _es_numero(tok: str) -> bool:
 
 def _es_unidad(tok: str) -> bool:
     return _bare(tok) in _UNIDADES
+
+
+def _es_conteo(tok: str) -> bool:
+    return _bare(tok) in _CONTEO
+
+
+def _canon_unidad(tok: str) -> str | None:
+    """g, kg, ml, L o un. None si el token no es una unidad."""
+    bare = tok.strip().strip(".").lower()
+    return _UNIDAD_CANON.get(bare)
+
+
+def _es_uat(tok: str) -> bool:
+    return _fold(tok).replace(".", "") == "uat"
+
+
+def _deshout(tok: str) -> str:
+    """Baja un grito (CRIOLLITAS) y deja quieto un acrónimo (UAT)."""
+    letras = [c for c in tok if c.isalpha()]
+    if len(letras) < 2 or not all(c.isupper() for c in letras):
+        return tok
+    clave = re.sub(r"[^a-z]", "", _fold(tok))
+    if clave in _ACRONIMOS:
+        return clave.upper()
+    bajo = tok.lower()
+    return bajo[:1].upper() + bajo[1:]
+
+
+def _acento(tok: str) -> str:
+    canon = _ACENTOS.get(_fold(tok).strip("."))
+    if not canon:
+        return tok
+    if tok[:1].islower():
+        return canon[:1].lower() + canon[1:]
+    return canon
+
+
+def _aplicar_marcas(tokens: list[str]) -> list[str]:
+    claves = [_clave(t) for t in tokens]
+    out: list[str] = []
+    i = 0
+    while i < len(tokens):
+        n = 0
+        canon = ""
+        for frase, escrito in _MARCAS_ORD:
+            m = len(frase)
+            if tuple(claves[i:i + m]) == frase:
+                n = m
+                canon = escrito
+                break
+        if n:
+            out.extend(canon.split())
+            i += n
+            continue
+        out.append(tokens[i])
+        i += 1
+    return out
+
+
+def _nombre_visible(nombre: str) -> str:
+    """Nombre para título, H1, meta y JSON-LD. No toca el dato ni el slug.
+
+    Orden: UAT, tokens pegados (1sachet, 300g), unidad corta, marca oficial,
+    palabras en mayúsculas y acentos comunes (Jabón, Té, Azúcar, Atún).
+    """
+    texto = " ".join(str(nombre or "").split())
+    if not texto:
+        return ""
+    texto = _UAT_PUNTEADO.sub("UAT", texto)
+    texto = _PEGADO.sub(r"\1 ", texto)
+    tokens: list[str] = []
+    for tok in texto.split():
+        if _es_uat(tok):
+            tokens.append("UAT")
+            continue
+        unidad = _canon_unidad(tok)
+        tokens.append(unidad if unidad else tok)
+    tokens = _aplicar_marcas(tokens)
+    vistos: list[str] = []
+    for tok in tokens:
+        if _canon_unidad(tok) or _es_uat(tok):
+            vistos.append(tok)
+            continue
+        tok = _deshout(tok)
+        tok = _acento(tok)
+        if _fold(tok).strip(".") in _SAQ:
+            tok = "saquitos"
+        vistos.append(tok)
+    return " ".join(vistos)
 
 
 def _es_suelto(tok: str, es_marca: bool = False) -> bool:
@@ -304,6 +456,11 @@ def _indices_marca(tokens: list[str], marca: str) -> set[int]:
         if claves[i] in _ARTICULO_MARCA and len(letras) > 3:
             idxs.add(i)
             idxs.add(i + 1)
+    for frase, _escrito in _MARCAS_ORD:
+        m = len(frase)
+        for i in range(len(claves) - m + 1):
+            if tuple(claves[i:i + m]) == frase:
+                idxs.update(range(i, i + m))
     return idxs
 
 
@@ -347,7 +504,9 @@ def _acortar_nombre(nombre: str, marca: str, budget: int) -> str:
     for i, tok in enumerate(tokens):
         items.append({"t": tok, "brand": i in marca_idx, "pair": None})
     for i in range(len(items) - 1):
-        if _es_numero(items[i]["t"]) and _es_unidad(items[i + 1]["t"]):
+        if _es_numero(items[i]["t"]) and (
+            _es_unidad(items[i + 1]["t"]) or _es_conteo(items[i + 1]["t"])
+        ):
             items[i]["pair"] = i
             items[i + 1]["pair"] = i
     # 1) Sacar relleno antes de cortar. La marca y el par número+unidad se quedan.
@@ -378,10 +537,25 @@ def _acortar_nombre(nombre: str, marca: str, budget: int) -> str:
             return
         del items[idx]
 
-    # 2) Si sigue largo, soltar descriptores desde el final. La marca espera.
-    #    Un número y su unidad salen juntos (2.25 L, 1 kg, 1 Lts).
+    def _par_canonico(it: dict[str, Any]) -> bool:
+        if it["pair"] is None:
+            return False
+        pid = it["pair"]
+        return any(x["pair"] == pid and _es_unidad(x["t"]) for x in items)
+
+    # 2) Si sigue largo, soltar descriptores desde el final. La marca espera
+    #    y el par número+unidad (1 L, 400 g, 4 un) también, hasta que no quede
+    #    otra cosa. Un sachet o "25 saquitos" sale antes que ese par.
     while items and len(texto()) > budget:
-        idx = next((i for i in range(len(items) - 1, -1, -1) if not items[i]["brand"]), None)
+        idx = next(
+            (
+                i for i in range(len(items) - 1, -1, -1)
+                if not items[i]["brand"] and not _par_canonico(items[i])
+            ),
+            None,
+        )
+        if idx is None:
+            idx = next((i for i in range(len(items) - 1, -1, -1) if not items[i]["brand"]), None)
         if idx is None:
             idx = len(items) - 1
         drop_index(idx)
@@ -402,10 +576,12 @@ def _acortar_nombre(nombre: str, marca: str, budget: int) -> str:
 def _titulo(nombre: str, marca: str = "") -> str:
     """Precio {nombre} hoy | BaratoYa, siempre con la marca BaratoYa y a lo sumo 60 caracteres.
 
-    Si no entra, primero saca relleno genérico y después recorta. No termina en un
+    El nombre pasa antes por `_nombre_visible` (marca, unidad, mayúsculas). Si no
+    entra, primero saca relleno genérico y después recorta. No termina en un
     token suelto (La, De, El, Y), no separa un número de su unidad y prefiere
     conservar la marca del producto antes que un descriptor.
     """
+    nombre = _nombre_visible(nombre)
     completo = f"Precio {nombre} hoy{_SUFIJO_TITULO}"
     if len(completo) <= _TOPE_TITULO:
         return completo
@@ -600,17 +776,18 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
     resumen = resumen_precios(ofertas)
     mas_barato = texto_mas_barato(ofertas)
     promos = _promos(ofertas)
-    faq = _faq(nombre, resumen, len(ofertas), texto, promos)
+    visible = _nombre_visible(nombre)
+    faq = _faq(visible, resumen, len(ofertas), texto, promos)
     href = f"{PATH_HUB}/{spec['slug']}"
     categoria_href = _href_categoria(spec["categoria"])
     canonical = ORIGEN + href
     marca = str(raw.get("marca") or "").strip()
-    title = _titulo(nombre, marca)
-    description = _descripcion(nombre, ofertas, resumen)
+    title = _titulo(visible, marca)
+    description = _descripcion(visible, ofertas, resumen)
     product: dict[str, Any] = {
         "@context": "https://schema.org",
         "@type": "Product",
-        "name": nombre,
+        "name": visible,
         "description": description,
         "category": spec["categoria"],
     }
@@ -651,12 +828,13 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
         "categoria_href": categoria_href,
         "mas_barato": mas_barato,
         "nombre": nombre,
+        "nombre_visible": visible,
         "marca": marca,
         "tamano": str(raw.get("tamano") or "").strip(),
         "ean": str(raw.get("ean") or ""),
         "title": title,
         "description": description,
-        "h1": f"Precio de {nombre} hoy en supermercados",
+        "h1": f"Precio de {visible} hoy en supermercados",
         "canonical": canonical,
         "href": href,
         "resumen": resumen,
@@ -690,7 +868,7 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
                 {"@type": "ListItem", "position": 1, "name": "Inicio", "item": ORIGEN + "/"},
                 {"@type": "ListItem", "position": 2, "name": "Comparar precios", "item": ORIGEN + PATH_HUB},
                 {"@type": "ListItem", "position": 3, "name": spec["categoria"], "item": ORIGEN + categoria_href},
-                {"@type": "ListItem", "position": 4, "name": nombre, "item": canonical},
+                {"@type": "ListItem", "position": 4, "name": visible, "item": canonical},
             ],
         }),
     }
@@ -789,7 +967,7 @@ def vistas_publicadas() -> list[dict[str, Any]]:
 def _con_otros(vista: dict[str, Any], todas: list[dict[str, Any]]) -> dict[str, Any]:
     vista = dict(vista)
     vista["otros"] = [
-        {"href": otra["href"], "nombre": otra["nombre"]}
+        {"href": otra["href"], "nombre": otra.get("nombre_visible") or otra["nombre"]}
         for otra in todas
         if otra["categoria"] == vista["categoria"] and otra["slug"] != vista["slug"]
     ][:6]
@@ -915,10 +1093,10 @@ def _faq_foco(categoria: str, productos: list[dict[str, Any]]) -> dict[str, str]
         return None
     if len(matches) == 1:
         uno = matches[0]
-        respuesta = f"{uno['resumen']} Es {uno['nombre'].rstrip('.')}."
+        respuesta = f"{uno['resumen']} Es {uno['nombre_visible'].rstrip('.')}."
     else:
         lineas = " ".join(
-            f"{p['nombre'].rstrip('.')}: {p['mas_barato']}." for p in matches
+            f"{p['nombre_visible'].rstrip('.')}: {p['mas_barato']}." for p in matches
         )
         respuesta = f"{lineas} Son {len(matches)} {foco['varios']} con precio en al menos dos cadenas."
     return {"q": foco["q"], "a": respuesta}
@@ -1023,7 +1201,7 @@ def _armar_categoria(nombre: str, todas: list[dict[str, Any]]) -> dict[str, Any]
                 {
                     "@type": "ListItem",
                     "position": i,
-                    "name": p["nombre"],
+                    "name": p["nombre_visible"],
                     "url": p["canonical"],
                 }
                 for i, p in enumerate(productos, start=1)
@@ -1085,7 +1263,7 @@ def muestra_home() -> list[dict[str, str]]:
     for slug in MUESTRA_SLUGS:
         vista = by.get(slug)
         if vista:
-            out.append({"href": vista["href"], "nombre": vista["nombre"]})
+            out.append({"href": vista["href"], "nombre": vista.get("nombre_visible") or vista["nombre"]})
     return out
 
 
