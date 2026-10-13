@@ -22,6 +22,7 @@ from promos_hoy import (
     descripcion_hub,
     fecha_datos_promos,
     fecha_larga,
+    h1_cadena,
     nav_dias,
     notas_honestidad,
     pagina_seo,
@@ -172,6 +173,13 @@ class PromosPublicasTest(unittest.TestCase):
         site = self.client.get("/sitemap.xml")
         self.assertEqual(site.status_code, 200)
         self.assertIn(SEO_URL, site.text)
+        head = self.client.head("/sitemap.xml")
+        self.assertEqual(head.status_code, 200)
+        self.assertIn("xml", head.headers.get("content-type", ""))
+        self.assertEqual(head.headers.get("content-length"), str(len(site.content)))
+        self.assertEqual(head.content, b"")
+        self.assertIn("<?xml", site.text)
+        self.assertIn("</urlset>", site.text)
         home = self.client.get("/").text
         self.assertIn('href="/promos-bancarias-supermercados"', home)
         self.assertIn("Promos de banco, juntas.", home)
@@ -220,15 +228,30 @@ class PromosPorCadenaTest(unittest.TestCase):
             self.assertLessEqual(len(vista["title"]), 60)
             self.assertLessEqual(len(vista["description"]), 155)
             self.assertEqual(vista["title"], titulo_cadena(cadena["nombre"]))
-            self.assertTrue(vista["title"].startswith("Promos bancarias "))
+            self.assertTrue(vista["title"].startswith("Promociones bancarias "))
             self.assertIn(cadena["nombre"], vista["title"])
-            self.assertIn("supermercado", vista["title"].casefold())
+            self.assertIn("hoy", vista["title"])
+            self.assertTrue(vista["title"].endswith("| BaratoYa"))
+            largo = f"Promociones bancarias {cadena['nombre']} supermercado hoy | BaratoYa"
+            if len(largo) <= 60:
+                self.assertIn("supermercado", vista["title"])
+            self.assertIn("promociones bancarias", vista["description"].casefold())
             self.assertIn("supermercado", vista["description"].casefold())
-            self.assertIn("bancarias", vista["description"].casefold())
             self.assertNotIn("%", vista["title"])
             self.assertNotIn("%", vista["description"])
             self.assertLessEqual(len(descripcion_cadena(cadena["nombre"], "miércoles")), 155)
-            self.assertEqual(vista["h1"], f"Promos bancarias en {cadena['nombre']} hoy")
+            self.assertTrue(descripcion_cadena(cadena["nombre"], "miércoles").startswith("Promociones bancarias "))
+            self.assertEqual(vista["h1"], h1_cadena(cadena["nombre"]))
+            self.assertEqual(vista["h1"], f"Promociones bancarias en {cadena['nombre']} hoy")
+            self.assertEqual(
+                vista["faq"][0]["q"],
+                f"¿Cuáles son las promociones bancarias en {cadena['nombre']} hoy?",
+            )
+            self.assertIn(
+                f"¿Hay promos bancarias de {cadena['nombre']} hoy?",
+                [item["q"] for item in vista["faq"]],
+            )
+            self.assertNotIn("%", vista["faq"][0]["a"])
             self.assertEqual(vista["canonical"], cadena["url"])
             res = self.client.get(cadena["href"])
             self.assertEqual(res.status_code, 200, cadena["slug"])
@@ -255,6 +278,11 @@ class PromosPorCadenaTest(unittest.TestCase):
             for fuente in vista["fuentes"]:
                 self.assertIn(f'href="{fuente}"', html)
             self.assertIn("<table>", html)
+            lead = html.split("<h1>", 1)[1].split("<h2", 1)[0]
+            self.assertIn(
+                f"¿Cuáles son las promociones bancarias en {cadena['nombre']} hoy?",
+                lead,
+            )
             self.assertNotIn("Tope no publicado", html)
             self.assertNotIn("Sin mínimo publicado", html)
             self.assertNotIn("día no publicado", html)
