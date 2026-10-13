@@ -91,7 +91,7 @@
   </header>
   <main>
     <nav class="crumbs" aria-label="Migas de pan">
-      <a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · {{ nombre }}
+      <a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · <a href="{{ categoria_href }}">{{ categoria }}</a> · {{ nombre }}
     </nav>
     <h1>{{ h1 }}</h1>
     <p class="resumen">{{ resumen }}</p>
@@ -140,7 +140,7 @@
     {% endif %}
 
     {% if otros %}
-    <h2>Otros productos</h2>
+    <h2>Otros productos de <a href="{{ categoria_href }}">{{ categoria }}</a></h2>
     <ul>
       {% for p in otros %}
       <li><a href="{{ p.href }}">{{ p.nombre }}</a></li>
