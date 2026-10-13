@@ -1740,6 +1740,14 @@
       <div class="wrap">
         <h2 class="sec">Comparar precios de supermercados</h2>
         <p class="lead"><a href="/precios">Precios de hoy</a>, por producto y por cadena. Leche, aceite, yerba y otros básicos, con la fecha en que se leyó cada precio.</p>
+        {% if precios_categorias %}
+        <h3 class="promos-cadenas-title">Por categoría</h3>
+        <ul class="promos-cadenas">
+          {% for c in precios_categorias %}
+          <li><a href="{{ c.href }}">Precios de {{ c.etiqueta }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
         {% if precios_muestra %}
         <ul class="promos-cadenas">
           {% for p in precios_muestra %}
