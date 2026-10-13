@@ -2031,8 +2031,10 @@ def _n_promos(n: int) -> str:
 
 
 def titulo_cadena(nombre: str) -> str:
-    """≤60. "promos bancarias {cadena}" y, si entra, la palabra supermercado."""
+    """≤60. Arranca con "promociones bancarias" (la búsqueda) y, si entra, supermercado."""
     opciones = (
+        f"Promociones bancarias {nombre} supermercado hoy | BaratoYa",
+        f"Promociones bancarias {nombre} hoy | BaratoYa",
         f"Promos bancarias {nombre} supermercado hoy | BaratoYa",
         f"Promos bancarias {nombre} hoy: bancos y días | BaratoYa",
         f"Promos bancarias {nombre} hoy | BaratoYa",
@@ -2045,22 +2047,27 @@ def titulo_cadena(nombre: str) -> str:
     raise ValueError(f"titulo de {nombre} no entra en 60")
 
 
+def h1_cadena(nombre: str) -> str:
+    """La búsqueda es "promociones bancarias en {cadena} hoy"."""
+    return f"Promociones bancarias en {nombre} hoy"
+
+
 def descripcion_cadena(nombre: str, dia: str) -> str:
     opciones = (
         (
-            f"Promos bancarias del supermercado {nombre} hoy ({dia}) en CABA: "
+            f"Promociones bancarias del supermercado {nombre} hoy ({dia}) en CABA: "
             f"banco o tarjeta, días y tope si está publicado. BaratoYa no vende ni entrega."
         ),
         (
-            f"Promos bancarias del supermercado {nombre} hoy ({dia}) en CABA: "
+            f"Promociones bancarias del supermercado {nombre} hoy ({dia}) en CABA: "
             f"banco, días y tope si está publicado. BaratoYa no vende ni entrega."
         ),
         (
-            f"Promos bancarias de {nombre} hoy ({dia}) en CABA: banco o tarjeta, "
+            f"Promociones bancarias de {nombre} hoy ({dia}) en CABA: banco o tarjeta, "
             f"días y tope si está publicado. BaratoYa no vende ni entrega."
         ),
         (
-            f"Promos bancarias de {nombre} hoy ({dia}) en CABA: bancos, días y tope "
+            f"Promociones bancarias de {nombre} hoy ({dia}) en CABA: bancos, días y tope "
             f"si está publicado. BaratoYa no vende ni entrega."
         ),
         (
@@ -2104,6 +2111,25 @@ def cadenas_indexables(hoy: date | None = None) -> list[dict[str, str]]:
     return salida
 
 
+def _respuesta_promociones_cadena(nombre: str, dia_hoy: str, fecha: str, n_hoy: int) -> str:
+    """Cuenta las promos de hoy. No inventa un banco ni un porcentaje."""
+    cuando = f"Hoy es {dia_hoy} {fecha}."
+    if n_hoy == 1:
+        cuantas = "hay 1 promoción bancaria"
+    elif n_hoy:
+        cuantas = f"hay {n_hoy} promociones bancarias"
+    else:
+        return (
+            f"{cuando} Esta semana, según lo publicado por {nombre}, "
+            f"no hay promociones bancarias para ese día."
+        )
+    return (
+        f"{cuando} Esta semana, según lo publicado por {nombre}, "
+        f"{cuantas} para ese día. Están en la sección Hoy: banco o tarjeta, "
+        f"porcentaje o cuotas, y el tope si está publicado."
+    )
+
+
 def _faq_cadena(
     nombre: str,
     dia_hoy: str,
@@ -2113,7 +2139,10 @@ def _faq_cadena(
     n_hoy: int,
 ) -> list[dict[str, str]]:
     """Preguntas que se responden con lo publicado por la cadena. Sin cifras inventadas."""
-    faq: list[dict[str, str]] = []
+    faq: list[dict[str, str]] = [{
+        "q": f"¿Cuáles son las promociones bancarias en {nombre} hoy?",
+        "a": _respuesta_promociones_cadena(nombre, dia_hoy, fecha, n_hoy),
+    }]
     if n_hoy:
         faq.append({
             "q": f"¿Hay promos bancarias de {nombre} hoy?",
@@ -2258,7 +2287,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
         "title": titulo_cadena(nombre),
         "description": descripcion_cadena(nombre, dia),
         "canonical": canonical,
-        "h1": f"Promos bancarias en {nombre} hoy",
+        "h1": h1_cadena(nombre),
         "path": href,
         "slug": _SLUG_POR_ID[chain_id],
         "nombre": nombre,

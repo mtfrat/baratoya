@@ -174,8 +174,9 @@ async def robots_txt():
     return FileResponse(STATIC_DIR / "robots.txt", media_type="text/plain; charset=utf-8")
 
 
-@app.get("/sitemap.xml", include_in_schema=False)
-async def sitemap_xml():
+@app.api_route("/sitemap.xml", methods=["GET", "HEAD"], include_in_schema=False)
+async def sitemap_xml(request: Request):
+    """GET y HEAD. FastAPI 0.142 no suma HEAD a un @app.get; GSC hace HEAD y recibía 405."""
     base = (STATIC_DIR / "sitemap.xml").read_text(encoding="utf-8")
     extra = "".join(
         f"  <url><loc>{loc}</loc><lastmod>{last}</lastmod></url>\n"
@@ -183,7 +184,12 @@ async def sitemap_xml():
     )
     if extra and "</urlset>" in base:
         base = base.replace("</urlset>", extra + "</urlset>")
-    return Response(content=base, media_type="application/xml")
+    body = base.encode("utf-8")
+    # HEAD: mismos headers que GET, sin cuerpo. Response de Starlette no lo recorta.
+    headers = {"Content-Length": str(len(body))}
+    if request.method == "HEAD":
+        return Response(content=b"", media_type="application/xml", headers=headers)
+    return Response(content=body, media_type="application/xml", headers=headers)
 
 
 @app.get("/favicon.svg", include_in_schema=False)
