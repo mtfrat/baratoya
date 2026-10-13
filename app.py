@@ -916,6 +916,7 @@ async def home(request: Request):
             "mla": ENABLE_MLA,
             "promos_cadenas": cadenas_promos_publicas(),
             "precios_muestra": precios_seo.muestra_home(),
+            "precios_categorias": precios_seo.enlaces_categoria(),
             **cuentas.pagina_publica(),
         },
     )
@@ -985,6 +986,21 @@ async def precios_hub(request: Request):
         request,
         "precios.html",
         precios_seo.pagina_precios(),
+        headers={"Cache-Control": precios_seo.CACHE_CONTROL},
+    )
+
+
+@app.get("/precios/categoria/{slug}", response_class=HTMLResponse)
+async def precios_categoria(request: Request, slug: str):
+    """Hub de una categoría. El precio de cada producto es el de su ficha."""
+    await precios_seo.asegurar_categoria(slug)
+    vista = precios_seo.pagina_categoria(slug)
+    if vista is None:
+        raise StarletteHTTPException(status_code=404)
+    return templates.TemplateResponse(
+        request,
+        "precios_categoria.html",
+        vista,
         headers={"Cache-Control": precios_seo.CACHE_CONTROL},
     )
 

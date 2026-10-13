@@ -35,6 +35,61 @@ CACHE_CONTROL = "public, max-age=300, s-maxage=86400, stale-while-revalidate=864
 HUB_TITLE = "Comparar precios de supermercados hoy | BaratoYa"
 HUB_H1 = "Comparar precios de supermercados hoy"
 CATEGORIAS = ("Lácteos", "Almacén", "Bebidas", "Limpieza")
+# /precios/<slug> es la ficha. La categoría va un segmento más abajo para no pisarla.
+PATH_CATEGORIA = "/precios/categoria"
+_CATEGORIA_SLUG = {
+    "Lácteos": "lacteos",
+    "Almacén": "almacen",
+    "Bebidas": "bebidas",
+    "Limpieza": "limpieza",
+}
+_SLUG_CATEGORIA = {slug: nombre for nombre, slug in _CATEGORIA_SLUG.items()}
+CATEGORIA_TITLE = {
+    "Lácteos": "Precios de lácteos hoy en supermercados | BaratoYa",
+    "Almacén": "Precios de almacén hoy en supermercados | BaratoYa",
+    "Bebidas": "Precios de bebidas hoy en supermercados | BaratoYa",
+    "Limpieza": "Precios de limpieza hoy en supermercados | BaratoYa",
+}
+_CATEGORIA_INTRO = {
+    "Lácteos": (
+        "Leche, manteca, yogur, queso y dulce de leche. "
+        "El precio de góndola que publica cada cadena, con la fecha de la captura."
+    ),
+    "Almacén": (
+        "Aceite, yerba, harina, arroz y fideos. "
+        "El número sale del catálogo público: si una cadena no lo publica, no lo completamos."
+    ),
+    "Bebidas": (
+        "Agua, gaseosa, cerveza y té. "
+        "Cada producto compara el precio de góndola en las cadenas que lo tienen publicado."
+    ),
+    "Limpieza": (
+        "Lavandina, jabón en polvo y papel higiénico. "
+        "El más barato es el menor precio publicado, con la cadena que lo muestra."
+    ),
+}
+_FOCO_CATEGORIA = {
+    "Lácteos": {
+        "prefijo": "leche-",
+        "q": "¿Cuál es el precio de la leche hoy en el supermercado?",
+        "varios": "leches",
+    },
+    "Almacén": {
+        "prefijo": "yerba-",
+        "q": "¿Cuál es el precio de la yerba hoy?",
+        "varios": "yerbas",
+    },
+    "Bebidas": {
+        "prefijo": "coca-cola",
+        "q": "¿Cuál es el precio de la Coca-Cola hoy en el supermercado?",
+        "varios": "presentaciones",
+    },
+    "Limpieza": {
+        "prefijo": "lavandina-",
+        "q": "¿Cuál es el precio de la lavandina hoy?",
+        "varios": "lavandinas",
+    },
+}
 _MESES = "ene feb mar abr may jun jul ago sep oct nov dic".split()
 
 # Qué buscar. Sin precios: si el catálogo no trae dos cadenas, la página no sale.
@@ -135,17 +190,24 @@ def _lista_y(nombres: list[str]) -> str:
     return ", ".join(nombres[:-1]) + " y " + nombres[-1]
 
 
+def texto_mas_barato(ofertas: list[dict[str, Any]]) -> str:
+    """Precio mínimo y las cadenas que lo publican. La misma cuenta que el resumen."""
+    low = min(o["precio"] for o in ofertas)
+    quienes = _lista_y([o["tienda"] for o in ofertas if o["precio"] == low])
+    return f"{quienes} a {peso(low)}"
+
+
 def resumen_precios(ofertas: list[dict[str, Any]]) -> str:
     low = min(o["precio"] for o in ofertas)
     high = max(o["precio"] for o in ofertas)
-    quienes = _lista_y([o["tienda"] for o in ofertas if o["precio"] == low])
     monto = peso(low)
     if high == low:
         return f"Hoy el precio publicado es {monto} en todas las cadenas de esta página."
+    mejor = texto_mas_barato(ofertas)
     pct = int(round((high - low) / high * 100))
     if pct <= 0:
-        return f"Hoy el más barato es {quienes} a {monto}, menos de 1% por debajo del más caro."
-    return f"Hoy el más barato es {quienes} a {monto}, {pct}% menos que el más caro."
+        return f"Hoy el más barato es {mejor}, menos de 1% por debajo del más caro."
+    return f"Hoy el más barato es {mejor}, {pct}% menos que el más caro."
 
 
 # Relleno de góndola: se saca sólo si el título no entra en 60.
@@ -684,6 +746,10 @@ def _faq(
     ]
 
 
+def _href_categoria(categoria: str) -> str:
+    return f"{PATH_CATEGORIA}/{_CATEGORIA_SLUG[categoria]}"
+
+
 def _gtin(ean: str) -> dict[str, str]:
     digits = re.sub(r"\D", "", ean or "")
     if len(digits) in {8, 12, 13, 14}:
@@ -708,10 +774,12 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
     low = min(o["precio"] for o in ofertas)
     high = max(o["precio"] for o in ofertas)
     resumen = resumen_precios(ofertas)
+    mas_barato = texto_mas_barato(ofertas)
     promos = _promos(ofertas)
     visible = _nombre_visible(nombre)
     faq = _faq(visible, resumen, len(ofertas), texto, promos)
     href = f"{PATH_HUB}/{spec['slug']}"
+    categoria_href = _href_categoria(spec["categoria"])
     canonical = ORIGEN + href
     marca = str(raw.get("marca") or "").strip()
     title = _titulo(visible, marca)
@@ -757,6 +825,8 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
     return {
         "slug": spec["slug"],
         "categoria": spec["categoria"],
+        "categoria_href": categoria_href,
+        "mas_barato": mas_barato,
         "nombre": nombre,
         "nombre_visible": visible,
         "marca": marca,
@@ -797,7 +867,8 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
             "itemListElement": [
                 {"@type": "ListItem", "position": 1, "name": "Inicio", "item": ORIGEN + "/"},
                 {"@type": "ListItem", "position": 2, "name": "Comparar precios", "item": ORIGEN + PATH_HUB},
-                {"@type": "ListItem", "position": 3, "name": visible, "item": canonical},
+                {"@type": "ListItem", "position": 3, "name": spec["categoria"], "item": ORIGEN + categoria_href},
+                {"@type": "ListItem", "position": 4, "name": visible, "item": canonical},
             ],
         }),
     }
@@ -909,7 +980,11 @@ def pagina_precios() -> dict[str, Any]:
     for categoria in CATEGORIAS:
         items = [p for p in productos if p["categoria"] == categoria]
         if items:
-            grupos.append({"categoria": categoria, "productos": items})
+            grupos.append({
+                "categoria": categoria,
+                "href": _href_categoria(categoria),
+                "productos": items,
+            })
     n = len(productos)
     if productos:
         reciente = max(productos, key=lambda p: p["capturado"])
@@ -980,6 +1055,198 @@ def pagina_precios() -> dict[str, Any]:
     }
 
 
+def _n_cadenas(productos: list[dict[str, Any]]) -> int:
+    ids: set[str] = set()
+    for producto in productos:
+        for oferta in producto["ofertas"]:
+            ids.add(str(oferta.get("tienda_id") or oferta["tienda"]))
+    return len(ids)
+
+
+def _descripcion_categoria(etiqueta: str, n: int, cadenas: int) -> str:
+    """120–158 caracteres, con la cantidad real de productos y de cadenas."""
+    prod = "producto" if n == 1 else "productos"
+    cad = "supermercado" if cadenas == 1 else "supermercados"
+    texto = (
+        f"Precios de {etiqueta} hoy: {n} {prod} en {cadenas} {cad}. "
+        "El más barato de cada uno sale del catálogo público, con la cadena y la fecha de captura."
+    )
+    if 120 <= len(texto) <= 158:
+        return texto
+    if len(texto) < 120:
+        texto += " No se escribe un precio a mano."
+    if len(texto) > 158:
+        corto = (
+            f"Precios de {etiqueta}: {n} {prod} en {cadenas} {cad}. "
+            "El más barato sale del catálogo público, con la cadena y la fecha de captura."
+        )
+        texto = corto if len(corto) <= 158 else corto[:158].rsplit(" ", 1)[0].rstrip(".,;") + "."
+    return texto
+
+
+def _faq_foco(categoria: str, productos: list[dict[str, Any]]) -> dict[str, str] | None:
+    foco = _FOCO_CATEGORIA.get(categoria)
+    if not foco:
+        return None
+    matches = [p for p in productos if str(p["slug"]).startswith(foco["prefijo"])]
+    if not matches:
+        return None
+    if len(matches) == 1:
+        uno = matches[0]
+        respuesta = f"{uno['resumen']} Es {uno['nombre_visible'].rstrip('.')}."
+    else:
+        lineas = " ".join(
+            f"{p['nombre_visible'].rstrip('.')}: {p['mas_barato']}." for p in matches
+        )
+        respuesta = f"{lineas} Son {len(matches)} {foco['varios']} con precio en al menos dos cadenas."
+    return {"q": foco["q"], "a": respuesta}
+
+
+def _faq_categoria(
+    categoria: str,
+    etiqueta: str,
+    productos: list[dict[str, Any]],
+    n_cadenas: int,
+) -> list[dict[str, str]]:
+    n = len(productos)
+    prod = "producto" if n == 1 else "productos"
+    cad = "supermercado" if n_cadenas == 1 else "supermercados"
+    reciente = max(productos, key=lambda p: p["capturado"])
+    faq = [
+        {
+            "q": f"¿Cuáles son los precios de {etiqueta} hoy?",
+            "a": (
+                f"Hay {n} {prod} de {etiqueta} con precio en {n_cadenas} {cad}. "
+                "En cada ficha, el más barato es el menor precio de góndola publicado. "
+                f"Captura más reciente: {reciente['capturado_texto']}."
+            ),
+        }
+    ]
+    foco = _faq_foco(categoria, productos)
+    if foco:
+        faq.append(foco)
+    faq.extend([
+        {
+            "q": "¿El precio incluye promos bancarias?",
+            "a": (
+                "No. Es el precio de góndola, sin descuento de banco. "
+                "Las promos bancarias de supermercados están en su propia página."
+            ),
+        },
+        {
+            "q": "¿De cuándo es el precio?",
+            "a": (
+                "Cada producto muestra la fecha de captura, en hora de Buenos Aires. "
+                f"La más reciente de {etiqueta} es del {reciente['capturado_texto']}."
+            ),
+        },
+    ])
+    return faq
+
+
+def _armar_categoria(nombre: str, todas: list[dict[str, Any]]) -> dict[str, Any] | None:
+    productos = [p for p in todas if p["categoria"] == nombre]
+    if not productos:
+        return None
+    etiqueta = nombre.casefold()
+    n = len(productos)
+    cadenas = _n_cadenas(productos)
+    title = CATEGORIA_TITLE[nombre]
+    h1 = title.removesuffix(" | BaratoYa")
+    href = _href_categoria(nombre)
+    canonical = ORIGEN + href
+    reciente = max(productos, key=lambda p: p["capturado"])
+    faq = _faq_categoria(nombre, etiqueta, productos, cadenas)
+    otras = [
+        {"href": _href_categoria(otra), "nombre": otra}
+        for otra in CATEGORIAS
+        if otra != nombre and any(p["categoria"] == otra for p in todas)
+    ]
+    return {
+        "title": title,
+        "description": _descripcion_categoria(etiqueta, n, cadenas),
+        "h1": h1,
+        "canonical": canonical,
+        "href": href,
+        "categoria": nombre,
+        "etiqueta": etiqueta,
+        "intro": _CATEGORIA_INTRO[nombre],
+        "n": n,
+        "n_cadenas": cadenas,
+        "productos_txt": f"{n} {'producto' if n == 1 else 'productos'}",
+        "cadenas_txt": f"{cadenas} {'supermercado' if cadenas == 1 else 'supermercados'}",
+        "productos": productos,
+        "actualizado": reciente["capturado_texto"],
+        "lastmod": max(p["lastmod"] for p in productos),
+        "faq": faq,
+        "otras": otras,
+        "ld_faq": _ld({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": item["q"],
+                    "acceptedAnswer": {"@type": "Answer", "text": item["a"]},
+                }
+                for item in faq
+            ],
+        }),
+        "ld_itemlist": _ld({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": h1,
+            "numberOfItems": n,
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": i,
+                    "name": p["nombre_visible"],
+                    "url": p["canonical"],
+                }
+                for i, p in enumerate(productos, start=1)
+            ],
+        }),
+        "ld_breadcrumb": _ld({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Inicio", "item": ORIGEN + "/"},
+                {"@type": "ListItem", "position": 2, "name": "Precios", "item": ORIGEN + PATH_HUB},
+                {"@type": "ListItem", "position": 3, "name": nombre, "item": canonical},
+            ],
+        }),
+    }
+
+
+def pagina_categoria(slug: str) -> dict[str, Any] | None:
+    if not re.fullmatch(r"[a-z0-9-]{3,40}", slug or ""):
+        return None
+    nombre = _SLUG_CATEGORIA.get(slug)
+    if nombre is None:
+        return None
+    return _armar_categoria(nombre, vistas_publicadas())
+
+
+def paginas_categoria() -> list[dict[str, Any]]:
+    todas = vistas_publicadas()
+    out: list[dict[str, Any]] = []
+    for nombre in CATEGORIAS:
+        pagina = _armar_categoria(nombre, todas)
+        if pagina is not None:
+            out.append(pagina)
+    return out
+
+
+def enlaces_categoria() -> list[dict[str, str]]:
+    publicados = {p["categoria"] for p in vistas_publicadas()}
+    return [
+        {"href": _href_categoria(nombre), "nombre": nombre, "etiqueta": nombre.casefold()}
+        for nombre in CATEGORIAS
+        if nombre in publicados
+    ]
+
+
 def pagina_producto(slug: str) -> dict[str, Any] | None:
     if not re.fullmatch(r"[a-z0-9-]{3,80}", slug or ""):
         return None
@@ -1006,6 +1273,8 @@ def urls_sitemap() -> list[tuple[str, str]]:
         return []
     last = max(p["lastmod"] for p in productos)
     urls = [(ORIGEN + PATH_HUB, last)]
+    for pagina in paginas_categoria():
+        urls.append((pagina["canonical"], pagina["lastmod"]))
     for vista in productos:
         urls.append((vista["canonical"], vista["lastmod"]))
     return urls
@@ -1077,6 +1346,28 @@ async def asegurar_hub() -> None:
         return
     slugs = []
     for spec in CATALOGO:
+        actual = _crudo(spec["slug"])
+        if actual is None or _viejo(str(actual.get("capturado") or "")):
+            slugs.append(spec["slug"])
+    if not slugs:
+        return
+    try:
+        await asyncio.wait_for(_refrescar_varios(slugs), timeout=15)
+    except asyncio.TimeoutError:
+        return
+
+
+async def asegurar_categoria(slug: str) -> None:
+    """Relee los productos vencidos de una categoría. Si no alcanza el tiempo, queda la captura."""
+    if _offline():
+        return
+    nombre = _SLUG_CATEGORIA.get(slug or "")
+    if nombre is None:
+        return
+    slugs = []
+    for spec in CATALOGO:
+        if spec["categoria"] != nombre:
+            continue
         actual = _crudo(spec["slug"])
         if actual is None or _viejo(str(actual.get("capturado") or "")):
             slugs.append(spec["slug"])

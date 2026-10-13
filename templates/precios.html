@@ -94,7 +94,7 @@
     <p class="nota">El número de esta página es el de góndola, sin promo de banco. Los 7 días Plus se activan al crear la cuenta, en el inicio.</p>
 
     {% for grupo in grupos %}
-    <h2>{{ grupo.categoria }}</h2>
+    <h2><a href="{{ grupo.href }}">{{ grupo.categoria }}</a></h2>
     <ul>
       {% for p in grupo.productos %}
       <li>
