@@ -68,6 +68,49 @@ _CATEGORIA_INTRO = {
         "El más barato es el menor precio publicado, con la cadena que lo muestra."
     ),
 }
+# /precios/<slug> es la ficha. Un hub de producto puntual (leche, yerba) usa el
+# mismo segmento, con un slug corto que no puede coincidir con una ficha.
+COMMODITIES: tuple[dict[str, Any], ...] = (
+    {
+        "slug": "leche",
+        "nombre": "Leche",
+        "etiqueta": "leche",
+        "varios": "leches",
+        "categoria": "Lácteos",
+        "title": "Precio de la leche hoy en supermercados | BaratoYa",
+        "anchor": "Precio de la leche hoy",
+        "intro": (
+            "Leche líquida, en sachet o larga vida, entera o descremada. "
+            "El precio de góndola que publica cada cadena, con la fecha de la captura."
+        ),
+        "nota": "Manteca, yogur, queso y dulce de leche no forman parte de esta lista.",
+        "prefijo": "leche-",
+        "excluye_slug": ("polvo", "condensada", "chocolatada", "dulce"),
+        "faq_precio": "¿Cuál es el precio de la leche hoy?",
+        "faq_donde": "¿Dónde está más barata la leche?",
+        "articulo_barato": "La más barata",
+    },
+    {
+        "slug": "yerba",
+        "nombre": "Yerba",
+        "etiqueta": "yerba",
+        "varios": "yerbas",
+        "categoria": "Almacén",
+        "title": "Precio de la yerba hoy en supermercados | BaratoYa",
+        "anchor": "Precio de la yerba hoy",
+        "intro": (
+            "Yerba en paquete. "
+            "El número sale del catálogo público: si una cadena no lo publica, no lo completamos."
+        ),
+        "nota": "",
+        "prefijo": "yerba-",
+        "excluye_slug": ("mate-cocido", "cancha"),
+        "faq_precio": "¿Cuál es el precio de la yerba hoy?",
+        "faq_donde": "¿Dónde está más barata la yerba?",
+        "articulo_barato": "La más barata",
+    },
+)
+_COMMODITY = {item["slug"]: item for item in COMMODITIES}
 _FOCO_CATEGORIA = {
     "Lácteos": {
         "prefijo": "leche-",
@@ -147,6 +190,9 @@ MUESTRA_SLUGS = (
 )
 
 _SPEC = {item["slug"]: item for item in CATALOGO}
+_CHOQUE_COMMODITY = {item["slug"] for item in COMMODITIES} & set(_SPEC)
+if _CHOQUE_COMMODITY:
+    raise RuntimeError(f"un hub de producto pisa una ficha: {sorted(_CHOQUE_COMMODITY)}")
 _mem: dict[str, Any] | None = None
 _lock = asyncio.Lock()
 
@@ -195,6 +241,20 @@ def texto_mas_barato(ofertas: list[dict[str, Any]]) -> str:
     low = min(o["precio"] for o in ofertas)
     quienes = _lista_y([o["tienda"] for o in ofertas if o["precio"] == low])
     return f"{quienes} a {peso(low)}"
+
+
+def frase_mas_barato(productos: list[dict[str, Any]]) -> str:
+    """El menor precio de góndola entre varios productos, con cadena y nombre."""
+    low = min(o["precio"] for p in productos for o in p["ofertas"])
+    partes = []
+    for producto in productos:
+        baratas = [o for o in producto["ofertas"] if o["precio"] == low]
+        if not baratas:
+            continue
+        quienes = _lista_y([o["tienda"] for o in baratas])
+        nombre = str(producto["nombre_visible"]).rstrip(".")
+        partes.append(f"{nombre} en {quienes} a {peso(low)}")
+    return _lista_y(partes)
 
 
 def resumen_precios(ofertas: list[dict[str, Any]]) -> str:
@@ -750,6 +810,46 @@ def _href_categoria(categoria: str) -> str:
     return f"{PATH_CATEGORIA}/{_CATEGORIA_SLUG[categoria]}"
 
 
+def _producto_en_commodity(slug: str, spec: dict[str, Any]) -> bool:
+    if not str(slug).startswith(spec["prefijo"]):
+        return False
+    plano = _fold(slug).replace("_", "-")
+    return not any(tok in plano for tok in spec.get("excluye_slug") or ())
+
+
+def _commodity_por_producto(slug: str) -> dict[str, Any] | None:
+    for spec in COMMODITIES:
+        if _producto_en_commodity(slug, spec):
+            return spec
+    return None
+
+
+def _href_commodity(spec: dict[str, Any]) -> str:
+    return f"{PATH_HUB}/{spec['slug']}"
+
+
+def _migas_producto(
+    categoria: str,
+    categoria_href: str,
+    visible: str,
+    canonical: str,
+    commodity_nombre: str,
+    commodity_href: str,
+) -> list[dict[str, Any]]:
+    migas = [
+        ("Inicio", ORIGEN + "/"),
+        ("Comparar precios", ORIGEN + PATH_HUB),
+        (categoria, ORIGEN + categoria_href),
+    ]
+    if commodity_href:
+        migas.append((commodity_nombre, ORIGEN + commodity_href))
+    migas.append((visible, canonical))
+    return [
+        {"@type": "ListItem", "position": i, "name": nombre, "item": url}
+        for i, (nombre, url) in enumerate(migas, start=1)
+    ]
+
+
 def _gtin(ean: str) -> dict[str, str]:
     digits = re.sub(r"\D", "", ean or "")
     if len(digits) in {8, 12, 13, 14}:
@@ -780,6 +880,10 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
     faq = _faq(visible, resumen, len(ofertas), texto, promos)
     href = f"{PATH_HUB}/{spec['slug']}"
     categoria_href = _href_categoria(spec["categoria"])
+    commodity = _commodity_por_producto(spec["slug"])
+    commodity_href = _href_commodity(commodity) if commodity else ""
+    commodity_nombre = commodity["nombre"] if commodity else ""
+    commodity_anchor = commodity["anchor"] if commodity else ""
     canonical = ORIGEN + href
     marca = str(raw.get("marca") or "").strip()
     title = _titulo(visible, marca)
@@ -826,6 +930,9 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
         "slug": spec["slug"],
         "categoria": spec["categoria"],
         "categoria_href": categoria_href,
+        "commodity_href": commodity_href,
+        "commodity_nombre": commodity_nombre,
+        "commodity_anchor": commodity_anchor,
         "mas_barato": mas_barato,
         "nombre": nombre,
         "nombre_visible": visible,
@@ -864,12 +971,14 @@ def armar_vista(spec: dict[str, Any], raw: dict[str, Any]) -> dict[str, Any] | N
         "ld_breadcrumb": _ld({
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
-            "itemListElement": [
-                {"@type": "ListItem", "position": 1, "name": "Inicio", "item": ORIGEN + "/"},
-                {"@type": "ListItem", "position": 2, "name": "Comparar precios", "item": ORIGEN + PATH_HUB},
-                {"@type": "ListItem", "position": 3, "name": spec["categoria"], "item": ORIGEN + categoria_href},
-                {"@type": "ListItem", "position": 4, "name": visible, "item": canonical},
-            ],
+            "itemListElement": _migas_producto(
+                spec["categoria"],
+                categoria_href,
+                visible,
+                canonical,
+                commodity_nombre,
+                commodity_href,
+            ),
         }),
     }
 
@@ -984,6 +1093,7 @@ def pagina_precios() -> dict[str, Any]:
                 "categoria": categoria,
                 "href": _href_categoria(categoria),
                 "productos": items,
+                "commodities": enlaces_commodity(items, categoria),
             })
     n = len(productos)
     if productos:
@@ -1169,8 +1279,12 @@ def _armar_categoria(nombre: str, todas: list[dict[str, Any]]) -> dict[str, Any]
         "canonical": canonical,
         "href": href,
         "categoria": nombre,
+        "titulo_miga": nombre,
         "etiqueta": etiqueta,
         "intro": _CATEGORIA_INTRO[nombre],
+        "nota": "",
+        "padre": None,
+        "commodities": enlaces_commodity(productos, nombre),
         "n": n,
         "n_cadenas": cadenas,
         "productos_txt": f"{n} {'producto' if n == 1 else 'productos'}",
@@ -1247,6 +1361,182 @@ def enlaces_categoria() -> list[dict[str, str]]:
     ]
 
 
+def commodity_conocida(slug: str) -> bool:
+    if not re.fullmatch(r"[a-z0-9-]{3,40}", slug or ""):
+        return False
+    return slug in _COMMODITY
+
+
+def _productos_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [p for p in todas if _producto_en_commodity(p["slug"], spec)]
+
+
+def enlaces_commodity(
+    productos: list[dict[str, Any]] | None = None,
+    categoria: str | None = None,
+) -> list[dict[str, str]]:
+    if productos is None:
+        productos = vistas_publicadas()
+    out: list[dict[str, str]] = []
+    for spec in COMMODITIES:
+        if categoria is not None and spec["categoria"] != categoria:
+            continue
+        if not _productos_commodity(spec, productos):
+            continue
+        out.append({
+            "href": _href_commodity(spec),
+            "nombre": spec["nombre"],
+            "anchor": spec["anchor"],
+            "categoria": spec["categoria"],
+        })
+    return out
+
+
+def _faq_commodity(
+    spec: dict[str, Any],
+    productos: list[dict[str, Any]],
+    n_cadenas: int,
+) -> list[dict[str, str]]:
+    n = len(productos)
+    prod = spec["varios"] if n != 1 else spec["etiqueta"]
+    cad = "supermercado" if n_cadenas == 1 else "supermercados"
+    reciente = max(productos, key=lambda p: p["capturado"])
+    frase = frase_mas_barato(productos)
+    return [
+        {
+            "q": spec["faq_precio"],
+            "a": (
+                f"El menor precio publicado es {frase}. "
+                f"Hay {n} {prod} en {n_cadenas} {cad}. "
+                f"Captura más reciente: {reciente['capturado_texto']}."
+            ),
+        },
+        {
+            "q": spec["faq_donde"],
+            "a": (
+                f"{spec['articulo_barato']} de esta lista es {frase}. "
+                "Es el precio de góndola que publica la cadena, "
+                "no el de una sucursal ni el precio con promo bancaria."
+            ),
+        },
+        {
+            "q": "¿El precio incluye promos bancarias?",
+            "a": (
+                "No. Es el precio de góndola, sin descuento de banco. "
+                "Las promos bancarias de supermercados están en su propia página."
+            ),
+        },
+        {
+            "q": "¿De cuándo es el precio?",
+            "a": (
+                "Cada producto muestra la fecha de captura, en hora de Buenos Aires. "
+                f"La más reciente de esta lista es del {reciente['capturado_texto']}."
+            ),
+        },
+    ]
+
+
+def _ld_faq(faq: list[dict[str, str]]) -> str:
+    return _ld({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": item["q"],
+                "acceptedAnswer": {"@type": "Answer", "text": item["a"]},
+            }
+            for item in faq
+        ],
+    })
+
+
+def _armar_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> dict[str, Any] | None:
+    productos = _productos_commodity(spec, todas)
+    if not productos:
+        return None
+    n = len(productos)
+    cadenas = _n_cadenas(productos)
+    title = spec["title"]
+    h1 = title.removesuffix(" | BaratoYa")
+    href = _href_commodity(spec)
+    canonical = ORIGEN + href
+    reciente = max(productos, key=lambda p: p["capturado"])
+    faq = _faq_commodity(spec, productos, cadenas)
+    categoria = spec["categoria"]
+    categoria_href = _href_categoria(categoria)
+    return {
+        "slug": spec["slug"],
+        "title": title,
+        "description": _descripcion_categoria(spec["etiqueta"], n, cadenas),
+        "h1": h1,
+        "canonical": canonical,
+        "href": href,
+        "categoria": categoria,
+        "titulo_miga": spec["nombre"],
+        "etiqueta": spec["etiqueta"],
+        "intro": spec["intro"],
+        "nota": spec.get("nota") or "",
+        "padre": {
+            "href": categoria_href,
+            "nombre": categoria,
+            "etiqueta": categoria.casefold(),
+        },
+        "commodities": [],
+        "n": n,
+        "n_cadenas": cadenas,
+        "productos_txt": f"{n} {'producto' if n == 1 else 'productos'}",
+        "cadenas_txt": f"{cadenas} {'supermercado' if cadenas == 1 else 'supermercados'}",
+        "productos": productos,
+        "actualizado": reciente["capturado_texto"],
+        "lastmod": max(p["lastmod"] for p in productos),
+        "faq": faq,
+        "otras": [],
+        "ld_faq": _ld_faq(faq),
+        "ld_itemlist": _ld({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": h1,
+            "numberOfItems": n,
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": i,
+                    "name": p["nombre_visible"],
+                    "url": p["canonical"],
+                }
+                for i, p in enumerate(productos, start=1)
+            ],
+        }),
+        "ld_breadcrumb": _ld({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Inicio", "item": ORIGEN + "/"},
+                {"@type": "ListItem", "position": 2, "name": "Precios", "item": ORIGEN + PATH_HUB},
+                {"@type": "ListItem", "position": 3, "name": categoria, "item": ORIGEN + categoria_href},
+                {"@type": "ListItem", "position": 4, "name": spec["nombre"], "item": canonical},
+            ],
+        }),
+    }
+
+
+def pagina_commodity(slug: str) -> dict[str, Any] | None:
+    if not commodity_conocida(slug):
+        return None
+    return _armar_commodity(_COMMODITY[slug], vistas_publicadas())
+
+
+def paginas_commodity() -> list[dict[str, Any]]:
+    todas = vistas_publicadas()
+    out: list[dict[str, Any]] = []
+    for spec in COMMODITIES:
+        pagina = _armar_commodity(spec, todas)
+        if pagina is not None:
+            out.append(pagina)
+    return out
+
+
 def pagina_producto(slug: str) -> dict[str, Any] | None:
     if not re.fullmatch(r"[a-z0-9-]{3,80}", slug or ""):
         return None
@@ -1274,6 +1564,8 @@ def urls_sitemap() -> list[tuple[str, str]]:
     last = max(p["lastmod"] for p in productos)
     urls = [(ORIGEN + PATH_HUB, last)]
     for pagina in paginas_categoria():
+        urls.append((pagina["canonical"], pagina["lastmod"]))
+    for pagina in paginas_commodity():
         urls.append((pagina["canonical"], pagina["lastmod"]))
     for vista in productos:
         urls.append((vista["canonical"], vista["lastmod"]))
@@ -1357,6 +1649,15 @@ async def asegurar_hub() -> None:
         return
 
 
+async def _asegurar_slugs(slugs: list[str]) -> None:
+    if not slugs:
+        return
+    try:
+        await asyncio.wait_for(_refrescar_varios(slugs), timeout=15)
+    except asyncio.TimeoutError:
+        return
+
+
 async def asegurar_categoria(slug: str) -> None:
     """Relee los productos vencidos de una categoría. Si no alcanza el tiempo, queda la captura."""
     if _offline():
@@ -1371,12 +1672,24 @@ async def asegurar_categoria(slug: str) -> None:
         actual = _crudo(spec["slug"])
         if actual is None or _viejo(str(actual.get("capturado") or "")):
             slugs.append(spec["slug"])
-    if not slugs:
+    await _asegurar_slugs(slugs)
+
+
+async def asegurar_commodity(slug: str) -> None:
+    """Relee los productos vencidos de un hub (leche, yerba). Si no alcanza el tiempo, queda la captura."""
+    if _offline():
         return
-    try:
-        await asyncio.wait_for(_refrescar_varios(slugs), timeout=15)
-    except asyncio.TimeoutError:
+    if not commodity_conocida(slug):
         return
+    spec = _COMMODITY[slug]
+    slugs = []
+    for item in CATALOGO:
+        if not _producto_en_commodity(item["slug"], spec):
+            continue
+        actual = _crudo(item["slug"])
+        if actual is None or _viejo(str(actual.get("capturado") or "")):
+            slugs.append(item["slug"])
+    await _asegurar_slugs(slugs)
 
 
 async def capturar_todo() -> dict[str, Any]:

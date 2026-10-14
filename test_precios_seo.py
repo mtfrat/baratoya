@@ -21,6 +21,7 @@ from precios_seo import (
     PATH_HUB,
     armar_vista,
     pagina_categoria,
+    pagina_commodity,
     pagina_precios,
     pagina_producto,
     resumen_precios,
@@ -160,18 +161,23 @@ class PreciosPublicosTest(unittest.TestCase):
                 self.assertIn(item["q"], html)
                 self.assertIn(item["a"], html)
             crumbs = next(b for b in bloques if b["@type"] == "BreadcrumbList")
-            self.assertEqual(
-                [c["item"] for c in crumbs["itemListElement"]],
-                [
-                    "https://baratoya.app/",
-                    "https://baratoya.app/precios",
-                    "https://baratoya.app" + vista["categoria_href"],
-                    vista["canonical"],
-                ],
-            )
-            self.assertEqual(crumbs["itemListElement"][2]["name"], vista["categoria"])
-            self.assertEqual(crumbs["itemListElement"][3]["name"], vista["nombre_visible"])
+            esperados = [
+                "https://baratoya.app/",
+                "https://baratoya.app/precios",
+                "https://baratoya.app" + vista["categoria_href"],
+            ]
+            nombres = ["Inicio", "Comparar precios", vista["categoria"]]
+            if vista["commodity_href"]:
+                esperados.append("https://baratoya.app" + vista["commodity_href"])
+                nombres.append(vista["commodity_nombre"])
+            esperados.append(vista["canonical"])
+            nombres.append(vista["nombre_visible"])
+            self.assertEqual([c["item"] for c in crumbs["itemListElement"]], esperados)
+            self.assertEqual([c["name"] for c in crumbs["itemListElement"]], nombres)
             self.assertIn(f'href="{vista["categoria_href"]}"', html)
+            if vista["commodity_href"]:
+                self.assertIn(f'href="{vista["commodity_href"]}"', html)
+                self.assertIn(vista["commodity_anchor"], html)
             self.assertIn('href="/promos-bancarias-supermercados"', html)
             self.assertIn('href="/"', html)
 
@@ -543,6 +549,150 @@ class PreciosPublicosTest(unittest.TestCase):
         self.assertIn("Esa página no está.", res.text)
         self.assertIn("BaratoYa", res.text)
 
+    def test_hubs_de_commodity(self) -> None:
+        esperados = {
+            "leche": "Precio de la leche hoy en supermercados | BaratoYa",
+            "yerba": "Precio de la yerba hoy en supermercados | BaratoYa",
+        }
+        publicadas = {p["slug"]: p for p in precios_seo.paginas_commodity()}
+        self.assertEqual(set(publicadas), set(esperados))
+        publicados = {p["slug"] for p in self.productos}
+        for slug, titulo in esperados.items():
+            vista = pagina_commodity(slug)
+            self.assertIsNotNone(vista, slug)
+            assert vista is not None
+            self.assertEqual(vista["title"], titulo)
+            self.assertLessEqual(len(vista["title"]), 60, vista["title"])
+            self.assertGreaterEqual(len(vista["title"]), 45, vista["title"])
+            self.assertTrue(vista["title"].endswith(" | BaratoYa"), vista["title"])
+            self.assertEqual(vista["h1"], titulo.removesuffix(" | BaratoYa"))
+            self.assertEqual(
+                vista["faq"][0]["q"],
+                {
+                    "leche": "¿Cuál es el precio de la leche hoy?",
+                    "yerba": "¿Cuál es el precio de la yerba hoy?",
+                }[slug],
+            )
+            self.assertEqual(
+                vista["faq"][1]["q"],
+                {
+                    "leche": "¿Dónde está más barata la leche?",
+                    "yerba": "¿Dónde está más barata la yerba?",
+                }[slug],
+            )
+            self.assertGreaterEqual(len(vista["description"]), 120, vista["description"])
+            self.assertLessEqual(len(vista["description"]), 158, vista["description"])
+            self.assertIn(str(vista["n"]), vista["description"])
+            self.assertIn(str(vista["n_cadenas"]), vista["description"])
+            self.assertEqual(vista["n"], len(vista["productos"]))
+            self.assertEqual(vista["n_cadenas"], precios_seo._n_cadenas(vista["productos"]))
+            self.assertGreaterEqual(vista["n"], 1)
+            self.assertGreaterEqual(vista["n_cadenas"], MIN_CADENAS)
+            prefijo = slug + "-"
+            self.assertEqual(
+                {p["slug"] for p in vista["productos"]},
+                {s for s in publicados if s.startswith(prefijo)},
+            )
+            for producto in vista["productos"]:
+                self.assertTrue(producto["slug"].startswith(prefijo), producto["slug"])
+            res = self.client.get(vista["href"])
+            self.assertEqual(res.status_code, 200, slug)
+            html = res.text
+            self.assertNotIn("<script src=", html)
+            self.assertNotIn('content="noindex"', html)
+            self.assertIn(f"<title>{vista['title']}</title>", html)
+            self.assertIn(f'<meta name="description" content="{vista["description"]}" />', html)
+            self.assertIn(f'<link rel="canonical" href="{vista["canonical"]}" />', html)
+            self.assertIn(f'property="og:title" content="{vista["title"]}"', html)
+            self.assertIn(f'property="og:description" content="{vista["description"]}"', html)
+            self.assertIn(f'property="og:url" content="{vista["canonical"]}"', html)
+            parser = _H1()
+            parser.feed(html)
+            self.assertEqual(parser.h1, [vista["h1"]])
+            for producto in vista["productos"]:
+                self.assertIn(f'href="{producto["href"]}"', html)
+                self.assertIn(producto["nombre_visible"], html)
+            low = min(o["precio"] for p in vista["productos"] for o in p["ofertas"])
+            precio = precios_seo.peso(low)
+            bloques = _ld_json(html)
+            tipos = {b.get("@type") for b in bloques}
+            self.assertEqual(tipos, {"FAQPage", "ItemList", "BreadcrumbList"})
+            faq = next(b for b in bloques if b["@type"] == "FAQPage")
+            self.assertEqual(
+                [q["name"] for q in faq["mainEntity"]],
+                [item["q"] for item in vista["faq"]],
+            )
+            preguntas = {item["q"]: item["a"] for item in vista["faq"]}
+            self.assertIn(precio, preguntas[vista["faq"][0]["q"]])
+            self.assertIn(precio, preguntas[vista["faq"][1]["q"]])
+            for producto in vista["productos"]:
+                for oferta in producto["ofertas"]:
+                    if oferta["precio"] != low:
+                        continue
+                    self.assertIn(oferta["tienda"], preguntas[vista["faq"][0]["q"]])
+                    self.assertIn(oferta["tienda"], preguntas[vista["faq"][1]["q"]])
+                    self.assertIn(producto["nombre_visible"].rstrip("."), preguntas[vista["faq"][1]["q"]])
+            for item in vista["faq"]:
+                self.assertIn(item["q"], html)
+                self.assertIn(item["a"], html)
+            crumbs = next(b for b in bloques if b["@type"] == "BreadcrumbList")
+            self.assertEqual(
+                [(c["name"], c["item"]) for c in crumbs["itemListElement"]],
+                [
+                    ("Inicio", "https://baratoya.app/"),
+                    ("Precios", "https://baratoya.app/precios"),
+                    (vista["categoria"], "https://baratoya.app" + vista["padre"]["href"]),
+                    (vista["titulo_miga"], vista["canonical"]),
+                ],
+            )
+            items = next(b for b in bloques if b["@type"] == "ItemList")
+            self.assertEqual(items["numberOfItems"], vista["n"])
+            self.assertEqual(
+                [el["url"] for el in items["itemListElement"]],
+                [p["canonical"] for p in vista["productos"]],
+            )
+            self.assertIn(f'href="{vista["padre"]["href"]}"', html)
+
+    def test_leche_solo_lista_leche_liquida(self) -> None:
+        vista = pagina_commodity("leche")
+        self.assertIsNotNone(vista)
+        assert vista is not None
+        excluidos = {
+            "manteca-la-serenisima-200g",
+            "dulce-de-leche-la-serenisima-400g",
+            "yogur-ser-frutilla-190g",
+            "queso-rallado-la-serenisima-130g",
+        }
+        publicados = {p["slug"] for p in self.productos}
+        self.assertTrue(excluidos <= publicados)
+        hub = {p["slug"] for p in vista["productos"]}
+        self.assertTrue(hub.isdisjoint(excluidos))
+        self.assertGreaterEqual(len(hub), 4)
+        html = self.client.get("/precios/leche").text
+        for slug in excluidos:
+            self.assertNotIn(f'href="/precios/{slug}"', html)
+        self.assertIn("Manteca, yogur, queso y dulce de leche no forman parte de esta lista.", html)
+        lacteos = self.client.get("/precios/categoria/lacteos").text
+        self.assertIn('href="/precios/leche"', lacteos)
+        self.assertIn("Precio de la leche hoy", lacteos)
+        precios = self.client.get("/precios").text
+        self.assertIn('href="/precios/leche"', precios)
+        for slug in hub:
+            ficha = self.client.get(f"/precios/{slug}").text
+            self.assertIn('href="/precios/leche"', ficha)
+        manteca = self.client.get("/precios/manteca-la-serenisima-200g").text
+        self.assertNotIn('href="/precios/leche"', manteca)
+
+    def test_commodity_desconocida_404(self) -> None:
+        self.assertIsNone(pagina_commodity("no-existe"))
+        self.assertIsNone(pagina_commodity("manteca"))
+        self.assertIsNone(pagina_commodity("Leche"))
+        self.assertIsNone(pagina_commodity("dulce-de-leche"))
+        for path in ("/precios/manteca", "/precios/azucar", "/precios/dulce-de-leche"):
+            res = self.client.get(path)
+            self.assertEqual(res.status_code, 404, path)
+            self.assertIn('name="robots" content="noindex"', res.text)
+
     def test_sitemap_y_links(self) -> None:
         site = self.client.get("/sitemap.xml")
         self.assertEqual(site.status_code, 200)
@@ -557,6 +707,14 @@ class PreciosPublicosTest(unittest.TestCase):
                 f"<loc>{pagina['canonical']}</loc><lastmod>{pagina['lastmod']}</lastmod>",
                 site.text,
             )
+        for pagina in precios_seo.paginas_commodity():
+            self.assertIn(
+                f"<loc>{pagina['canonical']}</loc><lastmod>{pagina['lastmod']}</lastmod>",
+                site.text,
+            )
+        self.assertIn("<loc>https://baratoya.app/precios/leche</loc>", site.text)
+        self.assertIn("<loc>https://baratoya.app/precios/yerba</loc>", site.text)
+        self.assertNotIn("<loc>https://baratoya.app/precios/manteca</loc>", site.text)
         for vista in self.productos:
             self.assertIn(
                 f"<loc>{vista['canonical']}</loc><lastmod>{vista['lastmod']}</lastmod>",
@@ -573,6 +731,9 @@ class PreciosPublicosTest(unittest.TestCase):
         for enlace in precios_seo.enlaces_categoria():
             self.assertIn(f'href="{enlace["href"]}"', home)
             self.assertIn(f"Precios de {enlace['etiqueta']}", home)
+        for enlace in precios_seo.enlaces_commodity():
+            self.assertIn(f'href="{enlace["href"]}"', home)
+            self.assertIn(enlace["anchor"], home)
         for item in precios_seo.muestra_home():
             self.assertIn(f'href="{item["href"]}"', home)
 

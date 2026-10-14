@@ -91,12 +91,15 @@
   </header>
   <main>
     <nav class="crumbs" aria-label="Migas de pan">
-      <a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · <a href="{{ categoria_href }}">{{ categoria }}</a> · {{ nombre_visible }}
+      <a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · <a href="{{ categoria_href }}">{{ categoria }}</a>{% if commodity_href %} · <a href="{{ commodity_href }}">{{ commodity_nombre }}</a>{% endif %} · {{ nombre_visible }}
     </nav>
     <h1>{{ h1 }}</h1>
     <p class="resumen">{{ resumen }}</p>
     <p class="actualizado">Capturado el {{ capturado_texto }}.</p>
     <p>Precio de góndola en los catálogos públicos. No es el precio con promo bancaria ni el de una sucursal puntual: es el que cada cadena publica online.</p>
+    {% if commodity_href %}
+    <p><a href="{{ commodity_href }}">{{ commodity_anchor }}</a> en supermercados.</p>
+    {% endif %}
     <div class="tabla-wrap">
       <table>
         <caption class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Precio de {{ nombre_visible }} por supermercado</caption>

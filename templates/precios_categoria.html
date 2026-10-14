@@ -85,10 +85,18 @@
   </header>
   <main>
     <nav class="crumbs" aria-label="Migas de pan">
-      <a href="/">Inicio</a> · <a href="/precios">Precios</a> · {{ categoria }}
+      <a href="/">Inicio</a> · <a href="/precios">Precios</a>{% if padre %} · <a href="{{ padre.href }}">{{ padre.nombre }}</a>{% endif %} · {{ titulo_miga }}
     </nav>
     <h1>{{ h1 }}</h1>
     <p>{{ intro }}</p>
+    {% if commodities %}
+    <p>
+      {% for c in commodities %}<a href="{{ c.href }}">{{ c.anchor }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
+    </p>
+    {% endif %}
+    {% if nota %}
+    <p>{{ nota }}</p>
+    {% endif %}
     <p>Hoy hay {{ productos_txt }} con precio en {{ cadenas_txt }}. El más barato de cada uno es el menor precio de góndola que publica una cadena.</p>
     {% if actualizado %}
     <p class="actualizado">Captura más reciente: {{ actualizado }}.</p>
@@ -109,6 +117,10 @@
       </li>
       {% endfor %}
     </ul>
+
+    {% if padre %}
+    <p><a href="{{ padre.href }}">Ver todos los precios de {{ padre.etiqueta }}</a></p>
+    {% endif %}
 
     {% if otras %}
     <h2>Otras categorías</h2>

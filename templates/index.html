@@ -1748,6 +1748,14 @@
           {% endfor %}
         </ul>
         {% endif %}
+        {% if precios_commodities %}
+        <h3 class="promos-cadenas-title">Por producto</h3>
+        <ul class="promos-cadenas">
+          {% for c in precios_commodities %}
+          <li><a href="{{ c.href }}">{{ c.anchor }}</a></li>
+          {% endfor %}
+        </ul>
+        {% endif %}
         {% if precios_muestra %}
         <ul class="promos-cadenas">
           {% for p in precios_muestra %}
