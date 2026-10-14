@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import re
 import unittest
+from datetime import date
 from html.parser import HTMLParser
 
 from fastapi.testclient import TestClient
@@ -23,6 +24,8 @@ from promos_hoy import (
     fecha_datos_promos,
     fecha_larga,
     h1_cadena,
+    h1_dia,
+    lastmod_promos,
     nav_dias,
     notas_honestidad,
     pagina_seo,
@@ -30,6 +33,7 @@ from promos_hoy import (
     pagina_seo_dia,
     pagina_seo_dias,
     titulo_cadena,
+    titulo_dia,
 )
 
 
@@ -206,6 +210,7 @@ class PromosPorCadenaTest(unittest.TestCase):
         cls.client = TestClient(app_mod.app)
         cls.cadenas = cadenas_indexables()
         cls.fecha = fecha_datos_promos()
+        cls.lastmod = lastmod_promos()
 
     def test_solo_cadenas_con_datos(self) -> None:
         slugs = [c["slug"] for c in self.cadenas]
@@ -323,10 +328,10 @@ class PromosPorCadenaTest(unittest.TestCase):
         )
         self.assertEqual(
             encontrados,
-            [(c["url"], self.fecha.isoformat()) for c in self.cadenas],
+            [(c["url"], self.lastmod) for c in self.cadenas],
         )
-        self.assertIn(SEO_URL, site.text)
-        self.assertNotIn(f"{SEO_URL}</loc><lastmod>", site.text)
+        self.assertIn(f"<loc>{SEO_URL}</loc><lastmod>{self.lastmod}</lastmod>", site.text)
+        self.assertGreaterEqual(self.lastmod, self.fecha.isoformat())
 
     def test_hub_conserva_titulo_y_h1(self) -> None:
         html = self.client.get(SEO_PATH).text
@@ -356,6 +361,7 @@ class DescuentosPorDiaTest(unittest.TestCase):
         cls.nav = nav_dias()
         cls.hub = pagina_seo_dias()
         cls.fecha = fecha_datos_promos()
+        cls.lastmod = lastmod_promos()
 
     def test_siete_dias_200_y_slug_desconocido_404(self) -> None:
         self.assertEqual([d["slug"] for d in self.nav], [
@@ -392,10 +398,19 @@ class DescuentosPorDiaTest(unittest.TestCase):
             self.assertLessEqual(len(vista["title"]), 60)
             self.assertGreaterEqual(len(vista["description"]), 120)
             self.assertLessEqual(len(vista["description"]), 155)
-            self.assertTrue(vista["title"].startswith("Descuentos en supermercados los "))
+            self.assertEqual(vista["title"], titulo_dia(dia["plural"], es_hoy=vista["es_hoy"]))
+            self.assertIn("Descuentos en supermercados", vista["title"])
+            self.assertIn(dia["plural"], vista["title"])
             self.assertIn("| BaratoYa", vista["title"])
-            self.assertEqual(vista["h1"], f"Descuentos en supermercados los {dia['plural']} en CABA")
+            self.assertEqual(vista["h1"], h1_dia(dia["plural"], es_hoy=vista["es_hoy"]))
+            self.assertIn(dia["plural"], vista["h1"])
             self.assertTrue(vista["h1"].endswith("en CABA"))
+            if vista["es_hoy"]:
+                self.assertIn("hoy", vista["title"])
+                self.assertIn("hoy", vista["h1"])
+            else:
+                self.assertNotIn("hoy", vista["title"])
+                self.assertNotIn("hoy", vista["h1"])
             self.assertEqual(vista["canonical"], dia["url"])
             self.assertTrue(vista["canonical"].startswith("https://baratoya.app/descuentos-supermercados/"))
             titulos.append(vista["title"])
@@ -410,7 +425,18 @@ class DescuentosPorDiaTest(unittest.TestCase):
             parser = _H1()
             parser.feed(html)
             self.assertEqual(parser.h1, [vista["h1"]])
+            self.assertIn(vista["intro"], html)
+            self.assertIn("todas las cadenas juntas", vista["intro"])
             self.assertIn(vista["linea"], html)
+            self.assertEqual(
+                vista["faq"][0]["q"],
+                f"¿Cuáles son los descuentos en supermercados los {dia['plural']}?",
+            )
+            porcentajes = re.findall(r"\d+(?:,\d+)?%", vista["faq"][0]["a"])
+            if vista["top_txt"]:
+                self.assertEqual(porcentajes, [f"{vista['top_txt']}%"])
+            else:
+                self.assertEqual(porcentajes, [])
             self.assertIn("precio final estimado", html)
             self.assertIn("no acumula", html)
             self.assertIn(f'href="{SEO_PATH}"', html)
@@ -497,11 +523,33 @@ class DescuentosPorDiaTest(unittest.TestCase):
                 self.assertIn(f'href="{dia["href"]}"', html, cadena["slug"])
         home = self.client.get("/").text
         self.assertIn('href="/descuentos-supermercados"', home)
+        hoy = next(d for d in self.nav if d["hoy"])
+        self.assertIn(f'id="descuentos-hoy" href="{hoy["href"]}"', home)
+        self.assertIn(f"Descuentos de hoy ({hoy['nombre']})", home)
+        for dia in self.nav:
+            self.assertIn(
+                f'<a href="{dia["href"]}">Descuentos en supermercados los {dia["plural"]}</a>',
+                home,
+            )
+            self.assertIn(
+                f'<a href="{dia["href"]}">Todos los descuentos del {dia["nombre"]}</a>',
+                hub_promos,
+            )
+        for cadena in cadenas_indexables():
+            html = self.client.get(cadena["href"]).text
+            for dia in self.nav:
+                self.assertIn(
+                    f'<a href="{dia["href"]}">Todos los descuentos del {dia["nombre"]}</a>',
+                    html,
+                    cadena["slug"],
+                )
         site = self.client.get("/sitemap.xml")
         self.assertEqual(site.status_code, 200)
         self.assertIsNotNone(self.fecha)
-        fecha = self.fecha.isoformat()
+        fecha = self.lastmod
+        self.assertGreaterEqual(fecha, self.fecha.isoformat())
         self.assertIn(f"<loc>{DESCUENTOS_URL}</loc><lastmod>{fecha}</lastmod>", site.text)
+        self.assertIn(f"<loc>{SEO_URL}</loc><lastmod>{fecha}</lastmod>", site.text)
         for dia in self.nav:
             self.assertIn(f"<loc>{dia['url']}</loc><lastmod>{fecha}</lastmod>", site.text)
         for cadena in cadenas_indexables():
@@ -515,6 +563,13 @@ class DescuentosPorDiaTest(unittest.TestCase):
             "https://baratoya.app/terminos",
         ):
             self.assertIn(f"<loc>{url}</loc>", site.text)
+
+    def test_lastmod_sigue_el_dato_o_el_dia(self) -> None:
+        datos = self.fecha
+        self.assertIsNotNone(datos)
+        self.assertEqual(lastmod_promos(date(2020, 1, 1)), datos.isoformat())
+        self.assertEqual(lastmod_promos(date(2099, 1, 2)), "2099-01-02")
+        self.assertEqual(self.lastmod, max(datos, date.fromisoformat(self.hub["hoy_iso"])).isoformat())
 
     def test_no_dice_archivo(self) -> None:
         paths = [SEO_PATH, DESCUENTOS_PATH]

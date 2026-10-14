@@ -37,6 +37,8 @@ try:
     from baratoya.promos_hoy import pagina_seo_cadena as pagina_promo_cadena
     from baratoya.promos_hoy import pagina_seo_dia as pagina_promo_dia
     from baratoya.promos_hoy import pagina_seo_dias as pagina_promos_dias
+    from baratoya.promos_hoy import nav_dias as nav_dias_publicos
+    from baratoya.promos_hoy import urls_sitemap as urls_sitemap_promos
     from baratoya.promos_hoy import promos_para_cadena
     from baratoya import precios_seo
     from baratoya import cuentas
@@ -55,6 +57,8 @@ except ImportError:
     from promos_hoy import pagina_seo_cadena as pagina_promo_cadena
     from promos_hoy import pagina_seo_dia as pagina_promo_dia
     from promos_hoy import pagina_seo_dias as pagina_promos_dias
+    from promos_hoy import nav_dias as nav_dias_publicos
+    from promos_hoy import urls_sitemap as urls_sitemap_promos
     from promos_hoy import promos_para_cadena
     import precios_seo
     import cuentas
@@ -180,7 +184,7 @@ async def sitemap_xml(request: Request):
     base = (STATIC_DIR / "sitemap.xml").read_text(encoding="utf-8")
     extra = "".join(
         f"  <url><loc>{loc}</loc><lastmod>{last}</lastmod></url>\n"
-        for loc, last in precios_seo.urls_sitemap()
+        for loc, last in (*urls_sitemap_promos(), *precios_seo.urls_sitemap())
     )
     if extra and "</urlset>" in base:
         base = base.replace("</urlset>", extra + "</urlset>")
@@ -915,6 +919,7 @@ async def home(request: Request):
             "paid_scrapers": ENABLE_PAID,
             "mla": ENABLE_MLA,
             "promos_cadenas": cadenas_promos_publicas(),
+            "dias_nav": nav_dias_publicos(),
             "precios_muestra": precios_seo.muestra_home(),
             "precios_categorias": precios_seo.enlaces_categoria(),
             **cuentas.pagina_publica(),

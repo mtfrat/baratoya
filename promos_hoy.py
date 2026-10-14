@@ -1727,6 +1727,19 @@ def fecha_datos_promos() -> date | None:
     return max(fechas) if fechas else None
 
 
+def lastmod_promos(hoy: date | None = None) -> str:
+    """Fecha del sitemap de promos y descuentos.
+
+    La más nueva entre el dato del archivo y el día en Argentina. La sección
+    Hoy cambia con el calendario; una fecha fija en el XML se queda atrás.
+    """
+    candidatos = [hoy or hoy_art()]
+    datos = fecha_datos_promos()
+    if datos is not None:
+        candidatos.append(datos)
+    return max(candidatos).isoformat()
+
+
 def _respuesta_promos_hoy(n_hoy: int | None, cadenas_hoy: int | None) -> str:
     """Apunta a la sección Hoy. Sin un porcentaje de ahorro inventado."""
     detalle = (
@@ -2390,15 +2403,47 @@ def nav_dias(hoy: date | None = None) -> list[dict[str, Any]]:
     return salida
 
 
-def titulo_dia(plural: str) -> str:
-    texto = f"Descuentos en supermercados los {plural} | BaratoYa"
+def urls_sitemap(hoy: date | None = None) -> list[tuple[str, str]]:
+    """Promos y descuentos, con lastmod del dato o del día. No una fecha fija."""
+    hoy = hoy or hoy_art()
+    last = lastmod_promos(hoy)
+    urls = [(SEO_URL, last)]
+    urls.extend((c["url"], last) for c in cadenas_indexables(hoy))
+    urls.append((DESCUENTOS_URL, last))
+    urls.extend((d["url"], last) for d in nav_dias(hoy))
+    return urls
+
+
+def titulo_dia(plural: str, *, es_hoy: bool = False) -> str:
+    """El día va en el título. Si esa página es la de hoy, también entra "hoy"."""
+    if es_hoy:
+        texto = f"Descuentos en supermercados hoy, los {plural} | BaratoYa"
+    else:
+        texto = f"Descuentos en supermercados los {plural} | BaratoYa"
     if len(texto) > 60:
         raise ValueError(f"titulo de {plural} no entra en 60 ({len(texto)})")
     return texto
 
 
-def h1_dia(plural: str) -> str:
+def h1_dia(plural: str, *, es_hoy: bool = False) -> str:
+    if es_hoy:
+        return f"Descuentos en supermercados hoy, los {plural} en CABA"
     return f"Descuentos en supermercados los {plural} en CABA"
+
+
+def intro_dia(resumen: dict[str, Any], fecha: str, dia_hoy: str, es_hoy: bool) -> str:
+    """Abre la página por el día, con el conteo publicado. Sin un % inventado."""
+    plural = str(resumen["plural"])
+    nombre = str(resumen["nombre"])
+    if es_hoy:
+        cuando = f"Hoy es {nombre} {fecha}, así que esta es la página de los descuentos de hoy."
+    else:
+        cuando = f"Hoy es {dia_hoy} {fecha}. Acá están los descuentos del {nombre}."
+    return (
+        f"Descuentos en supermercados los {plural} en CABA: "
+        f"{_n_promos(int(resumen['n']))} en {_cadenas_txt(int(resumen['cadenas_n']))}, "
+        f"de todas las cadenas juntas. {cuando}"
+    )
 
 
 def descripcion_dia(plural: str, n: int, cadenas_n: int, top_pct: float | None) -> str:
@@ -2538,10 +2583,36 @@ def _resumen_dia(spec: dict[str, Any], items: list[dict[str, Any]]) -> dict[str,
     }
 
 
+def _respuesta_descuentos_dia(resumen: dict[str, Any]) -> str:
+    """Responde con el conteo y, si está publicado, el mayor porcentaje. Nada inventado."""
+    plural = resumen["plural"]
+    n = int(resumen["n"])
+    if n <= 0:
+        return (
+            f"Esta semana, según lo publicado por cada cadena, no hay descuentos "
+            f"vigentes los {plural} en supermercados de CABA."
+        )
+    cadenas = [str(slot["cadena"]) for slot in resumen["conteo"]]
+    donde = _unir(cadenas) if cadenas else _cadenas_txt(int(resumen["cadenas_n"]))
+    texto = (
+        f"Esta semana, según lo publicado por cada cadena, hay {_n_promos(n)} "
+        f"los {plural} en {donde}."
+    )
+    if resumen["top_txt"]:
+        donde_top = f" en {resumen['top_donde']}" if resumen["top_donde"] else ""
+        texto += f" El mayor porcentaje publicado es {resumen['top_txt']}%{donde_top}."
+    else:
+        texto += " Ese día las cadenas no publican un porcentaje."
+    return texto
+
+
 def _faq_dia(resumen: dict[str, Any]) -> list[dict[str, str]]:
     plural = resumen["plural"]
     n = int(resumen["n"])
-    faq: list[dict[str, str]] = []
+    faq: list[dict[str, str]] = [{
+        "q": f"¿Cuáles son los descuentos en supermercados los {plural}?",
+        "a": _respuesta_descuentos_dia(resumen),
+    }]
     if n <= 0:
         faq.append({
             "q": f"¿Hay descuentos en supermercados los {plural}?",
@@ -2759,19 +2830,23 @@ def pagina_seo_dia(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
     faq = _faq_dia(resumen)
     actualizado = fecha_datos_promos()
     canonical = resumen["url"]
+    es_hoy = spec["idx"] == wd
+    fecha = fecha_larga(hoy)
+    dia_hoy = NOMBRE_DIA[wd]
     return {
-        "title": titulo_dia(plural),
+        "title": titulo_dia(plural, es_hoy=es_hoy),
         "description": descripcion_dia(plural, resumen["n"], resumen["cadenas_n"], resumen["top_pct"]),
         "canonical": canonical,
-        "h1": h1_dia(plural),
+        "h1": h1_dia(plural, es_hoy=es_hoy),
+        "intro": intro_dia(resumen, fecha, dia_hoy, es_hoy),
         "path": resumen["href"],
         "slug": spec["slug"],
         "nombre": spec["nombre"],
         "plural": plural,
-        "es_hoy": spec["idx"] == wd,
+        "es_hoy": es_hoy,
         "hoy_iso": hoy.isoformat(),
-        "dia_hoy": NOMBRE_DIA[wd],
-        "fecha": fecha_larga(hoy),
+        "dia_hoy": dia_hoy,
+        "fecha": fecha,
         "actualizado": fecha_larga(actualizado) if actualizado else "",
         "n": resumen["n"],
         "cadenas_n": resumen["cadenas_n"],
