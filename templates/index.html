@@ -1763,6 +1763,19 @@
         <h2 class="sec">Promos de banco, juntas.</h2>
         <p class="lead" id="promos-lead">Las mismas tarjetas, cortadas por día o por banco. No entran las ocultas, las vencidas ni las que publican dos fechas distintas.</p>
         <p class="lead"><a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a>: las de hoy en CABA, por cadena y por día.</p>
+        {% if dias_nav %}
+        {% for d in dias_nav %}
+        {% if d.hoy %}
+        <p class="lead"><a class="btn lime" id="descuentos-hoy" href="{{ d.href }}">Descuentos de hoy ({{ d.nombre }})</a></p>
+        {% endif %}
+        {% endfor %}
+        <h3 class="promos-cadenas-title" id="descuentos-por-dia">Descuentos por día</h3>
+        <ul class="promos-cadenas">
+          {% for d in dias_nav %}
+          <li><a href="{{ d.href }}">Descuentos en supermercados los {{ d.plural }}</a>{% if d.hoy %} (hoy){% endif %}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
         {% if promos_cadenas %}
         <h3 class="promos-cadenas-title" id="promos-por-super">Promos por supermercado</h3>
         <ul class="promos-cadenas">
@@ -1923,6 +1936,9 @@
       <p>BaratoYa muestra el precio que cada cadena publica para CABA. No es un sitio oficial y no pone un precio propio.</p>
       <p>Instagram: <a href="https://www.instagram.com/baratoya.ba/" target="_blank" rel="noopener noreferrer">@baratoya.ba</a> · Mail: <a href="mailto:baratoyaba@gmail.com">baratoyaba@gmail.com</a></p>
       <p><a href="/">Inicio</a> · <a href="/precios">Comparar precios</a> · <a href="/promos-bancarias-supermercados">Promos bancarias supermercados</a> · <a href="/descuentos-supermercados">Descuentos por día</a> · <a href="/planes">Planes</a> · <a href="/aviso-precios">Aviso de precios</a> · <a href="/terminos">Términos de uso</a> · <a href="/privacidad">Privacidad</a></p>
+      {% if dias_nav %}
+      <p>Descuentos por día:{% for d in dias_nav %} <a href="{{ d.href }}">Descuentos en supermercados los {{ d.plural }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
+      {% endif %}
       {% if promos_cadenas %}
       <p>Promos por supermercado:{% for c in promos_cadenas %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% if not loop.last %} ·{% endif %}{% endfor %}</p>
       {% endif %}
