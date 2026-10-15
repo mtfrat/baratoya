@@ -894,7 +894,7 @@
             try { if (data.preference_id) sessionStorage.setItem("by_mp_pref", String(data.preference_id)); } catch (_) {}
             location.href = data.init_point;
           } else if (data.already) {
-            if (checkoutMsg) checkoutMsg.textContent = "Tu cuenta ya tiene búsquedas ilimitadas.";
+            if (checkoutMsg) checkoutMsg.textContent = data.error || "Tu cuenta ya tiene búsquedas ilimitadas.";
             btnComprar.textContent = "Ya sos Plus ✓";
           } else {
             if (checkoutMsg) checkoutMsg.textContent = data.error || "No se pudo iniciar el pago. Probá de nuevo.";

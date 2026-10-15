@@ -1647,6 +1647,7 @@
           </picture>
         </div>
         <p class="sesion-note" id="sesion-note">Para buscar hace falta entrar. Sin sesión no se consulta el precio.</p>
+        <p class="sesion-note" id="plus-renovar" hidden><a href="/planes#planes" id="plus-renovar-link">Renovar Plus (30 días con Mercado Pago)</a></p>
 
         {# Electro: oculto por ahora, Martin 2026-10-05. Para reactivar, SHOW_ELECTRO = true (/api/electro sigue vivo). #}
         {% set SHOW_ELECTRO = false %}
@@ -2374,8 +2375,12 @@
       }
       if (adminLink) adminLink.hidden = !(cj && cj.admin);
       if (cj) trackTrialIfNeeded(cj);
+      const renovar = document.getElementById("plus-renovar");
+      if (renovar) renovar.hidden = !(cj && !cj.admin && !cj.trial && (cj.plus_vencido || (cj.plus_activo && cj.puede_renovar)));
       if (note) {
         if (cj && cj.trial) note.textContent = "Trial BaratoYa Plus activo (sin tope de búsquedas).";
+        else if (cj && cj.plus_activo && cj.paid_until_texto) note.textContent = "Plus hasta " + cj.paid_until_texto + " (sin tope de búsquedas).";
+        else if (cj && cj.plus_vencido && cj.remaining != null) note.textContent = "Tu Plus venció. Te quedan " + cj.remaining + " de " + (cj.limit || 5) + " búsquedas gratis.";
         else if (cj && (cj.admin || cj.plan === "paid")) note.textContent = "Esta cuenta no tiene tope de búsquedas.";
         else if (cj && cj.remaining != null) note.textContent = "Te quedan " + cj.remaining + " de " + (cj.limit || 5) + " búsquedas.";
         else note.textContent = "Ya entraste. Escribí un producto.";
@@ -4227,7 +4232,7 @@
             try { if (data.preference_id) sessionStorage.setItem("by_mp_pref", String(data.preference_id)); } catch (_) {}
             location.href = data.init_point;
           } else if (data.already) {
-            if (landingCheckoutMsg) landingCheckoutMsg.textContent = "Tu cuenta ya tiene búsquedas ilimitadas.";
+            if (landingCheckoutMsg) landingCheckoutMsg.textContent = data.error || "Tu cuenta ya tiene búsquedas ilimitadas.";
             btnLandingComprar.textContent = "Ya sos Plus ✓";
           } else {
             if (landingCheckoutMsg) landingCheckoutMsg.textContent = data.error || "No se pudo iniciar el pago. Probá de nuevo.";

@@ -1380,13 +1380,14 @@ class BatchPendientesLoteTest(unittest.TestCase):
         self.assertFalse(calc_vencido["trial_activo"])
         self.assertTrue(calc_vencido["trial_vencido"])
 
-    def test_pago_mp_supersede_trial_a_paid_permanente(self) -> None:
+    def test_pago_mp_supersede_trial_a_paid_30_dias(self) -> None:
         from datetime import datetime, timedelta, timezone
         import cuentas
 
-        # 3. Usuario paga con MP -> plan paid permanente
+        # 3. Usuario paga con MP -> plan paid hasta paid_until (30 días)
         futuro = (datetime.now(timezone.utc) + timedelta(days=5)).isoformat()
-        calc_paid = cuentas.calcular_plan_efectivo("paid", "2026-10-05T20:00:00Z", futuro, "user")
+        hasta = (datetime.now(timezone.utc) + timedelta(days=30)).isoformat()
+        calc_paid = cuentas.calcular_plan_efectivo("paid", "2026-10-05T20:00:00Z", futuro, "user", hasta)
         self.assertEqual(calc_paid["plan_efectivo"], "paid")
         self.assertTrue(calc_paid["es_paid"])
         self.assertFalse(calc_paid["es_trial"])

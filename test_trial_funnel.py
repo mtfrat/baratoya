@@ -280,6 +280,10 @@ class CheckoutTrialAllowedTest(unittest.TestCase):
                 "plan_base": "paid",
                 "trial": False,
                 "paid_at": "2026-01-01T00:00:00+00:00",
+                "paid_until": "2099-01-01T00:00:00+00:00",
+                "paid_until_texto": "1 ene 2099",
+                "plus_activo": True,
+                "puede_renovar": False,
             }
 
         with patch.object(cuentas, "cuentas_on", return_value=True), \

@@ -1304,6 +1304,11 @@ async def ver_cuenta(request: Request):
         "remaining": perfil["remaining"],
         "limit": perfil["limit"],
         "admin": bool(perfil.get("admin")),
+        "paid_until": perfil.get("paid_until"),
+        "paid_until_texto": perfil.get("paid_until_texto") or "",
+        "plus_activo": bool(perfil.get("plus_activo")),
+        "plus_vencido": bool(perfil.get("plus_vencido")),
+        "puede_renovar": bool(perfil.get("puede_renovar", True)),
         "cobro_activo": cuentas.cobro_on(),
         "plan_label": cuentas.plan_label() if cuentas.cobro_on() else "",
         "prefs": perfil.get("prefs") or cuentas.DEFAULT_PREFS,
@@ -1394,11 +1399,16 @@ async def checkout_cuenta(request: Request):
     if not user:
         return JSONResponse({"ok": False, "reason": "auth", "error": "La sesión no sirve."}, status_code=401)
     perfil = await cuentas.leer_cuenta(token, user["id"])
-    # Solo bloquear si ya pagó Plus real. Trial (plan efectivo paid) sí puede suscribirse.
-    if perfil.get("paid_at") or (
-        perfil.get("plan_base") == "paid" and not perfil.get("trial")
-    ):
-        return {"ok": True, "already": True, "error": "Esta cuenta ya tiene búsquedas ilimitadas."}
+    # Plus pago dura 30 días por pago. Se bloquea solo si está vigente y faltan más de
+    # RENOVAR_DIAS_ANTES días; vencido o por vencer se puede renovar (suma desde paid_until).
+    if perfil.get("plus_activo") and not perfil.get("puede_renovar"):
+        hasta = perfil.get("paid_until_texto") or ""
+        return {
+            "ok": True,
+            "already": True,
+            "paid_until": perfil.get("paid_until"),
+            "error": f"Tu Plus está activo hasta {hasta}." if hasta else "Esta cuenta ya tiene búsquedas ilimitadas.",
+        }
     result = await cuentas.crear_preferencia(user["id"], user["email"])
     status = int(result.pop("status", 200))
     return JSONResponse(result, status_code=status)
