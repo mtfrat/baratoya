@@ -922,6 +922,7 @@ async def home(request: Request):
             "dias_nav": nav_dias_publicos(),
             "precios_muestra": precios_seo.muestra_home(),
             "precios_categorias": precios_seo.enlaces_categoria(),
+            "precios_commodities": precios_seo.enlaces_commodity(),
             **cuentas.pagina_publica(),
         },
     )
@@ -1012,7 +1013,18 @@ async def precios_categoria(request: Request, slug: str):
 
 @app.get("/precios/{slug}", response_class=HTMLResponse)
 async def precios_producto(request: Request, slug: str):
-    """Un producto, un precio por cadena. Menos de dos cadenas: no se publica."""
+    """Una ficha, o un hub de producto puntual (leche, yerba). Menos de dos cadenas: no se publica."""
+    if precios_seo.commodity_conocida(slug):
+        await precios_seo.asegurar_commodity(slug)
+        vista = precios_seo.pagina_commodity(slug)
+        if vista is None:
+            raise StarletteHTTPException(status_code=404)
+        return templates.TemplateResponse(
+            request,
+            "precios_categoria.html",
+            vista,
+            headers={"Cache-Control": precios_seo.CACHE_CONTROL},
+        )
     await precios_seo.asegurar_producto(slug)
     vista = precios_seo.pagina_producto(slug)
     if vista is None:

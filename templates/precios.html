@@ -101,6 +101,11 @@
 
     {% for grupo in grupos %}
     <h2><a href="{{ grupo.href }}">{{ grupo.categoria }}</a></h2>
+    {% if grupo.commodities %}
+    <p>
+      {% for c in grupo.commodities %}<a href="{{ c.href }}">{{ c.anchor }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
+    </p>
+    {% endif %}
     <ul>
       {% for p in grupo.productos %}
       <li>
