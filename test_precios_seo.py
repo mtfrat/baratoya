@@ -85,9 +85,17 @@ class PreciosPublicosTest(unittest.TestCase):
     def test_hub_seo(self) -> None:
         self.assertEqual(self.res.status_code, 200)
         self.assertIn("text/html", self.res.headers.get("content-type", ""))
-        self.assertEqual(HUB_TITLE, "Comparar precios de supermercados hoy | BaratoYa")
+        self.assertEqual(HUB_TITLE, "Comparar precios de supermercados hoy en CABA | BaratoYa")
         self.assertLessEqual(len(HUB_TITLE), 60)
+        self.assertGreaterEqual(len(HUB_TITLE), 45)
+        self.assertIn("Comparar precios de supermercados hoy", HUB_TITLE)
+        self.assertIn("CABA", HUB_H1)
+        self.assertGreaterEqual(len(self.hub["description"]), 120)
         self.assertLessEqual(len(self.hub["description"]), 155)
+        self.assertIn("Comparar precios de supermercados hoy", self.hub["description"])
+        self.assertIn("CABA", self.hub["description"])
+        self.assertIn("actualiza", self.hub["description"])
+        self.assertNotIn("$", self.hub["description"])
         self.assertIn(f"<title>{HUB_TITLE}</title>", self.html)
         self.assertIn(f'<meta name="description" content="{self.hub["description"]}" />', self.html)
         self.assertIn(f'<link rel="canonical" href="{self.hub["canonical"]}" />', self.html)
@@ -98,7 +106,48 @@ class PreciosPublicosTest(unittest.TestCase):
         parser.feed(self.html)
         self.assertEqual(parser.h1, [HUB_H1])
         self.assertNotIn("<script src=", self.html)
+        self.assertIn(self.hub["intro"], self.html)
+        self.assertIn("CABA", self.hub["intro"])
+        self.assertIn("Se actualiza", self.hub["intro"])
+        self.assertIn("Entrá por categoría o por producto", self.hub["intro"])
         self.assertIn("Captura más reciente:", self.html)
+        self.assertIn('id="categorias"', self.html)
+        arriba = self.html.split('id="categorias"', 1)[1].split("<h2", 1)[0]
+        for grupo in self.hub["grupos"]:
+            self.assertIn(f'href="{grupo["href"]}">{grupo["categoria"]}</a>', arriba)
+        self.assertIn('href="/descuentos-supermercados/', arriba)
+        self.assertIn(">descuentos en supermercados hoy</a>", arriba)
+        self.assertIn('href="/promos-bancarias-supermercados/coto"', arriba)
+        self.assertIn(">promos bancarias Coto</a>", arriba)
+        self.assertIn('href="/promos-bancarias-supermercados/carrefour"', arriba)
+        self.assertIn(">promos bancarias Carrefour</a>", arriba)
+        preguntas = [item["q"] for item in self.hub["faq"]]
+        self.assertEqual(
+            preguntas,
+            [
+                "¿Cómo comparar precios de supermercados?",
+                "¿Qué cadenas entran en la comparación?",
+                "¿Cada cuánto se actualizan los precios?",
+                "¿En qué se diferencia de las promos bancarias?",
+            ],
+        )
+        bloques = _ld_json(self.html)
+        faq = next(b for b in bloques if b["@type"] == "FAQPage")
+        self.assertEqual([q["name"] for q in faq["mainEntity"]], preguntas)
+        for item, publicado in zip(self.hub["faq"], faq["mainEntity"]):
+            self.assertEqual(publicado["acceptedAnswer"]["text"], item["a"])
+            self.assertIn(item["q"], self.html)
+            visible = re.sub(r"<[^>]+>", "", item.get("html") or item["a"])
+            self.assertEqual(visible, item["a"])
+            self.assertIn(item["a"] if not item.get("html") else "promos bancarias de supermercados", self.html)
+        self.assertIn('href="/promos-bancarias-supermercados"', self.html)
+        self.assertIn('href="/descuentos-supermercados"', self.html)
+        cadenas = self.hub["cadenas"]
+        self.assertGreaterEqual(len(cadenas), 2)
+        respuesta_cadenas = self.hub["faq"][1]["a"]
+        for nombre in cadenas:
+            self.assertIn(nombre, respuesta_cadenas)
+        self.assertNotIn("Coto", respuesta_cadenas)
         for vista in self.productos:
             self.assertIn(f'href="{vista["href"]}"', self.html)
             self.assertIn(vista["resumen"], self.html)
@@ -296,7 +345,7 @@ class PreciosPublicosTest(unittest.TestCase):
         self.assertNotEqual(corto.split()[-1], "1")
 
     def test_hub_y_jsonld_no_cambian_con_el_titulo(self) -> None:
-        self.assertEqual(HUB_TITLE, "Comparar precios de supermercados hoy | BaratoYa")
+        self.assertEqual(HUB_TITLE, "Comparar precios de supermercados hoy en CABA | BaratoYa")
         self.assertEqual(self.hub["title"], HUB_TITLE)
         self.assertLessEqual(len(HUB_TITLE), 60)
         for slug in (
@@ -547,7 +596,18 @@ class PreciosPublicosTest(unittest.TestCase):
         site = self.client.get("/sitemap.xml")
         self.assertEqual(site.status_code, 200)
         self.assertIn("application/xml", site.headers.get("content-type", ""))
-        self.assertIn("<loc>https://baratoya.app/precios</loc>", site.text)
+        self.assertIn(
+            f"<loc>https://baratoya.app/precios</loc><lastmod>{self.hub['lastmod']}</lastmod>",
+            site.text,
+        )
+        self.assertGreaterEqual(
+            self.hub["lastmod"],
+            max(p["lastmod"] for p in self.productos),
+        )
+        self.assertRegex(
+            site.text,
+            r"<loc>https://baratoya.app/</loc><lastmod>\d{4}-\d{2}-\d{2}</lastmod>",
+        )
         head = self.client.head("/sitemap.xml")
         self.assertEqual(head.status_code, 200)
         self.assertIn("xml", head.headers.get("content-type", ""))
@@ -569,7 +629,28 @@ class PreciosPublicosTest(unittest.TestCase):
         parser = _H1()
         parser.feed(home)
         self.assertEqual(parser.h1, ["Compará precios del súper, hoy por cadena"])
-        self.assertIn('href="/precios"', home)
+        self.assertIn('href="/precios">comparar precios de supermercados</a>', home)
+        descuentos = self.client.get("/descuentos-supermercados").text
+        self.assertIn('href="/precios">comparar precios de supermercados</a>', descuentos)
+        for path in (
+            "/",
+            "/precios",
+            "/planes",
+            "/descuentos-supermercados",
+            "/promos-bancarias-supermercados",
+            "/promos-bancarias-supermercados/coto",
+            "/promos-bancarias-supermercados/carrefour",
+            "/robots.txt",
+        ):
+            head = self.client.head(path)
+            self.assertEqual(head.status_code, 200, path)
+            self.assertEqual(head.content, b"", path)
+        for path in (self.productos[0]["href"], "/precios/categoria/lacteos", "/descuentos-supermercados/lunes"):
+            head = self.client.head(path)
+            self.assertEqual(head.status_code, 200, path)
+            self.assertEqual(head.content, b"", path)
+        self.assertEqual(self.client.head("/api/promos").status_code, 405)
+        self.assertEqual(self.client.head("/health").status_code, 405)
         for enlace in precios_seo.enlaces_categoria():
             self.assertIn(f'href="{enlace["href"]}"', home)
             self.assertIn(f"Precios de {enlace['etiqueta']}", home)

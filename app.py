@@ -1635,3 +1635,39 @@ async def alertas_revisar(request: Request):
         "aviso": "Relectura a pedido. No hay envío de mail ni una tarea programada.",
         "alertas": alertas,
     }
+
+
+def _sumar_head_a_paginas() -> None:
+    """FastAPI 0.142 no suma HEAD a un @app.get. GSC hace HEAD y recibía 405.
+
+    Solo páginas HTML, el sitemap ya lo tiene. /api y /health no: un HEAD no
+    debe disparar una búsqueda ni pegarle a Precios Claros.
+    """
+    exactas = {
+        "/",
+        "/planes",
+        "/aviso-precios",
+        "/terminos",
+        "/privacidad",
+        "/promos-bancarias-supermercados",
+        "/descuentos-supermercados",
+        "/precios",
+        "/favicon.svg",
+        "/favicon.ico",
+        "/robots.txt",
+    }
+    prefijos = (
+        "/promos-bancarias-supermercados/",
+        "/descuentos-supermercados/",
+        "/precios/",
+    )
+    for route in app.routes:
+        methods = getattr(route, "methods", None)
+        path = getattr(route, "path", "") or ""
+        if not methods or "GET" not in methods or "HEAD" in methods:
+            continue
+        if path in exactas or path.startswith(prefijos):
+            methods.add("HEAD")
+
+
+_sumar_head_a_paginas()
