@@ -17,10 +17,10 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from baratoya.promos_hoy import cadenas_indexables
+    from baratoya.promos_hoy import cadenas_indexables, nav_dias
     from baratoya.super_cadenas import agrupar_mismo_producto, buscar_super
 except ImportError:
-    from promos_hoy import cadenas_indexables
+    from promos_hoy import cadenas_indexables, nav_dias
     from super_cadenas import agrupar_mismo_producto, buscar_super
 
 ART = timezone(timedelta(hours=-3))
@@ -32,8 +32,31 @@ MIN_CADENAS = 2
 HORAS_FRESCURA = 24
 CACHE_CONTROL = "public, max-age=300, s-maxage=86400, stale-while-revalidate=86400"
 
-HUB_TITLE = "Comparar precios de supermercados hoy | BaratoYa"
-HUB_H1 = "Comparar precios de supermercados hoy"
+# ≤60. La query va primero; CABA es el alcance real, el mismo que el resto del sitio.
+HUB_TITLE = "Comparar precios de supermercados hoy en CABA | BaratoYa"
+HUB_H1 = "Comparar precios de supermercados hoy en CABA"
+HUB_INTRO = (
+    "Comparar precios de supermercados hoy en CABA: el precio de góndola que publica cada cadena. "
+    "Se actualiza al releer el catálogo público si la captura tiene más de un día. "
+    "Entrá por categoría o por producto. Si un precio no está publicado, no lo completamos."
+)
+# Orden del hub de promos. Un nombre que no esté acá igual entra, al final.
+_ORDEN_CADENA_PRECIO = (
+    "Día",
+    "Carrefour",
+    "Jumbo",
+    "Disco",
+    "Vea",
+    "Mas Online",
+    "Makro",
+    "Maxiconsumo",
+    "Josimar",
+    "El Abastecedor",
+)
+_ANCLAS_PROMOS = (
+    ("promos bancarias de supermercados", "/promos-bancarias-supermercados"),
+    ("descuentos por día", "/descuentos-supermercados"),
+)
 CATEGORIAS = ("Lácteos", "Almacén", "Bebidas", "Limpieza")
 # /precios/<slug> es la ficha. La categoría va un segmento más abajo para no pisarla.
 PATH_CATEGORIA = "/precios/categoria"
@@ -974,6 +997,125 @@ def _con_otros(vista: dict[str, Any], todas: list[dict[str, Any]]) -> dict[str, 
     return vista
 
 
+def cadenas_en_precios(productos: list[dict[str, Any]]) -> list[str]:
+    """Cadenas que publican al menos un precio. Sin inventar una que no esté."""
+    presentes: set[str] = set()
+    for producto in productos:
+        for oferta in producto["ofertas"]:
+            tienda = str(oferta.get("tienda") or "").strip()
+            if tienda:
+                presentes.add(tienda)
+    orden = [nombre for nombre in _ORDEN_CADENA_PRECIO if nombre in presentes]
+    resto = sorted(presentes - set(orden))
+    return orden + resto
+
+
+def _anclar(texto: str, anclas: tuple[tuple[str, str], ...]) -> str:
+    html = texto
+    for frase, href in anclas:
+        if frase not in html:
+            raise ValueError(f"ancla ausente: {frase}")
+        html = html.replace(frase, f'<a href="{href}">{frase}</a>', 1)
+    return html
+
+
+def _descripcion_hub(n: int) -> str:
+    """120–155. La query, CABA, que el precio se actualiza, y el CTA."""
+    prod = "producto" if n == 1 else "productos"
+    texto = (
+        f"Comparar precios de supermercados hoy en CABA: {n} {prod} de góndola. "
+        "El precio se actualiza con el catálogo público. Entrá por categoría o por producto."
+    )
+    if len(texto) > 155 or '"' in texto or "<" in texto:
+        texto = texto[:155].rsplit(" ", 1)[0].rstrip(".,;") + "."
+    return texto
+
+
+def _faq_hub(n: int, cadenas: list[str], actualizado: str) -> list[dict[str, str]]:
+    if n == 1:
+        cuantos = "1 producto con precio de góndola"
+    elif n:
+        cuantos = f"{n} productos con precio de góndola"
+    else:
+        cuantos = "los productos con precio de góndola"
+    if cadenas:
+        quienes = (
+            f"En esta página hay precio de {_lista_y(cadenas)}. "
+            "Cada ficha incluye solo las cadenas que publican ese producto. "
+            "Si una no lo muestra, no entra."
+        )
+    else:
+        quienes = (
+            "Entran las cadenas que publican el producto en el catálogo de CABA. "
+            "Si una no muestra el precio, no la completamos."
+        )
+    cuando = (
+        "Si la captura tiene más de un día, esta página vuelve a leer el catálogo público. "
+        "Cada ficha muestra la fecha y la hora, en hora de Buenos Aires."
+    )
+    if actualizado:
+        cuando += f" La captura más reciente es del {actualizado}."
+    diferencia = (
+        "No. El número de esta página es el precio de góndola, sin descuento de banco ni promo del día. "
+        "Las promos bancarias de supermercados y los descuentos por día están en otras páginas "
+        "y no cambian este precio."
+    )
+    return [
+        {
+            "q": "¿Cómo comparar precios de supermercados?",
+            "a": (
+                f"En esta página, por producto: {cuantos} en al menos dos cadenas de CABA. "
+                "Entrá a una categoría o a una ficha. El número sale del catálogo público. "
+                "Si una cadena no publica el precio, no lo completamos."
+            ),
+        },
+        {
+            "q": "¿Qué cadenas entran en la comparación?",
+            "a": quienes,
+        },
+        {
+            "q": "¿Cada cuánto se actualizan los precios?",
+            "a": cuando,
+        },
+        {
+            "q": "¿En qué se diferencia de las promos bancarias?",
+            "a": diferencia,
+            "html": _anclar(diferencia, _ANCLAS_PROMOS),
+        },
+    ]
+
+
+def _relacionados() -> list[dict[str, str]]:
+    """El día de hoy y las promos de Coto y Carrefour, si esas páginas existen."""
+    hoy = next(d for d in nav_dias() if d["hoy"])
+    por_slug = {c["slug"]: c for c in cadenas_indexables()}
+    salida = [{
+        "href": hoy["href"],
+        "texto": "descuentos en supermercados hoy",
+        "nota": hoy["nombre"],
+    }]
+    for slug, texto in (
+        ("coto", "promos bancarias Coto"),
+        ("carrefour", "promos bancarias Carrefour"),
+    ):
+        cadena = por_slug.get(slug)
+        if cadena:
+            salida.append({"href": cadena["href"], "texto": texto, "nota": ""})
+    return salida
+
+
+def _lastmod_hub(productos: list[dict[str, Any]]) -> str:
+    """La captura más nueva, o el día en Argentina si el enlace de hoy es más reciente.
+
+    El enlace al día de la semana cambia con el calendario. Una lastmod
+    clavada en la captura se queda atrás.
+    """
+    hoy = datetime.now(ART).date().isoformat()
+    if not productos:
+        return hoy
+    return max(hoy, *(p["lastmod"] for p in productos))
+
+
 def pagina_precios() -> dict[str, Any]:
     productos = vistas_publicadas()
     grupos = []
@@ -989,48 +1131,22 @@ def pagina_precios() -> dict[str, Any]:
     if productos:
         reciente = max(productos, key=lambda p: p["capturado"])
         actualizado = reciente["capturado_texto"]
-        lastmod = max(p["lastmod"] for p in productos)
     else:
         actualizado = ""
-        lastmod = ""
-    description = (
-        f"Precios de {n} productos básicos en supermercados. "
-        "El más barato sale del catálogo público, con la fecha de captura."
-    )
-    if len(description) > 155:
-        description = description[:155].rsplit(" ", 1)[0].rstrip(".,;") + "."
-    faq = [
-        {
-            "q": "¿Cómo se comparan los precios?",
-            "a": (
-                f"Esta página lista {n} productos con precio de góndola en al menos dos cadenas. "
-                "El número sale del catálogo público que ya consulta BaratoYa. No se escribe un precio a mano."
-            ),
-        },
-        {
-            "q": "¿El precio incluye promos bancarias?",
-            "a": (
-                "No. Es el precio de góndola, sin descuento de banco. "
-                "Las promos bancarias de supermercados están en su propia página."
-            ),
-        },
-        {
-            "q": "¿De cuándo es el precio?",
-            "a": (
-                "Cada producto muestra la fecha y la hora de la captura, en hora de Buenos Aires. "
-                "Si la captura tiene más de un día, la página vuelve a leer el catálogo."
-            ),
-        },
-    ]
+    cadenas = cadenas_en_precios(productos)
+    faq = _faq_hub(n, cadenas, actualizado)
     return {
         "title": HUB_TITLE,
-        "description": description,
+        "description": _descripcion_hub(n),
         "h1": HUB_H1,
+        "intro": HUB_INTRO,
         "canonical": ORIGEN + PATH_HUB,
         "n": n,
         "grupos": grupos,
+        "cadenas": cadenas,
+        "relacionados": _relacionados(),
         "actualizado": actualizado,
-        "lastmod": lastmod,
+        "lastmod": _lastmod_hub(productos),
         "faq": faq,
         "ld_faq": _ld({
             "@context": "https://schema.org",
@@ -1271,8 +1387,7 @@ def urls_sitemap() -> list[tuple[str, str]]:
     productos = vistas_publicadas()
     if not productos:
         return []
-    last = max(p["lastmod"] for p in productos)
-    urls = [(ORIGEN + PATH_HUB, last)]
+    urls = [(ORIGEN + PATH_HUB, _lastmod_hub(productos))]
     for pagina in paginas_categoria():
         urls.append((pagina["canonical"], pagina["lastmod"]))
     for vista in productos:
