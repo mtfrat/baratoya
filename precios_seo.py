@@ -29,6 +29,9 @@ PATH_HUB = "/precios"
 RUTA = Path(__file__).parent / "data" / "precios-publicos.json"
 RUTA_TMP = Path("/tmp/baratoya-precios-publicos.json")
 MIN_CADENAS = 2
+# Un hub de commodity sale solo con 3 SKU comparables, cada uno en 3 cadenas.
+MIN_SKUS_COMMODITY = 3
+MIN_CADENAS_COMMODITY = 3
 HORAS_FRESCURA = 24
 CACHE_CONTROL = "public, max-age=300, s-maxage=86400, stale-while-revalidate=86400"
 
@@ -130,6 +133,44 @@ COMMODITIES: tuple[dict[str, Any], ...] = (
         "excluye_slug": ("mate-cocido", "cancha"),
         "faq_precio": "¿Cuál es el precio de la yerba hoy?",
         "faq_donde": "¿Dónde está más barata la yerba?",
+        "articulo_barato": "La más barata",
+    },
+    {
+        "slug": "aceite",
+        "nombre": "Aceite",
+        "etiqueta": "aceite",
+        "varios": "aceites",
+        "categoria": "Almacén",
+        "title": "Precio del aceite hoy en supermercados | BaratoYa",
+        "anchor": "Precio del aceite hoy",
+        "intro": (
+            "Aceite de girasol en botella. "
+            "El número sale del catálogo público: si una cadena no lo publica, no lo completamos."
+        ),
+        "nota": "Aceite de oliva, aceitunas y aceite en aerosol no forman parte de esta lista.",
+        "prefijo": "aceite-",
+        "excluye_slug": ("oliva", "aceituna", "aerosol", "spray"),
+        "faq_precio": "¿Cuál es el precio del aceite hoy?",
+        "faq_donde": "¿Dónde está más barato el aceite?",
+        "articulo_barato": "El más barato",
+    },
+    {
+        "slug": "harina",
+        "nombre": "Harina",
+        "etiqueta": "harina",
+        "varios": "harinas",
+        "categoria": "Almacén",
+        "title": "Precio de la harina hoy en supermercados | BaratoYa",
+        "anchor": "Precio de la harina hoy",
+        "intro": (
+            "Harina de trigo en paquete de 1 kg. "
+            "El precio de góndola que publica cada cadena, con la fecha de la captura."
+        ),
+        "nota": "Harina leudante, integral y de maíz no forman parte de esta lista.",
+        "prefijo": "harina-",
+        "excluye_slug": ("leudante", "integral", "maiz", "premezcla"),
+        "faq_precio": "¿Cuál es el precio de la harina hoy?",
+        "faq_donde": "¿Dónde está más barata la harina?",
         "articulo_barato": "La más barata",
     },
 )
@@ -1255,6 +1296,7 @@ def pagina_precios() -> dict[str, Any]:
         "grupos": grupos,
         "cadenas": cadenas,
         "relacionados": _relacionados(),
+        "commodities": enlaces_commodity(productos),
         "actualizado": actualizado,
         "lastmod": _lastmod_hub(productos),
         "faq": faq,
@@ -1484,7 +1526,18 @@ def commodity_conocida(slug: str) -> bool:
 
 
 def _productos_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    return [p for p in todas if _producto_en_commodity(p["slug"], spec)]
+    """SKU del hub: el prefijo, sin lo que el filtro saca, y con precio en 3 cadenas."""
+    return [
+        p for p in todas
+        if _producto_en_commodity(p["slug"], spec) and int(p.get("n") or 0) >= MIN_CADENAS_COMMODITY
+    ]
+
+
+def _hub_publicado(productos: list[dict[str, Any]]) -> bool:
+    return (
+        len(productos) >= MIN_SKUS_COMMODITY
+        and _n_cadenas(productos) >= MIN_CADENAS_COMMODITY
+    )
 
 
 def enlaces_commodity(
@@ -1497,15 +1550,28 @@ def enlaces_commodity(
     for spec in COMMODITIES:
         if categoria is not None and spec["categoria"] != categoria:
             continue
-        if not _productos_commodity(spec, productos):
+        if not _hub_publicado(_productos_commodity(spec, productos)):
             continue
         out.append({
             "href": _href_commodity(spec),
             "nombre": spec["nombre"],
+            "etiqueta": spec["etiqueta"],
             "anchor": spec["anchor"],
             "categoria": spec["categoria"],
         })
     return out
+
+
+def _captura_menor_precio(productos: list[dict[str, Any]]) -> str:
+    """Fecha de captura del menor precio de góndola, no la más nueva de la lista."""
+    low = min(o["precio"] for p in productos for o in p["ofertas"])
+    fechas: list[str] = []
+    for producto in productos:
+        if any(o["precio"] == low for o in producto["ofertas"]):
+            texto = str(producto["capturado_texto"])
+            if texto not in fechas:
+                fechas.append(texto)
+    return _lista_y(fechas)
 
 
 def _faq_commodity(
@@ -1518,11 +1584,13 @@ def _faq_commodity(
     cad = "supermercado" if n_cadenas == 1 else "supermercados"
     reciente = max(productos, key=lambda p: p["capturado"])
     frase = frase_mas_barato(productos)
+    captura = _captura_menor_precio(productos)
     return [
         {
             "q": spec["faq_precio"],
             "a": (
                 f"El menor precio publicado es {frase}. "
+                f"Se capturó el {captura}. "
                 f"Hay {n} {prod} en {n_cadenas} {cad}. "
                 f"Captura más reciente: {reciente['capturado_texto']}."
             ),
@@ -1531,6 +1599,7 @@ def _faq_commodity(
             "q": spec["faq_donde"],
             "a": (
                 f"{spec['articulo_barato']} de esta lista es {frase}. "
+                f"Se capturó el {captura}. "
                 "Es el precio de góndola que publica la cadena, "
                 "no el de una sucursal ni el precio con promo bancaria."
             ),
@@ -1569,7 +1638,7 @@ def _ld_faq(faq: list[dict[str, str]]) -> str:
 
 def _armar_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> dict[str, Any] | None:
     productos = _productos_commodity(spec, todas)
-    if not productos:
+    if not _hub_publicado(productos):
         return None
     n = len(productos)
     cadenas = _n_cadenas(productos)
@@ -1791,7 +1860,7 @@ async def asegurar_categoria(slug: str) -> None:
 
 
 async def asegurar_commodity(slug: str) -> None:
-    """Relee los productos vencidos de un hub (leche, yerba). Si no alcanza el tiempo, queda la captura."""
+    """Relee los productos vencidos de un hub. Si no alcanza el tiempo, queda la captura."""
     if _offline():
         return
     if not commodity_conocida(slug):

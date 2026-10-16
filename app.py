@@ -1013,7 +1013,7 @@ async def precios_categoria(request: Request, slug: str):
 
 @app.get("/precios/{slug}", response_class=HTMLResponse)
 async def precios_producto(request: Request, slug: str):
-    """Una ficha, o un hub de producto puntual (leche, yerba). Menos de dos cadenas: no se publica."""
+    """Una ficha, o un hub de producto puntual. Menos de dos cadenas: no se publica."""
     if precios_seo.commodity_conocida(slug):
         await precios_seo.asegurar_commodity(slug)
         vista = precios_seo.pagina_commodity(slug)

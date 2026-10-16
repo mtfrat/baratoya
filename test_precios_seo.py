@@ -602,6 +602,8 @@ class PreciosPublicosTest(unittest.TestCase):
         esperados = {
             "leche": "Precio de la leche hoy en supermercados | BaratoYa",
             "yerba": "Precio de la yerba hoy en supermercados | BaratoYa",
+            "aceite": "Precio del aceite hoy en supermercados | BaratoYa",
+            "harina": "Precio de la harina hoy en supermercados | BaratoYa",
         }
         publicadas = {p["slug"]: p for p in precios_seo.paginas_commodity()}
         self.assertEqual(set(publicadas), set(esperados))
@@ -620,6 +622,8 @@ class PreciosPublicosTest(unittest.TestCase):
                 {
                     "leche": "¿Cuál es el precio de la leche hoy?",
                     "yerba": "¿Cuál es el precio de la yerba hoy?",
+                    "aceite": "¿Cuál es el precio del aceite hoy?",
+                    "harina": "¿Cuál es el precio de la harina hoy?",
                 }[slug],
             )
             self.assertEqual(
@@ -627,6 +631,8 @@ class PreciosPublicosTest(unittest.TestCase):
                 {
                     "leche": "¿Dónde está más barata la leche?",
                     "yerba": "¿Dónde está más barata la yerba?",
+                    "aceite": "¿Dónde está más barato el aceite?",
+                    "harina": "¿Dónde está más barata la harina?",
                 }[slug],
             )
             self.assertGreaterEqual(len(vista["description"]), 120, vista["description"])
@@ -635,13 +641,18 @@ class PreciosPublicosTest(unittest.TestCase):
             self.assertIn(str(vista["n_cadenas"]), vista["description"])
             self.assertEqual(vista["n"], len(vista["productos"]))
             self.assertEqual(vista["n_cadenas"], precios_seo._n_cadenas(vista["productos"]))
-            self.assertGreaterEqual(vista["n"], 1)
-            self.assertGreaterEqual(vista["n_cadenas"], MIN_CADENAS)
-            prefijo = slug + "-"
+            self.assertGreaterEqual(vista["n"], precios_seo.MIN_SKUS_COMMODITY)
+            self.assertGreaterEqual(vista["n_cadenas"], precios_seo.MIN_CADENAS_COMMODITY)
+            spec = precios_seo._COMMODITY[slug]
             self.assertEqual(
                 {p["slug"] for p in vista["productos"]},
-                {s for s in publicados if s.startswith(prefijo)},
+                {
+                    s for s in publicados
+                    if precios_seo._producto_en_commodity(s, spec)
+                    and next(v["n"] for v in self.productos if v["slug"] == s) >= precios_seo.MIN_CADENAS_COMMODITY
+                },
             )
+            prefijo = slug + "-"
             for producto in vista["productos"]:
                 self.assertTrue(producto["slug"].startswith(prefijo), producto["slug"])
             res = self.client.get(vista["href"])
@@ -663,6 +674,11 @@ class PreciosPublicosTest(unittest.TestCase):
                 self.assertIn(producto["nombre_visible"], html)
             low = min(o["precio"] for p in vista["productos"] for o in p["ofertas"])
             precio = precios_seo.peso(low)
+            fechas_low = {
+                p["capturado_texto"]
+                for p in vista["productos"]
+                if any(o["precio"] == low for o in p["ofertas"])
+            }
             bloques = _ld_json(html)
             tipos = {b.get("@type") for b in bloques}
             self.assertEqual(tipos, {"FAQPage", "ItemList", "BreadcrumbList"})
@@ -674,6 +690,9 @@ class PreciosPublicosTest(unittest.TestCase):
             preguntas = {item["q"]: item["a"] for item in vista["faq"]}
             self.assertIn(precio, preguntas[vista["faq"][0]["q"]])
             self.assertIn(precio, preguntas[vista["faq"][1]["q"]])
+            for fecha in fechas_low:
+                self.assertIn(fecha, preguntas[vista["faq"][0]["q"]])
+                self.assertIn(fecha, preguntas[vista["faq"][1]["q"]])
             for producto in vista["productos"]:
                 for oferta in producto["ofertas"]:
                     if oferta["precio"] != low:
@@ -732,12 +751,121 @@ class PreciosPublicosTest(unittest.TestCase):
         manteca = self.client.get("/precios/manteca-la-serenisima-200g").text
         self.assertNotIn('href="/precios/leche"', manteca)
 
+    def test_aceite_solo_girasol(self) -> None:
+        vista = pagina_commodity("aceite")
+        self.assertIsNotNone(vista)
+        assert vista is not None
+        hub = {p["slug"] for p in vista["productos"]}
+        self.assertEqual(
+            hub,
+            {
+                "aceite-natura-girasol-1-5l",
+                "aceite-cocinero-girasol-900ml",
+                "aceite-canuelas-girasol-900ml",
+            },
+        )
+        self.assertEqual(vista["n_cadenas"], 8)
+        publicados = {p["slug"] for p in self.productos}
+        self.assertIn("aceite-oliva-natura-500ml", publicados)
+        self.assertNotIn("aceite-oliva-natura-500ml", hub)
+        for cadena in vista["productos"]:
+            self.assertGreaterEqual(cadena["n"], precios_seo.MIN_CADENAS_COMMODITY)
+        spec = precios_seo._COMMODITY["aceite"]
+        for slug in hub:
+            self.assertTrue(precios_seo._producto_en_commodity(slug, spec))
+        for slug in (
+            "aceite-oliva-natura-500ml",
+            "aceite-aceitunas-nucu",
+            "aceite-en-aerosol-natura",
+            "aceitunas-verdes",
+        ):
+            self.assertFalse(precios_seo._producto_en_commodity(slug, spec), slug)
+        html = self.client.get("/precios/aceite").text
+        self.assertNotIn('href="/precios/aceite-oliva-natura-500ml"', html)
+        self.assertIn("Aceite de oliva, aceitunas y aceite en aerosol no forman parte de esta lista.", html)
+        almacen = self.client.get("/precios/categoria/almacen").text
+        self.assertIn('href="/precios/aceite"', almacen)
+        self.assertIn("Precio del aceite hoy", almacen)
+        for slug in hub:
+            ficha = self.client.get(f"/precios/{slug}").text
+            self.assertIn('href="/precios/aceite"', ficha)
+            self.assertIn("Precio del aceite hoy", ficha)
+        oliva = self.client.get("/precios/aceite-oliva-natura-500ml").text
+        self.assertNotIn('href="/precios/aceite"', oliva)
+
+    def test_harina_solo_trigo(self) -> None:
+        vista = pagina_commodity("harina")
+        self.assertIsNotNone(vista)
+        assert vista is not None
+        hub = {p["slug"] for p in vista["productos"]}
+        self.assertEqual(
+            hub,
+            {
+                "harina-pureza-0000-1kg",
+                "harina-favorita-000-1kg",
+                "harina-favorita-0000-1kg",
+            },
+        )
+        self.assertEqual(vista["n_cadenas"], 7)
+        for producto in vista["productos"]:
+            self.assertGreaterEqual(producto["n"], precios_seo.MIN_CADENAS_COMMODITY)
+        spec = precios_seo._COMMODITY["harina"]
+        for slug in (
+            "harina-leudante-pureza-1kg",
+            "harina-integral-1kg",
+            "harina-de-maiz-1kg",
+            "premezcla-para-pizza",
+        ):
+            self.assertFalse(precios_seo._producto_en_commodity(slug, spec), slug)
+        html = self.client.get("/precios/harina").text
+        self.assertIn("Harina leudante, integral y de maíz no forman parte de esta lista.", html)
+        almacen = self.client.get("/precios/categoria/almacen").text
+        self.assertIn('href="/precios/harina"', almacen)
+        self.assertIn("Precio de la harina hoy", almacen)
+        for slug in hub:
+            ficha = self.client.get(f"/precios/{slug}").text
+            self.assertIn('href="/precios/harina"', ficha)
+            self.assertIn("Precio de la harina hoy", ficha)
+
+    def test_bloque_precio_hoy(self) -> None:
+        self.assertIn('id="precio-hoy"', self.html)
+        bloque = self.html.split('id="precio-hoy"', 1)[1].split("</p>", 1)[0]
+        self.assertTrue(bloque.startswith(">Precio hoy de "), bloque)
+        enlaces = precios_seo.enlaces_commodity()
+        self.assertEqual([e["slug"] if "slug" in e else e["href"].rsplit("/", 1)[-1] for e in enlaces], ["leche", "yerba", "aceite", "harina"])
+        for enlace in enlaces:
+            self.assertIn(f'href="{enlace["href"]}">{enlace["etiqueta"]}</a>', bloque)
+        for slug in ("azucar", "arroz", "fideos", "cafe", "gaseosa", "agua", "papel-higienico", "detergente"):
+            self.assertNotIn(f'href="/precios/{slug}"', bloque)
+
     def test_commodity_desconocida_404(self) -> None:
         self.assertIsNone(pagina_commodity("no-existe"))
         self.assertIsNone(pagina_commodity("manteca"))
         self.assertIsNone(pagina_commodity("Leche"))
         self.assertIsNone(pagina_commodity("dulce-de-leche"))
-        for path in ("/precios/manteca", "/precios/azucar", "/precios/dulce-de-leche"):
+        for slug in (
+            "azucar",
+            "arroz",
+            "fideos",
+            "cafe",
+            "gaseosa",
+            "agua",
+            "papel-higienico",
+            "detergente",
+        ):
+            self.assertIsNone(pagina_commodity(slug), slug)
+        for path in (
+            "/precios/manteca",
+            "/precios/azucar",
+            "/precios/arroz",
+            "/precios/fideos",
+            "/precios/cafe",
+            "/precios/gaseosa",
+            "/precios/agua",
+            "/precios/papel-higienico",
+            "/precios/detergente",
+            "/precios/dulce-de-leche",
+        ):
             res = self.client.get(path)
             self.assertEqual(res.status_code, 404, path)
             self.assertIn('name="robots" content="noindex"', res.text)
@@ -774,7 +902,11 @@ class PreciosPublicosTest(unittest.TestCase):
             )
         self.assertIn("<loc>https://baratoya.app/precios/leche</loc>", site.text)
         self.assertIn("<loc>https://baratoya.app/precios/yerba</loc>", site.text)
+        self.assertIn("<loc>https://baratoya.app/precios/aceite</loc>", site.text)
+        self.assertIn("<loc>https://baratoya.app/precios/harina</loc>", site.text)
         self.assertNotIn("<loc>https://baratoya.app/precios/manteca</loc>", site.text)
+        for slug in ("azucar", "arroz", "fideos", "cafe", "gaseosa", "agua", "papel-higienico", "detergente"):
+            self.assertNotIn(f"<loc>https://baratoya.app/precios/{slug}</loc>", site.text)
         for vista in self.productos:
             self.assertIn(
                 f"<loc>{vista['canonical']}</loc><lastmod>{vista['lastmod']}</lastmod>",

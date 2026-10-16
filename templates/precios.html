@@ -93,6 +93,9 @@
       <a class="btn" href="{{ grupo.href }}">{{ grupo.categoria }}</a>
       {% endfor %}
     </nav>
+    {% if commodities %}
+    <p id="precio-hoy">Precio hoy de{% for c in commodities %}{% if not loop.first %}{% if loop.last %} y{% else %},{% endif %}{% endif %} <a href="{{ c.href }}">{{ c.etiqueta }}</a>{% endfor %}.</p>
+    {% endif %}
     {% if relacionados %}
     <p>También:{% for e in relacionados %}{% if not loop.first %}{% if loop.last %} y{% else %},{% endif %}{% endif %} <a href="{{ e.href }}">{{ e.texto }}</a>{% if e.nota %} ({{ e.nota }}){% endif %}{% endfor %}.</p>
     {% endif %}
