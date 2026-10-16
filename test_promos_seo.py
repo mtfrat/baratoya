@@ -243,7 +243,10 @@ class PromosPorCadenaTest(unittest.TestCase):
             self.assertIn("promociones bancarias", vista["description"].casefold())
             self.assertIn("supermercado", vista["description"].casefold())
             self.assertNotIn("%", vista["title"])
-            self.assertNotIn("%", vista["description"])
+            if cadena["nombre"] == "Carrefour":
+                self.assertLessEqual(len(vista["description"]), 160)
+            else:
+                self.assertNotIn("%", vista["description"])
             self.assertLessEqual(len(descripcion_cadena(cadena["nombre"], "miércoles")), 155)
             self.assertTrue(descripcion_cadena(cadena["nombre"], "miércoles").startswith("Promociones bancarias "))
             self.assertEqual(vista["h1"], h1_cadena(cadena["nombre"]))
@@ -629,6 +632,35 @@ class ResumenCadenaTest(unittest.TestCase):
         self.assertEqual(r["mejor_por_dia"][0], {"dia": "lunes", "pct": "20%", "bancos": "Banco A", "tope": "tope $5.000"})
         self.assertEqual({b["banco"]: b["dias"] for b in r["por_banco"]}, {"Banco A": "lunes, miércoles", "Banco B": "lunes", "Tarjeta C": "todos los días"})
         self.assertEqual(r["bancos_online"], ["Banco A"])
+
+
+class MetaCarrefourHastaTest(unittest.TestCase):
+    def test_meta_con_porcentaje_y_fallback(self):
+        from promos_hoy import descripcion_cadena
+        con = descripcion_cadena("Carrefour", "miércoles", 35.0)
+        self.assertIn("hasta 35%", con)
+        self.assertTrue(con.startswith("Promociones bancarias "))
+        self.assertLessEqual(len(con), 160)
+        sin = descripcion_cadena("Carrefour", "miércoles", None)
+        self.assertNotIn("%", sin)
+        self.assertEqual(sin, descripcion_cadena("Carrefour", "miércoles"))
+        self.assertNotIn("%", descripcion_cadena("Coto", "miércoles", 35.0))
+
+    def test_pagina_usa_mayor_vigente_hoy(self):
+        from unittest import mock
+        import promos_hoy
+        items = [
+            {"chain_id": "carrefour", "cadena": "Carrefour", "banco": "Banco A", "oferta": "20%", "percent": 20.0, "day_ids": [2]},
+            {"chain_id": "carrefour", "cadena": "Carrefour", "banco": "Banco B", "oferta": "30%", "percent": 30.0, "day_ids": [3]},
+        ]
+        mie = date(2026, 10, 14)
+        with mock.patch.object(promos_hoy, "_items_publicos", return_value=items):
+            v = promos_hoy.pagina_seo_cadena("carrefour", mie)
+        self.assertIn("hasta 20%", v["description"])
+        items_sin = [dict(items[0], percent=None, oferta="3 cuotas sin interés")]
+        with mock.patch.object(promos_hoy, "_items_publicos", return_value=items_sin):
+            v = promos_hoy.pagina_seo_cadena("carrefour", mie)
+        self.assertNotIn("%", v["description"])
 
 
 if __name__ == "__main__":

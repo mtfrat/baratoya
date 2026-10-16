@@ -2065,7 +2065,21 @@ def h1_cadena(nombre: str) -> str:
     return f"Promociones bancarias en {nombre} hoy"
 
 
-def descripcion_cadena(nombre: str, dia: str) -> str:
+def descripcion_cadena(nombre: str, dia: str, hasta_pct: float | None = None) -> str:
+    if hasta_pct and nombre == "Carrefour":
+        hasta = _pct_txt(hasta_pct)
+        for texto in (
+            (
+                f"Promociones bancarias del supermercado {nombre} hoy ({dia}) en CABA: "
+                f"hasta {hasta} de descuento. Banco o tarjeta, días y tope. BaratoYa no vende ni entrega."
+            ),
+            (
+                f"Promociones bancarias de {nombre} hoy ({dia}) en CABA: hasta {hasta}. "
+                f"Bancos, días y tope. BaratoYa no vende ni entrega."
+            ),
+        ):
+            if len(texto) <= 160:
+                return texto
     opciones = (
         (
             f"Promociones bancarias del supermercado {nombre} hoy ({dia}) en CABA: "
@@ -2335,7 +2349,9 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
     otras = [c for c in cadenas_indexables(hoy) if c["chain_id"] != chain_id]
     return {
         "title": titulo_cadena(nombre),
-        "description": descripcion_cadena(nombre, dia),
+        "description": descripcion_cadena(
+            nombre, dia, max((it["percent"] for it in hoy_promos if it.get("percent")), default=None)
+        ),
         "canonical": canonical,
         "h1": h1_cadena(nombre),
         "path": href,
