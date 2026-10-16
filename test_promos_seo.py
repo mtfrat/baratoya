@@ -615,5 +615,21 @@ class DescuentosPorDiaTest(unittest.TestCase):
         self.assertIn('<a href="/admin" id="nav-admin" hidden rel="nofollow">', src)
 
 
+class ResumenCadenaTest(unittest.TestCase):
+    def test_resumen_solo_datos_publicados(self):
+        from promos_hoy import resumen_cadena
+        items = [
+            {"banco": "Banco A", "oferta": "20%", "percent": 20.0, "day_ids": [0, 2], "tope": "tope $5.000", "canal": "online"},
+            {"banco": "Banco B", "oferta": "10%", "percent": 10.0, "day_ids": [0], "canal": "sucursal"},
+            {"banco": "Si sos empleado público todos los jueves", "oferta": "30%", "percent": 30.0, "day_ids": [3]},
+            {"banco": "Tarjeta C", "oferta": "3 cuotas sin interés", "day_ids": list(range(7))},
+        ]
+        r = resumen_cadena(items)
+        self.assertEqual([f["dia"] for f in r["mejor_por_dia"]], ["lunes", "miércoles"])
+        self.assertEqual(r["mejor_por_dia"][0], {"dia": "lunes", "pct": "20%", "bancos": "Banco A", "tope": "tope $5.000"})
+        self.assertEqual({b["banco"]: b["dias"] for b in r["por_banco"]}, {"Banco A": "lunes, miércoles", "Banco B": "lunes", "Tarjeta C": "todos los días"})
+        self.assertEqual(r["bancos_online"], ["Banco A"])
+
+
 if __name__ == "__main__":
     unittest.main()

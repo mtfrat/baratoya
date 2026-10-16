@@ -2253,6 +2253,43 @@ _COLUMNAS_CADENA = (
 )
 
 
+def _pct_txt(p: float) -> str:
+    return f"{int(p)}%" if float(p).is_integer() else f"{p:g}%".replace(".", ",")
+
+
+def _es_nombre_banco(banco: str) -> bool:
+    """Deja afuera textos de promo que la cadena publica en el lugar del banco."""
+    b = banco.strip()
+    return bool(b) and len(b) <= 40 and not b[0].isdigit() and not _fold(b).startswith("si ")
+
+
+def resumen_cadena(items: list[dict[str, Any]]) -> dict[str, Any]:
+    """Resumen calculado solo con lo publicado: mayor % por día y días por banco."""
+    items = [it for it in items if _es_nombre_banco(it.get("banco") or "")]
+    mejor: list[dict[str, str]] = []
+    for i, nombre_dia in DIAS:
+        del_dia = [it for it in items if i in it.get("day_ids", []) and it.get("percent")]
+        if not del_dia:
+            continue
+        top = max(it["percent"] for it in del_dia)
+        bancos = sorted({it["banco"] for it in del_dia if it["percent"] == top}, key=str.casefold)
+        fila = {"dia": nombre_dia, "pct": _pct_txt(top), "bancos": ", ".join(bancos)}
+        topes = {it.get("tope", "") for it in del_dia if it["percent"] == top}
+        if len(topes) == 1 and next(iter(topes)):
+            fila["tope"] = next(iter(topes))
+        mejor.append(fila)
+    por_banco: dict[str, set[int]] = {}
+    for it in items:
+        por_banco.setdefault(it["banco"], set()).update(it.get("day_ids", []))
+    bancos = [
+        {"banco": b, "dias": ", ".join(NOMBRE_DIA[d] for d in sorted(ds)) if len(ds) < 7 else "todos los días"}
+        for b, ds in sorted(por_banco.items(), key=lambda kv: kv[0].casefold())
+        if ds
+    ]
+    online = sorted({it["banco"] for it in items if "online" in (it.get("canal") or "")}, key=str.casefold)
+    return {"mejor_por_dia": mejor, "por_banco": bancos, "bancos_online": online}
+
+
 def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
     """Vista de /promos-bancarias-supermercados/<slug>. None si no hay datos."""
     chain_id = _ID_POR_SLUG.get((slug or "").strip())
@@ -2316,6 +2353,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
         "filas": filas,
         "columnas": columnas,
         "faq": faq,
+        "resumen": resumen_cadena(items),
         "notas": notas_honestidad(),
         "otras": otras,
         "dias_nav": nav_dias(hoy),
