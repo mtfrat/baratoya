@@ -300,7 +300,8 @@ class CopyAndGaTest(unittest.TestCase):
         html = TestClient(app_mod.app).get("/").text
         self.assertIn("Probar 7d Plus gratis", html)
         self.assertIn("Empezar 7d gratis", html)
-        self.assertIn("Suscribirme", html)
+        self.assertIn("Pagar 30 días", html)
+        self.assertNotIn("Suscribirme", html)
         self.assertIn("¿El trial cobra solo?", html)
         self.assertIn("No hay cobro automático el día 8", html)
         self.assertIn('gtag("event", name', html)
@@ -350,3 +351,17 @@ class ActivarTrialEndpointTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PlusPagoUnicoCopyTest(unittest.TestCase):
+    """Checkout Pro es pago único por 30 días: el copy no puede prometer suscripción ni débito."""
+
+    def test_home_y_planes_sin_copy_de_suscripcion(self) -> None:
+        client = TestClient(app_mod.app)
+        for path in ("/", "/planes"):
+            html = client.get(path).text
+            self.assertIn("Pagar 30 días", html, path)
+            self.assertIn("ARS / 30 días", html, path)
+            self.assertIn("sin débito automático", html, path)
+            for frase in ("Suscribirme", "suscribís", "suscribirte", "¿Cómo cancelo la suscripción?", "ARS / mes", "Cancelás cuando quieras"):
+                self.assertNotIn(frase, html, f"{path}: {frase}")

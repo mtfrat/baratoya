@@ -1638,7 +1638,7 @@
         <p class="sub">Creá tu cuenta y durante 7 días buscás sin tope, sin tarjeta. Después seguís en plan gratis (5 búsquedas) o te pasás a Plus si querés.</p>
         <div class="hero-cta-row">
           <button type="button" class="btn lime" id="hero-cta-trial">Empezar 7d gratis</button>
-          <a href="#planes" class="btn outline" id="hero-cta-subscribe">Suscribirme · {{ plan_label or "$1.990" }}</a>
+          <a href="#planes" class="btn outline" id="hero-cta-subscribe">Pagar 30 días · {{ plan_label or "$1.990" }}</a>
         </div>
         <div class="hero-mockup-frame">
           <picture>
@@ -1831,7 +1831,7 @@
     <section class="section landing-planes" id="planes">
       <div class="wrap">
         <div class="planes-header">
-          <span class="planes-badge">Planes y suscripciones</span>
+          <span class="planes-badge">Planes</span>
           <h2 class="sec">Empezá con 7 días Plus gratis</h2>
           <p class="lead">Creá tu cuenta y probá búsquedas sin tope durante 7 días, sin tarjeta. Después seguís gratis (5 búsquedas) o elegís Plus.</p>
         </div>
@@ -1867,7 +1867,7 @@
               </li>
             </ul>
             <button type="button" class="btn outline plan-cta" id="landing-cta-trial">Empezar 7d gratis</button>
-            <p class="plan-note">Sin tarjeta. Al crear la cuenta activás 7 días Plus. Plus pago ({{ plan_label or "$1.990" }}/mes) es aparte y solo si lo elegís.</p>
+            <p class="plan-note">Sin tarjeta. Al crear la cuenta activás 7 días Plus. Plus pago ({{ plan_label or "$1.990" }} por 30 días) es aparte y solo si lo elegís.</p>
           </article>
 
           <!-- Card BaratoYa Plus -->
@@ -1877,7 +1877,7 @@
             <p class="plan-desc">Para compras familiares y encontrar siempre la mejor combinación de descuentos.</p>
             <div class="plan-price-row">
               <span class="plan-price">{{ plan_label or "$1.990" }}</span>
-              <span class="plan-period">ARS / mes</span>
+              <span class="plan-period">ARS / 30 días</span>
             </div>
             <ul class="plan-features">
               <li class="strong">
@@ -1894,11 +1894,11 @@
               </li>
               <li>
                 <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-                <span>Cancelación simple vía Mercado Pago</span>
+                <span>Pago único, sin débito automático</span>
               </li>
             </ul>
             <button type="button" class="btn lime plan-cta" id="btn-landing-comprar-plus">
-              Suscribirme · {{ plan_label or "$1.990" }} <span aria-hidden="true">↗</span>
+              Pagar 30 días · {{ plan_label or "$1.990" }} <span aria-hidden="true">↗</span>
             </button>
             {% if not cobro_on %}
             <p class="plan-note warn">El cobro con Mercado Pago se está configurando en producción. Próximamente disponible.</p>
@@ -1920,11 +1920,11 @@
         <div class="faq-list">
           <div class="faq-item">
             <h3 class="faq-q">¿El trial cobra solo?</h3>
-            <p class="faq-a">No. Los 7 días Plus son gratis y sin tarjeta. No hay cobro automático el día 8: pasás al plan gratis (5 búsquedas). Solo se cobra si elegís suscribirte a Plus con Mercado Pago.</p>
+            <p class="faq-a">No. Los 7 días Plus son gratis y sin tarjeta. No hay cobro automático el día 8: pasás al plan gratis (5 búsquedas). Solo se cobra si elegís pagar Plus con Mercado Pago: es un pago único por 30 días, sin débito automático.</p>
           </div>
           <div class="faq-item">
-            <h3 class="faq-q">¿Cómo cancelo la suscripción?</h3>
-            <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en suscripciones o pagos automáticos) o enviando un mail a baratoyaba@gmail.com. Sin penalizaciones ni permanencia mínima.</p>
+            <h3 class="faq-q">¿Se renueva solo? ¿Tengo que cancelar algo?</h3>
+            <p class="faq-a">No. Plus es un pago único con Mercado Pago que te da 30 días sin tope de búsquedas. No hay débito automático ni nada que cancelar: cuando vence, pasás al plan gratis y, si querés, pagás otros 30 días. Dudas: baratoyaba@gmail.com.</p>
           </div>
           <div class="faq-item">
             <h3 class="faq-q">¿Los precios con promociones son exactos?</h3>
@@ -4206,7 +4206,7 @@
 
     const btnLandingComprar = document.getElementById("btn-landing-comprar-plus");
     const landingCheckoutMsg = document.getElementById("landing-checkout-msg");
-    const PLUS_CTA_HTML = "Suscribirme · " + (CUENTA.planLabel || "$1.990") + " <span aria-hidden=\"true\">↗</span>";
+    const PLUS_CTA_HTML = "Pagar 30 días · " + (CUENTA.planLabel || "$1.990") + " <span aria-hidden=\"true\">↗</span>";
 
     if (btnLandingComprar) {
       btnLandingComprar.addEventListener("click", async () => {
@@ -4214,7 +4214,7 @@
         const s = leerSesion();
         if (!s || !s.access_token) {
           const dlg = document.getElementById("entrar-dialog");
-          if (cuentaMsg) cuentaMsg.textContent = "Iniciá sesión o creá tu cuenta gratis para suscribirte a BaratoYa Plus.";
+          if (cuentaMsg) cuentaMsg.textContent = "Iniciá sesión o creá tu cuenta gratis para pagar BaratoYa Plus.";
           if (dlg && typeof dlg.showModal === "function") dlg.showModal();
           return;
         }
