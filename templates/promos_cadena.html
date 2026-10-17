@@ -188,6 +188,28 @@
     <p>No hay promos vigentes cargadas para hoy.</p>
     {% endif %}
 
+    {% if resumen and resumen.mejor_por_dia %}
+    <h2>Qué día conviene comprar en {{ nombre }}</h2>
+    <p>El mayor porcentaje publicado para cada día de la semana. Revisá tope, canal y condiciones en la tabla de abajo antes de pagar.</p>
+    <ul>
+      {% for f in resumen.mejor_por_dia %}
+      <li><strong>{{ f.dia|capitalize }}</strong>: hasta {{ f.pct }} con {{ f.bancos }}{% if f.tope %} ({{ f.tope }}){% endif %}.</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if resumen and resumen.por_banco %}
+    <h2>Bancos y billeteras con promo en {{ nombre }}</h2>
+    <ul>
+      {% for b in resumen.por_banco %}
+      <li><strong>{{ b.banco }}</strong>: {{ b.dias }}.</li>
+      {% endfor %}
+    </ul>
+    {% if resumen.bancos_online %}
+    <p>Con promo en la compra online: {{ resumen.bancos_online|join(", ") }}. El resto aplica solo en sucursal, salvo que la tabla diga otra cosa.</p>
+    {% endif %}
+    {% endif %}
+
     {% if filas %}
     <h2>Por día de la semana</h2>
     <div class="tabla-wrap">
