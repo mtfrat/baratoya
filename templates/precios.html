@@ -83,18 +83,32 @@
       <a href="/">Inicio</a> · Comparar precios
     </nav>
     <h1>{{ h1 }}</h1>
-    <p>El precio de góndola de productos de todos los días, leído de los catálogos públicos que ya consulta BaratoYa. Cada ficha tiene al menos dos cadenas. Si un precio no está publicado, no lo completamos.</p>
+    <p>{{ intro }}</p>
     {% if actualizado %}
     <p class="actualizado">Captura más reciente: {{ actualizado }}.</p>
     {% endif %}
-    <div class="cta">
-      <a class="btn" href="/">Empezar 7d gratis</a>
-      <a class="btn outline" href="/promos-bancarias-supermercados">Ver promos bancarias</a>
-    </div>
+    <p id="categorias">Elegí una categoría para comparar precios:</p>
+    <nav class="cta" aria-label="Categorías">
+      {% for grupo in grupos %}
+      <a class="btn" href="{{ grupo.href }}">{{ grupo.categoria }}</a>
+      {% endfor %}
+    </nav>
+    {% if commodities %}
+    <p id="precio-hoy">Precio hoy de{% for c in commodities %}{% if not loop.first %}{% if loop.last %} y{% else %},{% endif %}{% endif %} <a href="{{ c.href }}">{{ c.etiqueta }}</a>{% endfor %}.</p>
+    {% endif %}
+    {% if relacionados %}
+    <p>También:{% for e in relacionados %}{% if not loop.first %}{% if loop.last %} y{% else %},{% endif %}{% endif %} <a href="{{ e.href }}">{{ e.texto }}</a>{% if e.nota %} ({{ e.nota }}){% endif %}{% endfor %}.</p>
+    {% endif %}
     <p class="nota">El número de esta página es el de góndola, sin promo de banco. Los 7 días Plus se activan al crear la cuenta, en el inicio.</p>
+    <p><a class="btn outline" href="/">Empezar 7d gratis</a></p>
 
     {% for grupo in grupos %}
     <h2><a href="{{ grupo.href }}">{{ grupo.categoria }}</a></h2>
+    {% if grupo.commodities %}
+    <p>
+      {% for c in grupo.commodities %}<a href="{{ c.href }}">{{ c.anchor }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
+    </p>
+    {% endif %}
     <ul>
       {% for p in grupo.productos %}
       <li>
@@ -109,7 +123,11 @@
     {% for item in faq %}
     <section>
       <h3>{{ item.q }}</h3>
+      {% if item.html %}
+      <p>{{ item.html | safe }}</p>
+      {% else %}
       <p>{{ item.a }}</p>
+      {% endif %}
     </section>
     {% endfor %}
   </main>

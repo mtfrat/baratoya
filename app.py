@@ -922,6 +922,7 @@ async def home(request: Request):
             "dias_nav": nav_dias_publicos(),
             "precios_muestra": precios_seo.muestra_home(),
             "precios_categorias": precios_seo.enlaces_categoria(),
+            "precios_commodities": precios_seo.enlaces_commodity(),
             **cuentas.pagina_publica(),
         },
     )
@@ -1012,7 +1013,18 @@ async def precios_categoria(request: Request, slug: str):
 
 @app.get("/precios/{slug}", response_class=HTMLResponse)
 async def precios_producto(request: Request, slug: str):
-    """Un producto, un precio por cadena. Menos de dos cadenas: no se publica."""
+    """Una ficha, o un hub de producto puntual. Menos de dos cadenas: no se publica."""
+    if precios_seo.commodity_conocida(slug):
+        await precios_seo.asegurar_commodity(slug)
+        vista = precios_seo.pagina_commodity(slug)
+        if vista is None:
+            raise StarletteHTTPException(status_code=404)
+        return templates.TemplateResponse(
+            request,
+            "precios_categoria.html",
+            vista,
+            headers={"Cache-Control": precios_seo.CACHE_CONTROL},
+        )
     await precios_seo.asegurar_producto(slug)
     vista = precios_seo.pagina_producto(slug)
     if vista is None:
@@ -1645,3 +1657,39 @@ async def alertas_revisar(request: Request):
         "aviso": "Relectura a pedido. No hay envío de mail ni una tarea programada.",
         "alertas": alertas,
     }
+
+
+def _sumar_head_a_paginas() -> None:
+    """FastAPI 0.142 no suma HEAD a un @app.get. GSC hace HEAD y recibía 405.
+
+    Solo páginas HTML, el sitemap ya lo tiene. /api y /health no: un HEAD no
+    debe disparar una búsqueda ni pegarle a Precios Claros.
+    """
+    exactas = {
+        "/",
+        "/planes",
+        "/aviso-precios",
+        "/terminos",
+        "/privacidad",
+        "/promos-bancarias-supermercados",
+        "/descuentos-supermercados",
+        "/precios",
+        "/favicon.svg",
+        "/favicon.ico",
+        "/robots.txt",
+    }
+    prefijos = (
+        "/promos-bancarias-supermercados/",
+        "/descuentos-supermercados/",
+        "/precios/",
+    )
+    for route in app.routes:
+        methods = getattr(route, "methods", None)
+        path = getattr(route, "path", "") or ""
+        if not methods or "GET" not in methods or "HEAD" in methods:
+            continue
+        if path in exactas or path.startswith(prefijos):
+            methods.add("HEAD")
+
+
+_sumar_head_a_paginas()
