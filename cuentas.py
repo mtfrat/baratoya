@@ -215,11 +215,35 @@ def es_trial_activo(trial_ends_at: str | None) -> bool:
         return False
 
 
+PLUS_DAYS = 30
+RENOVAR_DIAS_ANTES = 7
+
+
+def plus_vigente(paid_until: str | None) -> bool:
+    """Plus pago vale hasta paid_until. Sin fecha no hay Plus (no existe el pago eterno)."""
+    if not paid_until:
+        return False
+    try:
+        dt = datetime.fromisoformat(str(paid_until).replace("Z", "+00:00"))
+        return datetime.now(timezone.utc) < dt
+    except Exception:
+        return False
+
+
+def puede_renovar(paid_until: str | None) -> bool:
+    """El checkout se abre si Plus venció o vence en los próximos RENOVAR_DIAS_ANTES días."""
+    if not plus_vigente(paid_until):
+        return True
+    dt = datetime.fromisoformat(str(paid_until).replace("Z", "+00:00"))
+    return dt - datetime.now(timezone.utc) <= timedelta(days=RENOVAR_DIAS_ANTES)
+
+
 def calcular_plan_efectivo(
     plan: str,
     paid_at: str | None,
     trial_ends_at: str | None,
     role: str = "user",
+    paid_until: str | None = None,
 ) -> dict[str, Any]:
     if role == "admin":
         return {
@@ -228,15 +252,20 @@ def calcular_plan_efectivo(
             "es_trial": False,
             "trial_activo": False,
             "trial_vencido": False,
+            "plus_activo": False,
+            "plus_vencido": False,
         }
-    if plan == "paid" and paid_at:
+    if plan == "paid" and paid_at and plus_vigente(paid_until):
         return {
             "plan_efectivo": "paid",
             "es_paid": True,
             "es_trial": False,
             "trial_activo": False,
             "trial_vencido": False,
+            "plus_activo": True,
+            "plus_vencido": False,
         }
+    plus_vencido = bool(paid_at)
     if es_trial_activo(trial_ends_at):
         return {
             "plan_efectivo": "paid",
@@ -244,6 +273,8 @@ def calcular_plan_efectivo(
             "es_trial": True,
             "trial_activo": True,
             "trial_vencido": False,
+            "plus_activo": False,
+            "plus_vencido": plus_vencido,
         }
     trial_vencido = bool(trial_ends_at and not es_trial_activo(trial_ends_at))
     return {
@@ -252,6 +283,8 @@ def calcular_plan_efectivo(
         "es_trial": False,
         "trial_activo": False,
         "trial_vencido": trial_vencido,
+        "plus_activo": False,
+        "plus_vencido": plus_vencido,
     }
 
 
@@ -311,9 +344,15 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.get(
             f"{supabase_url()}/rest/v1/profiles",
-            params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role,prefs,trial_ends_at"},
+            params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role,prefs,trial_ends_at,paid_until"},
             headers=_user_headers(token),
         )
+        if r.status_code != 200:
+            r = await client.get(
+                f"{supabase_url()}/rest/v1/profiles",
+                params={"id": f"eq.{user_id}", "select": "plan,searches_used,paid_at,role,prefs,trial_ends_at"},
+                headers=_user_headers(token),
+            )
         if r.status_code != 200:
             r = await client.get(
                 f"{supabase_url()}/rest/v1/profiles",
@@ -356,7 +395,8 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
             trial_ends_at = persisted
         # else: dejar trial_ends_at en None → plan free (no false green)
 
-    calc = calcular_plan_efectivo(plan, row.get("paid_at"), trial_ends_at, role)
+    paid_until = row.get("paid_until")
+    calc = calcular_plan_efectivo(plan, row.get("paid_at"), trial_ends_at, role, paid_until)
     if role == "admin" or calc["plan_efectivo"] == "paid":
         remaining = None
         limit = None
@@ -375,6 +415,11 @@ async def leer_cuenta(token: str, user_id: str) -> dict[str, Any]:
         "remaining": remaining,
         "limit": limit,
         "paid_at": row.get("paid_at"),
+        "paid_until": paid_until,
+        "paid_until_texto": formatear_art(paid_until) if paid_until else "",
+        "plus_activo": calc["plus_activo"],
+        "plus_vencido": calc["plus_vencido"],
+        "puede_renovar": puede_renovar(paid_until),
         "role": role,
         "admin": role == "admin",
         "prefs": prefs,
@@ -536,7 +581,7 @@ async def admin_listar_usuarios() -> list[dict[str, Any]]:
                         if not uid:
                             continue
                         trial_ends = p.get("trial_ends_at")
-                        calc = calcular_plan_efectivo(str(p.get("plan") or "free"), p.get("paid_at"), trial_ends, str(p.get("role") or "user"))
+                        calc = calcular_plan_efectivo(str(p.get("plan") or "free"), p.get("paid_at"), trial_ends, str(p.get("role") or "user"), p.get("paid_until"))
                         if calc["es_paid"] and p.get("paid_at"):
                             plan_display = "Paid (Plus)"
                         elif calc["es_trial"]:
@@ -605,7 +650,7 @@ async def admin_detalle_usuario(user_id: str) -> dict[str, Any] | None:
                             "created_at": "—",
                             "last_sign_in": "—",
                             "plan": str(p.get("plan") or "free"),
-                            "plan_display": "Paid (Plus)" if p.get("paid_at") else ("Trial Plus" if es_trial_activo(trial_ends) else "Free"),
+                            "plan_display": ("Paid (Plus)" if plus_vigente(p.get("paid_until")) else "Plus vencido") if p.get("paid_at") else ("Trial Plus" if es_trial_activo(trial_ends) else "Free"),
                             "trial_ends_at": formatear_art(trial_ends),
                             "searches_used": int(p.get("searches_used") or 0),
                             "role": str(p.get("role") or "user"),
@@ -757,7 +802,7 @@ async def consumir(user_id: str, query: str) -> dict[str, Any]:
                     paid_at = p.get("paid_at")
                     trial_ends_at = p.get("trial_ends_at")
                     role = str(p.get("role") or "user")
-                    calc = calcular_plan_efectivo(plan, paid_at, trial_ends_at, role)
+                    calc = calcular_plan_efectivo(plan, paid_at, trial_ends_at, role, p.get("paid_until"))
                     if calc["es_trial"]:
                         # Trial activo: búsquedas sin tope. Si el insert falla, se busca
                         # igual (no se castiga al usuario) pero queda en el log.
@@ -792,13 +837,15 @@ async def consumir(user_id: str, query: str) -> dict[str, Any]:
 
 
 async def marcar_pago(user_id: str, payment_id: str) -> dict[str, Any]:
+    """Suma PLUS_DAYS de Plus por pago aprobado. Idempotente por payment_id (tabla mp_payments):
+    un aviso repetido de MP devuelve duplicate=true y no extiende de nuevo."""
     if not cupo_on():
         raise RuntimeError("sin service role")
     async with httpx.AsyncClient(timeout=15.0) as client:
         r = await client.post(
             f"{supabase_url()}/rest/v1/rpc/mark_profile_paid",
             headers=_service_headers(),
-            json={"p_user": user_id, "p_payment": payment_id},
+            json={"p_user": user_id, "p_payment": payment_id, "p_days": PLUS_DAYS},
         )
     if r.status_code not in (200, 201):
         raise RuntimeError(f"mark_profile_paid http {r.status_code}")
@@ -953,4 +1000,7 @@ async def procesar_aviso(query: dict[str, Any], body: dict[str, Any]) -> dict[st
     marked = await marcar_pago(uid, pid)
     if not marked.get("ok"):
         return {"status": 502, "body": {"ok": False, "error": "El pago está aprobado y no se pudo anotar en la cuenta."}}
-    return {"status": 200, "body": {"ok": True, "plan": "paid"}}
+    out = {"ok": True, "plan": "paid", "paid_until": marked.get("paid_until")}
+    if marked.get("duplicate"):
+        out["duplicate"] = True
+    return {"status": 200, "body": out}

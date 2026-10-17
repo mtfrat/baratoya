@@ -597,7 +597,7 @@ class DescuentosPorDiaTest(unittest.TestCase):
         h1 = "BaratoYa Plus: probalo gratis 7 días"
         desc = (
             "Planes de BaratoYa: probá Plus gratis 7 días, sin tarjeta. "
-            "Después seguís gratis o te suscribís. Compará precios del súper en CABA."
+            "Después seguís gratis o pagás Plus por 30 días. Compará precios del súper en CABA."
         )
         self.assertLessEqual(len(titulo), 60)
         self.assertGreaterEqual(len(desc), 120)

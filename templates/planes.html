@@ -6,7 +6,7 @@
   {% include "_fonts.html" %}
   {% include "_gtag.html" %}
   <title>BaratoYa Plus: planes y prueba gratis 7 días</title>
-  <meta name="description" content="Planes de BaratoYa: probá Plus gratis 7 días, sin tarjeta. Después seguís gratis o te suscribís. Compará precios del súper en CABA." />
+  <meta name="description" content="Planes de BaratoYa: probá Plus gratis 7 días, sin tarjeta. Después seguís gratis o pagás Plus por 30 días. Compará precios del súper en CABA." />
   <link rel="canonical" href="https://baratoya.app/planes" />
   <meta name="theme-color" content="#163300" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -15,7 +15,7 @@
 
   <!-- Open Graph / Redes -->
   <meta property="og:title" content="BaratoYa Plus: planes y prueba gratis 7 días" />
-  <meta property="og:description" content="Planes de BaratoYa: probá Plus gratis 7 días, sin tarjeta. Después seguís gratis o te suscribís. Compará precios del súper en CABA." />
+  <meta property="og:description" content="Planes de BaratoYa: probá Plus gratis 7 días, sin tarjeta. Después seguís gratis o pagás Plus por 30 días. Compará precios del súper en CABA." />
   <meta property="og:url" content="https://baratoya.app/planes" />
   <meta property="og:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg" />
   <meta property="og:type" content="website" />
@@ -23,7 +23,7 @@
   <meta property="og:site_name" content="BaratoYa" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="BaratoYa Plus: planes y prueba gratis 7 días" />
-  <meta name="twitter:description" content="Planes de BaratoYa: probá Plus gratis 7 días, sin tarjeta. Después seguís gratis o te suscribís. Compará precios del súper en CABA." />
+  <meta name="twitter:description" content="Planes de BaratoYa: probá Plus gratis 7 días, sin tarjeta. Después seguís gratis o pagás Plus por 30 días. Compará precios del súper en CABA." />
   <meta name="twitter:image" content="https://baratoya.app/static/baratoya-hero-landing.jpg" />
   <script type="application/ld+json">
   {
@@ -460,7 +460,7 @@
       <div class="wrap">
         <span class="planes-badge">7 días Plus gratis</span>
         <h1>BaratoYa Plus: probalo gratis 7 días</h1>
-        <p class="sub">Creá tu cuenta y durante 7 días buscás sin tope, sin tarjeta. Después seguís en plan gratis (5 búsquedas) o te suscribís a Plus si querés.</p>
+        <p class="sub">Creá tu cuenta y durante 7 días buscás sin tope, sin tarjeta. Después seguís en plan gratis (5 búsquedas) o pagás Plus por 30 días si querés.</p>
       </div>
     </section>
 
@@ -507,7 +507,7 @@
           <p class="plan-desc">Para compras familiares, compras mensuales y encontrar siempre la mejor combinación de descuentos.</p>
           <div class="plan-price-row">
             <span class="plan-price">{{ plan_label or "$1.990" }}</span>
-            <span class="plan-period">ARS / mes</span>
+            <span class="plan-period">ARS / 30 días</span>
           </div>
           <ul class="plan-features">
             <li class="strong">
@@ -528,12 +528,12 @@
             </li>
             <li>
               <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
-              <span>Cancelás cuando quieras desde Mercado Pago</span>
+              <span>Pago único con Mercado Pago, sin débito automático</span>
             </li>
           </ul>
 
           <button type="button" class="btn lime plan-cta" id="btn-comprar-plus">
-            Suscribirme · {{ plan_label or "$1.990" }} <span aria-hidden="true">↗</span>
+            Pagar 30 días · {{ plan_label or "$1.990" }} <span aria-hidden="true">↗</span>
           </button>
 
           {% if not cobro_on %}
@@ -553,11 +553,11 @@
         <div class="faq-list">
           <div class="faq-item">
             <h3 class="faq-q">¿El trial cobra solo?</h3>
-            <p class="faq-a">No. Los 7 días Plus son gratis y sin tarjeta. No hay cobro automático el día 8: pasás al plan gratis (5 búsquedas). Solo se cobra si elegís suscribirte a Plus con Mercado Pago.</p>
+            <p class="faq-a">No. Los 7 días Plus son gratis y sin tarjeta. No hay cobro automático el día 8: pasás al plan gratis (5 búsquedas). Solo se cobra si elegís pagar Plus con Mercado Pago: es un pago único por 30 días, sin débito automático.</p>
           </div>
           <div class="faq-item">
-            <h3 class="faq-q">¿Cómo cancelo la suscripción?</h3>
-            <p class="faq-a">Podés cancelar en cualquier momento directamente desde tu cuenta de Mercado Pago (en la sección de suscripciones o pagos automáticos) o escribiéndonos a baratoyaba@gmail.com. No hay permanencia mínima ni penalizaciones.</p>
+            <h3 class="faq-q">¿Se renueva solo? ¿Tengo que cancelar algo?</h3>
+            <p class="faq-a">No. Plus es un pago único con Mercado Pago que te da 30 días sin tope de búsquedas. No hay débito automático ni nada que cancelar: cuando vence, pasás al plan gratis y, si querés, pagás otros 30 días. Dudas: baratoyaba@gmail.com.</p>
           </div>
           <div class="faq-item">
             <h3 class="faq-q">¿Los precios con promociones son exactos?</h3>
@@ -608,7 +608,7 @@
     const CUENTA_ANON = {{ supabase_anon_key|tojson }};
     const COBRO_ON = {{ cobro_on|tojson }};
     const PLAN_LABEL = {{ (plan_label or "$1.990")|tojson }};
-    const PLUS_CTA_HTML = "Suscribirme · " + (PLAN_LABEL || "$1.990") + " <span aria-hidden=\"true\">↗</span>";
+    const PLUS_CTA_HTML = "Pagar 30 días · " + (PLAN_LABEL || "$1.990") + " <span aria-hidden=\"true\">↗</span>";
     function trackEvent(name, params) {
       try {
         if (typeof gtag === "function") gtag("event", name, params || {});
@@ -894,7 +894,7 @@
             try { if (data.preference_id) sessionStorage.setItem("by_mp_pref", String(data.preference_id)); } catch (_) {}
             location.href = data.init_point;
           } else if (data.already) {
-            if (checkoutMsg) checkoutMsg.textContent = "Tu cuenta ya tiene búsquedas ilimitadas.";
+            if (checkoutMsg) checkoutMsg.textContent = data.error || "Tu cuenta ya tiene búsquedas ilimitadas.";
             btnComprar.textContent = "Ya sos Plus ✓";
           } else {
             if (checkoutMsg) checkoutMsg.textContent = data.error || "No se pudo iniciar el pago. Probá de nuevo.";
