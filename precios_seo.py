@@ -1137,13 +1137,26 @@ def vistas_publicadas() -> list[dict[str, Any]]:
     return out
 
 
+OTROS_MAX = 8
+
+
 def _con_otros(vista: dict[str, Any], todas: list[dict[str, Any]]) -> dict[str, Any]:
+    """Otros productos de la categoría, en ventana circular desde esta ficha.
+
+    Antes eran siempre los 6 primeros de la categoría: las fichas del final no
+    recibían enlaces entre fichas. La ventana arranca en la siguiente y da la
+    vuelta, así cada ficha queda enlazada desde las anteriores.
+    """
     vista = dict(vista)
+    misma = [otra for otra in todas if otra["categoria"] == vista["categoria"]]
+    slugs = [otra["slug"] for otra in misma]
+    i = slugs.index(vista["slug"]) if vista["slug"] in slugs else -1
+    rotada = misma[i + 1:] + misma[:max(i, 0)] if i >= 0 else misma
     vista["otros"] = [
         {"href": otra["href"], "nombre": otra.get("nombre_visible") or otra["nombre"]}
-        for otra in todas
-        if otra["categoria"] == vista["categoria"] and otra["slug"] != vista["slug"]
-    ][:6]
+        for otra in rotada
+        if otra["slug"] != vista["slug"]
+    ][:OTROS_MAX]
     return vista
 
 

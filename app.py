@@ -113,10 +113,54 @@ def _ga_context(_request: Request) -> dict[str, str]:
     return {"ga_id": ga_measurement_id()}
 
 
+def explorar_enlaces() -> dict[str, list[dict[str, str]]]:
+    """Bloque "Explorar" del footer: todas las páginas SEO, en <a href> del servidor.
+
+    Sale de las mismas funciones que arman el sitemap, así no queda una URL del
+    sitemap sin un camino rastreable ni un enlace a una página que no existe.
+    """
+    try:
+        cadenas = [
+            {"href": c["href"], "texto": f"Promos bancarias {c['nombre']}"}
+            for c in cadenas_promos_publicas()
+        ]
+    except Exception:  # noqa: BLE001 - el footer no puede tirar una página
+        cadenas = []
+    try:
+        dias = [
+            {"href": d["href"], "texto": f"Descuentos en supermercados los {d['plural']}"}
+            for d in nav_dias_publicos()
+        ]
+    except Exception:  # noqa: BLE001
+        dias = []
+    try:
+        precios = [
+            {"href": c["href"], "texto": c["anchor"]} for c in precios_seo.enlaces_commodity()
+        ] + [
+            {"href": c["href"], "texto": f"Precios de {c['etiqueta']}"}
+            for c in precios_seo.enlaces_categoria()
+        ]
+    except Exception:  # noqa: BLE001
+        precios = []
+    return {"cadenas": cadenas, "dias": dias, "precios": precios}
+
+
+def _explorar_context(request: Request) -> dict[str, Any]:
+    """Sin enlace a la página actual: un enlace a sí misma no suma camino."""
+    actual = request.url.path.rstrip("/") or "/"
+    enlaces = explorar_enlaces()
+    return {
+        "explorar": {
+            grupo: [e for e in items if e["href"] != actual]
+            for grupo, items in enlaces.items()
+        }
+    }
+
+
 app = FastAPI(title="BaratoYa")
 templates = Jinja2Templates(
     directory=str(Path(__file__).parent / "templates"),
-    context_processors=[_ga_context],
+    context_processors=[_ga_context, _explorar_context],
 )
 
 
