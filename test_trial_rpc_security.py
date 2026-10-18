@@ -157,7 +157,7 @@ class CaminosQueSiguenAndandoTest(unittest.TestCase):
         url, auth, body = calls[0]
         self.assertTrue(url.endswith("/rest/v1/rpc/mark_profile_paid"))
         self.assertEqual(auth, "Bearer svc")
-        self.assertEqual(body, {"p_user": UID, "p_payment": "pay-123"})
+        self.assertEqual(body, {"p_user": UID, "p_payment": "pay-123", "p_days": 30})
         # mark_profile_paid es SECURITY DEFINER (current_user postgres): el trigger lo deja pasar.
         self.assertIn("if current_user in ('postgres', 'supabase_admin', 'service_role') then return new", _norm(SQL))
 
