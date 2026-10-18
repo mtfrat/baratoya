@@ -1,0 +1,33 @@
+{# Bloque "Explorar": todas las páginas SEO con <a href> del servidor. Datos: explorar_enlaces() en app.py. #}
+{% if explorar and (explorar.cadenas or explorar.dias or explorar.precios) %}
+<nav class="explorar" aria-label="Explorar BaratoYa">
+  <style>
+    .explorar { margin: 0 0 16px; padding: 16px 0 4px; border-bottom: 1px solid #e8ebe6; }
+    .explorar h2 { margin: 0 0 12px; font-size: 15px; color: #163300; }
+    .explorar .grupo { margin: 0 0 12px; }
+    .explorar h3 { margin: 0 0 6px; font-size: 13px; font-weight: 700; color: #163300; text-transform: uppercase; letter-spacing: .04em; }
+    .explorar ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+    .explorar li { margin: 0; }
+    .explorar a { color: #163300; font-weight: 600; text-decoration: underline; text-decoration-color: #9fe870; text-underline-offset: 3px; }
+  </style>
+  <h2>Explorar BaratoYa</h2>
+  {% if explorar.cadenas %}
+  <div class="grupo">
+    <h3><a href="/promos-bancarias-supermercados">Promos bancarias por supermercado</a></h3>
+    <ul>{% for c in explorar.cadenas %}<li><a href="{{ c.href }}">{{ c.texto }}</a></li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+  {% if explorar.dias %}
+  <div class="grupo">
+    <h3><a href="/descuentos-supermercados">Qué día conviene: descuentos por día</a></h3>
+    <ul>{% for d in explorar.dias %}<li><a href="{{ d.href }}">{{ d.texto }}</a></li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+  {% if explorar.precios %}
+  <div class="grupo">
+    <h3><a href="/precios">Comparar precios de supermercados</a></h3>
+    <ul>{% for p in explorar.precios %}<li><a href="{{ p.href }}">{{ p.texto }}</a></li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+</nav>
+{% endif %}

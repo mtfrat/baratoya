@@ -749,7 +749,7 @@ class PreciosPublicosTest(unittest.TestCase):
             ficha = self.client.get(f"/precios/{slug}").text
             self.assertIn('href="/precios/leche"', ficha)
         manteca = self.client.get("/precios/manteca-la-serenisima-200g").text
-        self.assertNotIn('href="/precios/leche"', manteca)
+        self.assertNotIn('href="/precios/leche"', manteca.split("<footer>", 1)[0])
 
     def test_aceite_solo_girasol(self) -> None:
         vista = pagina_commodity("aceite")
@@ -791,7 +791,7 @@ class PreciosPublicosTest(unittest.TestCase):
             self.assertIn('href="/precios/aceite"', ficha)
             self.assertIn("Precio del aceite hoy", ficha)
         oliva = self.client.get("/precios/aceite-oliva-natura-500ml").text
-        self.assertNotIn('href="/precios/aceite"', oliva)
+        self.assertNotIn('href="/precios/aceite"', oliva.split("<footer>", 1)[0])
 
     def test_harina_solo_trigo(self) -> None:
         vista = pagina_commodity("harina")
