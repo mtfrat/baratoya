@@ -107,6 +107,7 @@
           <tr>
             <th scope="col">Supermercado</th>
             <th scope="col" class="num">Precio</th>
+            {% if unidad %}<th scope="col" class="num">Por {{ unidad }}</th>{% endif %}
             <th scope="col">Captura</th>
           </tr>
         </thead>
@@ -118,19 +119,37 @@
               {% if o.nombre %}<div class="en-catalogo">{{ o.nombre }}</div>{% endif %}
             </th>
             <td class="num">{{ o.precio_txt }}{% if o.barato %} <span class="tag">Más barato</span>{% endif %}</td>
+            {% if unidad %}<td class="num">{{ o.unidad_txt }}</td>{% endif %}
             <td>{{ o.fecha }}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
+    {% if unidad_txt or diferencia_txt %}
+    <p>{% if unidad_txt %}{{ unidad_txt }}{% endif %}{% if unidad_txt and diferencia_txt %} {% endif %}{% if diferencia_txt %}{{ diferencia_txt }}{% endif %}</p>
+    {% endif %}
     <div class="cta">
       <a class="btn" href="/">Comparar en BaratoYa</a>
       <a class="btn outline" href="/planes">Ver planes</a>
     </div>
     <p class="nota">Los 7 días Plus gratis se activan al crear la cuenta, en el inicio. No pide tarjeta.</p>
 
-    {% if promos %}
+    {% if dia_hoy %}
+    <h2>Promos bancarias hoy {{ dia_hoy }} en estas cadenas</h2>
+    {% if promos_hoy %}
+    <ul>
+      {% for p in promos_hoy %}
+      <li><a href="{{ p.href }}">Promos bancarias {{ p.nombre }}</a>: {{ p.linea }}.</li>
+      {% endfor %}
+    </ul>
+    {% if promos_hoy_sin %}<p>Sin promo bancaria publicada para hoy: {{ promos_hoy_sin }}.</p>{% endif %}
+    <p class="nota">Cada promo depende del banco o billetera y puede tener tope, compra mínima o productos excluidos. No está restada del precio de la tabla.</p>
+    {% else %}
+    <p>Hoy {{ dia_hoy }} ninguna de las cadenas de esta página tiene una promo bancaria publicada.</p>
+    {% endif %}
+    <p>{% if dia_hoy_href %}<a href="{{ dia_hoy_href }}">Descuentos en supermercados hoy {{ dia_hoy }}</a> · {% endif %}<a href="/promos-bancarias-supermercados">Todas las promos bancarias de supermercados</a></p>
+    {% elif promos %}
     <h2>Promos bancarias de estas cadenas</h2>
     <ul>
       {% for p in promos %}

@@ -11,16 +11,17 @@ import asyncio
 import json
 import os
 import re
+import time
 import unicodedata
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
 try:
-    from baratoya.promos_hoy import cadenas_indexables, nav_dias
+    from baratoya.promos_hoy import cadenas_indexables, hoy_art, nav_dias, promos_de_hoy_por_cadena
     from baratoya.super_cadenas import agrupar_mismo_producto, buscar_super
 except ImportError:
-    from promos_hoy import cadenas_indexables, nav_dias
+    from promos_hoy import cadenas_indexables, hoy_art, nav_dias, promos_de_hoy_por_cadena
     from super_cadenas import agrupar_mismo_producto, buscar_super
 
 ART = timezone(timedelta(hours=-3))
@@ -33,7 +34,6 @@ MIN_CADENAS = 2
 MIN_SKUS_COMMODITY = 3
 MIN_CADENAS_COMMODITY = 3
 HORAS_FRESCURA = 24
-CACHE_CONTROL = "public, max-age=300, s-maxage=86400, stale-while-revalidate=86400"
 
 # ≤60. La query va primero; CABA es el alcance real, el mismo que el resto del sitio.
 HUB_TITLE = "Comparar precios de supermercados hoy en CABA | BaratoYa"
@@ -258,7 +258,6 @@ _CHOQUE_COMMODITY = {item["slug"] for item in COMMODITIES} & set(_SPEC)
 if _CHOQUE_COMMODITY:
     raise RuntimeError(f"un hub de producto pisa una ficha: {sorted(_CHOQUE_COMMODITY)}")
 _mem: dict[str, Any] | None = None
-_lock = asyncio.Lock()
 
 
 def _fold(s: str) -> str:
@@ -1735,14 +1734,125 @@ def paginas_commodity() -> list[dict[str, Any]]:
     return out
 
 
-def pagina_producto(slug: str) -> dict[str, Any] | None:
+def pagina_producto(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
     if not re.fullmatch(r"[a-z0-9-]{3,80}", slug or ""):
         return None
     todas = vistas_publicadas()
     for vista in todas:
         if vista["slug"] == slug:
-            return _con_otros(vista, todas)
+            return _con_hoy(_con_otros(vista, todas), hoy or hoy_art())
     return None
+
+
+_TAMANO_RE = re.compile(r"^\s*(\d+(?:[.,]\d+)?)\s*(ml|l|g|kg)\s*$", re.IGNORECASE)
+_UNIDAD = {"ml": ("litro", 0.001), "l": ("litro", 1.0), "g": ("kilo", 0.001), "kg": ("kilo", 1.0)}
+
+
+def unidad_de_medida(tamano: str) -> tuple[str, float] | None:
+    """("litro", 0.9) para "900 ml". None si el envase no es un solo peso o volumen (packs)."""
+    m = _TAMANO_RE.match(tamano or "")
+    if not m:
+        return None
+    cantidad = float(m.group(1).replace(",", "."))
+    unidad, factor = _UNIDAD[m.group(2).lower()]
+    base = cantidad * factor
+    if base <= 0:
+        return None
+    return unidad, base
+
+
+def _precio_unidad(precio: float, base: float) -> float:
+    return round(precio / base)
+
+
+def _con_hoy(vista: dict[str, Any], hoy: date) -> dict[str, Any]:
+    """Lo que responde la ficha además del precio: litro/kilo, diferencia y promos de hoy.
+
+    Todo sale de la captura y del archivo de promos. No se resta ninguna promo al precio:
+    cada una tiene banco, tope y exclusiones propias.
+    """
+    vista = dict(vista)
+    nombre = vista.get("nombre_visible") or vista["nombre"]
+    ofertas = vista["ofertas"]
+    low, high = vista["low"], vista["high"]
+    dia = next((d for d in nav_dias(hoy) if d.get("hoy")), None)
+    dia_nombre = dia["nombre"] if dia else ""
+    vista["dia_hoy"] = dia_nombre
+    vista["dia_hoy_href"] = dia["href"] if dia else ""
+
+    # Precio por litro o kilo: solo si el envase no es ya 1 L / 1 kg.
+    medida = unidad_de_medida(str(vista.get("tamano") or ""))
+    vista["unidad"] = ""
+    vista["unidad_txt"] = ""
+    if medida and abs(medida[1] - 1.0) > 1e-9:
+        unidad, base = medida
+        vista["unidad"] = unidad
+        filas = []
+        for o in ofertas:
+            filas.append({**o, "unidad_txt": peso(_precio_unidad(o["precio"], base))})
+        vista["ofertas"] = filas
+        baratas = [o["tienda"] for o in ofertas if o["precio"] == low]
+        vista["unidad_txt"] = (
+            f"El {unidad} sale desde {peso(_precio_unidad(low, base))} en {_lista_y(baratas)} "
+            f"({peso(low)} el envase de {vista['tamano']})."
+        )
+    elif medida:
+        vista["unidad"] = ""
+        vista["unidad_txt"] = f"El envase es de {vista['tamano']}: el precio de la tabla ya es el precio por {medida[0]}."
+
+    vista["diferencia_txt"] = ""
+    if high > low:
+        vista["diferencia_txt"] = (
+            f"Entre el más barato y el más caro de esta tabla hay {peso(high - low)} de diferencia por envase."
+        )
+
+    # Promos bancarias publicadas para hoy en las cadenas de la tabla.
+    por_cadena = promos_de_hoy_por_cadena(hoy)
+    promos_hoy: list[dict[str, Any]] = []
+    vistos: set[str] = set()
+    for o in sorted(ofertas, key=lambda x: x["precio"]):
+        info = por_cadena.get(o.get("tienda_id") or "")
+        if not info or info["chain_id"] in vistos:
+            continue
+        vistos.add(info["chain_id"])
+        n = info["n"]
+        linea = f"{n} promo bancaria" if n == 1 else f"{n} promos bancarias"
+        if info["top_txt"]:
+            linea += f", hasta {info['top_txt']}%"
+            if info["bancos_top"]:
+                linea += f" con {_lista_y(info['bancos_top'][:3])}"
+                if len(info["bancos_top"]) > 3:
+                    linea += " y otros"
+        elif info["cuotas_n"]:
+            linea += " en cuotas"
+        promos_hoy.append({"nombre": info["nombre"], "href": info["href"], "linea": linea})
+    vista["promos_hoy"] = promos_hoy
+    sin = [o["tienda"] for o in ofertas if (o.get("tienda_id") or "") not in por_cadena]
+    vista["promos_hoy_sin"] = _lista_y(sorted(set(sin), key=str.casefold)) if sin else ""
+
+    faq = list(vista["faq"])
+    if vista["unidad"]:
+        faq.insert(1, {
+            "q": f"¿Cuánto sale el {vista['unidad']} de {nombre}?",
+            "a": f"Captura del {vista['capturado_texto']}. {vista['unidad_txt']}",
+        })
+    if dia_nombre:
+        if promos_hoy:
+            partes = "; ".join(f"{p['nombre']}: {p['linea']}" for p in promos_hoy)
+            resp = (
+                f"Hoy {dia_nombre}, entre las cadenas de esta página: {partes}. "
+                "Cada promo tiene su banco o billetera, tope, compra mínima y exclusiones: "
+                "no está restada del precio de la tabla."
+            )
+        else:
+            resp = (
+                f"Hoy {dia_nombre} ninguna de las cadenas de esta página tiene una promo "
+                "bancaria publicada. El precio de la tabla es el de góndola."
+            )
+        faq.append({"q": f"¿Qué supermercado tiene promo bancaria hoy para comprar {nombre}?", "a": resp})
+    vista["faq"] = faq
+    vista["ld_faq"] = _ld_faq(faq)
+    return vista
 
 
 def muestra_home() -> list[dict[str, str]]:
@@ -1796,97 +1906,112 @@ def _reemplazar(prod: dict[str, Any]) -> None:
     _persistir(data)
 
 
-async def asegurar_producto(slug: str) -> None:
-    """Si la captura de este producto tiene más de un día, vuelve a leer el catálogo."""
-    if _offline():
-        return
-    spec = _SPEC.get(slug)
-    if spec is None:
-        return
+# Refresco en vivo de capturas vencidas (>24 h).
+# Antes: un asyncio.Lock global ponía en fila TODAS las lecturas (el Semaphore(4) del hub no
+# servía), el hub esperaba 15 s y casi siempre cortaba por tiempo, y una lectura que fallaba
+# se reintentaba en cada request. Resultado: /precios tardaba 15-18 s en cada MISS.
+# Ahora: una tarea por producto (la comparten los requests simultáneos), hasta 4 lecturas
+# a la vez, backoff tras un fallo, y el request espera como mucho ESPERA_REQUEST_S. Si la
+# lectura no terminó, la página sale con la captura anterior (con su fecha visible) y la
+# tarea sigue en esa instancia; el CDN (stale-while-revalidate) hace que el usuario no espere.
+ESPERA_REQUEST_S = 8.0
+LECTURA_TIMEOUT_S = 25.0
+REINTENTO_TRAS_FALLO_S = 900.0
+LECTURAS_SIMULTANEAS = 4
+_en_curso: dict[str, asyncio.Task] = {}
+_fallo: dict[str, float] = {}
+_sem: asyncio.Semaphore | None = None
+_sem_loop: Any = None
+
+
+def _semaforo() -> asyncio.Semaphore:
+    global _sem, _sem_loop
+    loop = asyncio.get_running_loop()
+    if _sem is None or _sem_loop is not loop:
+        _sem = asyncio.Semaphore(LECTURAS_SIMULTANEAS)
+        _sem_loop = loop
+    return _sem
+
+
+def _vencido(slug: str) -> bool:
     actual = _crudo(slug)
-    if actual is not None and not _viejo(str(actual.get("capturado") or "")):
-        return
-    async with _lock:
-        actual = _crudo(slug)
-        if actual is not None and not _viejo(str(actual.get("capturado") or "")):
+    return actual is None or _viejo(str(actual.get("capturado") or ""))
+
+
+async def _leer_y_guardar(spec: dict[str, Any]) -> None:
+    slug = spec["slug"]
+    async with _semaforo():
+        if not _vencido(slug):
             return
         try:
-            nuevo = await asyncio.wait_for(leer_en_vivo(spec), timeout=25)
-        except Exception:
-            return
-        if nuevo is None:
-            return
-        _reemplazar(nuevo)
+            nuevo = await asyncio.wait_for(leer_en_vivo(spec), timeout=LECTURA_TIMEOUT_S)
+        except Exception:  # noqa: BLE001 - una cadena caída no tira la página
+            nuevo = None
+    if nuevo is None:
+        _fallo[slug] = time.monotonic()
+        return
+    _fallo.pop(slug, None)
+    _reemplazar(nuevo)
 
 
-async def _refrescar_varios(slugs: list[str]) -> None:
-    sem = asyncio.Semaphore(4)
+def _tarea_refresco(slug: str) -> asyncio.Task | None:
+    """La tarea que relee este producto, o None si no hace falta (o falló hace poco)."""
+    if _offline():
+        return None
+    spec = _SPEC.get(slug)
+    if spec is None or not _vencido(slug):
+        return None
+    tarea = _en_curso.get(slug)
+    if tarea is not None and not tarea.done() and tarea.get_loop() is asyncio.get_running_loop():
+        return tarea
+    falla = _fallo.get(slug)
+    if falla is not None and time.monotonic() - falla < REINTENTO_TRAS_FALLO_S:
+        return None
+    tarea = asyncio.create_task(_leer_y_guardar(spec))
+    _en_curso[slug] = tarea
 
-    async def uno(slug: str) -> None:
-        async with sem:
-            await asegurar_producto(slug)
+    def _fin(t: asyncio.Task, s: str = slug) -> None:
+        if _en_curso.get(s) is t:
+            _en_curso.pop(s, None)
+        if not t.cancelled():
+            t.exception()  # evita "Task exception was never retrieved"
 
-    await asyncio.gather(*[uno(slug) for slug in slugs])
+    tarea.add_done_callback(_fin)
+    return tarea
+
+
+async def _refrescar(slugs: list[str], espera: float | None = None) -> None:
+    tareas = [t for t in (_tarea_refresco(s) for s in slugs) if t is not None]
+    if not tareas:
+        return
+    # asyncio.wait no cancela al vencer el plazo: la lectura sigue y la próxima página la usa.
+    await asyncio.wait(tareas, timeout=ESPERA_REQUEST_S if espera is None else espera)
+
+
+async def asegurar_producto(slug: str) -> None:
+    """Si la captura de este producto tiene más de un día, vuelve a leer el catálogo."""
+    await _refrescar([slug])
 
 
 async def asegurar_hub() -> None:
     """Relee los productos vencidos. Si no alcanza el tiempo, queda la captura anterior."""
-    if _offline():
-        return
-    slugs = []
-    for spec in CATALOGO:
-        actual = _crudo(spec["slug"])
-        if actual is None or _viejo(str(actual.get("capturado") or "")):
-            slugs.append(spec["slug"])
-    if not slugs:
-        return
-    try:
-        await asyncio.wait_for(_refrescar_varios(slugs), timeout=15)
-    except asyncio.TimeoutError:
-        return
-
-
-async def _asegurar_slugs(slugs: list[str]) -> None:
-    if not slugs:
-        return
-    try:
-        await asyncio.wait_for(_refrescar_varios(slugs), timeout=15)
-    except asyncio.TimeoutError:
-        return
+    await _refrescar([spec["slug"] for spec in CATALOGO])
 
 
 async def asegurar_categoria(slug: str) -> None:
     """Relee los productos vencidos de una categoría. Si no alcanza el tiempo, queda la captura."""
-    if _offline():
-        return
     nombre = _SLUG_CATEGORIA.get(slug or "")
     if nombre is None:
         return
-    slugs = []
-    for spec in CATALOGO:
-        if spec["categoria"] != nombre:
-            continue
-        actual = _crudo(spec["slug"])
-        if actual is None or _viejo(str(actual.get("capturado") or "")):
-            slugs.append(spec["slug"])
-    await _asegurar_slugs(slugs)
+    await _refrescar([spec["slug"] for spec in CATALOGO if spec["categoria"] == nombre])
 
 
 async def asegurar_commodity(slug: str) -> None:
     """Relee los productos vencidos de un hub. Si no alcanza el tiempo, queda la captura."""
-    if _offline():
-        return
     if not commodity_conocida(slug):
         return
     spec = _COMMODITY[slug]
-    slugs = []
-    for item in CATALOGO:
-        if not _producto_en_commodity(item["slug"], spec):
-            continue
-        actual = _crudo(item["slug"])
-        if actual is None or _viejo(str(actual.get("capturado") or "")):
-            slugs.append(item["slug"])
-    await _asegurar_slugs(slugs)
+    await _refrescar([item["slug"] for item in CATALOGO if _producto_en_commodity(item["slug"], spec)])
 
 
 async def capturar_todo() -> dict[str, Any]:

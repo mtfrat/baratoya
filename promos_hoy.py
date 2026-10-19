@@ -1913,14 +1913,35 @@ def _ld(data: dict[str, Any]) -> str:
     return json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
 
 
-def _items_publicos(hoy: date) -> list[dict[str, Any]]:
-    """Las mismas tarjetas que lista el hub. Sin precio de producto."""
+# (día, lista de cargar(), tarjetas). Una página pública pedía esta lista ~200 veces
+# (footer, home, cada ficha de precio vía cadenas_indexables) y cada vez rearmaba
+# ~270 tarjetas con logos: 2-5 s de CPU por request. Los datos solo cambian con el
+# día de Argentina o con un cargar() nuevo (deploy o forzar=True), así que se arma
+# una vez por día y por carga. La comparación es por identidad de la lista, no por id().
+_ITEMS_MEMO: tuple[date, list[dict[str, Any]], list[dict[str, Any]]] | None = None
+
+
+def _items_publicos_calc(hoy: date) -> list[dict[str, Any]]:
     items = []
     for rec in activas(hoy):
         item = _item_publico(rec)
         if item is not None:
             items.append(item)
     return items
+
+
+def _items_publicos(hoy: date) -> list[dict[str, Any]]:
+    """Las mismas tarjetas que lista el hub. Sin precio de producto.
+
+    Devuelve copias: quien llama puede ordenar o tocar una tarjeta sin cambiar la memo.
+    """
+    global _ITEMS_MEMO
+    recs = cargar()
+    memo = _ITEMS_MEMO
+    if memo is None or memo[0] != hoy or memo[1] is not recs:
+        memo = (hoy, recs, _items_publicos_calc(hoy))
+        _ITEMS_MEMO = memo
+    return [{**it, "day_ids": list(it.get("day_ids") or [])} for it in memo[2]]
 
 
 def descripcion_hub(n: int, cadenas_n: int, n_hoy: int) -> str:
@@ -2593,6 +2614,40 @@ def _conteo_cadenas(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def _items_de(items: list[dict[str, Any]], idx: int) -> list[dict[str, Any]]:
     return [it for it in items if idx in it.get("day_ids", [])]
+
+
+def promos_de_hoy_por_cadena(hoy: date | None = None) -> dict[str, dict[str, Any]]:
+    """Por cadena con página pública: las promos que aplican hoy (día de Argentina).
+
+    Mismas tarjetas que el hub y la página del día. top_pct es el mayor porcentaje
+    publicado (None si hoy solo hay cuotas); bancos_top, los bancos que lo dan.
+    """
+    hoy = hoy or hoy_art()
+    wd = hoy.weekday()
+    indice = {c["chain_id"]: c for c in cadenas_indexables(hoy)}
+    dia = _items_de(_items_publicos(hoy), wd)
+    out: dict[str, dict[str, Any]] = {}
+    for chain_id, cadena in indice.items():
+        propios = [it for it in dia if it.get("chain_id") == chain_id]
+        if not propios:
+            continue
+        top_pct, ties = _top_descuento(propios)
+        bancos_top: list[str] = []
+        for it in ties:
+            banco = str(it.get("banco") or "").strip()
+            if banco and banco not in bancos_top:
+                bancos_top.append(banco)
+        out[chain_id] = {
+            "chain_id": chain_id,
+            "nombre": cadena["nombre"],
+            "href": cadena["href"],
+            "n": len(propios),
+            "top_pct": top_pct,
+            "top_txt": _pct_publico(top_pct) if top_pct is not None else "",
+            "bancos_top": bancos_top,
+            "cuotas_n": sum(1 for it in propios if "percent" not in it),
+        }
+    return out
 
 
 def _resumen_dia(spec: dict[str, Any], items: list[dict[str, Any]]) -> dict[str, Any]:

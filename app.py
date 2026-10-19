@@ -176,16 +176,63 @@ CANONICAL_HOST = "baratoya.app"
 VERCEL_APP_HOSTS = frozenset({"baratoya.vercel.app"})
 
 
+# HTML público: el mismo para todos (la sesión vive en el navegador, no en el HTML).
+# Sin esto Vercel respondía "max-age=0, must-revalidate" y cada visita y cada pasada de
+# Googlebot ejecutaba la función (3-7 s en frío). Ver cache_control_publico().
+PUBLIC_EXACT = frozenset({
+    "/", "/planes", "/aviso-precios", "/terminos", "/privacidad", "/sitemap.xml", "/robots.txt",
+})
+PUBLIC_PREFIXES = ("/promos-bancarias-supermercados", "/descuentos-supermercados", "/precios")
+_ART = timezone(timedelta(hours=-3))
+SWR_S = 86400
+
+
+def es_publica_cacheable(path: str) -> bool:
+    path = path.rstrip("/") or "/"
+    if path in PUBLIC_EXACT:
+        return True
+    return any(path == p or path.startswith(p + "/") for p in PUBLIC_PREFIXES)
+
+
+def cache_control_publico(ahora: datetime | None = None) -> str:
+    """CDN fresco hasta la medianoche de Argentina: "hoy", los días y las promos cambian ahí.
+
+    max-age=0: el navegador siempre vuelve al CDN. stale-while-revalidate: pasado el corte,
+    el primer pedido recibe la copia anterior al instante y Vercel rearma la página en
+    segundo plano (nadie espera a la función). Un deploy nuevo (promos de la semana) vacía
+    el caché igual.
+    """
+    ahora = (ahora or datetime.now(timezone.utc)).astimezone(_ART)
+    medianoche = (ahora + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+    segundos = int((medianoche - ahora).total_seconds())
+    segundos = max(60, min(segundos, 86400))
+    return (
+        f"public, max-age=0, s-maxage={segundos}, "
+        f"stale-while-revalidate={SWR_S}, stale-if-error={SWR_S}"
+    )
+
+
 @app.middleware("http")
 async def redirect_legacy_vercel_host(request: Request, call_next):
-    """308 baratoya.vercel.app → baratoya.app (same path + query). Preview *.vercel.app untouched."""
+    """308 baratoya.vercel.app → baratoya.app (same path + query). Preview *.vercel.app untouched.
+
+    También pone el Cache-Control del CDN en las páginas públicas que responden 200.
+    """
     host = (request.headers.get("host") or "").split(":", 1)[0].lower()
     if host in VERCEL_APP_HOSTS:
         target = f"https://{CANONICAL_HOST}{request.url.path}"
         if request.url.query:
             target = f"{target}?{request.url.query}"
         return RedirectResponse(url=target, status_code=308)
-    return await call_next(request)
+    response = await call_next(request)
+    if (
+        request.method in ("GET", "HEAD")
+        and response.status_code == 200
+        and "set-cookie" not in response.headers
+        and es_publica_cacheable(request.url.path)
+    ):
+        response.headers["Cache-Control"] = cache_control_publico()
+    return response
 
 
 
@@ -1036,7 +1083,6 @@ async def precios_hub(request: Request):
         request,
         "precios.html",
         precios_seo.pagina_precios(),
-        headers={"Cache-Control": precios_seo.CACHE_CONTROL},
     )
 
 
@@ -1051,7 +1097,6 @@ async def precios_categoria(request: Request, slug: str):
         request,
         "precios_categoria.html",
         vista,
-        headers={"Cache-Control": precios_seo.CACHE_CONTROL},
     )
 
 
@@ -1067,7 +1112,6 @@ async def precios_producto(request: Request, slug: str):
             request,
             "precios_categoria.html",
             vista,
-            headers={"Cache-Control": precios_seo.CACHE_CONTROL},
         )
     await precios_seo.asegurar_producto(slug)
     vista = precios_seo.pagina_producto(slug)
@@ -1077,7 +1121,6 @@ async def precios_producto(request: Request, slug: str):
         request,
         "precio_producto.html",
         vista,
-        headers={"Cache-Control": precios_seo.CACHE_CONTROL},
     )
 
 

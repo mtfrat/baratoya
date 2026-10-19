@@ -205,8 +205,12 @@ class PreciosPublicosTest(unittest.TestCase):
                 self.assertEqual(crudo["priceCurrency"], "ARS")
                 self.assertEqual(crudo["seller"]["name"], publicado["tienda"])
             faq = next(b for b in bloques if b["@type"] == "FAQPage")
-            self.assertEqual([q["name"] for q in faq["mainEntity"]], [item["q"] for item in vista["faq"]])
+            # La ficha suma al FAQ de la vista base el litro/kilo y las promos de hoy.
+            ficha = pagina_producto(vista["slug"])
+            self.assertEqual([q["name"] for q in faq["mainEntity"]], [item["q"] for item in ficha["faq"]])
             for item in vista["faq"]:
+                self.assertIn(item["q"], [q["q"] for q in ficha["faq"]])
+            for item in ficha["faq"]:
                 self.assertIn(item["q"], html)
                 self.assertIn(item["a"], html)
             crumbs = next(b for b in bloques if b["@type"] == "BreadcrumbList")
