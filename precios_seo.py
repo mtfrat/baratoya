@@ -1980,38 +1980,44 @@ def _tarea_refresco(slug: str) -> asyncio.Task | None:
     return tarea
 
 
-async def _refrescar(slugs: list[str], espera: float | None = None) -> None:
+async def _refrescar(slugs: list[str], espera: float | None = None) -> bool:
+    """True si la página sale con todas las lecturas terminadas; False si alguna sigue en curso.
+
+    Con False, app.py le pide al CDN un caché corto: la copia con la captura anterior no
+    queda fija hasta la medianoche y la próxima revalidación ya trae el precio nuevo.
+    """
     tareas = [t for t in (_tarea_refresco(s) for s in slugs) if t is not None]
     if not tareas:
-        return
+        return True
     # asyncio.wait no cancela al vencer el plazo: la lectura sigue y la próxima página la usa.
-    await asyncio.wait(tareas, timeout=ESPERA_REQUEST_S if espera is None else espera)
+    _hechas, pendientes = await asyncio.wait(tareas, timeout=ESPERA_REQUEST_S if espera is None else espera)
+    return not pendientes
 
 
-async def asegurar_producto(slug: str) -> None:
+async def asegurar_producto(slug: str) -> bool:
     """Si la captura de este producto tiene más de un día, vuelve a leer el catálogo."""
-    await _refrescar([slug])
+    return await _refrescar([slug])
 
 
-async def asegurar_hub() -> None:
+async def asegurar_hub() -> bool:
     """Relee los productos vencidos. Si no alcanza el tiempo, queda la captura anterior."""
-    await _refrescar([spec["slug"] for spec in CATALOGO])
+    return await _refrescar([spec["slug"] for spec in CATALOGO])
 
 
-async def asegurar_categoria(slug: str) -> None:
+async def asegurar_categoria(slug: str) -> bool:
     """Relee los productos vencidos de una categoría. Si no alcanza el tiempo, queda la captura."""
     nombre = _SLUG_CATEGORIA.get(slug or "")
     if nombre is None:
-        return
-    await _refrescar([spec["slug"] for spec in CATALOGO if spec["categoria"] == nombre])
+        return True
+    return await _refrescar([spec["slug"] for spec in CATALOGO if spec["categoria"] == nombre])
 
 
-async def asegurar_commodity(slug: str) -> None:
+async def asegurar_commodity(slug: str) -> bool:
     """Relee los productos vencidos de un hub. Si no alcanza el tiempo, queda la captura."""
     if not commodity_conocida(slug):
-        return
+        return True
     spec = _COMMODITY[slug]
-    await _refrescar([item["slug"] for item in CATALOGO if _producto_en_commodity(item["slug"], spec)])
+    return await _refrescar([item["slug"] for item in CATALOGO if _producto_en_commodity(item["slug"], spec)])
 
 
 async def capturar_todo() -> dict[str, Any]:

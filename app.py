@@ -194,7 +194,10 @@ def es_publica_cacheable(path: str) -> bool:
     return any(path == p or path.startswith(p + "/") for p in PUBLIC_PREFIXES)
 
 
-def cache_control_publico(ahora: datetime | None = None) -> str:
+CDN_CORTO_S = 300
+
+
+def cache_control_publico(ahora: datetime | None = None, corto: bool = False) -> str:
     """CDN fresco hasta la medianoche de Argentina: "hoy", los días y las promos cambian ahí.
 
     max-age=0: el navegador siempre vuelve al CDN. stale-while-revalidate: pasado el corte,
@@ -206,6 +209,9 @@ def cache_control_publico(ahora: datetime | None = None) -> str:
     medianoche = (ahora + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
     segundos = int((medianoche - ahora).total_seconds())
     segundos = max(60, min(segundos, 86400))
+    if corto:
+        # /precios con una lectura en vivo todavía en curso: 5 min y se rearma con el precio nuevo.
+        segundos = min(segundos, CDN_CORTO_S)
     return (
         f"public, max-age=0, s-maxage={segundos}, "
         f"stale-while-revalidate={SWR_S}, stale-if-error={SWR_S}"
@@ -231,7 +237,9 @@ async def redirect_legacy_vercel_host(request: Request, call_next):
         and "set-cookie" not in response.headers
         and es_publica_cacheable(request.url.path)
     ):
-        response.headers["Cache-Control"] = cache_control_publico()
+        response.headers["Cache-Control"] = cache_control_publico(
+            corto=bool(getattr(request.state, "cdn_corto", False))
+        )
     return response
 
 
@@ -1078,7 +1086,8 @@ async def descuentos_supermercados_dia(request: Request, dia: str):
 @app.get("/precios", response_class=HTMLResponse)
 async def precios_hub(request: Request):
     """Comparación pública por producto. El número sale del catálogo, sin sesión."""
-    await precios_seo.asegurar_hub()
+    if not await precios_seo.asegurar_hub():
+        request.state.cdn_corto = True
     return templates.TemplateResponse(
         request,
         "precios.html",
@@ -1089,7 +1098,8 @@ async def precios_hub(request: Request):
 @app.get("/precios/categoria/{slug}", response_class=HTMLResponse)
 async def precios_categoria(request: Request, slug: str):
     """Hub de una categoría. El precio de cada producto es el de su ficha."""
-    await precios_seo.asegurar_categoria(slug)
+    if not await precios_seo.asegurar_categoria(slug):
+        request.state.cdn_corto = True
     vista = precios_seo.pagina_categoria(slug)
     if vista is None:
         raise StarletteHTTPException(status_code=404)
@@ -1104,7 +1114,8 @@ async def precios_categoria(request: Request, slug: str):
 async def precios_producto(request: Request, slug: str):
     """Una ficha, o un hub de producto puntual. Menos de dos cadenas: no se publica."""
     if precios_seo.commodity_conocida(slug):
-        await precios_seo.asegurar_commodity(slug)
+        if not await precios_seo.asegurar_commodity(slug):
+            request.state.cdn_corto = True
         vista = precios_seo.pagina_commodity(slug)
         if vista is None:
             raise StarletteHTTPException(status_code=404)
@@ -1113,7 +1124,8 @@ async def precios_producto(request: Request, slug: str):
             "precios_categoria.html",
             vista,
         )
-    await precios_seo.asegurar_producto(slug)
+    if not await precios_seo.asegurar_producto(slug):
+        request.state.cdn_corto = True
     vista = precios_seo.pagina_producto(slug)
     if vista is None:
         raise StarletteHTTPException(status_code=404)
