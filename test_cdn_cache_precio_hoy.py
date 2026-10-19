@@ -79,6 +79,43 @@ class MiddlewareTests(unittest.TestCase):
         self.assertEqual(_smaxage(r.headers.get("cache-control", "")), -1)
 
 
+class CdnCortoTests(unittest.TestCase):
+    def test_corto_tope_5_min(self):
+        h = app_mod.cache_control_publico(datetime(2026, 10, 19, 9, 0, tzinfo=ART), corto=True)
+        self.assertEqual(_smaxage(h), 300)
+        h = app_mod.cache_control_publico(datetime(2026, 10, 19, 23, 58, tzinfo=ART), corto=True)
+        self.assertEqual(_smaxage(h), 120)
+
+    def test_precios_con_lectura_pendiente_pide_cache_corto(self):
+        slug = precios_seo.vistas_publicadas()[0]["slug"]
+        with TestClient(app_mod.app) as c:
+            with mock.patch.object(precios_seo, "asegurar_producto", mock.AsyncMock(return_value=False)), \
+                 mock.patch.object(precios_seo, "asegurar_hub", mock.AsyncMock(return_value=False)):
+                for path in (f"/precios/{slug}", "/precios"):
+                    r = c.get(path)
+                    self.assertEqual(r.status_code, 200)
+                    self.assertLessEqual(_smaxage(r.headers["cache-control"]), 300, path)
+            with mock.patch.object(precios_seo, "asegurar_producto", mock.AsyncMock(return_value=True)):
+                r = c.get(f"/precios/{slug}")
+                self.assertEqual(_smaxage(r.headers["cache-control"]), _smaxage(app_mod.cache_control_publico()))
+
+    def test_refrescar_informa_pendientes(self):
+        async def correr():
+            async def lento(spec):
+                await asyncio.sleep(0.2)
+                return None
+            precios_seo._en_curso.clear()
+            precios_seo._fallo.clear()
+            slug = precios_seo.CATALOGO[1]["slug"]
+            with mock.patch.object(precios_seo, "_offline", return_value=False), \
+                 mock.patch.object(precios_seo, "_vencido", return_value=True), \
+                 mock.patch.object(precios_seo, "leer_en_vivo", side_effect=lento):
+                self.assertFalse(await precios_seo._refrescar([slug], espera=0.01))
+                await asyncio.sleep(0.3)
+            self.assertTrue(await precios_seo._refrescar([], espera=0.01))
+        asyncio.run(correr())
+
+
 class MemoPromosTests(unittest.TestCase):
     def setUp(self):
         promos_hoy._ITEMS_MEMO = None
