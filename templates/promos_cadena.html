@@ -161,6 +161,15 @@
     </div>
     <p class="nota">Los 7 días Plus gratis se activan al crear la cuenta, en el inicio. No pide tarjeta. El precio de un producto con la promo se calcula ahí. Plus, si lo querés, está en Planes.</p>
 
+    {% if semana and semana.lineas %}
+    <h2 id="semana">Resumen de la semana en {{ nombre }}</h2>
+    <ul>
+      {% for linea in semana.lineas %}
+      <li>{{ linea }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
     <h2>Otras cadenas</h2>
     <ul class="otras">
       <li><a href="{{ hub_href }}">Todas las cadenas</a></li>
@@ -178,14 +187,36 @@
 
     {% if hoy_promos %}
     <h2 id="hoy">Hoy, {{ dia }} {{ fecha }}</h2>
+    {% if hoy_pct %}
+    <h3>Con porcentaje de descuento</h3>
     <ul>
-      {% for it in hoy_promos %}
+      {% for it in hoy_pct %}
       <li><strong>{{ it.banco }}</strong>: {{ it.oferta }}{% if it.dias %}, {{ it.dias }}{% endif %}{% if it.tope %}, {{ it.tope }}{% endif %}{% if it.minimo %}, mínimo {{ it.minimo }}{% endif %}{% if it.canal %}, {{ it.canal }}{% endif %}{% if it.vigencia %}, vigencia {{ it.vigencia }}{% endif %}{% if it.nota %}. {{ it.nota }}{% endif %}.</li>
       {% endfor %}
     </ul>
+    {% endif %}
+    {% if hoy_cuotas %}
+    <h3>En cuotas sin interés</h3>
+    <ul>
+      {% for it in hoy_cuotas %}
+      <li><strong>{{ it.banco }}</strong>: {{ it.oferta }}{% if it.dias %}, {{ it.dias }}{% endif %}{% if it.tope %}, {{ it.tope }}{% endif %}{% if it.minimo %}, mínimo {{ it.minimo }}{% endif %}{% if it.canal %}, {{ it.canal }}{% endif %}{% if it.vigencia %}, vigencia {{ it.vigencia }}{% endif %}{% if it.nota %}. {{ it.nota }}{% endif %}.</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
     {% else %}
     <h2 id="hoy">Hoy, {{ dia }} {{ fecha }}</h2>
     <p>No hay promos vigentes cargadas para hoy.</p>
+    {% endif %}
+
+    {% if hoy_cadenas %}
+    <h2 id="hoy-cadenas">Hoy, {{ dia }}: {{ nombre }} y las otras cadenas</h2>
+    <p>Cuántas promos bancarias publica hoy cada cadena y el mayor porcentaje, con las mismas tarjetas de esta página. Todas juntas están en <a href="{{ dia_href }}">los descuentos en supermercados del {{ dia }}</a>.</p>
+    <ul>
+      {% for c in hoy_cadenas %}
+      <li>{% if c.propia %}<strong>{{ c.nombre }}</strong> (esta página){% else %}<a href="{{ c.href }}">{{ c.nombre }}</a>{% endif %}: {% if c.n %}{{ c.n }} {{ "promo" if c.n == 1 else "promos" }} hoy{% if c.top_pct %}, hasta {{ c.top_pct }}{% else %}, solo cuotas sin interés{% endif %}{% else %}sin promos cargadas hoy{% endif %}.</li>
+      {% endfor %}
+    </ul>
+    <p class="nota">El mayor porcentaje puede tener condiciones (socios, rubros o sucursales): están en la página de cada cadena.</p>
     {% endif %}
 
     {% if resumen and resumen.mejor_por_dia %}
@@ -193,7 +224,7 @@
     <p>El mayor porcentaje publicado para cada día de la semana. Revisá tope, canal y condiciones en la tabla de abajo antes de pagar.</p>
     <ul>
       {% for f in resumen.mejor_por_dia %}
-      <li><strong>{{ f.dia|capitalize }}</strong>: hasta {{ f.pct }} con {{ f.bancos }}{% if f.tope %} ({{ f.tope }}){% endif %}.</li>
+      <li><strong>{{ f.dia|capitalize }}</strong>: hasta {{ f.pct }} con {{ f.bancos }}{% if f.tope %} ({{ f.tope }}){% endif %}{% if f.condicion %}, {{ f.condicion }}{% if f.general_pct %}. Sin condiciones extra: hasta {{ f.general_pct }} con {{ f.general_bancos }}{% endif %}{% endif %}.</li>
       {% endfor %}
     </ul>
     {% endif %}

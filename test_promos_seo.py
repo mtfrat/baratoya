@@ -33,6 +33,7 @@ from promos_hoy import (
     pagina_seo_dia,
     pagina_seo_dias,
     titulo_cadena,
+    titulo_cadena_hoy,
     titulo_dia,
 )
 
@@ -232,25 +233,34 @@ class PromosPorCadenaTest(unittest.TestCase):
             self.assertIsNotNone(vista)
             self.assertLessEqual(len(vista["title"]), 60)
             self.assertLessEqual(len(vista["description"]), 155)
-            self.assertEqual(vista["title"], titulo_cadena(cadena["nombre"]))
+            fija = cadena["chain_id"] in ("cotodigital", "carrefour")
+            if fija:
+                # Coto y Carrefour ya rankean: título, H1 y meta de antes (20/10).
+                self.assertEqual(vista["title"], titulo_cadena(cadena["nombre"]))
+                largo = f"Promociones bancarias {cadena['nombre']} supermercado hoy | BaratoYa"
+                if len(largo) <= 60:
+                    self.assertIn("supermercado", vista["title"])
+                self.assertEqual(vista["h1"], h1_cadena(cadena["nombre"]))
+                self.assertEqual(vista["h1"], f"Promociones bancarias en {cadena['nombre']} hoy")
+                if cadena["nombre"] != "Carrefour":
+                    self.assertNotIn("%", vista["description"])
+            else:
+                self.assertEqual(vista["title"], titulo_cadena_hoy(cadena["nombre"]))
+                self.assertIn(f"Promociones bancarias {cadena['nombre']} hoy", vista["title"])
+                self.assertEqual(vista["h1"], f"Promociones bancarias {cadena['nombre']} hoy, {vista['dia']}")
+                self.assertTrue(
+                    vista["description"].startswith(f"Promociones bancarias {cadena['nombre']} hoy ({vista['dia']})")
+                    or vista["description"].startswith("Promociones bancarias del supermercado ")
+                )
             self.assertTrue(vista["title"].startswith("Promociones bancarias "))
             self.assertIn(cadena["nombre"], vista["title"])
             self.assertIn("hoy", vista["title"])
             self.assertTrue(vista["title"].endswith("| BaratoYa"))
-            largo = f"Promociones bancarias {cadena['nombre']} supermercado hoy | BaratoYa"
-            if len(largo) <= 60:
-                self.assertIn("supermercado", vista["title"])
             self.assertIn("promociones bancarias", vista["description"].casefold())
-            self.assertIn("supermercado", vista["description"].casefold())
             self.assertNotIn("%", vista["title"])
-            if cadena["nombre"] == "Carrefour":
-                self.assertLessEqual(len(vista["description"]), 160)
-            else:
-                self.assertNotIn("%", vista["description"])
+            self.assertLessEqual(len(vista["description"]), 160 if cadena["nombre"] == "Carrefour" else 155)
             self.assertLessEqual(len(descripcion_cadena(cadena["nombre"], "miércoles")), 155)
             self.assertTrue(descripcion_cadena(cadena["nombre"], "miércoles").startswith("Promociones bancarias "))
-            self.assertEqual(vista["h1"], h1_cadena(cadena["nombre"]))
-            self.assertEqual(vista["h1"], f"Promociones bancarias en {cadena['nombre']} hoy")
             self.assertEqual(
                 vista["faq"][0]["q"],
                 f"¿Cuáles son las promociones bancarias en {cadena['nombre']} hoy?",
@@ -570,7 +580,9 @@ class DescuentosPorDiaTest(unittest.TestCase):
     def test_lastmod_sigue_el_dato_o_el_dia(self) -> None:
         datos = self.fecha
         self.assertIsNotNone(datos)
-        self.assertEqual(lastmod_promos(date(2020, 1, 1)), datos.isoformat())
+        # 20/10: nunca una fecha posterior al día (antes devolvía el dato, en el futuro).
+        self.assertEqual(lastmod_promos(date(2020, 1, 1)), "2020-01-01")
+        self.assertLessEqual(datos, date.fromisoformat(self.hub["hoy_iso"]))
         self.assertEqual(lastmod_promos(date(2099, 1, 2)), "2099-01-02")
         self.assertEqual(self.lastmod, max(datos, date.fromisoformat(self.hub["hoy_iso"])).isoformat())
 
