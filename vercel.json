@@ -3,9 +3,20 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "baratoya.vercel.app" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "baratoya.vercel.app"
+        }
+      ],
       "destination": "https://baratoya.app/:path*",
       "permanent": true
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/precios",
+      "schedule": "0 10 * * *"
     }
   ]
 }
