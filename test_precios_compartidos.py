@@ -79,6 +79,7 @@ class Base(unittest.TestCase):
     def setUp(self):
         precios_seo.reiniciar_cache()
         precios_seo._hidratado_en = None
+        precios_seo._remoto_capturado.clear()
         _Cliente.calls = []
         _Cliente.get_payload = []
         _Cliente.get_status = 200
@@ -218,6 +219,7 @@ class CronTests(Base):
         body = r.json()
         self.assertTrue(body["ok"])
         self.assertEqual(body["productos"], len(precios_seo.CATALOGO))
+        self.assertIn("subidas", body)
         self.assertEqual(r.headers["cache-control"], "no-store")
         self.assertIn("noindex", r.headers.get("x-robots-tag", ""))
 
@@ -231,6 +233,26 @@ class CronTests(Base):
         v = json.loads((precios_seo.RUTA.parent.parent / "vercel.json").read_text(encoding="utf-8"))
         self.assertIn({"path": "/api/cron/precios", "schedule": "0 10 * * *"}, v["crons"])
         self.assertFalse(app_mod.es_publica_cacheable("/api/cron/precios"))
+
+
+class SincronizarTests(Base):
+    def test_sube_solo_lo_fresco_que_falta_o_es_mas_nuevo(self):
+        data = precios_seo.cargar()
+        ahora = datetime.now(ART)
+        a, b, c = (copy.deepcopy(p) for p in data["productos"][:3])
+        a = _con_fecha(a, ahora - timedelta(minutes=10))   # fresco, Supabase no lo tiene
+        b = _con_fecha(b, ahora - timedelta(minutes=10))   # fresco, Supabase ya lo tiene igual
+        data["productos"] = [a, b, c] + data["productos"][3:]  # c sigue con la foto vieja
+        precios_seo._remoto_capturado[b["slug"]] = precios_seo._fecha_captura(b["capturado"])
+        with mock.patch.dict(os.environ, ENV):
+            self.assertEqual(asyncio.run(precios_seo.sincronizar_remoto()), 1)
+            self.assertEqual(asyncio.run(precios_seo.sincronizar_remoto()), 0)
+        posts = [c_ for c_ in _Cliente.calls if c_[0] == "POST"]
+        self.assertEqual([p_[4]["slug"] for p_ in posts], [a["slug"]])
+
+    def test_sin_claves_no_sube(self):
+        with mock.patch.dict(os.environ, {"SUPABASE_URL": "", "SUPABASE_SERVICE_ROLE_KEY": ""}):
+            self.assertEqual(asyncio.run(precios_seo.sincronizar_remoto()), 0)
 
 
 if __name__ == "__main__":

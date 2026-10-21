@@ -1918,6 +1918,8 @@ TABLA_REMOTA = "precios_publicos"
 HIDRATAR_CADA_S = 600.0
 REMOTO_TIMEOUT_S = 3.0
 _hidratado_en: float | None = None
+# capturado de cada slug según la última lectura de Supabase (o el último upsert que respondió OK).
+_remoto_capturado: dict[str, datetime] = {}
 _hidratar_lock: asyncio.Lock | None = None
 _hidratar_loop: Any = None
 
@@ -2018,7 +2020,12 @@ async def hidratar(forzar: bool = False) -> int:
             return 0
         if not isinstance(filas, list):
             return 0
-        return mezclar_capturas([f.get("captura") for f in filas if isinstance(f, dict)])
+        capturas = [f.get("captura") for f in filas if isinstance(f, dict)]
+        _remoto_capturado.clear()
+        for prod in capturas:
+            if _captura_valida(prod):
+                _remoto_capturado[prod["slug"]] = _fecha_captura(prod["capturado"])
+        return mezclar_capturas(capturas)
 
 
 async def guardar_remoto(prod: dict[str, Any]) -> bool:
@@ -2040,7 +2047,30 @@ async def guardar_remoto(prod: dict[str, Any]) -> bool:
             )
     except Exception:  # noqa: BLE001
         return False
-    return r.status_code in (200, 201, 204)
+    ok = r.status_code in (200, 201, 204)
+    if ok:
+        _remoto_capturado[prod["slug"]] = _fecha_captura(prod["capturado"])
+    return ok
+
+
+async def sincronizar_remoto() -> int:
+    """Sube las capturas de esta instancia que Supabase no tiene o tiene más viejas.
+
+    Una lectura que terminó después de que el request respondió puede no haber llegado a
+    guardarse (la instancia se congela entre requests). El cron lo completa.
+    """
+    if _remoto() is None:
+        return 0
+    subidas = 0
+    for prod in cargar().get("productos") or []:
+        if not _captura_valida(prod) or _viejo(str(prod.get("capturado") or "")):
+            continue
+        remoto = _remoto_capturado.get(prod["slug"])
+        if remoto is not None and remoto >= _fecha_captura(prod["capturado"]):
+            continue
+        if await guardar_remoto(prod):
+            subidas += 1
+    return subidas
 
 
 async def refrescar_vencidos(espera: float) -> dict[str, int]:
@@ -2053,7 +2083,9 @@ async def refrescar_vencidos(espera: float) -> dict[str, int]:
     if tareas:
         _hechas, pendientes = await asyncio.wait(tareas, timeout=espera)
     frescos = sum(1 for s in slugs if not _vencido(s))
+    subidas = await sincronizar_remoto()
     return {
+        "subidas": subidas,
         "productos": len(slugs),
         "vencidos_antes": len(vencidos),
         "lecturas": len(tareas),
