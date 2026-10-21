@@ -17,6 +17,8 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+import httpx
+
 try:
     from baratoya.promos_hoy import cadenas_indexables, hoy_art, nav_dias, promos_de_hoy_por_cadena
     from baratoya.super_cadenas import agrupar_mismo_producto, buscar_super
@@ -1906,6 +1908,160 @@ def _reemplazar(prod: dict[str, Any]) -> None:
     _persistir(data)
 
 
+# Capturas compartidas entre instancias (Supabase, tabla public.precios_publicos).
+# Antes cada instancia de Vercel guardaba sus lecturas en su propio /tmp: una instancia nueva
+# (cada deploy, cada escalado) arrancaba con la foto del repo (10/10) y el sitemap y las fichas
+# alternaban entre esa fecha y la de hoy según qué instancia respondía. Ahora cada lectura en
+# vivo se guarda también en Supabase y toda instancia la levanta antes de armar la página.
+# Sin claves, o con Supabase caído, todo sigue como antes (foto del repo + /tmp).
+TABLA_REMOTA = "precios_publicos"
+HIDRATAR_CADA_S = 600.0
+REMOTO_TIMEOUT_S = 3.0
+_hidratado_en: float | None = None
+_hidratar_lock: asyncio.Lock | None = None
+_hidratar_loop: Any = None
+
+
+def _remoto() -> tuple[str, str] | None:
+    url = os.getenv("SUPABASE_URL", "").strip().rstrip("/")
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+    if not url or not key:
+        return None
+    return url, key
+
+
+def _headers_remoto(key: str) -> dict[str, str]:
+    return {
+        "apikey": key,
+        "Authorization": f"Bearer {key}",
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+    }
+
+
+def _fecha_captura(iso: Any) -> datetime | None:
+    try:
+        dt = datetime.fromisoformat(str(iso or ""))
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ART)
+    return dt
+
+
+def _captura_valida(prod: Any) -> bool:
+    """Una fila remota entra solo si tiene la forma de una captura real y no viene del futuro."""
+    if not isinstance(prod, dict) or prod.get("slug") not in _SPEC:
+        return False
+    if not isinstance(prod.get("ofertas"), list) or len(prod["ofertas"]) < MIN_CADENAS:
+        return False
+    dt = _fecha_captura(prod.get("capturado"))
+    if dt is None or dt > datetime.now(ART) + timedelta(minutes=5):
+        return False
+    return True
+
+
+def mezclar_capturas(remotas: list[Any]) -> int:
+    """Reemplaza en memoria cada producto cuya captura remota es más nueva. Devuelve cuántos."""
+    data = cargar()
+    by = {p.get("slug"): p for p in data.get("productos") or [] if isinstance(p, dict)}
+    cambios = 0
+    for prod in remotas:
+        if not _captura_valida(prod):
+            continue
+        prev = by.get(prod["slug"])
+        prev_dt = _fecha_captura(prev.get("capturado")) if isinstance(prev, dict) else None
+        if prev_dt is not None and prev_dt >= _fecha_captura(prod["capturado"]):
+            continue
+        by[prod["slug"]] = prod
+        cambios += 1
+    if cambios:
+        data["productos"] = list(by.values())
+    return cambios
+
+
+def _lock_hidratar() -> asyncio.Lock:
+    global _hidratar_lock, _hidratar_loop
+    loop = asyncio.get_running_loop()
+    if _hidratar_lock is None or _hidratar_loop is not loop:
+        _hidratar_lock = asyncio.Lock()
+        _hidratar_loop = loop
+    return _hidratar_lock
+
+
+async def hidratar(forzar: bool = False) -> int:
+    """Trae las capturas guardadas por cualquier instancia. Como mucho cada 10 min por instancia."""
+    global _hidratado_en
+    remoto = _remoto()
+    if remoto is None:
+        return 0
+    async with _lock_hidratar():
+        if not forzar and _hidratado_en is not None and time.monotonic() - _hidratado_en < HIDRATAR_CADA_S:
+            return 0
+        url, key = remoto
+        try:
+            async with httpx.AsyncClient(timeout=REMOTO_TIMEOUT_S) as client:
+                r = await client.get(
+                    f"{url}/rest/v1/{TABLA_REMOTA}",
+                    params={"select": "captura"},
+                    headers=_headers_remoto(key),
+                )
+        except Exception:  # noqa: BLE001 - Supabase caído no tira la página
+            _hidratado_en = time.monotonic()
+            return 0
+        _hidratado_en = time.monotonic()
+        if r.status_code != 200:
+            return 0
+        try:
+            filas = r.json()
+        except ValueError:
+            return 0
+        if not isinstance(filas, list):
+            return 0
+        return mezclar_capturas([f.get("captura") for f in filas if isinstance(f, dict)])
+
+
+async def guardar_remoto(prod: dict[str, Any]) -> bool:
+    """Upsert de una captura recién leída. Best effort: si falla, la página sigue igual."""
+    remoto = _remoto()
+    if remoto is None or not _captura_valida(prod):
+        return False
+    url, key = remoto
+    headers = _headers_remoto(key)
+    headers["Prefer"] = "resolution=merge-duplicates,return=minimal"
+    fila = {"slug": prod["slug"], "capturado": prod["capturado"], "captura": prod}
+    try:
+        async with httpx.AsyncClient(timeout=REMOTO_TIMEOUT_S) as client:
+            r = await client.post(
+                f"{url}/rest/v1/{TABLA_REMOTA}",
+                params={"on_conflict": "slug"},
+                headers=headers,
+                json=fila,
+            )
+    except Exception:  # noqa: BLE001
+        return False
+    return r.status_code in (200, 201, 204)
+
+
+async def refrescar_vencidos(espera: float) -> dict[str, int]:
+    """Captura diaria (cron): relee todo lo que tenga más de 24 h y lo deja guardado."""
+    await hidratar(forzar=True)
+    slugs = [spec["slug"] for spec in CATALOGO]
+    vencidos = [s for s in slugs if _vencido(s)]
+    tareas = [t for t in (_tarea_refresco(s) for s in vencidos) if t is not None]
+    pendientes: set[Any] = set()
+    if tareas:
+        _hechas, pendientes = await asyncio.wait(tareas, timeout=espera)
+    frescos = sum(1 for s in slugs if not _vencido(s))
+    return {
+        "productos": len(slugs),
+        "vencidos_antes": len(vencidos),
+        "lecturas": len(tareas),
+        "pendientes": len(pendientes),
+        "frescos": frescos,
+    }
+
+
 # Refresco en vivo de capturas vencidas (>24 h).
 # Antes: un asyncio.Lock global ponía en fila TODAS las lecturas (el Semaphore(4) del hub no
 # servía), el hub esperaba 15 s y casi siempre cortaba por tiempo, y una lectura que fallaba
@@ -1952,6 +2108,7 @@ async def _leer_y_guardar(spec: dict[str, Any]) -> None:
         return
     _fallo.pop(slug, None)
     _reemplazar(nuevo)
+    await guardar_remoto(nuevo)
 
 
 def _tarea_refresco(slug: str) -> asyncio.Task | None:
@@ -1986,6 +2143,7 @@ async def _refrescar(slugs: list[str], espera: float | None = None) -> bool:
     Con False, app.py le pide al CDN un caché corto: la copia con la captura anterior no
     queda fija hasta la medianoche y la próxima revalidación ya trae el precio nuevo.
     """
+    await hidratar()
     tareas = [t for t in (_tarea_refresco(s) for s in slugs) if t is not None]
     if not tareas:
         return True

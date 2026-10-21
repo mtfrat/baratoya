@@ -280,6 +280,8 @@ async def robots_txt():
 @app.api_route("/sitemap.xml", methods=["GET", "HEAD"], include_in_schema=False)
 async def sitemap_xml(request: Request):
     """GET y HEAD. FastAPI 0.142 no suma HEAD a un @app.get; GSC hace HEAD y recibía 405."""
+    # Fechas de captura compartidas: cualquier instancia publica la misma lastmod de /precios.
+    await precios_seo.hidratar()
     base = (STATIC_DIR / "sitemap.xml").read_text(encoding="utf-8")
     extra = "".join(
         f"  <url><loc>{loc}</loc><lastmod>{last}</lastmod></url>\n"
@@ -1133,6 +1135,24 @@ async def precios_producto(request: Request, slug: str):
         request,
         "precio_producto.html",
         vista,
+    )
+
+
+CRON_PRECIOS_ESPERA_S = 240.0
+
+
+@app.get("/api/cron/precios", include_in_schema=False)
+async def cron_precios(request: Request):
+    """Captura diaria de /precios (Vercel Cron, 07:00 ART). Relee lo que tenga más de 24 h
+    del mismo catálogo público y lo guarda en Supabase para todas las instancias.
+    Con CRON_SECRET configurado, solo responde al header que manda Vercel."""
+    secreto = os.getenv("CRON_SECRET", "").strip()
+    if secreto and request.headers.get("authorization") != f"Bearer {secreto}":
+        return JSONResponse({"ok": False}, status_code=401, headers={"Cache-Control": "no-store"})
+    resumen = await precios_seo.refrescar_vencidos(CRON_PRECIOS_ESPERA_S)
+    return JSONResponse(
+        {"ok": True, **resumen},
+        headers={"Cache-Control": "no-store", "X-Robots-Tag": "noindex"},
     )
 
 

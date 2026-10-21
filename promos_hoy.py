@@ -2109,7 +2109,8 @@ def descripcion_cadena(nombre: str, dia: str, hasta_pct: float | None = None) ->
                 f"Bancos, días y tope. BaratoYa no vende ni entrega."
             ),
         ):
-            if len(texto) <= 160:
+            # ≤155 como el resto de las metas: con "miércoles" la primera daba 157.
+            if len(texto) <= 155:
                 return texto
     opciones = (
         (

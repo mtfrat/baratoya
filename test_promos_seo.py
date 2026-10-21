@@ -675,5 +675,16 @@ class MetaCarrefourHastaTest(unittest.TestCase):
         self.assertNotIn("%", v["description"])
 
 
+class DescripcionLargoTest(unittest.TestCase):
+    def test_carrefour_entra_en_155_todos_los_dias(self) -> None:
+        from promos_hoy import descripcion_cadena
+
+        for dia in ("lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"):
+            for pct in (5, 25, 35, 40, 12.5):
+                texto = descripcion_cadena("Carrefour", dia, pct)
+                self.assertLessEqual(len(texto), 155, texto)
+                self.assertIn(f"hoy ({dia})", texto)
+
+
 if __name__ == "__main__":
     unittest.main()
