@@ -92,6 +92,19 @@
     .btn.outline { background: var(--paper); border: 1px solid var(--ink); }
     .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .nota { color: var(--slate); font-size: 15px; }
+    .tabla { width: 100%; overflow-x: auto; margin: 0 0 16px; }
+    .tabla table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .tabla th, .tabla td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--fog); }
+    .tabla th { color: var(--ink); font-weight: 700; background: #f6f8f4; }
+    .tabla td.num { white-space: nowrap; font-weight: 700; color: var(--ink); }
+    .tabla tr.actual td { background: #f1fbe9; }
+    .bancos { list-style: none; padding: 0; }
+    @media (max-width: 520px) {
+      .tabla table { font-size: 14px; }
+      .tabla th, .tabla td { padding: 6px 6px; }
+      .tabla .col-n { display: none; }
+    }
+    .bancos li { margin: 0 0 10px; }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
     footer .wrap { width: min(100% - 32px, 48rem); margin: 0 auto; }
     footer p { margin: 0 0 8px; }
@@ -118,6 +131,25 @@
     <h1>{{ h1 }}</h1>
     <p>{{ intro }}</p>
     <p>{{ linea }}</p>
+    {% if por_cadena %}
+    <h2 id="resumen">Resumen del {{ nombre }}: el mayor descuento en cada supermercado</h2>
+    <div class="tabla">
+      <table>
+        <thead><tr><th scope="col">Supermercado</th><th scope="col">Mayor descuento</th><th scope="col">Con</th><th scope="col" class="col-n">Promos</th></tr></thead>
+        <tbody>
+          {% for f in por_cadena %}
+          <tr>
+            <td>{% if f.href %}<a href="{{ f.href }}">{{ f.cadena }}</a>{% else %}{{ f.cadena }}{% endif %}</td>
+            <td class="num">{% if f.top_txt %}{{ f.top_txt }}%{% else %}Solo cuotas{% endif %}</td>
+            <td>{% if f.top_txt %}{{ f.bancos | join(", ") }}{% if f.tope %} ({{ f.tope }}){% endif %}{% else %}—{% endif %}</td>
+            <td class="col-n">{{ f.n }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">Es el mejor caso de cada cadena, con el banco o la billetera que lo da. Las condiciones (tope, mínimo, canal y vigencia) de cada promo están más abajo.</p>
+    {% endif %}
     <p>Son las mismas promos que usa la cuenta de BaratoYa. Si la cadena no publica ese dato, no lo completamos. El precio final estimado se calcula en la cuenta. Si la letra dice que no acumula, no se suma a otro descuento.</p>
     {% if es_hoy %}
     <p>Hoy es {{ nombre }} {{ fecha }}.</p>
@@ -149,6 +181,16 @@
       {% endfor %}
     </ul>
 
+    {% if por_banco %}
+    <h2 id="por-banco">Descuentos de los {{ plural }} por banco o billetera</h2>
+    <p>Qué da cada banco o billetera los {{ plural }}, en qué supermercado y cuánto. Si una cadena solo publica cuotas con ese banco, figura como cuotas.</p>
+    <ul class="bancos">
+      {% for b in por_banco %}
+      <li><strong>{{ b.banco }}</strong>{% if b.top_txt %} — hasta {{ b.top_txt }}%{% endif %}: {% for c in b.cadenas %}{{ c.cadena }} {{ c.txt }}{% if not loop.last %}, {% endif %}{% endfor %}.</li>
+      {% endfor %}
+    </ul>
+    <p class="nota">Agrupamos el nombre que publica cada cadena (por ejemplo, "BNA+ MODO" y "Banco Nación" van juntos). Las promos de clubes, de un grupo de clientes o de "todos los medios de pago" quedan solo en la lista completa.</p>
+    {% endif %}
     {% if cadenas %}
     <h2>Promos del {{ nombre }}</h2>
     {% for grupo in cadenas %}
@@ -166,6 +208,24 @@
     <p>No hay promos vigentes cargadas para este día.</p>
     {% endif %}
 
+    {% if comparar %}
+    <h2 id="otros-dias">Los {{ plural }} comparados con los otros días</h2>
+    <div class="tabla">
+      <table>
+        <thead><tr><th scope="col">Día</th><th scope="col">Promos</th><th scope="col">Supermercados</th><th scope="col">Mayor descuento</th></tr></thead>
+        <tbody>
+          {% for d in comparar %}
+          <tr{% if d.actual %} class="actual"{% endif %}>
+            <td>{% if d.actual %}{{ d.plural }}{% else %}<a href="{{ d.href }}">{{ d.plural }}</a>{% endif %}{% if d.hoy %} (hoy){% endif %}</td>
+            <td>{{ d.n }}</td>
+            <td>{{ d.cadenas_n }}</td>
+            <td class="num">{% if d.top_txt %}{{ d.top_txt }}%{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
     <h2>Notas</h2>
     {% for item in notas %}
     <section>
