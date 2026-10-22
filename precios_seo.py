@@ -1109,7 +1109,12 @@ def _crudo(slug: str) -> dict[str, Any] | None:
     return None
 
 
-def _viejo(iso: str | None) -> bool:
+def _viejo(iso: str | None, del_dia: bool = False) -> bool:
+    """Más de 24 h. Con del_dia (cron diario), también si se capturó antes de hoy (ART).
+
+    El cron corre a las 07:00 ART; la captura del día anterior suele ser de las 09:00, o sea
+    22 h: con solo el corte de 24 h el cron no releía nada y las fechas quedaban en ayer.
+    """
     if not iso:
         return True
     try:
@@ -1118,7 +1123,10 @@ def _viejo(iso: str | None) -> bool:
         return True
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=ART)
-    return datetime.now(ART) - dt > timedelta(hours=HORAS_FRESCURA)
+    ahora = datetime.now(ART)
+    if del_dia and dt.astimezone(ART).date() < ahora.date():
+        return True
+    return ahora - dt > timedelta(hours=HORAS_FRESCURA)
 
 
 def vistas_publicadas() -> list[dict[str, Any]]:
@@ -2074,15 +2082,15 @@ async def sincronizar_remoto() -> int:
 
 
 async def refrescar_vencidos(espera: float) -> dict[str, int]:
-    """Captura diaria (cron): relee todo lo que tenga más de 24 h y lo deja guardado."""
+    """Captura diaria (cron): relee todo lo que no sea de hoy (ART) y lo deja guardado."""
     await hidratar(forzar=True)
     slugs = [spec["slug"] for spec in CATALOGO]
-    vencidos = [s for s in slugs if _vencido(s)]
-    tareas = [t for t in (_tarea_refresco(s) for s in vencidos) if t is not None]
+    vencidos = [s for s in slugs if _vencido(s, del_dia=True)]
+    tareas = [t for t in (_tarea_refresco(s, del_dia=True) for s in vencidos) if t is not None]
     pendientes: set[Any] = set()
     if tareas:
         _hechas, pendientes = await asyncio.wait(tareas, timeout=espera)
-    frescos = sum(1 for s in slugs if not _vencido(s))
+    frescos = sum(1 for s in slugs if not _vencido(s, del_dia=True))
     subidas = await sincronizar_remoto()
     return {
         "subidas": subidas,
@@ -2121,15 +2129,15 @@ def _semaforo() -> asyncio.Semaphore:
     return _sem
 
 
-def _vencido(slug: str) -> bool:
+def _vencido(slug: str, del_dia: bool = False) -> bool:
     actual = _crudo(slug)
-    return actual is None or _viejo(str(actual.get("capturado") or ""))
+    return actual is None or _viejo(str(actual.get("capturado") or ""), del_dia)
 
 
-async def _leer_y_guardar(spec: dict[str, Any]) -> None:
+async def _leer_y_guardar(spec: dict[str, Any], del_dia: bool = False) -> None:
     slug = spec["slug"]
     async with _semaforo():
-        if not _vencido(slug):
+        if not _vencido(slug, del_dia):
             return
         try:
             nuevo = await asyncio.wait_for(leer_en_vivo(spec), timeout=LECTURA_TIMEOUT_S)
@@ -2143,12 +2151,12 @@ async def _leer_y_guardar(spec: dict[str, Any]) -> None:
     await guardar_remoto(nuevo)
 
 
-def _tarea_refresco(slug: str) -> asyncio.Task | None:
+def _tarea_refresco(slug: str, del_dia: bool = False) -> asyncio.Task | None:
     """La tarea que relee este producto, o None si no hace falta (o falló hace poco)."""
     if _offline():
         return None
     spec = _SPEC.get(slug)
-    if spec is None or not _vencido(slug):
+    if spec is None or not _vencido(slug, del_dia):
         return None
     tarea = _en_curso.get(slug)
     if tarea is not None and not tarea.done() and tarea.get_loop() is asyncio.get_running_loop():
@@ -2156,7 +2164,7 @@ def _tarea_refresco(slug: str) -> asyncio.Task | None:
     falla = _fallo.get(slug)
     if falla is not None and time.monotonic() - falla < REINTENTO_TRAS_FALLO_S:
         return None
-    tarea = asyncio.create_task(_leer_y_guardar(spec))
+    tarea = asyncio.create_task(_leer_y_guardar(spec, del_dia))
     _en_curso[slug] = tarea
 
     def _fin(t: asyncio.Task, s: str = slug) -> None:
