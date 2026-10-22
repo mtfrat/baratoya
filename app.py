@@ -42,6 +42,7 @@ try:
     from baratoya.promos_hoy import promos_para_cadena
     from baratoya import precios_seo
     from baratoya import cuentas
+    from baratoya import anon
 except ImportError:
     from electro import buscar_electro
     from meli import buscar_meli
@@ -62,6 +63,7 @@ except ImportError:
     from promos_hoy import promos_para_cadena
     import precios_seo
     import cuentas
+    import anon
 
 BASE = os.getenv("PRECIOS_CLAROS_BASE", "https://d3e6htiiul5ek9.cloudfront.net/prod").rstrip("/")
 API_KEY = os.getenv("PRECIOS_CLAROS_API_KEY", "").strip()
@@ -700,16 +702,33 @@ def _leido_ahora() -> tuple[str, str]:
     return dt.isoformat(timespec="seconds"), texto
 
 
+def _poner_cookie_anon(resp: Response, quota: dict[str, Any]) -> Response:
+    raw = quota.get("_anon_cookie") if isinstance(quota, dict) else None
+    if raw:
+        resp.set_cookie(
+            anon.COOKIE,
+            raw,
+            max_age=anon.COOKIE_MAX_AGE,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            path="/",
+        )
+    return resp
+
+
 def _con_cuenta(payload: dict[str, Any], quota: dict[str, Any]) -> JSONResponse:
     payload = dict(payload)
     payload["cuenta"] = _cuenta_publica(quota)
-    return JSONResponse(
+    resp = JSONResponse(
         payload,
         headers={
             "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
             "Pragma": "no-cache",
         },
     )
+    _poner_cookie_anon(resp, quota)
+    return resp
 
 
 def _cuenta_publica(quota: dict[str, Any]) -> dict[str, Any]:
@@ -717,6 +736,16 @@ def _cuenta_publica(quota: dict[str, Any]) -> dict[str, Any]:
     limit = quota.get("limit")
     if limit is None and role != "admin":
         limit = cuentas.FREE_LIMIT
+    if quota.get("anon"):
+        return {
+            "plan": "anon",
+            "role": "",
+            "anon": True,
+            "used": quota.get("used"),
+            "remaining": quota.get("remaining"),
+            "limit": quota.get("limit"),
+            "prefs": quota.get("prefs") or cuentas.DEFAULT_PREFS,
+        }
     return {
         "plan": quota.get("plan"),
         "role": role,
@@ -733,14 +762,64 @@ def _imagen_https(url: Any) -> str:
     return ""
 
 
+ANON_CTA = "Creá tu cuenta gratis"
+
+
+async def _busqueda_anonima(request: Request, q: str) -> dict[str, Any] | JSONResponse:
+    """Sin cuenta se busca igual, con tope por IP + cookie. No toca ningún cupo de cuenta."""
+    client_host = request.client.host if request.client else None
+    res = await anon.registrar(request.headers, request.cookies, client_host, q)
+    if not res.get("ok"):
+        reason = str(res.get("reason") or "")
+        if reason in ("rate_hour", "rate_day"):
+            if reason == "rate_day":
+                msg = (
+                    f"Llegaste a las {res.get('day_limit') or anon.day_limit()} búsquedas sin cuenta de hoy. "
+                    "Creá tu cuenta gratis y seguí buscando: además te avisamos si baja un precio."
+                )
+            else:
+                msg = (
+                    f"Hiciste {res.get('hour_limit') or anon.hour_limit()} búsquedas sin cuenta en la última hora. "
+                    "Creá tu cuenta gratis para seguir ahora, o probá en un rato."
+                )
+            resp = JSONResponse(
+                {
+                    "ok": False,
+                    "reason": "anon_limit",
+                    "scope": "day" if reason == "rate_day" else "hour",
+                    "error": msg,
+                    "cta": ANON_CTA,
+                },
+                status_code=429,
+                headers={"Retry-After": "86400" if reason == "rate_day" else "3600", "Cache-Control": "no-store"},
+            )
+            _poner_cookie_anon(resp, {"_anon_cookie": res.get("set_cookie")})
+            return resp
+        return JSONResponse(
+            {"ok": False, "reason": "bad_query", "error": "Esa búsqueda no se pudo hacer."},
+            status_code=400,
+        )
+    h_lim = int(res.get("hour_limit") or anon.hour_limit())
+    used = int(res.get("hour") or 0)
+    return {
+        "ok": True,
+        "anon": True,
+        "plan": "anon",
+        "used": used,
+        "remaining": max(h_lim - used, 0),
+        "limit": h_lim,
+        "storage": res.get("storage"),
+        "prefs": cuentas.DEFAULT_PREFS,
+        "_anon_cookie": res.get("set_cookie"),
+    }
+
+
 async def _exigir_busqueda(request: Request, q: str) -> dict[str, Any] | JSONResponse:
-    """Sin bearer no se busca. El cupo de 5 corre para una cuenta normal. El admin no tiene tope."""
+    """Sin bearer se busca como anónimo (tope por IP). Con sesión: cupo de 5 para una
+    cuenta normal, trial/Plus sin tope, admin sin tope (igual que antes)."""
     token = cuentas.bearer(request.headers)
     if not token:
-        return JSONResponse(
-            {"ok": False, "reason": "auth", "error": "Sin sesión. Creá una cuenta gratis para ver promos y precios."},
-            status_code=401,
-        )
+        return await _busqueda_anonima(request, q)
     if not cuentas.cuentas_on():
         return JSONResponse(
             {"ok": False, "reason": "auth", "error": "No se pudo verificar la sesión. No se buscó."},
@@ -871,6 +950,8 @@ def _admin_vista(resumen: dict[str, Any] | None) -> dict[str, Any]:
     return {
         "usuarios": n("usuarios"),
         "busquedas": n("busquedas"),
+        "busquedas_sin_cuenta": n("busquedas_sin_cuenta"),
+        "busquedas_sin_cuenta_24h": n("busquedas_sin_cuenta_24h"),
         "perfiles_pagos": n("perfiles_pagos"),
         "ingresos": "$0",
         "pagos": pagos_txt,
@@ -1348,7 +1429,7 @@ async def buscar(
             **_consulta(),
         }
         err["cuenta"] = _cuenta_publica(gate)
-        return JSONResponse(
+        resp_err = JSONResponse(
             err,
             status_code=502,
             headers={
@@ -1356,6 +1437,8 @@ async def buscar(
                 "Pragma": "no-cache",
             },
         )
+        _poner_cookie_anon(resp_err, gate)
+        return resp_err
     # guardar snapshot liviano (solo Precios Claros, sin mezclar otras cadenas)
     if _pc_tiene(data):
         try:

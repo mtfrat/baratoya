@@ -1227,17 +1227,20 @@ class BatchPendientesLoteTest(unittest.TestCase):
         self.assertEqual(data.get("reason"), "auth")
         self.assertIn("cuenta gratis", data.get("error", "").lower())
 
-    def test_anonimo_buscar_da_401(self) -> None:
+    def test_buscar_con_sesion_invalida_da_401(self) -> None:
+        # Sin cuenta ya se busca (ver test_anon_search.py). Un token roto sigue dando 401.
+        from unittest.mock import AsyncMock, patch
         from fastapi.testclient import TestClient
         from app import app
 
         client = TestClient(app)
-        r = client.get("/api/buscar?q=leche")
+        with patch("cuentas.cuentas_on", return_value=True), \
+                patch("cuentas.usuario", AsyncMock(return_value=None)):
+            r = client.get("/api/buscar?q=leche", headers={"Authorization": "Bearer roto"})
         self.assertEqual(r.status_code, 401)
         data = r.json()
         self.assertFalse(data.get("ok"))
         self.assertEqual(data.get("reason"), "auth")
-        self.assertIn("cuenta gratis", data.get("error", "").lower())
 
     def test_home_nav_limpia_y_promos_wall_presente(self) -> None:
         from unittest.mock import patch
