@@ -2800,7 +2800,14 @@ def intro_dia(resumen: dict[str, Any], fecha: str, dia_hoy: str, es_hoy: bool) -
     )
 
 
-def descripcion_dia(plural: str, n: int, cadenas_n: int, top_pct: float | None) -> str:
+def descripcion_dia(
+    plural: str,
+    n: int,
+    cadenas_n: int,
+    top_pct: float | None,
+    top_cadena: str = "",
+    top_banco: str = "",
+) -> str:
     if n <= 0:
         return _meta_120((
             f"Los {plural} no hay promos bancarias cargadas para los supermercados de CABA. "
@@ -2818,7 +2825,19 @@ def descripcion_dia(plural: str, n: int, cadenas_n: int, top_pct: float | None) 
             f"Sin un porcentaje publicado ese día. BaratoYa no vende ni entrega.",
         ), f"descripcion de {plural}")
     pct = _pct_publico(top_pct)
-    return _meta_120((
+    concretas: tuple[str, ...] = ()
+    if top_cadena:
+        cap = plural[:1].upper() + plural[1:]
+        con = f" con {top_banco}" if top_banco else ""
+        concretas = (
+            f"{cap}: hasta {pct}% en {top_cadena}{con}. {promo[:1].upper() + promo[1:]} en {lugar} "
+            f"de CABA, por banco y por cadena.",
+            f"{cap}: hasta {pct}% en {top_cadena}. {promo[:1].upper() + promo[1:]} en {lugar} "
+            f"de CABA, por banco y por cadena.",
+            f"Descuentos los {plural}: hasta {pct}% en {top_cadena}{con}. Hay {promo} en {lugar} "
+            f"de CABA, con tope y banco de cada una.",
+        )
+    return _meta_120(concretas + (
         f"Los {plural} hay {promo} en {lugar} de CABA. El mayor porcentaje publicado "
         f"es {pct}%. BaratoYa no vende ni entrega.",
         f"Descuentos los {plural} en supermercados de CABA: {promo} en {lugar}. "
@@ -2929,6 +2948,113 @@ def promos_de_hoy_por_cadena(hoy: date | None = None) -> dict[str, dict[str, Any
     return out
 
 
+# Bancos y billeteras con nombre propio para la vista "por banco". Primer patrón que
+# coincide gana (sobre el texto sin acentos y en minúsculas). Lo que no está acá
+# (clubes de diarios, "Visa y Master", "Medios de Pago", jubilados…) queda solo en la
+# lista completa de cada cadena: no se adivina de qué banco es.
+_BANCOS_CANON: tuple[tuple[str, str], ...] = (
+    ("Cuenta DNI (Banco Provincia)", r"cuenta dni"),
+    ("Banco Nación", r"^(?!club).*(\bnacion\b|\bbna\b)"),
+    ("Banco Galicia", r"\bgalicia\b"),
+    ("BBVA", r"\bbbva\b"),
+    ("Banco Macro", r"\bmacro\b"),
+    ("Banco Patagonia", r"\bpatagonia\b"),
+    ("Banco Comafi", r"\bcomafi\b"),
+    ("Banco Ciudad", r"\bciudad\b"),
+    ("Banco Credicoop", r"\bcredicoop\b"),
+    ("Banco Supervielle", r"\bsupervielle\b"),
+    ("Banco Hipotecario", r"\bhipotecario\b"),
+    ("ICBC", r"\bicbc\b"),
+    ("Banco Columbia", r"\bcolumbia\b"),
+    ("Bancor (Banco de Córdoba)", r"\bbancor\b|banco cordoba"),
+    ("Naranja X", r"\bnaranja\b"),
+    ("Mercado Pago", r"mercado pago"),
+    ("Personal Pay", r"personal pay"),
+    ("CencoPay", r"\bcencopay\b"),
+    ("American Express", r"american express"),
+    ("MODO", r"^modo$"),
+)
+
+
+def banco_canonico(nombre: str) -> str | None:
+    """El banco o la billetera de una promo, con un nombre único. None si no es claro."""
+    texto = " ".join(_fold(nombre or "").split())
+    if not texto:
+        return None
+    for canon, patron in _BANCOS_CANON:
+        if re.search(patron, texto):
+            return canon
+    return None
+
+
+def _pct_de(it: dict[str, Any]) -> float | None:
+    pct = it.get("percent")
+    if isinstance(pct, (int, float)) and pct > 0:
+        return float(pct)
+    return None
+
+
+def _resumen_por_cadena(dia_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Por cadena: el mayor porcentaje publicado ese día, quién lo da y su tope."""
+    grupos = _agrupar_cadenas(dia_items)
+    filas = []
+    for g in grupos:
+        top_pct, ties = _top_descuento(g["promos"])
+        bancos: list[str] = []
+        for it in ties:
+            banco = str(it.get("banco") or "").strip()
+            if banco and banco not in bancos:
+                bancos.append(banco)
+        topes = {str(it.get("tope") or "").strip() for it in ties}
+        tope = topes.pop() if len(topes) == 1 else ""
+        filas.append({
+            "chain_id": g["chain_id"],
+            "cadena": g["cadena"],
+            "href": g["href"],
+            "n": len(g["promos"]),
+            "top_pct": top_pct,
+            "top_txt": _pct_publico(top_pct) if top_pct is not None else "",
+            "bancos": sorted(bancos, key=str.casefold),
+            "tope": tope,
+            "cuotas_n": sum(1 for it in g["promos"] if "percent" not in it),
+        })
+    filas.sort(key=lambda f: (-(f["top_pct"] or 0), _orden_cadena(f["chain_id"])))
+    return filas
+
+
+def _resumen_por_banco(dia_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Por banco o billetera con nombre claro: en qué cadenas da algo ese día y cuánto."""
+    por: dict[str, dict[str, dict[str, Any]]] = {}
+    for it in dia_items:
+        canon = banco_canonico(str(it.get("banco") or ""))
+        cid = str(it.get("chain_id") or "")
+        if canon is None or not cid:
+            continue
+        slot = por.setdefault(canon, {}).get(cid)
+        if slot is None:
+            slot = {"chain_id": cid, "cadena": it.get("cadena") or cid, "pct": None, "cuotas": False}
+            por[canon][cid] = slot
+        pct = _pct_de(it)
+        if pct is None:
+            slot["cuotas"] = True
+        elif slot["pct"] is None or pct > slot["pct"]:
+            slot["pct"] = pct
+    filas = []
+    for canon, cadenas in por.items():
+        lista = sorted(cadenas.values(), key=lambda c: (-(c["pct"] or 0), _orden_cadena(c["chain_id"])))
+        for c in lista:
+            c["txt"] = f"{_pct_publico(c['pct'])}%" if c["pct"] is not None else "cuotas"
+        mejor = max((c["pct"] for c in lista if c["pct"] is not None), default=None)
+        filas.append({
+            "banco": canon,
+            "top_pct": mejor,
+            "top_txt": _pct_publico(mejor) if mejor is not None else "",
+            "cadenas": lista,
+        })
+    filas.sort(key=lambda f: (-(f["top_pct"] or 0), -len(f["cadenas"]), _fold(f["banco"])))
+    return filas
+
+
 def _resumen_dia(spec: dict[str, Any], items: list[dict[str, Any]]) -> dict[str, Any]:
     """Mismos ítems que el bloque de ese día en el hub de promos."""
     dia_items = _items_de(items, int(spec["idx"]))
@@ -2953,6 +3079,8 @@ def _resumen_dia(spec: dict[str, Any], items: list[dict[str, Any]]) -> dict[str,
                 linea += f", en {top_donde}"
             linea += "."
     return {
+        "por_cadena": _resumen_por_cadena(dia_items),
+        "por_banco": _resumen_por_banco(dia_items),
         "idx": spec["idx"],
         "slug": spec["slug"],
         "nombre": spec["nombre"],
@@ -3046,6 +3174,37 @@ def _faq_dia(resumen: dict[str, Any]) -> list[dict[str, str]]:
         faq.append({
             "q": f"¿Qué supermercado tiene más promos los {plural}?",
             "a": frase,
+        })
+    bancos = [b for b in resumen.get("por_banco") or [] if b["top_txt"]]
+    if bancos:
+        partes = [
+            f"{b['banco']} (hasta {b['top_txt']}% en {b['cadenas'][0]['cadena']})" for b in bancos[:8]
+        ]
+        resto = len(bancos) - len(partes)
+        extra = f" y {resto} más" if resto > 0 else ""
+        faq.append({
+            "q": f"¿Qué bancos tienen descuento en supermercados los {plural}?",
+            "a": (
+                f"Esta semana, según lo publicado por cada cadena, los {plural} hay descuento con "
+                f"{_unir(partes)}{extra}. Cada promo tiene su tope y sus condiciones: están en la "
+                f"lista de cada supermercado."
+            ),
+        })
+    filas = [f for f in resumen.get("por_cadena") or []]
+    if filas:
+        partes = []
+        for f in filas:
+            if f["top_txt"]:
+                partes.append(f"{f['cadena']} {f['top_txt']}%")
+            else:
+                partes.append(f"{f['cadena']} solo cuotas")
+        faq.append({
+            "q": f"¿Qué descuento da cada supermercado los {plural}?",
+            "a": (
+                f"Esta semana, según lo publicado por cada cadena, el mayor descuento de los "
+                f"{plural} en cada supermercado es: {_unir(partes)}. Es el mejor caso con el banco "
+                f"o la billetera que lo da, no un descuento para todos los medios de pago."
+            ),
         })
     cuotas = int(resumen["cuotas_n"])
     if cuotas:
@@ -3221,9 +3380,34 @@ def pagina_seo_dia(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
     es_hoy = spec["idx"] == wd
     fecha = fecha_larga(hoy)
     dia_hoy = NOMBRE_DIA[wd]
+    top_cadena = top_banco = ""
+    primera = (resumen["por_cadena"] or [None])[0]
+    if primera and primera["top_txt"]:
+        top_cadena = str(primera["cadena"])
+        if len(primera["bancos"]) == 1:
+            raw = primera["bancos"][0]
+            top_banco = banco_canonico(raw) or (raw if len(raw) <= 24 else "")
+    comparar = [
+        {
+            "nombre": r["nombre"],
+            "plural": r["plural"],
+            "href": r["href"],
+            "n": r["n"],
+            "top_txt": r["top_txt"],
+            "cadenas_n": r["cadenas_n"],
+            "hoy": r["hoy"],
+            "actual": r["slug"] == spec["slug"],
+        }
+        for r in resumenes
+    ]
     return {
+        "por_cadena": resumen["por_cadena"],
+        "por_banco": resumen["por_banco"],
+        "comparar": comparar,
         "title": titulo_dia(plural, es_hoy=es_hoy),
-        "description": descripcion_dia(plural, resumen["n"], resumen["cadenas_n"], resumen["top_pct"]),
+        "description": descripcion_dia(
+            plural, resumen["n"], resumen["cadenas_n"], resumen["top_pct"], top_cadena, top_banco
+        ),
         "canonical": canonical,
         "h1": h1_dia(plural, es_hoy=es_hoy),
         "intro": intro_dia(resumen, fecha, dia_hoy, es_hoy),
