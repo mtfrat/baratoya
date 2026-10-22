@@ -351,6 +351,11 @@
           <div class="value">{{ vista.busquedas }}</div>
           <div class="hint">Historial de consultas</div>
         </a>
+        <div class="card-metric">
+          <div class="title"><span>Búsquedas sin cuenta</span></div>
+          <div class="value">{{ vista.busquedas_sin_cuenta or "0" }}</div>
+          <div class="hint">Últimas 24 h: {{ vista.busquedas_sin_cuenta_24h or "0" }}</div>
+        </div>
         <a href="/admin/pagos" class="card-metric">
           <div class="title"><span>Perfiles pagos</span> <span>→</span></div>
           <div class="value">{{ vista.perfiles_pagos }}</div>

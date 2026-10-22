@@ -763,6 +763,8 @@
     .lista-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
     .lista-row input { max-width: 16rem; }
     .lista-min .results:empty { display: none; }
+    .anon-cta { margin-top: 16px; }
+    .anon-cta .btn { margin-top: 8px; }
     #mi-lista-msg { margin: 12px 0; min-height: 1.5em; color: var(--color-forest-ink); }
     .drop { color: var(--color-alarm-red); font-weight: 700; }
     .ok-flag { color: var(--color-spruce); font-weight: 600; }
@@ -1646,7 +1648,7 @@
             <img src="/static/baratoya-hero-landing.jpg" alt="BaratoYa: precios de hoy en CABA" class="hero-mockup-img" width="1280" height="720" loading="eager" fetchpriority="high" />
           </picture>
         </div>
-        <p class="sesion-note" id="sesion-note">Para buscar hace falta entrar. Sin sesión no se consulta el precio.</p>
+        <p class="sesion-note" id="sesion-note">Buscá sin cuenta. Con tu cuenta gratis guardás listas y te avisamos si baja un precio.</p>
         <p class="sesion-note" id="plus-renovar" hidden><a href="/planes#planes" id="plus-renovar-link">Renovar Plus (30 días con Mercado Pago)</a></p>
 
         {# Electro: oculto por ahora, Martin 2026-10-05. Para reactivar, SHOW_ELECTRO = true (/api/electro sigue vivo). #}
@@ -1683,10 +1685,15 @@
         <p id="aviso" class="warn-flag" role="status"></p>
         <ul id="promos" class="promos" hidden></ul>
         <div id="estado" class="state">
-          <p class="state-title">Para buscar hace falta entrar.</p>
-          <p>Sin sesión no se llama a la búsqueda. Usá Entrar, en el encabezado.</p>
+          <p class="state-title">Todavía no buscaste.</p>
+          <p>Escribí un producto. El número aparece cuando una cadena publica un precio.</p>
         </div>
         <div id="out" class="results" aria-live="polite"></div>
+        <div id="anon-cta" class="state anon-cta" hidden>
+          <p class="state-title">¿Querés guardar esta lista o que te avisemos si baja?</p>
+          <p>Las listas y las alertas de precio son con cuenta. Es gratis y tarda un minuto.</p>
+          <button type="button" class="btn lime" id="anon-cta-btn">Creá tu cuenta gratis</button>
+        </div>
         {% if cuentas_on %}
         <script>
           // Con sesión guardada no se pinta el muro de "entrar" mientras se confirma la cuenta.
@@ -2252,6 +2259,7 @@
     function notaCuenta(j) {
       const c = j && j.cuenta;
       if (!c) return "";
+      if (c.anon) return "Búsqueda sin cuenta. ";
       if (c.role === "admin" || c.plan === "paid") return "Sin tope de búsquedas. ";
       if (c.remaining != null) return "Te quedan " + c.remaining + " de " + (c.limit || CUENTA.limit || 5) + ". ";
       return "";
@@ -2330,10 +2338,8 @@
       if (!estado || !out) return;
       if (out.innerHTML.trim()) return;
       const title = estado.querySelector(".state-title");
-      const gated = title && title.textContent === "Para buscar hace falta entrar.";
-      if (estado.classList.contains("error") && !gated) return;
-      if (hay) setState("", "Todavía no buscaste.", "Escribí un producto. El número aparece cuando una cadena publica un precio.");
-      else setState("", "Para buscar hace falta entrar.", "Sin sesión no se llama a la búsqueda. Usá Entrar, en el encabezado.");
+      if (estado.classList.contains("error")) return;
+      setState("", "Todavía no buscaste.", "Escribí un producto. El número aparece cuando una cadena publica un precio.");
     }
     async function refrescarCuenta() {
       const note = document.getElementById("sesion-note");
@@ -2348,7 +2354,7 @@
       if (!CUENTA.on) {
         pintarCabecera("");
         if (adminLink) adminLink.hidden = true;
-        if (note) note.textContent = "Para buscar hace falta entrar. Sin sesión no se consulta el precio.";
+        if (note) note.textContent = "Buscá sin cuenta. Con tu cuenta gratis guardás listas y te avisamos si baja un precio.";
         estadoInicial(false);
         await pintarBusquedas([]);
         return;
@@ -2357,7 +2363,7 @@
       if (!user) {
         pintarCabecera("");
         if (adminLink) adminLink.hidden = true;
-        if (note) note.textContent = "Para buscar hace falta entrar. Sin sesión no se consulta el precio.";
+        if (note) note.textContent = "Buscá sin cuenta. Con tu cuenta gratis guardás listas y te avisamos si baja un precio.";
         estadoInicial(false);
         await pintarBusquedas([]);
         return;
@@ -2395,7 +2401,27 @@
       try { bj = await br.json(); } catch (_) { bj = null; }
       await pintarBusquedas((bj && bj.items) || []);
     }
+    function abrirCrearCuenta(texto) {
+      if (typeof setAuthModo === "function") setAuthModo("signup");
+      const msg = document.getElementById("cuenta-msg");
+      if (msg) {
+        msg.style.color = "var(--color-forest-ink)";
+        msg.textContent = texto || "Creá tu cuenta gratis: guardás listas y te avisamos si baja un precio.";
+      }
+      const dlg = document.getElementById("entrar-dialog");
+      if (dlg && typeof dlg.showModal === "function" && !dlg.open) dlg.showModal();
+    }
     function corteBusqueda(r, j) {
+      if (r.status === 429 && j && j.reason === "anon_limit") {
+        estado.hidden = false;
+        estado.className = "state error";
+        estado.innerHTML = "<p class=\"state-title\">" + esc(j.scope === "day" ? "Llegaste al tope de hoy sin cuenta." : "Llegaste al tope de esta hora sin cuenta.") + "</p>" +
+          "<p>" + esc(j.error || "Creá tu cuenta gratis para seguir buscando.") + "</p>" +
+          "<button type=\"button\" class=\"btn lime\" id=\"anon-limit-cta\">" + esc(j.cta || "Creá tu cuenta gratis") + "</button>";
+        const b = document.getElementById("anon-limit-cta");
+        if (b) b.addEventListener("click", () => abrirCrearCuenta("Creá tu cuenta gratis para seguir buscando."));
+        return true;
+      }
       if (r.status !== 401 && r.status !== 402 && r.status !== 503) return false;
       const crudo = String((j && j.error) || "");
       const humano = crudo.replace(/HTTP\s*\d+/gi, "").replace(/\b(401|402|503)\b/g, "").replace(/\s+/g, " ").trim();
@@ -2643,12 +2669,8 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const sesion = await tokenFresco();
-      if (!sesion) {
-        setState("error", "Para buscar hace falta entrar.", "Sin sesión no se consulta el precio.");
-        const dlg = document.getElementById("entrar-dialog");
-        if (dlg && typeof dlg.showModal === "function" && !dlg.open) dlg.showModal();
-        return;
-      }
+      const anonCta = document.getElementById("anon-cta");
+      if (anonCta) anonCta.hidden = true;
       const q = document.getElementById("q").value.trim();
       const lat = document.getElementById("lat").value;
       const lng = document.getElementById("lng").value;
@@ -2770,6 +2792,7 @@
             botonGuardar(p, i) +
           "</div></div></article>";
         }).join("");
+        if (!sesion && anonCta) anonCta.hidden = false;
       } catch (err) {
         setState("error", "No pude leer los precios.", "Se cortó. Probá de nuevo.");
       } finally {
@@ -3306,6 +3329,8 @@
     }
     cargarPromosSiHaySesion();
 
+    const anonCtaBtn = document.getElementById("anon-cta-btn");
+    if (anonCtaBtn) anonCtaBtn.addEventListener("click", () => abrirCrearCuenta());
     const promosWallCta = document.getElementById("promos-wall-cta");
     if (promosWallCta) {
       promosWallCta.addEventListener("click", () => {
