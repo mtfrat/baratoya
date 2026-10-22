@@ -255,5 +255,54 @@ class SincronizarTests(Base):
             self.assertEqual(asyncio.run(precios_seo.sincronizar_remoto()), 0)
 
 
+class CronDelDiaTests(Base):
+    """El cron de las 07:00 ART relee lo capturado ayer aunque tenga menos de 24 h."""
+
+    def _ayer_tarde(self) -> datetime:
+        hoy0 = datetime.now(ART).replace(hour=0, minute=0, second=0, microsecond=0)
+        return hoy0 - timedelta(minutes=1)
+
+    def test_viejo_del_dia(self):
+        ayer = self._ayer_tarde().isoformat(timespec="seconds")
+        hoy = datetime.now(ART).isoformat(timespec="seconds")
+        self.assertTrue(precios_seo._viejo(ayer, del_dia=True))
+        self.assertFalse(precios_seo._viejo(hoy, del_dia=True))
+        self.assertFalse(precios_seo._viejo(hoy))
+        hace_22h = (datetime.now(ART) - timedelta(hours=22)).isoformat(timespec="seconds")
+        self.assertFalse(precios_seo._viejo(hace_22h))  # páginas: sigue el corte de 24 h
+        self.assertTrue(precios_seo._viejo((datetime.now(ART) - timedelta(hours=25)).isoformat()))
+
+    def test_cron_relee_capturas_de_ayer(self):
+        data = precios_seo.cargar()
+        ayer = self._ayer_tarde()
+        data["productos"] = [_con_fecha(p, ayer) for p in data["productos"]]
+        leidos: list[str] = []
+
+        async def leer(spec):
+            leidos.append(spec["slug"])
+            base = precios_seo._crudo(spec["slug"])
+            return _con_fecha(base, datetime.now(ART))
+
+        async def correr():
+            precios_seo._en_curso.clear()
+            precios_seo._fallo.clear()
+            return await precios_seo.refrescar_vencidos(30)
+
+        with mock.patch.dict(os.environ, {"SUPABASE_URL": "", "SUPABASE_SERVICE_ROLE_KEY": ""}), \
+                mock.patch.object(precios_seo, "_offline", lambda: False), \
+                mock.patch.object(precios_seo, "leer_en_vivo", leer), \
+                mock.patch.object(precios_seo, "_persistir", lambda data: None):
+            r = asyncio.run(correr())
+        n = len([p for p in data["productos"] if precios_seo._SPEC.get(p["slug"])])
+        self.assertEqual(r["vencidos_antes"], len(precios_seo.CATALOGO))
+        self.assertEqual(r["lecturas"], len(precios_seo.CATALOGO))
+        self.assertEqual(len(leidos), n)
+        self.assertEqual(r["frescos"], len(precios_seo.CATALOGO))
+        hoy = datetime.now(ART).date().isoformat()
+        for p in precios_seo.cargar()["productos"]:
+            if precios_seo._SPEC.get(p["slug"]):
+                self.assertEqual(p["capturado"][:10], hoy)
+
+
 if __name__ == "__main__":
     unittest.main()
