@@ -1990,6 +1990,145 @@ def descripcion_hub(n: int, cadenas_n: int, n_hoy: int) -> str:
     raise ValueError(f"descripcion del hub no entra en 155 ({n}, {cadenas_n}, {n_hoy})")
 
 
+def _matriz_semana(items: list[dict[str, Any]], wd: int) -> dict[str, Any]:
+    """Cadena × día: el mayor % publicado (o "cuotas"). Para elegir qué día ir a cada súper.
+
+    Sale de las mismas tarjetas que el hub; nada se completa a mano. "mejor" marca el
+    día (o los días) con el % más alto de cada cadena.
+    """
+    dias = [
+        {"idx": d["idx"], "nombre": d["nombre"], "plural": d["plural"],
+         "href": f"{DESCUENTOS_PATH}/{d['slug']}", "hoy": d["idx"] == wd}
+        for d in _DIAS_SEO
+    ]
+    filas = []
+    for g in _agrupar_cadenas(items):
+        celdas = []
+        for d in dias:
+            propios = _items_de(g["promos"], int(d["idx"]))
+            pct, _ = _top_descuento(propios)
+            celdas.append({
+                "idx": d["idx"],
+                "pct": pct,
+                "txt": f"{_pct_publico(pct)}%" if pct is not None else ("cuotas" if propios else "—"),
+                "hoy": d["hoy"],
+                "mejor": False,
+            })
+        mejor = max((c["pct"] for c in celdas if c["pct"] is not None), default=None)
+        mejores = []
+        for c, d in zip(celdas, dias):
+            if mejor is not None and c["pct"] == mejor:
+                c["mejor"] = True
+                mejores.append(d["nombre"])
+        filas.append({
+            "chain_id": g["chain_id"],
+            "cadena": g["cadena"],
+            "href": g["href"],
+            "celdas": celdas,
+            "mejor_pct": mejor,
+            "mejor_txt": _pct_publico(mejor) if mejor is not None else "",
+            "mejores_dias": mejores,
+        })
+    return {"dias": dias, "filas": filas}
+
+
+def _top_hub(por_cadena: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """El mayor % de hoy, en qué cadenas y, si es uno solo, con qué banco o billetera."""
+    con = [f for f in por_cadena if f["top_pct"] is not None]
+    if not con:
+        return None
+    mx = max(f["top_pct"] for f in con)
+    filas = [f for f in con if f["top_pct"] == mx]
+    bancos: set[str] = set()
+    for f in filas:
+        for raw in f["bancos"]:
+            bancos.add(banco_canonico(raw) or raw)
+    banco = bancos.pop() if len(bancos) == 1 else ""
+    if len(banco) > 24:
+        banco = ""
+    return {
+        "pct": mx,
+        "txt": _pct_publico(mx),
+        "cadenas": [str(f["cadena"]) for f in filas],
+        "banco": banco,
+    }
+
+
+def descripcion_hub_hoy(dia: str, n_hoy: int, cadenas_hoy: int, top: dict[str, Any] | None) -> str:
+    """Meta con el dato de hoy (120-155): el mayor % y dónde. "" si no hay un % hoy."""
+    if not top or n_hoy <= 0:
+        return ""
+    cadenas = top["cadenas"]
+    lugar_top = _unir(cadenas) if len(cadenas) <= 3 else f"{cadenas[0]} y {len(cadenas) - 1} cadenas más"
+    con = f" con {top['banco']}" if top["banco"] else ""
+    promos = "1 promo bancaria" if n_hoy == 1 else f"{n_hoy} promos bancarias"
+    lugar = "1 supermercado" if cadenas_hoy == 1 else f"{cadenas_hoy} supermercados"
+    cap = dia[:1].upper() + dia[1:]
+    opciones = (
+        f"Hoy {dia}: hasta {top['txt']}% en {lugar_top}{con}. {promos} en {lugar} de CABA, por banco y por cadena.",
+        f"Hoy {dia}: hasta {top['txt']}% en {lugar_top}{con}. {promos} en {lugar} de CABA, con banco y tope.",
+        f"Hoy {dia}: hasta {top['txt']}% en {lugar_top}. {promos} en {lugar} de CABA, por banco y por cadena.",
+        f"{cap}: hasta {top['txt']}% en {lugar_top}. {promos} hoy en {lugar} de CABA, con banco, tope y días.",
+    )
+    for texto in opciones:
+        if 120 <= len(texto) <= 155 and '"' not in texto and "<" not in texto:
+            return texto
+    return ""
+
+
+def _faq_hub_hoy(
+    dia: str,
+    por_cadena: list[dict[str, Any]],
+    por_banco: list[dict[str, Any]],
+    matriz: dict[str, Any],
+) -> list[dict[str, str]]:
+    """Preguntas que responde el resumen de hoy y la tabla de la semana. Solo datos cargados."""
+    faq: list[dict[str, str]] = []
+    if por_cadena:
+        partes = [
+            f"{f['cadena']} {f['top_txt']}%" if f["top_txt"] else f"{f['cadena']} solo cuotas"
+            for f in por_cadena
+        ]
+        faq.append({
+            "q": "¿Qué supermercado tiene el mayor descuento bancario hoy?",
+            "a": (
+                f"Hoy {dia}, según lo publicado por cada cadena, el mayor descuento en cada "
+                f"supermercado de CABA es: {_unir(partes)}. Es el mejor caso con el banco o la "
+                f"billetera que lo da, no un descuento para todos los medios de pago; el tope y "
+                f"las condiciones están en el resumen de hoy."
+            ),
+        })
+    bancos = [b for b in por_banco if b["top_txt"]]
+    if bancos:
+        partes = [f"{b['banco']} (hasta {b['top_txt']}% en {b['cadenas'][0]['cadena']})" for b in bancos[:8]]
+        resto = len(bancos) - len(partes)
+        extra = f" y {resto} más" if resto > 0 else ""
+        faq.append({
+            "q": "¿Qué bancos tienen descuento en supermercados hoy?",
+            "a": (
+                f"Hoy {dia} hay descuento en supermercados de CABA con {_unir(partes)}{extra}."
+                + (" Otros bancos solo publican cuotas hoy." if len(bancos) < len(por_banco) else "")
+                + " Cada promo tiene su tope y sus condiciones."
+            ),
+        })
+    filas = [f for f in matriz.get("filas") or [] if f["mejor_txt"]]
+    if filas:
+        partes = []
+        for f in filas:
+            dias = f["mejores_dias"]
+            cuando = _unir(dias) if len(dias) <= 3 else f"{len(dias)} días de la semana"
+            partes.append(f"{f['cadena']}: {cuando} ({f['mejor_txt']}%)")
+        faq.append({
+            "q": "¿Qué día conviene ir a cada supermercado?",
+            "a": (
+                f"Esta semana, el día con el mayor descuento publicado en cada supermercado es: "
+                f"{'; '.join(partes)}. Depende del banco o la billetera que tengas: la tabla de "
+                f"la semana muestra el mayor porcentaje de cada día."
+            ),
+        })
+    return faq
+
+
 def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
     """Vista de /promos-bancarias-supermercados. Solo campos presentes."""
     hoy = hoy or hoy_art()
@@ -2006,10 +2145,22 @@ def pagina_seo(hoy: date | None = None) -> dict[str, Any]:
     cadenas_n = len({it["chain_id"] for it in items})
     cadenas_hoy = len(hoy_cadenas)
     actualizado = fecha_datos_promos(hoy)
-    faq = faq_promos_publicas(len(hoy_items), cadenas_hoy)
+    por_cadena_hoy = _resumen_por_cadena(hoy_items)
+    por_banco_hoy = _resumen_por_banco(hoy_items)
+    matriz = _matriz_semana(items, wd)
+    top = _top_hub(por_cadena_hoy)
+    faq = faq_promos_publicas(len(hoy_items), cadenas_hoy) + _faq_hub_hoy(
+        NOMBRE_DIA[wd], por_cadena_hoy, por_banco_hoy, matriz
+    )
     return {
         "title": SEO_TITLE,
-        "description": descripcion_hub(len(items), cadenas_n, len(hoy_items)),
+        "description": descripcion_hub_hoy(
+            NOMBRE_DIA[wd], len(hoy_items), cadenas_hoy, top
+        ) or descripcion_hub(len(items), cadenas_n, len(hoy_items)),
+        "por_cadena_hoy": por_cadena_hoy,
+        "por_banco_hoy": por_banco_hoy,
+        "matriz": matriz,
+        "top_hoy": top,
         "canonical": SEO_URL,
         "path": SEO_PATH,
         "hoy_iso": hoy.isoformat(),
