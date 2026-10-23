@@ -85,6 +85,24 @@
     .btn.outline { background: var(--paper); border: 1px solid var(--ink); }
     .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .nota { color: var(--slate); font-size: 15px; }
+    .tabla { width: 100%; overflow-x: auto; margin: 0 0 16px; }
+    .tabla table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    .tabla th, .tabla td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--fog); }
+    .tabla th { color: var(--ink); font-weight: 700; background: #f6f8f4; }
+    .tabla td.num { white-space: nowrap; font-weight: 700; color: var(--ink); }
+    .tabla th.hoy, .tabla td.hoy { background: #f1fbe9; }
+    .tabla td.mejor { font-weight: 700; color: var(--ink); }
+    .semana th, .semana td { padding: 6px 6px; text-align: center; white-space: nowrap; }
+    .semana th:first-child, .semana td:first-child { text-align: left; white-space: normal; }
+    .bancos { list-style: none; padding: 0; }
+    .bancos li { margin: 0 0 10px; }
+    @media (max-width: 520px) {
+      .tabla table { font-size: 14px; }
+      .tabla th, .tabla td { padding: 6px 6px; }
+      .tabla .col-n { display: none; }
+      .semana table { font-size: 13px; }
+      .semana th, .semana td { padding: 5px 3px; }
+    }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
     footer .wrap { width: min(100% - 32px, 42rem); margin: 0 auto; }
     footer p { margin: 0 0 8px; }
@@ -124,7 +142,60 @@
     </div>
     <p class="nota">Los 7 días Plus gratis se activan al crear la cuenta, en el inicio. No pide tarjeta. El precio de un producto con la promo se calcula ahí. Plus, si lo querés, está en Planes.</p>
 
-    <h2>Por día</h2>
+    {% if por_cadena_hoy %}
+    <h2 id="resumen-hoy">Resumen de hoy, {{ dia }}: el mayor descuento en cada supermercado</h2>
+    {% if top_hoy %}
+    <p>Hoy el mayor descuento publicado es de {{ top_hoy.txt }}% en {% for c in top_hoy.cadenas %}{% if loop.first %}{% elif loop.last %} y {% else %}, {% endif %}{{ c }}{% endfor %}{% if top_hoy.banco %}, con {{ top_hoy.banco }}{% endif %}.</p>
+    {% endif %}
+    <div class="tabla">
+      <table>
+        <thead><tr><th scope="col">Supermercado</th><th scope="col">Mayor descuento hoy</th><th scope="col">Con</th><th scope="col" class="col-n">Promos hoy</th></tr></thead>
+        <tbody>
+          {% for f in por_cadena_hoy %}
+          <tr>
+            <td>{% if f.href %}<a href="{{ f.href }}">{{ f.cadena }}</a>{% else %}{{ f.cadena }}{% endif %}</td>
+            <td class="num">{% if f.top_txt %}{{ f.top_txt }}%{% else %}Solo cuotas{% endif %}</td>
+            <td>{% if f.top_txt %}{{ f.bancos | join(", ") }}{% if f.tope %} ({{ f.tope }}){% endif %}{% else %}—{% endif %}</td>
+            <td class="col-n">{{ f.n }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">Es el mejor caso de cada cadena, con el banco o la billetera que lo da. Las condiciones (tope, mínimo, canal y vigencia) de cada promo están en la lista de hoy, más abajo.</p>
+    {% endif %}
+
+    {% if por_banco_hoy %}
+    <h2 id="por-banco">Promos bancarias de hoy por banco o billetera</h2>
+    <p>Qué da hoy cada banco o billetera, en qué supermercado y cuánto. Si una cadena solo publica cuotas con ese banco, figura como cuotas.</p>
+    <ul class="bancos">
+      {% for b in por_banco_hoy %}
+      <li><strong>{{ b.banco }}</strong>{% if b.top_txt %} — hasta {{ b.top_txt }}%{% endif %}: {% for c in b.cadenas %}{{ c.cadena }} {{ c.txt }}{% if not loop.last %}, {% endif %}{% endfor %}.</li>
+      {% endfor %}
+    </ul>
+    <p class="nota">Agrupamos el nombre que publica cada cadena (por ejemplo, "BNA+ MODO" y "Banco Nación" van juntos). Las promos de clubes, de un grupo de clientes o de "todos los medios de pago" quedan solo en la lista completa.</p>
+    {% endif %}
+
+    {% if matriz and matriz.filas %}
+    <h2 id="semana">Qué día conviene en cada supermercado</h2>
+    <p>El mayor descuento publicado por día de la semana, en cada cadena. En negrita, el mejor día de cada una. El detalle de cada día (bancos, topes y condiciones) está en su página.</p>
+    <div class="tabla semana">
+      <table>
+        <thead><tr><th scope="col">Supermercado</th>{% for d in matriz.dias %}<th scope="col"{% if d.hoy %} class="hoy"{% endif %}><a href="{{ d.href }}">{{ d.nombre[:3] | capitalize }}</a></th>{% endfor %}</tr></thead>
+        <tbody>
+          {% for f in matriz.filas %}
+          <tr>
+            <td>{% if f.href %}<a href="{{ f.href }}">{{ f.cadena }}</a>{% else %}{{ f.cadena }}{% endif %}</td>
+            {% for c in f.celdas %}<td class="{% if c.hoy %}hoy {% endif %}{% if c.mejor %}mejor{% endif %}">{% if c.mejor %}<strong>{{ c.txt }}</strong>{% else %}{{ c.txt }}{% endif %}</td>{% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">"Cuotas" quiere decir que ese día la cadena solo publica cuotas sin interés, sin un porcentaje. "—", que no hay promos cargadas.</p>
+    {% endif %}
+
+    <h2 id="por-dia-links">Por día</h2>
     <ul>
       {% for d in dias_nav %}
       <li><a href="{{ d.href }}">Todos los descuentos del {{ d.nombre }}</a>{% if d.hoy %} (hoy){% endif %}</li>
@@ -151,25 +222,8 @@
     <p>No hay promos vigentes cargadas para hoy.</p>
     {% endif %}
 
-    {% if por_dia %}
-    <h2>Por día de la semana</h2>
-    {% for bloque in por_dia %}
-    <section id="{{ bloque.dia }}">
-      <h3>{{ bloque.dia }}{% if bloque.hoy %} (hoy){% endif %}</h3>
-      {% for grupo in bloque.cadenas %}
-      <h4>{% if grupo.href %}<a href="{{ grupo.href }}">{{ grupo.cadena }}</a>{% else %}{{ grupo.cadena }}{% endif %}</h4>
-      {% if grupo.fuentes %}
-      <p class="fuente">Fuente:{% for f in grupo.fuentes %} <a href="{{ f }}" rel="noopener noreferrer">{{ f }}</a>{% endfor %}</p>
-      {% endif %}
-      <ul>
-        {% for it in grupo.promos %}
-        <li><strong>{{ it.banco }}</strong>: {{ it.oferta }}{% if it.dias %}, {{ it.dias }}{% endif %}{% if it.tope %}, {{ it.tope }}{% endif %}{% if it.minimo %}, mínimo {{ it.minimo }}{% endif %}{% if it.canal %}, {{ it.canal }}{% endif %}{% if it.vigencia %}, vigencia {{ it.vigencia }}{% endif %}{% if it.nota %}. {{ it.nota }}{% endif %}.</li>
-        {% endfor %}
-      </ul>
-      {% endfor %}
-    </section>
-    {% endfor %}
-    {% endif %}
+    <h2>Todas las promos de la semana</h2>
+    <p>La lista completa de otro día, con todas las promos por cadena, está en su página (en <a href="#por-dia-links">Por día</a>). La de cada supermercado, con todos sus días:{% for c in cadenas %} <a href="{{ c.href }}">{{ c.nombre }}</a>{% if not loop.last %},{% else %}.{% endif %}{% endfor %}</p>
 
     <h2>Para ver el precio con la promo</h2>
     <p>Esta página no calcula el precio de un producto. Eso queda en la cuenta, con la promo que sí se puede restar.</p>

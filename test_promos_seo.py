@@ -21,6 +21,7 @@ from promos_hoy import (
     cadenas_indexables,
     descripcion_cadena,
     descripcion_hub,
+    descripcion_hub_hoy,
     fecha_datos_promos,
     fecha_larga,
     h1_cadena,
@@ -95,13 +96,20 @@ class PromosPublicasTest(unittest.TestCase):
         self.assertTrue(SEO_TITLE.lower().startswith("promos bancarias supermercados"))
         self.assertIn("CABA", SEO_TITLE)
         desc = self.vista["description"]
-        self.assertEqual(desc, descripcion_hub(self.vista["n"], self.vista["cadenas_n"], self.vista["n_hoy"]))
+        # Con un % hoy, la meta arranca con el dato concreto (23/10); si no, la del conteo.
+        hoy_cadenas_n = len(self.vista["hoy_cadenas"])
+        esperada = descripcion_hub_hoy(
+            self.vista["dia"], self.vista["n_hoy"], hoy_cadenas_n, self.vista["top_hoy"]
+        ) or descripcion_hub(self.vista["n"], self.vista["cadenas_n"], self.vista["n_hoy"])
+        self.assertEqual(desc, esperada)
         self.assertLessEqual(len(desc), 155)
-        self.assertTrue(desc.startswith(f"{self.vista['n']} promos") or desc.startswith("1 promo"))
-        lugar = "1 supermercado" if self.vista["cadenas_n"] == 1 else f"{self.vista['cadenas_n']} supermercados"
-        self.assertIn(lugar, desc)
-        self.assertIn("BaratoYa no vende ni entrega", desc)
-        self.assertNotIn("%", desc)
+        if self.vista["top_hoy"]:
+            self.assertTrue(desc.startswith(f"Hoy {self.vista['dia']}: hasta {self.vista['top_hoy']['txt']}%"), desc)
+            self.assertGreaterEqual(len(desc), 120)
+            self.assertIn(f"{self.vista['n_hoy']} promos bancarias", desc)
+        else:
+            self.assertTrue(desc.startswith(f"{self.vista['n']} promos") or desc.startswith("1 promo"))
+            self.assertIn("BaratoYa no vende ni entrega", desc)
         for n, cadenas_n, n_hoy in ((0, 0, 0), (1, 1, 0), (1, 1, 1), (271, 9, 120), (9999, 40, 4000)):
             texto = descripcion_hub(n, cadenas_n, n_hoy)
             self.assertLessEqual(len(texto), 155)
@@ -136,8 +144,9 @@ class PromosPublicasTest(unittest.TestCase):
         cadenas = {g["cadena"] for dia in self.vista["por_dia"] for g in dia["cadenas"]}
         for nombre, slug in (("Día", "dia"), ("Carrefour", "carrefour"), ("Coto Digital", "coto")):
             self.assertIn(nombre, cadenas)
+            # La tabla de la semana enlaza cada cadena aunque hoy no tenga promos.
             self.assertIn(
-                f'<h3><a href="/promos-bancarias-supermercados/{slug}">{nombre}</a></h3>',
+                f'<td><a href="/promos-bancarias-supermercados/{slug}">{nombre}</a></td>',
                 self.html,
             )
         for fuera in ("Cordiez", "Toledo", "La Anónima", "Super Mami", "Comodín"):
