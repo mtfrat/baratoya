@@ -78,7 +78,9 @@
     .tabla td.num, .tabla th.num { text-align: right; white-space: nowrap; }
     .tabla tr.barato td { background: #f1fbe9; }
     .tabla .sub { display: block; color: var(--slate); font-size: 13px; }
-    @media (max-width: 600px) { .tabla .opc { display: none; } .tabla { font-size: 14px; } }
+    .tabla td.num .sub { white-space: normal; }
+    .tabla-wrap { overflow-x: auto; }
+    @media (max-width: 600px) { .tabla .opc { display: none; } .tabla { font-size: 14px; } .tabla th, .tabla td { padding: 8px 4px; } }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
     footer .wrap { width: min(100% - 32px, 42rem); margin: 0 auto; }
     footer p { margin: 0 0 8px; }
@@ -117,7 +119,7 @@
     {% if es_commodity and por_cadena %}
     <h2>{{ anchor }} por supermercado</h2>
     <p>{% set top = por_cadena[0] %}Hoy el precio más bajo{% if unidad %} por {{ unidad }}{% endif %} está en <strong>{{ baratas_txt }}</strong>: {{ top.producto }} a {{ top.precio_txt }}{% if unidad_col %} ({{ top.unidad_txt }} el {{ unidad }}){% endif %}. La tabla muestra, en cada cadena, el producto más barato de esta lista{% if unidad_col %}, comparado por {{ unidad }}{% endif %}.</p>
-    <table class="tabla">
+    <div class="tabla-wrap"><table class="tabla">
       <thead><tr><th>Supermercado</th><th>Más barato ahí</th><th class="num">Precio</th>{% if unidad_col %}<th class="num">Por {{ unidad }}</th>{% endif %}<th class="opc">Promo bancaria hoy{% if dia_hoy %} ({{ dia_hoy }}){% endif %}</th></tr></thead>
       <tbody>
         {% for f in por_cadena %}
@@ -130,7 +132,7 @@
         </tr>
         {% endfor %}
       </tbody>
-    </table>
+    </table></div>
     <p class="nota">Precio de góndola del catálogo online de cada cadena, sin restar promos: cada promo tiene banco, tope y exclusiones propias. {% if dia_hoy_href %}<a href="{{ dia_hoy_href }}">Descuentos en supermercados hoy {{ dia_hoy }}</a> · {% endif %}<a href="/promos-bancarias-supermercados">Promos bancarias de supermercados</a></p>
     {% endif %}
 
@@ -148,7 +150,7 @@
     {% if es_commodity and diferencias %}
     <h2>Cuánto cambia el precio {{ de_la }} entre supermercados</h2>
     <p>El mismo producto no cuesta lo mismo en todas las cadenas. Menor y mayor precio publicado de cada uno, y la diferencia por envase.</p>
-    <table class="tabla">
+    <div class="tabla-wrap"><table class="tabla">
       <thead><tr><th>Producto</th><th class="num">Más barato</th><th class="num">Más caro</th><th class="num">Diferencia</th></tr></thead>
       <tbody>
         {% for d in diferencias %}
@@ -160,7 +162,7 @@
         </tr>
         {% endfor %}
       </tbody>
-    </table>
+    </table></div>
     {% endif %}
 
     {% if padre %}
