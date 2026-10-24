@@ -72,6 +72,13 @@
     .btn.outline { background: var(--paper); border: 1px solid var(--ink); }
     .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .nota { color: var(--slate); font-size: 15px; }
+    .tabla { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 15px; }
+    .tabla th, .tabla td { padding: 8px 6px; border-bottom: 1px solid var(--fog); text-align: left; vertical-align: top; }
+    .tabla th { color: var(--ink); font-size: 14px; }
+    .tabla td.num, .tabla th.num { text-align: right; white-space: nowrap; }
+    .tabla tr.barato td { background: #f1fbe9; }
+    .tabla .sub { display: block; color: var(--slate); font-size: 13px; }
+    @media (max-width: 600px) { .tabla .opc { display: none; } .tabla { font-size: 14px; } }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
     footer .wrap { width: min(100% - 32px, 42rem); margin: 0 auto; }
     footer p { margin: 0 0 8px; }
@@ -107,6 +114,26 @@
     </div>
     <p class="nota">El número de esta página es el de góndola, sin promo de banco. Los 7 días Plus se activan al crear la cuenta, en el inicio.</p>
 
+    {% if es_commodity and por_cadena %}
+    <h2>{{ anchor }} por supermercado</h2>
+    <p>{% set top = por_cadena[0] %}Hoy el precio más bajo{% if unidad %} por {{ unidad }}{% endif %} está en <strong>{{ baratas_txt }}</strong>: {{ top.producto }} a {{ top.precio_txt }}{% if unidad_col %} ({{ top.unidad_txt }} el {{ unidad }}){% endif %}. La tabla muestra, en cada cadena, el producto más barato de esta lista{% if unidad_col %}, comparado por {{ unidad }}{% endif %}.</p>
+    <table class="tabla">
+      <thead><tr><th>Supermercado</th><th>Más barato ahí</th><th class="num">Precio</th>{% if unidad_col %}<th class="num">Por {{ unidad }}</th>{% endif %}<th class="opc">Promo bancaria hoy{% if dia_hoy %} ({{ dia_hoy }}){% endif %}</th></tr></thead>
+      <tbody>
+        {% for f in por_cadena %}
+        <tr{% if f.barato %} class="barato"{% endif %}>
+          <td>{{ f.tienda }}<span class="sub">{{ f.n_txt }}</span></td>
+          <td><a href="{{ f.href }}">{{ f.producto }}</a></td>
+          <td class="num">{{ f.precio_txt }}</td>
+          {% if unidad_col %}<td class="num">{{ f.unidad_txt }}</td>{% endif %}
+          <td class="opc">{% if f.promo %}<a href="{{ f.promo.href }}">{{ f.promo.linea }}</a>{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <p class="nota">Precio de góndola del catálogo online de cada cadena, sin restar promos: cada promo tiene banco, tope y exclusiones propias. {% if dia_hoy_href %}<a href="{{ dia_hoy_href }}">Descuentos en supermercados hoy {{ dia_hoy }}</a> · {% endif %}<a href="/promos-bancarias-supermercados">Promos bancarias de supermercados</a></p>
+    {% endif %}
+
     <h2>El más barato de cada producto</h2>
     <ul>
       {% for p in productos %}
@@ -117,6 +144,24 @@
       </li>
       {% endfor %}
     </ul>
+
+    {% if es_commodity and diferencias %}
+    <h2>Cuánto cambia el precio {{ de_la }} entre supermercados</h2>
+    <p>El mismo producto no cuesta lo mismo en todas las cadenas. Menor y mayor precio publicado de cada uno, y la diferencia por envase.</p>
+    <table class="tabla">
+      <thead><tr><th>Producto</th><th class="num">Más barato</th><th class="num">Más caro</th><th class="num">Diferencia</th></tr></thead>
+      <tbody>
+        {% for d in diferencias %}
+        <tr>
+          <td><a href="{{ d.href }}">{{ d.producto }}</a><span class="sub">{{ d.n }} cadenas</span></td>
+          <td class="num">{{ d.low_txt }}<span class="sub">{{ d.low_tiendas }}</span></td>
+          <td class="num">{{ d.high_txt }}<span class="sub">{{ d.high_tiendas }}</span></td>
+          <td class="num">{{ d.dif_txt }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
 
     {% if padre %}
     <p><a href="{{ padre.href }}">Ver todos los precios de {{ padre.etiqueta }}</a></p>

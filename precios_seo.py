@@ -1658,6 +1658,169 @@ def _ld_faq(faq: list[dict[str, str]]) -> str:
     })
 
 
+def _de_la(spec: dict[str, Any]) -> str:
+    """"de la leche" / "del aceite", a partir del anchor ("Precio del aceite hoy")."""
+    return spec["anchor"].removeprefix("Precio ").removesuffix(" hoy")
+
+
+def _medidas_commodity(productos: list[dict[str, Any]]) -> dict[str, tuple[str, float]] | None:
+    """Unidad y base de cada producto. None si alguno no es un solo peso o volumen,
+    o si no todos usan la misma unidad: ahí no se compara por litro o kilo."""
+    out: dict[str, tuple[str, float]] = {}
+    for p in productos:
+        medida = unidad_de_medida(str(p.get("tamano") or ""))
+        if medida is None:
+            return None
+        out[p["slug"]] = medida
+    if len({u for u, _ in out.values()}) != 1:
+        return None
+    return out
+
+
+def _por_cadena_commodity(
+    productos: list[dict[str, Any]],
+    medidas: dict[str, tuple[str, float]] | None,
+) -> list[dict[str, Any]]:
+    """Por cadena: el producto más barato que publica (por litro/kilo si se puede comparar).
+
+    Sale de las mismas ofertas que la lista de productos: no se agrega ningún precio.
+    """
+    by: dict[str, dict[str, Any]] = {}
+    for p in productos:
+        base = medidas[p["slug"]][1] if medidas else 1.0
+        for o in p["ofertas"]:
+            clave = o["precio"] / base
+            fila = by.get(o["tienda_id"])
+            if fila is None:
+                by[o["tienda_id"]] = fila = {
+                    "tienda": o["tienda"],
+                    "tienda_id": o["tienda_id"],
+                    "n": 0,
+                    "_clave": None,
+                }
+            fila["n"] += 1
+            if fila["_clave"] is None or clave < fila["_clave"] or (
+                clave == fila["_clave"] and o["precio"] < fila["precio"]
+            ):
+                fila.update({
+                    "_clave": clave,
+                    "precio": o["precio"],
+                    "precio_txt": peso(o["precio"]),
+                    "producto": p["nombre_visible"],
+                    "href": p["href"],
+                    "tamano": p.get("tamano") or "",
+                    "unidad_valor": _precio_unidad(o["precio"], base) if medidas else None,
+                })
+    filas = sorted(by.values(), key=lambda f: (f["_clave"], f["tienda"].casefold()))
+    low = filas[0]["_clave"] if filas else None
+    for f in filas:
+        f["barato"] = f["_clave"] == low
+        f["unidad_txt"] = peso(f["unidad_valor"]) if f["unidad_valor"] is not None else ""
+        f["n_txt"] = f"{f['n']} de {len(productos)} productos"
+        del f["_clave"]
+    return filas
+
+
+def _diferencias_commodity(productos: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Producto por producto: menor y mayor precio publicado y la diferencia por envase."""
+    out = []
+    for p in productos:
+        low, high = p["low"], p["high"]
+        out.append({
+            "producto": p["nombre_visible"],
+            "href": p["href"],
+            "low_txt": peso(low),
+            "low_tiendas": _lista_y([o["tienda"] for o in p["ofertas"] if o["precio"] == low]),
+            "high_txt": peso(high),
+            "high_tiendas": _lista_y([o["tienda"] for o in p["ofertas"] if o["precio"] == high]),
+            "dif": high - low,
+            "dif_txt": peso(high - low),
+            "n": p["n"],
+        })
+    return out
+
+
+def _faq_extra_commodity(
+    spec: dict[str, Any],
+    productos: list[dict[str, Any]],
+    medidas: dict[str, tuple[str, float]] | None,
+    diferencias: list[dict[str, Any]],
+) -> list[dict[str, str]]:
+    """Dos preguntas más, con los números de la tabla: precio por litro/kilo y diferencia entre cadenas."""
+    out: list[dict[str, str]] = []
+    de_la = _de_la(spec)
+    if medidas:
+        unidad = next(iter(medidas.values()))[0]
+        precios = [
+            (_precio_unidad(o["precio"], medidas[p["slug"]][1]), o, p)
+            for p in productos for o in p["ofertas"]
+        ]
+        low = min(v for v, _, _ in precios)
+        high = max(v for v, _, _ in precios)
+        def _quienes(valor: float) -> str:
+            partes = []
+            for v, o, p in precios:
+                if v != valor:
+                    continue
+                texto = f"{p['nombre_visible']} en {o['tienda']}"
+                if abs(medidas[p["slug"]][1] - 1.0) > 1e-9:
+                    texto += f" ({peso(o['precio'])} el envase de {p['tamano']})"
+                if texto not in partes:
+                    partes.append(texto)
+            return _lista_y(partes[:3]) + (" y otros" if len(partes) > 3 else "")
+        out.append({
+            "q": f"¿Cuánto sale el {unidad} de {spec['etiqueta']} hoy?",
+            "a": (
+                f"Desde {peso(low)} el {unidad}: {_quienes(low)}. "
+                f"El más caro de esta lista es {peso(high)} el {unidad}: {_quienes(high)}. "
+                "Es precio de góndola, sin promo bancaria."
+            ),
+        })
+    con_dif = [d for d in diferencias if d["dif"] > 0]
+    if con_dif:
+        mayor = max(con_dif, key=lambda d: d["dif"])
+        texto = (
+            f"Depende del producto. La mayor diferencia de hoy es en {mayor['producto']}: "
+            f"{mayor['low_txt']} en {mayor['low_tiendas']} y {mayor['high_txt']} en {mayor['high_tiendas']}, "
+            f"{mayor['dif_txt']} por envase."
+        )
+        menor = min(con_dif, key=lambda d: d["dif"])
+        if menor is not mayor:
+            texto += f" La menor es en {menor['producto']}: {menor['dif_txt']} por envase."
+        out.append({"q": f"¿Cuánto cambia el precio {de_la} entre supermercados?", "a": texto})
+    return out
+
+
+def _descripcion_commodity(
+    spec: dict[str, Any],
+    por_cadena: list[dict[str, Any]],
+    medidas: dict[str, tuple[str, float]] | None,
+    n: int,
+    cadenas: int,
+) -> str:
+    """La respuesta en la meta: desde cuánto y dónde. Si no entra en 120–158, la de siempre."""
+    base = _descripcion_categoria(spec["etiqueta"], n, cadenas)
+    if not por_cadena:
+        return base
+    baratas = [f for f in por_cadena if f["barato"]]
+    quienes = _lista_y([f["tienda"] for f in baratas])
+    if medidas:
+        unidad = next(iter(medidas.values()))[0]
+        desde = f"desde {baratas[0]['unidad_txt']} el {unidad}"
+    else:
+        desde = f"desde {baratas[0]['precio_txt']}"
+    prod = "producto" if n == 1 else "productos"
+    cad = "supermercado" if cadenas == 1 else "supermercados"
+    for texto in (
+        f"Precio {_de_la(spec)} hoy: {desde} en {quienes}. {n} {prod} en {cadenas} {cad}, "
+        "por cadena y con la fecha de captura.",
+        f"Precio {_de_la(spec)} hoy: {desde} en {quienes}. {n} {prod} en {cadenas} {cad}.",
+    ):
+        if 120 <= len(texto) <= 158:
+            return texto
+    return base
+
+
 def _armar_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> dict[str, Any] | None:
     productos = _productos_commodity(spec, todas)
     if not _hub_publicado(productos):
@@ -1669,18 +1832,34 @@ def _armar_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> dict[
     href = _href_commodity(spec)
     canonical = ORIGEN + href
     reciente = max(productos, key=lambda p: p["capturado"])
+    medidas = _medidas_commodity(productos)
+    por_cadena = _por_cadena_commodity(productos, medidas)
+    diferencias = _diferencias_commodity(productos)
     faq = _faq_commodity(spec, productos, cadenas)
+    extra = _faq_extra_commodity(spec, productos, medidas, diferencias)
+    faq = faq[:2] + extra + faq[2:]
     categoria = spec["categoria"]
     categoria_href = _href_categoria(categoria)
     return {
         "slug": spec["slug"],
         "title": title,
-        "description": _descripcion_categoria(spec["etiqueta"], n, cadenas),
+        "description": _descripcion_commodity(spec, por_cadena, medidas, n, cadenas),
         "h1": h1,
         "canonical": canonical,
         "href": href,
         "categoria": categoria,
         "titulo_miga": spec["nombre"],
+        "es_commodity": True,
+        "de_la": _de_la(spec),
+        "anchor": spec["anchor"],
+        "por_cadena": por_cadena,
+        "baratas_txt": _lista_y([f["tienda"] for f in por_cadena if f["barato"]]),
+        "unidad": next(iter(medidas.values()))[0] if medidas else "",
+        "unidad_col": bool(medidas) and any(abs(b - 1.0) > 1e-9 for _, b in medidas.values()),
+        "diferencias": diferencias,
+        "promos_cadena": {},
+        "dia_hoy": "",
+        "dia_hoy_href": "",
         "etiqueta": spec["etiqueta"],
         "intro": spec["intro"],
         "nota": spec.get("nota") or "",
@@ -1728,10 +1907,44 @@ def _armar_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> dict[
     }
 
 
-def pagina_commodity(slug: str) -> dict[str, Any] | None:
+def pagina_commodity(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
     if not commodity_conocida(slug):
         return None
-    return _armar_commodity(_COMMODITY[slug], vistas_publicadas())
+    vista = _armar_commodity(_COMMODITY[slug], vistas_publicadas())
+    if vista is None:
+        return None
+    return _commodity_con_hoy(vista, hoy or hoy_art())
+
+
+def _commodity_con_hoy(vista: dict[str, Any], hoy: date) -> dict[str, Any]:
+    """Promo bancaria de hoy en cada cadena de la tabla, de las mismas tarjetas que el hub.
+
+    No se resta del precio: cada promo tiene banco, tope y exclusiones propias.
+    """
+    vista = dict(vista)
+    dia = next((d for d in nav_dias(hoy) if d.get("hoy")), None)
+    vista["dia_hoy"] = dia["nombre"] if dia else ""
+    vista["dia_hoy_href"] = dia["href"] if dia else ""
+    por_cadena = promos_de_hoy_por_cadena(hoy)
+    filas = []
+    for fila in vista["por_cadena"]:
+        info = por_cadena.get(fila["tienda_id"])
+        promo = None
+        if info:
+            if info["top_txt"]:
+                linea = f"hasta {info['top_txt']}%"
+                if info["bancos_top"]:
+                    linea += f" con {_lista_y(info['bancos_top'][:2])}"
+                    if len(info["bancos_top"]) > 2:
+                        linea += " y otros"
+            elif info["cuotas_n"]:
+                linea = "cuotas"
+            else:
+                linea = f"{info['n']} {'promo' if info['n'] == 1 else 'promos'}"
+            promo = {"href": info["href"], "linea": linea}
+        filas.append({**fila, "promo": promo})
+    vista["por_cadena"] = filas
+    return vista
 
 
 def paginas_commodity() -> list[dict[str, Any]]:
