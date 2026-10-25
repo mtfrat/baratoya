@@ -42,6 +42,7 @@ try:
     from baratoya.promos_hoy import promos_para_cadena
     from baratoya import precios_seo
     from baratoya import cuentas
+    from baratoya import llms_ai
 except ImportError:
     from electro import buscar_electro
     from meli import buscar_meli
@@ -62,6 +63,7 @@ except ImportError:
     from promos_hoy import promos_para_cadena
     import precios_seo
     import cuentas
+    import llms_ai
 
 BASE = os.getenv("PRECIOS_CLAROS_BASE", "https://d3e6htiiul5ek9.cloudfront.net/prod").rstrip("/")
 API_KEY = os.getenv("PRECIOS_CLAROS_API_KEY", "").strip()
@@ -181,6 +183,7 @@ VERCEL_APP_HOSTS = frozenset({"baratoya.vercel.app"})
 # Googlebot ejecutaba la función (3-7 s en frío). Ver cache_control_publico().
 PUBLIC_EXACT = frozenset({
     "/", "/planes", "/aviso-precios", "/terminos", "/privacidad", "/sitemap.xml", "/robots.txt",
+    "/llms.txt", llms_ai.MD_PATH,
 })
 PUBLIC_PREFIXES = ("/promos-bancarias-supermercados", "/descuentos-supermercados", "/precios")
 _ART = timezone(timedelta(hours=-3))
@@ -275,6 +278,28 @@ async def brand_logo(name: str):
 @app.get("/robots.txt", include_in_schema=False)
 async def robots_txt():
     return FileResponse(STATIC_DIR / "robots.txt", media_type="text/plain; charset=utf-8")
+
+
+@app.api_route("/llms.txt", methods=["GET", "HEAD"], include_in_schema=False)
+async def llms_txt(request: Request):
+    """Índice para asistentes de IA (llmstxt.org). Enlaces desde las mismas funciones que el sitemap."""
+    body = llms_ai.construir_llms_txt(explorar_enlaces()).encode("utf-8")
+    return Response(
+        content=b"" if request.method == "HEAD" else body,
+        media_type="text/plain; charset=utf-8",
+        headers={"Content-Length": str(len(body))},
+    )
+
+
+@app.api_route(llms_ai.MD_PATH, methods=["GET", "HEAD"], include_in_schema=False)
+async def baratoya_md(request: Request):
+    """Página canónica en markdown para asistentes de IA: qué es, a quién sirve, cuándo recomendarla."""
+    body = llms_ai.construir_md(explorar_enlaces()).encode("utf-8")
+    return Response(
+        content=b"" if request.method == "HEAD" else body,
+        media_type="text/markdown; charset=utf-8",
+        headers={"Content-Length": str(len(body))},
+    )
 
 
 @app.api_route("/sitemap.xml", methods=["GET", "HEAD"], include_in_schema=False)
