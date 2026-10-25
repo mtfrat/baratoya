@@ -2857,7 +2857,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
 # estas URLs viven en /descuentos-supermercados y no bajo el hub de cadenas.
 DESCUENTOS_PATH = "/descuentos-supermercados"
 DESCUENTOS_URL = "https://baratoya.app" + DESCUENTOS_PATH
-DESCUENTOS_TITLE = "Descuentos en supermercados por día | BaratoYa"
+DESCUENTOS_TITLE = "Descuentos en supermercados por día y por banco | BaratoYa"
 DESCUENTOS_H1 = "Descuentos en supermercados por día en CABA"
 _DIAS_SEO = (
     {"idx": 0, "slug": "lunes", "nombre": "lunes", "plural": "lunes"},
@@ -3469,6 +3469,174 @@ def _vista_listados(hoy: date) -> tuple[list[dict[str, Any]], list[dict[str, Any
     return items, [_resumen_dia(spec, items) for spec in _DIAS_SEO]
 
 
+def _calendario_bancos(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Banco o billetera × día de la semana: el mayor % publicado y en qué cadena.
+
+    Sale de las mismas tarjetas que las páginas por día (mismo alias de bancos que el
+    hub). Un banco sin nombre claro (p. ej. "Visa y Master") no entra. Nada a mano.
+    """
+    por: dict[str, dict[int, dict[str, Any]]] = {}
+    for it in items:
+        canon = banco_canonico(str(it.get("banco") or ""))
+        if canon is None:
+            continue
+        pct = _pct_de(it)
+        for idx in it.get("day_ids", []):
+            slot = por.setdefault(canon, {}).setdefault(int(idx), {"pct": None, "cadenas": []})
+            cadena = str(it.get("cadena") or it.get("chain_id") or "")
+            if pct is not None and (slot["pct"] is None or pct > slot["pct"]):
+                slot["pct"] = pct
+                slot["cadenas"] = [cadena] if cadena else []
+            elif pct is not None and pct == slot["pct"] and cadena and cadena not in slot["cadenas"]:
+                slot["cadenas"].append(cadena)
+    filas = []
+    for canon, dias in por.items():
+        mejor = max((d["pct"] for d in dias.values() if d["pct"] is not None), default=None)
+        mejores = []
+        cadenas_mejor: list[str] = []
+        for spec in _DIAS_SEO:
+            d = dias.get(int(spec["idx"]))
+            if d and mejor is not None and d["pct"] == mejor:
+                mejores.append(spec["nombre"])
+                for c in d["cadenas"]:
+                    if c not in cadenas_mejor:
+                        cadenas_mejor.append(c)
+        filas.append({
+            "banco": canon,
+            "mejor_pct": mejor,
+            "mejor_txt": _pct_publico(mejor) if mejor is not None else "",
+            "mejores_dias": mejores,
+            "cadenas_mejor": cadenas_mejor,
+            "dias": [spec["nombre"] for spec in _DIAS_SEO if int(spec["idx"]) in dias],
+        })
+    filas.sort(key=lambda f: (-(f["mejor_pct"] or 0), -len(f["dias"]), _fold(f["banco"])))
+    return filas
+
+
+def _texto_dias(nombres: list[str]) -> str:
+    return _unir(nombres) if len(nombres) <= 3 else f"{len(nombres)} días de la semana"
+
+
+def _linea_banco(f: dict[str, Any]) -> str:
+    """Banco Nación: hasta 35% el miércoles en Mas Online. Tiene promos 5 días."""
+    if f["mejor_txt"]:
+        cadenas = f["cadenas_mejor"]
+        donde = ""
+        if cadenas:
+            donde = f" en {_unir(cadenas)}" if len(cadenas) <= 3 else f" en {len(cadenas)} cadenas"
+        dias = f["mejores_dias"]
+        plural = {str(spec["nombre"]): str(spec["plural"]) for spec in _DIAS_SEO}
+        if len(dias) == 1:
+            cuando = f"el {dias[0]}"
+        elif len(dias) <= 3:
+            cuando = f"los {_unir([plural.get(d, d) for d in dias])}"
+        else:
+            cuando = f"en {len(dias)} días de la semana"
+        texto = f"hasta {f['mejor_txt']}% {cuando}{donde}"
+    else:
+        texto = "solo cuotas"
+    n = len(f["dias"])
+    if n == 7:
+        texto += ". Tiene promos todos los días"
+    elif n >= 5:
+        faltan = [str(spec["nombre"]) for spec in _DIAS_SEO if str(spec["nombre"]) not in f["dias"]]
+        texto += f". Tiene promos todos los días menos el {_unir(faltan).replace(' y ', ' y el ')}"
+    else:
+        plurales = {str(spec["nombre"]): str(spec["plural"]) for spec in _DIAS_SEO}
+        texto += f". Tiene promos los {_unir([plurales.get(d, d) for d in f['dias']])}"
+    return texto + "."
+
+
+def _que_dia_conviene(resumenes: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """El día con más promos y el día con el mayor %. Solo con los datos cargados."""
+    con = [r for r in resumenes if r["n"]]
+    if not con:
+        return None
+    maximo = max(int(r["n"]) for r in con)
+    mas = [r for r in con if int(r["n"]) == maximo]
+    con_pct = [r for r in con if r["top_pct"] is not None]
+    mejor = max((float(r["top_pct"]) for r in con_pct), default=None)
+    top = [r for r in con_pct if mejor is not None and float(r["top_pct"]) == mejor]
+    if len(mas) == 1:
+        texto = (
+            f"Esta semana, según lo publicado por cada cadena, el día con más promos es "
+            f"el {mas[0]['nombre']} ({_n_promos(maximo)})."
+        )
+    else:
+        texto = (
+            f"Esta semana, según lo publicado por cada cadena, los días con más promos son "
+            f"{_unir(['el ' + str(r['nombre']) for r in mas])} ({_n_promos(maximo)} cada uno)."
+        )
+    if top:
+        top_txt = _unir([f"el {r['nombre']}" for r in top])
+        donde = f", en {top[0]['top_donde']}" if len(top) == 1 and top[0]["top_donde"] else ""
+        if len(top) > 1 and len({r["top_donde"] for r in top}) == 1 and top[0]["top_donde"]:
+            donde = f", en {top[0]['top_donde']}"
+        texto += f" El mayor porcentaje es {_pct_publico(mejor)}%, {top_txt}{donde}."
+    return {
+        "mas": mas,
+        "mas_n": maximo,
+        "top": top,
+        "top_pct": mejor,
+        "top_txt": _pct_publico(mejor) if mejor is not None else "",
+        "texto": texto,
+    }
+
+
+def descripcion_dias_conviene(conviene: dict[str, Any] | None, n: int, cadenas_n: int) -> str:
+    """Meta con el dato (120-155): qué día tiene más promos y el mayor %. "" si no entra."""
+    if not conviene or n <= 0:
+        return ""
+    mas = _unir(["el " + str(r["nombre"]) for r in conviene["mas"]])
+    tiene = "tiene" if len(conviene["mas"]) == 1 else "tienen"
+    top = _unir(["el " + str(r["nombre"]) for r in conviene["top"]])
+    llega = "llega" if len(conviene["top"]) == 1 else "llegan"
+    lugar = _cadenas_txt(cadenas_n)
+    opciones = []
+    if conviene["top_txt"]:
+        opciones += [
+            f"Qué día conviene ir al súper: {mas} {tiene} más promos ({conviene['mas_n']}) y {top} {llega} a {conviene['top_txt']}%. Por día y por banco, {n} promos en {lugar} de CABA.",
+            f"Qué día conviene ir al súper: {mas} {tiene} más promos ({conviene['mas_n']}) y {top} {llega} a {conviene['top_txt']}%. {n} promos en {lugar} de CABA.",
+            f"Qué día conviene ir al súper: {mas} {tiene} más promos y {top} {llega} a {conviene['top_txt']}%. Por día y por banco, en {lugar} de CABA.",
+        ]
+    opciones.append(
+        f"Qué día conviene ir al supermercado: {mas} {tiene} más promos ({conviene['mas_n']}). Descuentos por día y por banco, {n} promos en {lugar} de CABA."
+    )
+    for texto in opciones:
+        if 120 <= len(texto) <= 155 and '"' not in texto and "<" not in texto:
+            return texto
+    return ""
+
+
+def _faq_dias_extra(conviene: dict[str, Any] | None, bancos: list[dict[str, Any]]) -> list[dict[str, str]]:
+    faq: list[dict[str, str]] = []
+    if conviene:
+        faq.append({
+            "q": "¿Cuál es el mejor día para ir al supermercado?",
+            "a": (
+                conviene["texto"]
+                + " El que más conviene depende de tu banco o billetera: cada promo tiene su "
+                "tope, compra mínima y exclusiones."
+            ),
+        })
+    con_pct = [b for b in bancos if b["mejor_txt"]]
+    if con_pct:
+        partes = []
+        for b in con_pct[:8]:
+            dias = b["mejores_dias"]
+            partes.append(f"{b['banco']}: {_texto_dias(dias)} ({b['mejor_txt']}%)")
+        resto = len(con_pct) - len(partes)
+        extra = f" y {resto} bancos o billeteras más en la lista" if resto > 0 else ""
+        faq.append({
+            "q": "¿Qué día descuenta mi banco en el supermercado?",
+            "a": (
+                f"Esta semana, el día con el mayor descuento publicado de cada banco o billetera "
+                f"en supermercados de CABA es: {'; '.join(partes)}{extra}."
+            ),
+        })
+    return faq
+
+
 def pagina_seo_dias(hoy: date | None = None) -> dict[str, Any]:
     """Vista de /descuentos-supermercados. Enlaza los 7 días y marca el de hoy."""
     hoy = hoy or hoy_art()
@@ -3477,7 +3645,14 @@ def pagina_seo_dias(hoy: date | None = None) -> dict[str, Any]:
     for resumen, spec in zip(resumenes, _DIAS_SEO):
         resumen["hoy"] = spec["idx"] == wd
     dia = NOMBRE_DIA[wd]
-    faq = _faq_dias(resumenes, dia)
+    conviene = _que_dia_conviene(resumenes)
+    bancos = _calendario_bancos(items)
+    for r in resumenes:
+        r["mas"] = bool(conviene) and any(m["idx"] == r["idx"] for m in conviene["mas"])
+        r["top"] = bool(conviene) and any(t["idx"] == r["idx"] for t in conviene["top"])
+    for b in bancos:
+        b["linea"] = _linea_banco(b)
+    faq = _faq_dias(resumenes, dia) + _faq_dias_extra(conviene, bancos)
     actualizado = fecha_datos_promos(hoy)
     cadenas_n = len({it["chain_id"] for it in items})
     fecha = fecha_larga(hoy)
@@ -3491,7 +3666,11 @@ def pagina_seo_dias(hoy: date | None = None) -> dict[str, Any]:
     )
     return {
         "title": DESCUENTOS_TITLE,
-        "description": descripcion_dias(len(items), cadenas_n, dia),
+        "description": descripcion_dias_conviene(conviene, len(items), cadenas_n)
+        or descripcion_dias(len(items), cadenas_n, dia),
+        "conviene": conviene,
+        "bancos": bancos,
+        "hoy_resumen": next((r for r in resumenes if r["idx"] == wd), None),
         "canonical": DESCUENTOS_URL,
         "h1": DESCUENTOS_H1,
         "path": DESCUENTOS_PATH,

@@ -519,8 +519,13 @@ class DescuentosPorDiaTest(unittest.TestCase):
         self.assertIn('aria-current="date"', nav)
         for dia in self.nav:
             self.assertIn(f'href="{dia["href"]}"', nav)
+        # 25/10: los 7 bloques por día pasaron a la tabla "Qué día conviene ir al supermercado".
         for bloque in self.hub["dias"]:
-            self.assertIn(bloque["linea"], html)
+            fila = html.split(f'<tr id="{bloque["slug"]}"', 1)[1].split("</tr>", 1)[0]
+            self.assertIn(f'href="{bloque["href"]}"', fila)
+            self.assertIn(f'<td class="num">{bloque["n"]}</td>', fila)
+            if bloque["top_txt"]:
+                self.assertIn(f'{bloque["top_txt"]}%', fila)
         for cadena in cadenas_indexables():
             self.assertIn(f'href="{cadena["href"]}"', html)
         self.assertIn(f'href="{SEO_PATH}"', html)
