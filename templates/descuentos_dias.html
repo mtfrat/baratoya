@@ -91,6 +91,17 @@
     .btn.outline { background: var(--paper); border: 1px solid var(--ink); }
     .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
     .nota { color: var(--slate); font-size: 15px; }
+    .tabla-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tabla { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 15px; }
+    .tabla th, .tabla td { padding: 8px 6px; border-bottom: 1px solid var(--fog); text-align: left; vertical-align: top; }
+    .tabla th { color: var(--ink); font-size: 14px; }
+    .tabla td.num, .tabla th.num { text-align: right; white-space: nowrap; }
+    .tabla tr.hoy td { background: #f1fbe9; }
+    .tabla .sub { display: block; color: var(--slate); font-size: 13px; overflow-wrap: anywhere; }
+    .tabla .marca { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 999px; background: var(--lime); color: var(--ink); font-size: 12px; font-weight: 700; }
+    .respuesta { font-weight: 700; color: var(--ink); }
+    .bancos li { margin: 0 0 10px; }
+    @media (max-width: 420px) { .tabla th, .tabla td { padding: 8px 4px; } }
     footer { padding: 24px 16px 40px; color: #6a6c6a; border-top: 1px solid #e8ebe6; }
     footer .wrap { width: min(100% - 32px, 48rem); margin: 0 auto; }
     footer p { margin: 0 0 8px; }
@@ -134,13 +145,39 @@
       {% endfor %}
     </ul>
 
-    {% for d in dias %}
-    <section id="{{ d.slug }}"{% if d.hoy %} class="hoy"{% endif %}>
-      <h2>{{ d.nombre }}{% if d.hoy %} (hoy){% endif %}</h2>
-      <p>{{ d.linea }}</p>
-      <p><a href="{{ d.href }}">Ver descuentos los {{ d.plural }}</a></p>
-    </section>
-    {% endfor %}
+    {% if hoy_resumen %}
+    <h2 id="hoy">Descuentos en supermercados hoy, {{ dia }}</h2>
+    <p>{{ hoy_resumen.linea }} El detalle por cadena y por banco está en <a href="{{ hoy_resumen.href }}">descuentos los {{ hoy_resumen.plural }}</a> y el resumen de hoy en <a href="{{ hub_promos }}">promos bancarias de supermercados</a>.</p>
+    {% endif %}
+
+    <h2 id="que-dia-conviene">Qué día conviene ir al supermercado</h2>
+    {% if conviene %}<p class="respuesta">{{ conviene.texto }}</p>{% endif %}
+    <div class="tabla-wrap">
+      <table class="tabla">
+        <thead><tr><th scope="col">Día</th><th scope="col" class="num">Promos</th><th scope="col" class="num">Cadenas</th><th scope="col">Mayor %</th></tr></thead>
+        <tbody>
+          {% for d in dias %}
+          <tr id="{{ d.slug }}"{% if d.hoy %} class="hoy"{% endif %}>
+            <td><a href="{{ d.href }}">{{ d.nombre }}</a>{% if d.hoy %} (hoy){% endif %}{% if d.mas %}<span class="marca">más promos</span>{% endif %}</td>
+            <td class="num">{{ d.n }}</td>
+            <td class="num">{{ d.cadenas_n }}</td>
+            <td>{% if d.top_txt %}{{ d.top_txt }}%{% if d.top %}<span class="marca">mayor</span>{% endif %}{% if d.top_donde %}<span class="sub">{{ d.top_donde }}</span>{% endif %}{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">Promos vigentes esta semana según lo publicado por cada cadena de CABA. El mayor % es el mejor caso con un banco o billetera, no para todos los medios de pago. Qué día conviene en cada supermercado está en <a href="{{ hub_promos }}#semana">promos bancarias de supermercados</a>.</p>
+
+    {% if bancos %}
+    <h2 id="por-banco">Qué día descuenta cada banco o billetera</h2>
+    <p>El mayor porcentaje que publica cada banco o billetera en supermercados de CABA esta semana, el día en que lo da y en qué cadena. Sale de las mismas promos de las páginas por día.</p>
+    <ul class="bancos">
+      {% for b in bancos %}
+      <li><strong>{{ b.banco }}</strong>: {{ b.linea }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
 
     <h2>Cadenas</h2>
     <ul class="otras">
