@@ -161,6 +161,34 @@
     <p><a href="/promos-bancarias-supermercados">Promos bancarias de supermercados</a></p>
     {% endif %}
 
+    {% if conviene %}
+    <h2>Qué día conviene comprar {{ nombre_visible }}</h2>
+    <p>Esta semana, el día con el mayor descuento bancario publicado en cada cadena de esta página. Ordenado por precio de hoy.</p>
+    <div class="tabla-wrap">
+      <table class="conviene">
+        <caption class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Qué día conviene comprar {{ nombre_visible }} en cada supermercado</caption>
+        <thead>
+          <tr>
+            <th scope="col">Supermercado</th>
+            <th scope="col">Mejor día</th>
+            <th scope="col" class="num">Hasta</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in conviene %}
+          <tr>
+            <th scope="row">{% if f.href %}<a href="{{ f.href }}">{{ f.nombre }}</a>{% else %}{{ f.nombre }}{% endif %}<div class="en-catalogo">{{ f.precio_txt }} hoy</div></th>
+            <td>{% if f.dias|length == 7 %}Todos los días{% else %}{% for d in f.dias %}<a href="{{ d.href }}">{{ d.nombre }}</a>{% if d.hoy %} <span class="tag">Hoy</span>{% endif %}{% if not f.mismos_bancos and d.bancos_txt %} <span class="en-catalogo">con {{ d.bancos_txt }}</span>{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}{% if f.mismos_bancos and f.bancos_txt %}<div class="en-catalogo">Con {{ f.bancos_txt }}</div>{% endif %}</td>
+            <td class="num">{{ f.pct_txt }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if conviene_sin %}<p>Sin descuento en % publicado esta semana: {{ conviene_sin }}.</p>{% endif %}
+    <p class="nota">Es el mayor porcentaje publicado por la cadena con un banco o billetera, no un descuento para todos los medios de pago. Tiene tope, compra mínima y exclusiones, y no está restado del precio. <a href="/descuentos-supermercados">Descuentos en supermercados por día</a></p>
+    {% endif %}
+
     {% if otros %}
     <h2>Otros productos de <a href="{{ categoria_href }}">{{ categoria }}</a></h2>
     <ul>

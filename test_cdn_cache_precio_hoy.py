@@ -221,7 +221,7 @@ class FichaHoyTests(unittest.TestCase):
             # FAQ JSON-LD = FAQ visible
             ld = json.loads(vista["ld_faq"])
             self.assertEqual([q["name"] for q in ld["mainEntity"]], [q["q"] for q in vista["faq"]])
-            self.assertTrue(vista["faq"][-1]["q"].startswith("¿Qué supermercado tiene promo bancaria hoy"))
+            self.assertTrue(any(q["q"].startswith("¿Qué supermercado tiene promo bancaria hoy") for q in vista["faq"]))
 
     def test_html_ficha(self):
         vista, (unidad, _b) = self._ficha_con_medida()

@@ -167,7 +167,10 @@ class PreciosPublicosTest(unittest.TestCase):
             html = res.text
             self.assertNotIn("<script src=", html)
             self.assertIn(f"<title>{vista['title']}</title>", html)
-            self.assertIn(f'<meta name="description" content="{vista["description"]}" />', html)
+            # La ficha servida puede llevar la meta con "qué día conviene" (sale de las promos de hoy).
+            servida = precios_seo.pagina_producto(vista["slug"]) or vista
+            self.assertLessEqual(len(servida["description"]), 155, vista["slug"])
+            self.assertIn(f'<meta name="description" content="{servida["description"]}" />', html)
             self.assertIn(f'<link rel="canonical" href="{vista["canonical"]}" />', html)
             self.assertIn(f'property="og:title" content="{vista["title"]}"', html)
             self.assertIn(f'property="og:url" content="{vista["canonical"]}"', html)

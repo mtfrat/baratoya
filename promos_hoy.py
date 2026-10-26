@@ -3099,6 +3099,58 @@ def promos_de_hoy_por_cadena(hoy: date | None = None) -> dict[str, dict[str, Any
     return out
 
 
+
+def mejor_dia_por_cadena(hoy: date | None = None) -> dict[str, dict[str, Any]]:
+    """Por cadena con página pública: el día (o los días) de la semana con el mayor %.
+
+    Mismas tarjetas que la tabla de la semana del hub (_matriz_semana). bancos son los
+    que dan ese % (nombre corto si se reconoce). Una cadena que esta semana solo publica
+    cuotas queda con pct None y sin días. Nada se completa a mano.
+    """
+    hoy = hoy or hoy_art()
+    wd = hoy.weekday()
+    indice = {c["chain_id"]: c for c in cadenas_indexables(hoy)}
+    items = [it for it in _items_publicos(hoy) if it.get("chain_id") in indice]
+    out: dict[str, dict[str, Any]] = {}
+    for chain_id, cadena in indice.items():
+        propios = [it for it in items if it.get("chain_id") == chain_id]
+        if not propios:
+            continue
+        pct, _ = _top_descuento(propios)
+        dias: list[dict[str, Any]] = []
+        bancos: list[str] = []
+        if pct is not None:
+            for d in _DIAS_SEO:
+                _, ties = _top_descuento(_items_de(propios, int(d["idx"])))
+                ties = [it for it in ties if float(it["percent"]) == pct]
+                if not ties:
+                    continue
+                del_dia: list[str] = []
+                for it in ties:
+                    raw = str(it.get("banco") or "").strip()
+                    banco = banco_canonico(raw) or raw
+                    if banco and len(banco) <= 28 and banco not in del_dia:
+                        del_dia.append(banco)
+                    if banco and len(banco) <= 28 and banco not in bancos:
+                        bancos.append(banco)
+                dias.append({
+                    "idx": d["idx"],
+                    "nombre": d["nombre"],
+                    "href": f"{DESCUENTOS_PATH}/{d['slug']}",
+                    "hoy": d["idx"] == wd,
+                    "bancos": sorted(del_dia, key=str.casefold),
+                })
+        out[chain_id] = {
+            "chain_id": chain_id,
+            "nombre": cadena["nombre"],
+            "href": cadena["href"],
+            "pct": pct,
+            "pct_txt": _pct_publico(pct) if pct is not None else "",
+            "dias": dias,
+            "bancos": sorted(bancos, key=str.casefold),
+        }
+    return out
+
 # Bancos y billeteras con nombre propio para la vista "por banco". Primer patrón que
 # coincide gana (sobre el texto sin acentos y en minúsculas). Lo que no está acá
 # (clubes de diarios, "Visa y Master", "Medios de Pago", jubilados…) queda solo en la
