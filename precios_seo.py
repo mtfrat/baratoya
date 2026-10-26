@@ -20,10 +20,10 @@ from typing import Any
 import httpx
 
 try:
-    from baratoya.promos_hoy import cadenas_indexables, hoy_art, nav_dias, promos_de_hoy_por_cadena
+    from baratoya.promos_hoy import cadenas_indexables, hoy_art, mejor_dia_por_cadena, nav_dias, promos_de_hoy_por_cadena
     from baratoya.super_cadenas import agrupar_mismo_producto, buscar_super
 except ImportError:
-    from promos_hoy import cadenas_indexables, hoy_art, nav_dias, promos_de_hoy_por_cadena
+    from promos_hoy import cadenas_indexables, hoy_art, mejor_dia_por_cadena, nav_dias, promos_de_hoy_por_cadena
     from super_cadenas import agrupar_mismo_producto, buscar_super
 
 ART = timezone(timedelta(hours=-3))
@@ -2053,6 +2053,14 @@ def _con_hoy(vista: dict[str, Any], hoy: date) -> dict[str, Any]:
     sin = [o["tienda"] for o in ofertas if (o.get("tienda_id") or "") not in por_cadena]
     vista["promos_hoy_sin"] = _lista_y(sorted(set(sin), key=str.casefold)) if sin else ""
 
+    # Qué día conviene comprarlo: el día de la semana con el mayor % en cada cadena.
+    conviene, conviene_sin = _conviene_semana(ofertas, mejor_dia_por_cadena(hoy))
+    vista["conviene"] = conviene
+    vista["conviene_sin"] = conviene_sin
+    meta = _descripcion_conviene(nombre, ofertas, conviene)
+    if meta:
+        vista["description"] = meta
+
     faq = list(vista["faq"])
     if vista["unidad"]:
         faq.insert(1, {
@@ -2073,9 +2081,122 @@ def _con_hoy(vista: dict[str, Any], hoy: date) -> dict[str, Any]:
                 "bancaria publicada. El precio de la tabla es el de góndola."
             )
         faq.append({"q": f"¿Qué supermercado tiene promo bancaria hoy para comprar {nombre}?", "a": resp})
+    if conviene:
+        faq.append({"q": f"¿Qué día conviene comprar {nombre}?", "a": _respuesta_conviene(conviene, conviene_sin)})
     vista["faq"] = faq
     vista["ld_faq"] = _ld_faq(faq)
     return vista
+
+
+def _dias_txt(dias: list[dict[str, Any]]) -> str:
+    if len(dias) == 7:
+        return "todos los días"
+    return _lista_y([str(d["nombre"]) for d in dias])
+
+
+def _bancos_txt(bancos: list[str]) -> str:
+    if not bancos:
+        return ""
+    return _lista_y(bancos[:3]) + (" y otros" if len(bancos) > 3 else "")
+
+
+def _mismos_bancos(dias: list[dict[str, Any]]) -> bool:
+    return len({tuple(d.get("bancos") or ()) for d in dias}) <= 1
+
+
+def _conviene_semana(
+    ofertas: list[dict[str, Any]], por_cadena: dict[str, dict[str, Any]]
+) -> tuple[list[dict[str, Any]], str]:
+    """Filas por cadena de la tabla (de la más barata a la más cara) con su mejor día.
+
+    Solo cadenas con un % publicado esta semana. Las que solo tienen cuotas o no tienen
+    promo quedan nombradas aparte. No se resta ninguna promo al precio.
+    """
+    filas: list[dict[str, Any]] = []
+    sin: list[str] = []
+    vistos: set[str] = set()
+    for o in sorted(ofertas, key=lambda x: x["precio"]):
+        cid = str(o.get("tienda_id") or "")
+        if cid in vistos:
+            continue
+        vistos.add(cid)
+        info = por_cadena.get(cid)
+        if not info or info["pct"] is None or not info["dias"]:
+            sin.append(str(o["tienda"]))
+            continue
+        dias = [{**d, "bancos_txt": _bancos_txt(list(d.get("bancos") or []))} for d in info["dias"]]
+        mismos = _mismos_bancos(dias)
+        if mismos:
+            cuando = _dias_txt(dias)
+            con = dias[0]["bancos_txt"]
+            texto = f"{cuando} (hasta {info['pct_txt']}%" + (f" con {con}" if con else "") + ")"
+        else:
+            # Cada día con su banco: no se mezcla el banco de un día con otro.
+            texto = _lista_y([
+                f"{d['nombre']}" + (f" con {d['bancos_txt']}" if d["bancos_txt"] else "") for d in dias
+            ]) + f" (hasta {info['pct_txt']}%)"
+        filas.append({
+            "nombre": info["nombre"],
+            "href": info["href"],
+            "precio_txt": peso(o["precio"]),
+            "pct_txt": info["pct_txt"],
+            "dias": dias,
+            "dias_txt": _dias_txt(dias),
+            "hoy": any(d["hoy"] for d in dias),
+            "mismos_bancos": mismos,
+            "bancos_txt": dias[0]["bancos_txt"] if mismos else "",
+            "texto": texto,
+        })
+    return filas, _lista_y(sorted(set(sin), key=str.casefold)) if sin else ""
+
+
+def _descripcion_conviene(
+    nombre: str, ofertas: list[dict[str, Any]], filas: list[dict[str, Any]]
+) -> str:
+    """Meta con el precio y qué día conviene, si entra en 110–155. Si no, "" (queda la de siempre)."""
+    if not filas or not ofertas:
+        return ""
+    low = min(o["precio"] for o in ofertas)
+    barato = _lista_y([o["tienda"] for o in ofertas if o["precio"] == low])
+    n = len(ofertas)
+    top = max(float(f["pct_txt"].replace(",", ".")) for f in filas)
+    mejores = [f for f in filas if float(f["pct_txt"].replace(",", ".")) == top]
+    idxs = sorted({int(d["idx"]) for f in mejores for d in f["dias"]})
+    por_idx = {int(d["idx"]): d["nombre"] for f in mejores for d in f["dias"]}
+    nombres_dia = [por_idx[i] for i in idxs]
+    if len(idxs) == 7:
+        cuando = "todos los días"
+    elif len(idxs) <= 3:
+        cuando = "el " + _lista_y(nombres_dia)
+    else:
+        return ""
+    pct = mejores[0]["pct_txt"]
+    cadenas = _lista_y([f["nombre"] for f in mejores])
+    candidatos = [
+        f"Precio de {nombre} hoy: desde {peso(low)} en {barato}, en {n} súper. Qué día conviene: hasta {pct}% {cuando} en {cadenas}.",
+        f"{nombre} hoy: desde {peso(low)} en {barato}, en {n} súper. Qué día conviene: hasta {pct}% {cuando} en {cadenas}.",
+        f"Precio de {nombre} hoy: desde {peso(low)} en {barato}. Qué día conviene: hasta {pct}% {cuando} con promo bancaria.",
+        f"{nombre} hoy: desde {peso(low)} en {barato}. Qué día conviene: hasta {pct}% {cuando} con promo bancaria.",
+    ]
+    for texto in candidatos:
+        if 110 <= len(texto) <= 155:
+            return texto
+    return ""
+
+
+def _respuesta_conviene(filas: list[dict[str, Any]], sin: str) -> str:
+    partes = [f"{f['nombre']}: {f['texto']}" for f in filas]
+    resp = (
+        "Esta semana, el día con el mayor descuento bancario publicado en cada cadena de esta página es: "
+        + "; ".join(partes) + "."
+    )
+    if sin:
+        resp += f" {sin} no publica un descuento en % esta semana."
+    resp += (
+        " Depende de tu banco o billetera, y cada promo tiene tope, compra mínima y exclusiones:"
+        " no está restada del precio de la tabla."
+    )
+    return resp
 
 
 def muestra_home() -> list[dict[str, str]]:
