@@ -2314,11 +2314,59 @@ def h1_cadena_hoy(nombre: str, dia: str) -> str:
     return f"Promociones bancarias {nombre} hoy, {dia}"
 
 
-def descripcion_cadena_hoy(nombre: str, dia: str, n_hoy: int, top: dict[str, str] | None) -> str:
-    """≤155. Arranca con la búsqueda. El % solo si hoy hay uno publicado sin condiciones extra."""
+def descripcion_cadena_hoy(
+    nombre: str,
+    dia: str,
+    n_hoy: int,
+    top: dict[str, str] | None,
+    semana_top: dict[str, Any] | None = None,
+    hoy_idx: int | None = None,
+) -> str:
+    """≤155. Arranca con la búsqueda. El % solo si hoy hay uno publicado sin condiciones extra.
+
+    Si en la semana hay un % mayor que el de hoy (sin condición para el que compra y con
+    tope publicado), va también: es lo que decide la visita (GSC 26/10: Maxiconsumo
+    0 clics / 98 imp @7,3 con "hasta 5%" en la meta y 30% el miércoles en la tabla).
+    """
     cierre = "BaratoYa no vende ni entrega."
     base = f"Promociones bancarias {nombre} hoy ({dia}) en CABA"
     opciones: list[str] = []
+    hoy_pct = None
+    if n_hoy and top:
+        try:
+            hoy_pct = float(str(top["pct"]).rstrip("%").replace(",", "."))
+        except ValueError:
+            hoy_pct = None
+    if semana_top and (hoy_pct is None or semana_top["pct"] > hoy_pct):
+        tope = f" ({semana_top['tope']})" if semana_top.get("tope") else ""
+        sem = f"En la semana, hasta {semana_top['pct_txt']} {semana_top['dias']} con {semana_top['banco']}{tope}"
+        sem_corta = f"En la semana, hasta {semana_top['pct_txt']} {semana_top['dias']}{tope}"
+        hoy_sem = f"hasta {semana_top['pct_txt']} con {semana_top['banco']}{tope}"
+        if hoy_idx in semana_top.get("day_ids", []) and n_hoy:
+            opciones += [
+                f"{base}: {hoy_sem}. {_n_promos(n_hoy)} hoy, con días y tope. {cierre}",
+                f"{base}: {hoy_sem}. {_n_promos(n_hoy)} hoy, con días y tope.",
+                f"{base}: {hoy_sem}.",
+            ]
+        elif hoy_pct is not None:
+            pct, bancos = top["pct"], top["bancos"]
+            opciones += [
+                f"{base}: hasta {pct} con {bancos}. {sem}. {cierre}",
+                f"{base}: hasta {pct} con {bancos}. {sem}.",
+                f"{base}: hasta {pct}. {sem}.",
+                f"{base}: {pct} con {bancos}. {sem_corta}.",
+            ]
+        elif n_hoy:
+            opciones += [
+                f"{base}: {_n_promos(n_hoy)} hoy. {sem}. {cierre}",
+                f"{base}: {_n_promos(n_hoy)} hoy. {sem}.",
+                f"{base}: {_n_promos(n_hoy)} hoy. {sem_corta}.",
+            ]
+        else:
+            opciones += [
+                f"{base}: hoy no hay promos cargadas. {sem}.",
+                f"{base}: hoy no hay promos cargadas. {sem_corta}.",
+            ]
     if n_hoy and top:
         pct, bancos = top["pct"], top["bancos"]
         opciones += [
@@ -2638,6 +2686,68 @@ def _mejores(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return salida
 
 
+# Notas que solo avisan que falta un dato en lo publicado (no restringen quién ni qué
+# compra). Sirven para decir el mayor % de la semana en la meta, con el tope a la vista.
+_NOTA_SOLO_DATO = re.compile(
+    r"^(vigencia no informada(?: en el legal)?|sin tope(?: o tope no informado| informado)?"
+    r"|canal no (?:indicado|informado))$"
+)
+
+
+def _restringe_comprador(it: dict[str, Any]) -> bool:
+    """True si la nota pone una condición al que compra (socios, rubros, sucursales...)."""
+    if not _con_condicion(it):
+        return False
+    partes = [_fold(p).strip(" .,") for p in str(it.get("nota") or "").split(";")]
+    return not all(_NOTA_SOLO_DATO.match(p) for p in partes if p)
+
+
+def _banco_corto(raw: str) -> str:
+    """El nombre como lo publica la cadena, sin el paréntesis; si es largo, el canónico."""
+    corto = re.sub(r"\s*\(.*?\)\s*", " ", raw).strip()
+    if corto and len(corto) <= 24:
+        return corto
+    return banco_canonico(raw) or (raw if len(raw) <= 24 else "")
+
+
+def mejor_semana_cadena(items: list[dict[str, Any]], hoy: date) -> dict[str, Any] | None:
+    """El mayor % de la semana que se puede decir en una línea: sin condición para el que
+    compra y con tope en pesos publicado (o "sin tope"). None si no hay."""
+    aptos = [
+        it for it in items
+        if it.get("percent") and it.get("day_ids") and _es_nombre_banco(it.get("banco") or "")
+        and not _restringe_comprador(it)
+        and (isinstance(it.get("tope_num"), (int, float)) or it.get("tope") == "sin tope")
+    ]
+    if not aptos:
+        return None
+    pct = max(float(it["percent"]) for it in aptos)
+    ties = sorted(
+        (it for it in aptos if float(it["percent"]) == pct),
+        key=lambda it: (min(it["day_ids"]), -(it.get("tope_num") or 0), (it.get("banco") or "").casefold()),
+    )
+    it = ties[0]
+    banco = _banco_corto(str(it.get("banco") or ""))
+    if not banco:
+        return None
+    ids = sorted(set(it["day_ids"]))
+    if len(ids) == 7:
+        dias = "todos los días"
+    else:
+        dias = "el " + _unir([NOMBRE_DIA[d] for d in ids])
+    tope = "sin tope" if it.get("tope") == "sin tope" else str(it.get("tope") or "")
+    return {
+        "pct": pct,
+        "pct_txt": _pct_txt(pct),
+        "banco": banco,
+        "dias": dias,
+        "day_ids": ids,
+        "tope": tope,
+        "canal": str(it.get("canal") or ""),
+        "nota": _condicion_txt(it) if _con_condicion(it) else "",
+    }
+
+
 def resumen_semana_cadena(nombre: str, items: list[dict[str, Any]]) -> dict[str, Any]:
     """Resumen de la semana de una cadena. Solo cuentas sobre las tarjetas publicadas."""
     items = [it for it in items if _es_nombre_banco(it.get("banco") or "")]
@@ -2731,6 +2841,108 @@ def hoy_otras_cadenas(chain_id: str, hoy: date) -> list[dict[str, Any]]:
     return filas
 
 
+# Mayoristas con página propia. Quien busca "promociones bancarias maxiconsumo" compra
+# por cantidad: la comparación útil es contra el otro mayorista, no contra Coto o Día.
+_MAYORISTAS = ("maxiconsumo", "makro")
+
+
+def mayoristas_semana(chain_id: str, hoy: date) -> list[dict[str, Any]]:
+    """Maxiconsumo y Makro esta semana, con las mismas tarjetas que sus páginas.
+
+    [] si la cadena no es mayorista o si no hay al menos dos mayoristas con promos.
+    """
+    if chain_id not in _MAYORISTAS:
+        return []
+    indice = {c["chain_id"]: c for c in cadenas_indexables(hoy)}
+    todos = _items_publicos(hoy)
+    wd = hoy.weekday()
+    filas: list[dict[str, Any]] = []
+    for cid in _MAYORISTAS:
+        if cid not in indice:
+            continue
+        items = [it for it in todos if it.get("chain_id") == cid and _es_nombre_banco(it.get("banco") or "")]
+        if not items:
+            continue
+        con_pct = [it for it in items if it.get("percent")]
+        canales = Counter(str(it.get("canal") or "no indicado") for it in items)
+        hoy_items = [it for it in items if wd in it.get("day_ids", [])]
+        top_hoy, _ = _top_descuento(hoy_items)
+        filas.append({
+            "chain_id": cid,
+            "nombre": indice[cid]["nombre"],
+            "href": indice[cid]["href"],
+            "propia": cid == chain_id,
+            "n": len(items),
+            "bancos_n": len({it["banco"] for it in items}),
+            "pct_n": len(con_pct),
+            "cuotas_n": len(items) - len(con_pct),
+            "n_hoy": len(hoy_items),
+            "top_hoy_txt": _pct_txt(top_hoy) if top_hoy is not None else "",
+            "mejor": mejor_semana_cadena(items, hoy),
+            "mayor": (_mejores(con_pct) or [None])[0],
+            "canales": [{"canal": k, "n": v} for k, v in sorted(canales.items(), key=lambda kv: (-kv[1], kv[0]))],
+        })
+    return filas if len(filas) >= 2 else []
+
+
+def _linea_mayorista(f: dict[str, Any]) -> str:
+    partes = [f"{_n_promos(f['n'])} de {f['bancos_n']} {'banco o billetera' if f['bancos_n'] == 1 else 'bancos y billeteras'}"]
+    m, mayor = f.get("mejor"), f.get("mayor")
+    if m:
+        tope = f", {m['tope']}" if m.get("tope") else ""
+        nota = f" (nota: «{m['nota']}»)" if m.get("nota") else ""
+        partes.append(f"mayor % con tope publicado: {m['pct_txt']} {m['dias']} con {m['banco']}{tope}{nota}")
+    if mayor and (not m or float(mayor["percent"]) > m["pct"]):
+        txt = f"mayor % publicado: {_promo_txt(mayor, pct=True)}"
+        if _con_condicion(mayor):
+            txt += f", nota: «{_condicion_txt(mayor)}»"
+        partes.append(txt)
+    canales = _unir([f"{c['n']} de {c['canal']}" for c in f["canales"]])
+    partes.append(f"canal: {canales}")
+    return "; ".join(partes)
+
+
+def _faq_mayoristas(nombre: str, filas: list[dict[str, Any]], items: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """Dos preguntas de quien compra en mayorista, con las tarjetas de la semana."""
+    if not filas:
+        return []
+    faq: list[dict[str, str]] = []
+    orden = sorted(filas, key=lambda f: (-f["n"], f["nombre"]))
+    if orden[0]["n"] == orden[-1]["n"]:
+        texto = f"Esta semana empatan en cantidad: {_unir([f['nombre'] for f in filas])} publican {_n_promos(orden[0]['n'])} cada uno."
+    else:
+        texto = (
+            f"Esta semana {orden[0]['nombre']} publica {_n_promos(orden[0]['n'])} y "
+            + _unir([f"{f['nombre']} {_n_promos(f['n'])}" for f in orden[1:]])
+            + "."
+        )
+    for f in filas:
+        if f.get("mayor"):
+            texto += f" En {f['nombre']}, el mayor porcentaje es {_promo_txt(f['mayor'], pct=True)}"
+            texto += f". Nota publicada: «{_condicion_txt(f['mayor'])}»." if _con_condicion(f["mayor"]) else "."
+    faq.append({
+        "q": "¿Qué mayorista tiene más promociones bancarias esta semana: Maxiconsumo o Makro?",
+        "a": texto + " Revisá el tope, el canal y la nota de cada promo antes de pagar.",
+    })
+    con_pct = [it for it in items if it.get("percent") and _es_nombre_banco(it.get("banco") or "")]
+    mejores = _mejores(con_pct)
+    if mejores:
+        top = mejores[0]
+        texto = (
+            f"Según lo publicado por {nombre} esta semana, el mayor porcentaje es "
+            f"{_promo_txt(top, pct=True)}."
+        )
+        if _con_condicion(top):
+            texto += f" Nota publicada: «{_condicion_txt(top)}»."
+        resto = [it for it in con_pct if float(it["percent"]) < float(top["percent"])]
+        if resto:
+            sig = _mejores(resto)[0]
+            texto += f" Le sigue {_promo_txt(sig, pct=True)}."
+        texto += " El detalle por día está en la tabla de esta página."
+        faq.append({"q": f"¿Qué día conviene comprar en {nombre}?", "a": texto})
+    return faq
+
+
 def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
     """Vista de /promos-bancarias-supermercados/<slug>. None si no hay datos."""
     chain_id = _ID_POR_SLUG.get((slug or "").strip())
@@ -2788,6 +3000,10 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
     )
     hoy_cuotas = [it for it in hoy_promos if not it.get("percent")]
     fija = chain_id in _CADENAS_META_FIJA
+    semana_top = mejor_semana_cadena(items, hoy)
+    mayoristas = mayoristas_semana(chain_id, hoy)
+    if mayoristas:
+        faq += [q for q in _faq_mayoristas(nombre, mayoristas, items) if q["q"] not in {x["q"] for x in faq}]
     dia_slug = next(d["slug"] for d in _DIAS_SEO if d["idx"] == wd)
     href = f"{SEO_PATH}/{_SLUG_POR_ID[chain_id]}"
     canonical = "https://baratoya.app" + href
@@ -2797,7 +3013,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
         "title": titulo_cadena(nombre) if fija else titulo_cadena_hoy(nombre),
         "description": descripcion_cadena(
             nombre, dia, max((it["percent"] for it in hoy_promos if it.get("percent")), default=None)
-        ) if fija else descripcion_cadena_hoy(nombre, dia, len(hoy_promos), top_hoy),
+        ) if fija else descripcion_cadena_hoy(nombre, dia, len(hoy_promos), top_hoy, semana_top, wd),
         "canonical": canonical,
         "h1": h1_cadena(nombre) if fija else h1_cadena_hoy(nombre, dia),
         "path": href,
@@ -2816,6 +3032,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
         "hoy_cuotas": hoy_cuotas,
         "semana": semana,
         "hoy_cadenas": hoy_otras_cadenas(chain_id, hoy),
+        "mayoristas": [dict(f, linea=_linea_mayorista(f)) for f in mayoristas],
         "dia_href": f"{DESCUENTOS_PATH}/{dia_slug}",
         "filas": filas,
         "columnas": columnas,

@@ -166,7 +166,12 @@ class HtmlCadenaTest(unittest.TestCase):
             self.assertIn(f"<h1>{v['h1']}</h1>", html)
             self.assertIn(f"Promociones bancarias {nombre} hoy", v["title"])
             self.assertIn(f"Promociones bancarias {nombre} hoy", v["h1"])
-            self.assertTrue(v["description"].startswith(f"Promociones bancarias {nombre} hoy ("))
+            # Un día sin % publicado (p. ej. domingo en Jumbo) cae en la meta de respaldo.
+            self.assertTrue(
+                v["description"].startswith(f"Promociones bancarias {nombre} hoy (")
+                or v["description"].startswith(f"Promociones bancarias del supermercado {nombre} hoy ("),
+                v["description"],
+            )
             self.assertIn(f'<h2 id="semana">Resumen de la semana en {nombre}</h2>', html)
             for linea in v["semana"]["lineas"]:
                 self.assertIn(linea.replace("«", "«"), html)
@@ -174,7 +179,10 @@ class HtmlCadenaTest(unittest.TestCase):
             self.assertIn(f'href="{v["dia_href"]}"', html)
             seccion = html.split('id="hoy-cadenas"', 1)[1].split("</ul>", 1)[0]
             for c in v["hoy_cadenas"]:
-                if c["propia"]:
+                if c["propia"] and not c["n"]:
+                    self.assertIn(f"<strong>{c['nombre']}</strong> (esta página): sin promos cargadas hoy", seccion)
+                    self.assertNotIn(f'href="{c["href"]}"', seccion)
+                elif c["propia"]:
                     self.assertIn(f"<strong>{c['nombre']}</strong> (esta página): {c['n']} promo", seccion)
                     self.assertNotIn(f'href="{c["href"]}"', seccion)
                 else:

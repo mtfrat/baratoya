@@ -229,6 +229,17 @@
     </ul>
     {% endif %}
 
+    {% if mayoristas %}
+    <h2 id="mayoristas">Promociones bancarias en mayoristas: {% for m in mayoristas %}{{ m.nombre }}{% if not loop.last %} y {% endif %}{% endfor %}</h2>
+    <p>{{ nombre }} es uno de los dos mayoristas con página en BaratoYa. Esta semana, según lo publicado por cada cadena:</p>
+    <ul>
+      {% for m in mayoristas %}
+      <li>{% if m.propia %}<strong>{{ m.nombre }}</strong> (esta página){% else %}<a href="{{ m.href }}">{{ m.nombre }}</a>{% endif %}: {{ m.linea }}. Hoy, {{ dia }}: {% if m.n_hoy %}{{ m.n_hoy }} {{ "promo" if m.n_hoy == 1 else "promos" }}{% if m.top_hoy_txt %}, hasta {{ m.top_hoy_txt }}{% endif %}{% else %}sin promos cargadas{% endif %}.</li>
+      {% endfor %}
+    </ul>
+    <p class="nota">Las promos de sucursal se pagan en el local: no se restan del precio online. Si una nota dice «Solo sucursales de …», no vale en las demás. Los descuentos de todas las cadenas, por día, están en <a href="{{ dia_href }}">los descuentos en supermercados del {{ dia }}</a>.</p>
+    {% endif %}
+
     {% if resumen and resumen.por_banco %}
     <h2>Bancos y billeteras con promo en {{ nombre }}</h2>
     <ul>
