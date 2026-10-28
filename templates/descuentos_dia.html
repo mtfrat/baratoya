@@ -150,6 +150,26 @@
     </div>
     <p class="nota">Es el mejor caso de cada cadena, con el banco o la billetera que lo da. Las condiciones (tope, mínimo, canal y vigencia) de cada promo están más abajo.</p>
     {% endif %}
+    {% if para_todos %}
+    <h2 id="para-todos">Descuentos del {{ nombre }} sin requisitos especiales: tope y hasta cuánto comprar</h2>
+    <p>Algunos de los porcentajes de arriba son solo para jubilados, socios de un club, clientes de una provincia o productos seleccionados. Acá quedan los que puede usar cualquier cliente de ese banco o billetera, con el tope de reintegro publicado. Si el tope está en pesos, calculamos hasta qué compra rinde el porcentaje completo: tope dividido por el porcentaje.</p>
+    <div class="tabla">
+      <table>
+        <thead><tr><th scope="col">Supermercado</th><th scope="col">Descuento</th><th scope="col">Tope</th><th scope="col">Rinde hasta</th></tr></thead>
+        <tbody>
+          {% for f in para_todos %}
+          <tr>
+            <td>{% if f.href %}<a href="{{ f.href }}">{{ f.cadena }}</a>{% else %}{{ f.cadena }}{% endif %}</td>
+            <td><strong>{{ f.pct_txt }}%</strong> con {{ f.bancos_txt }}{% if f.canal or f.minimo or f.excluye %}<br /><span class="nota">{% if f.canal %}{{ f.canal }}{% endif %}{% if f.minimo %}{% if f.canal %} · {% endif %}mínimo {{ f.minimo }}{% endif %}{% if f.excluye %}{% if f.canal or f.minimo %} · {% endif %}excluye rubros{% endif %}</span>{% endif %}</td>
+            <td{% if f.tope_num %} class="num"{% endif %}>{{ f.tope_txt }}</td>
+            <td class="num">{% if f.compra_txt %}{{ f.compra_txt }}{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">"Rinde hasta" es la compra con la que el reintegro llega al tope. Si gastás más, el reintegro queda en el tope y el porcentaje real baja. "Excluye rubros" quiere decir que el legal deja afuera algunos productos (por ejemplo, electro o bodegas): el detalle está en la lista de promos más abajo.{% if sin_para_todos_txt %} Los {{ plural }}, {{ sin_para_todos_txt }} no {% if sin_para_todos | length == 1 %}aparece porque sus promos de ese día son{% else %}aparecen porque sus promos de ese día son{% endif %} para un grupo de clientes o productos seleccionados, son cuotas o no informan el tope.{% endif %}</p>
+    {% endif %}
     <p>Son las mismas promos que usa la cuenta de BaratoYa. Si la cadena no publica ese dato, no lo completamos. El precio final estimado se calcula en la cuenta. Si la letra dice que no acumula, no se suma a otro descuento.</p>
     {% if es_hoy %}
     <p>Hoy es {{ nombre }} {{ fecha }}.</p>
