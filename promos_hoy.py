@@ -3519,6 +3519,146 @@ def _resumen_dia(spec: dict[str, Any], items: list[dict[str, Any]]) -> dict[str,
     }
 
 
+# Notas que no cambian quién puede usar la promo: avisan que falta un dato o que hay
+# rubros excluidos (electro, bodegas, carnes...). Todo lo demás ("solo socios", "solo
+# jubilados", "solo productos seleccionados", provincias, primera compra, conflictos
+# entre card y legal) deja la promo fuera del bloque "para cualquiera".
+_NOTA_PARA_TODOS = re.compile(
+    r"^(vigencia no informada(?: en el legal)?|sin tope(?: o tope no informado| informado| de reintegro)?"
+    r"|canal no (?:indicado|informado)|excluye .+|aplican exclusiones(?: \(ver legales\))?"
+    r"|exclusiones o restricciones(?: \(ver legales\))?|no incluye preciazos)$"
+)
+_NOTA_EXCLUYE = re.compile(r"^(excluye .+|aplican exclusiones.*|exclusiones o restricciones.*|no incluye preciazos)$")
+# Nombres que en realidad son un grupo de clientes, no un banco o billetera abierta.
+_BANCO_SEGMENTO = re.compile(r"anses|jubilad|pensionad|emplead|club|sueldo|primera compra")
+
+
+def _unir_o(partes: list[str]) -> str:
+    """Alternativas: "A o B", "A, B o C"."""
+    if len(partes) <= 1:
+        return "".join(partes)
+    return ", ".join(partes[:-1]) + " o " + partes[-1]
+
+
+def _pesos_txt(n: float) -> str:
+    return "$" + f"{int(round(n)):,}".replace(",", ".")
+
+
+def _apta_para_todos(it: dict[str, Any]) -> bool:
+    """Promo con % que puede usar cualquier cliente de ese banco o billetera, con el tope
+    publicado (en pesos o "sin tope")."""
+    banco = str(it.get("banco") or "")
+    if not it.get("percent") or not _es_nombre_banco(banco) or _BANCO_SEGMENTO.search(_fold(banco)):
+        return False
+    if not (isinstance(it.get("tope_num"), (int, float)) or it.get("tope") == "sin tope"):
+        return False
+    partes = [_fold(x).strip(" .,") for x in str(it.get("nota") or "").split(";")]
+    return all(_NOTA_PARA_TODOS.match(x) for x in partes if x)
+
+
+def para_todos_dia(dia_items: list[dict[str, Any]], hrefs: dict[str, str] | None = None) -> list[dict[str, Any]]:
+    """Por cadena, el mayor % de ese día que puede usar cualquiera (sin segmento, socios,
+    provincias ni productos seleccionados), con tope y hasta qué compra rinde el %.
+
+    Solo cuentas sobre lo publicado: compra_tope = tope / %. Nada estimado aparte de eso.
+    """
+    hrefs = hrefs or {}
+    por: dict[str, list[dict[str, Any]]] = {}
+    for it in dia_items:
+        if _apta_para_todos(it) and it.get("chain_id"):
+            por.setdefault(str(it["chain_id"]), []).append(it)
+    filas = []
+    for cid, lista in por.items():
+        pct = max(float(it["percent"]) for it in lista)
+        ties = [it for it in lista if float(it["percent"]) == pct]
+        # Entre los que empatan, el de tope más alto ("sin tope" primero).
+        def _tope_key(it: dict[str, Any]) -> float:
+            return float("inf") if it.get("tope") == "sin tope" else float(it.get("tope_num") or 0)
+        mejor = max(_tope_key(it) for it in ties)
+        ties = [it for it in ties if _tope_key(it) == mejor]
+        ties.sort(key=lambda it: (_fold(str(it.get("banco") or ""))))
+        bancos: list[str] = []
+        for it in ties:
+            raw = str(it.get("banco") or "").strip()
+            b = raw if len(raw) <= 28 else (_banco_corto(raw) or raw)
+            if b and b not in bancos:
+                bancos.append(b)
+        it0 = ties[0]
+        canales = []
+        for it in ties:
+            c = str(it.get("canal") or "").strip()
+            if c and c not in canales:
+                canales.append(c)
+        minimos = sorted({str(it.get("minimo") or "").strip() for it in ties} - {""})
+        sin_tope = it0.get("tope") == "sin tope"
+        tope_num = None if sin_tope else float(it0["tope_num"])
+        compra = tope_num * 100.0 / pct if tope_num else None
+        notas = [_fold(x).strip(" .,") for it in ties for x in str(it.get("nota") or "").split(";")]
+        excluye = any(_NOTA_EXCLUYE.match(x) for x in notas if x)
+        sin_tope_txt = ""
+        if sin_tope:
+            informado = all(
+                not re.search(r"tope no informado|sin tope informado", _fold(str(it.get("nota") or "")))
+                for it in ties
+            )
+            sin_tope_txt = "sin tope" if informado else "sin tope informado"
+        filas.append({
+            "chain_id": cid,
+            "cadena": str(it0.get("cadena") or cid),
+            "href": hrefs.get(cid, ""),
+            "pct": pct,
+            "pct_txt": _pct_publico(pct),
+            "bancos": bancos,
+            "bancos_txt": _unir_o(bancos),
+            "tope_num": tope_num,
+            "tope_txt": _pesos_txt(tope_num) if tope_num else sin_tope_txt,
+            "compra_tope": compra,
+            "compra_txt": _pesos_txt(compra) if compra else "",
+            "minimo": minimos[0] if len(minimos) == 1 else "",
+            "canal": canales[0] if len(canales) == 1 else ("online y sucursal" if canales else ""),
+            "excluye": excluye,
+        })
+    filas.sort(key=lambda f: (-f["pct"], -(f["tope_num"] or 0), _orden_cadena(f["chain_id"])))
+    return filas
+
+
+def _faq_dia_para_todos(filas: list[dict[str, Any]], plural: str) -> list[dict[str, str]]:
+    """Dos preguntas con el bloque "para cualquiera": cuál conviene y cuánto gastar."""
+    if not filas:
+        return []
+    partes = [f"{f['cadena']} {f['pct_txt']}% con {f['bancos_txt']}" for f in filas[:6]]
+    resto = len(filas) - len(partes)
+    extra = f" y {resto} más" if resto > 0 else ""
+    faq = [{
+        "q": f"¿Qué descuentos de supermercado de los {plural} puede usar cualquiera?",
+        "a": (
+            f"Esta semana, según lo publicado por cada cadena, los {plural} hay descuentos sin requisitos "
+            f"especiales (no son solo para jubilados, socios de un club, una provincia o productos "
+            f"seleccionados) en {_unir(partes)}{extra}. Las exclusiones de rubros de cada legal siguen valiendo."
+        ),
+    }]
+    con_tope = [f for f in filas if f["compra_tope"]]
+    if con_tope:
+        frases = []
+        for i, f in enumerate(con_tope[:3]):
+            rinde = "el descuento completo rinde hasta una compra de" if i == 0 else "rinde hasta"
+            frase = f"con {f['bancos_txt']} en {f['cadena']} ({f['pct_txt']}%, tope {f['tope_txt']}) {rinde} {f['compra_txt']}"
+            if f["minimo"]:
+                minimo = (_pesos_en(f["minimo"]) or [0.0])[0]
+                if minimo and minimo >= f["compra_tope"]:
+                    frase += f" (pide un mínimo de {f['minimo']}: con el mínimo ya llegás al tope)"
+                else:
+                    frase += f" y pide un mínimo de {f['minimo']}"
+            frases.append(frase)
+        texto = "Esta semana, según lo publicado por cada cadena, " + "; ".join(frases) + "."
+        texto += " Arriba de ese monto el reintegro queda en el tope, así que el porcentaje real baja."
+        faq.append({
+            "q": f"¿Cuánto conviene gastar los {plural} para aprovechar el tope del descuento?",
+            "a": texto,
+        })
+    return faq
+
+
 def _respuesta_descuentos_dia(resumen: dict[str, Any]) -> str:
     """Responde con el conteo y, si está publicado, el mayor porcentaje. Nada inventado."""
     plural = resumen["plural"]
@@ -3973,7 +4113,11 @@ def pagina_seo_dia(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
     for row in resumenes:
         row["hoy"] = row["idx"] == wd
     plural = spec["plural"]
-    faq = _faq_dia(resumen)
+    hrefs = {str(f["chain_id"]): str(f["href"] or "") for f in resumen["por_cadena"]}
+    para_todos = para_todos_dia(_items_de(_items, int(spec["idx"])), hrefs)
+    con_algo = {f["chain_id"] for f in para_todos}
+    sin_para_todos = [str(f["cadena"]) for f in resumen["por_cadena"] if f["chain_id"] not in con_algo]
+    faq = _faq_dia(resumen) + _faq_dia_para_todos(para_todos, plural)
     actualizado = fecha_datos_promos(hoy)
     canonical = resumen["url"]
     es_hoy = spec["idx"] == wd
@@ -4002,6 +4146,9 @@ def pagina_seo_dia(slug: str, hoy: date | None = None) -> dict[str, Any] | None:
     return {
         "por_cadena": resumen["por_cadena"],
         "por_banco": resumen["por_banco"],
+        "para_todos": para_todos,
+        "sin_para_todos": sin_para_todos,
+        "sin_para_todos_txt": _unir(sin_para_todos),
         "comparar": comparar,
         "title": titulo_dia(plural, es_hoy=es_hoy),
         "description": descripcion_dia(
