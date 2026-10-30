@@ -2070,6 +2070,10 @@ def descripcion_hub_hoy(dia: str, n_hoy: int, cadenas_hoy: int, top: dict[str, A
         f"Hoy {dia}: hasta {top['txt']}% en {lugar_top}. {promos} en {lugar} de CABA, por banco y por cadena.",
         f"{cap}: hasta {top['txt']}% en {lugar_top}. {promos} hoy en {lugar} de CABA, con banco, tope y días.",
     )
+    # Días con pocas cadenas (p. ej. "hasta 20% en Día y Mas Online", 13 promos) quedaban
+    # por debajo de 120 y la meta caía al conteo sin el %: se agrega el cierre de siempre.
+    cierre = " BaratoYa no vende ni entrega."
+    opciones += tuple(o + cierre for o in opciones)
     for texto in opciones:
         if 120 <= len(texto) <= 155 and '"' not in texto and "<" not in texto:
             return texto
@@ -3002,6 +3006,8 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
     fija = chain_id in _CADENAS_META_FIJA
     semana_top = mejor_semana_cadena(items, hoy)
     mayoristas = mayoristas_semana(chain_id, hoy)
+    por_dia_todos = para_todos_cadena(items, hoy)
+    faq += [q for q in _faq_cadena_para_todos(nombre, por_dia_todos) if q["q"] not in {x["q"] for x in faq}]
     if mayoristas:
         faq += [q for q in _faq_mayoristas(nombre, mayoristas, items) if q["q"] not in {x["q"] for x in faq}]
     dia_slug = next(d["slug"] for d in _DIAS_SEO if d["idx"] == wd)
@@ -3033,6 +3039,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
         "semana": semana,
         "hoy_cadenas": hoy_otras_cadenas(chain_id, hoy),
         "mayoristas": [dict(f, linea=_linea_mayorista(f)) for f in mayoristas],
+        "por_dia_todos": por_dia_todos,
         "dia_href": f"{DESCUENTOS_PATH}/{dia_slug}",
         "filas": filas,
         "columnas": columnas,
@@ -3655,6 +3662,110 @@ def _faq_dia_para_todos(filas: list[dict[str, Any]], plural: str) -> list[dict[s
         faq.append({
             "q": f"¿Cuánto conviene gastar los {plural} para aprovechar el tope del descuento?",
             "a": texto,
+        })
+    return faq
+
+
+def _motivo_no_apta(it: dict[str, Any]) -> str:
+    """Por qué una promo con % no entra en "para cualquiera". Solo con lo publicado."""
+    for parte in str(it.get("nota") or "").split(";"):
+        parte = parte.strip().rstrip(".")
+        if parte and not _NOTA_PARA_TODOS.match(_fold(parte).strip(" .,")):
+            return f"«{parte}»"
+    if _BANCO_SEGMENTO.search(_fold(str(it.get("banco") or ""))):
+        return "para un grupo de clientes"
+    if not (isinstance(it.get("tope_num"), (int, float)) or it.get("tope") == "sin tope"):
+        return "tope no informado"
+    return "con condiciones publicadas"
+
+
+def para_todos_cadena(items: list[dict[str, Any]], hoy: date) -> list[dict[str, Any]]:
+    """Una cadena, lunes a domingo: el mayor % de cada día que puede usar cualquiera, con
+    tope y hasta qué compra rinde (la misma regla que el bloque de las páginas por día),
+    y el % más alto con condiciones si es mayor. [] si ningún día tiene una promo así.
+
+    GSC 29/10: "disco promociones bancarias" 0/43 @9, "disco descuentos bancarios" 0/13
+    @8,9 y búsquedas por día ("... jueves" 0/5 @7,6, "... martes", "disco descuentos
+    miercoles"); /promos-bancarias-supermercados/disco 0/203 @8,8. La página listaba 34
+    promos (20 en cuotas, casi todas de electro) y no decía qué descuento del súper sirve
+    a cualquiera cada día.
+    """
+    wd = hoy.weekday()
+    filas: list[dict[str, Any]] = []
+    for d in _DIAS_SEO:
+        idx = int(d["idx"])
+        del_dia = [it for it in items if idx in (it.get("day_ids") or []) and _es_nombre_banco(it.get("banco") or "")]
+        mejor = (para_todos_dia(del_dia) or [None])[0]
+        otras = sorted(
+            (it for it in del_dia if it.get("percent") and not _apta_para_todos(it)),
+            key=lambda it: (-float(it["percent"]), _fold(str(it.get("banco") or ""))),
+        )
+        otra = None
+        if otras and (mejor is None or float(otras[0]["percent"]) > mejor["pct"]):
+            it = otras[0]
+            raw = str(it.get("banco") or "").strip()
+            otra = {
+                "pct_txt": _pct_publico(float(it["percent"])),
+                "banco": raw if len(raw) <= 28 else (_banco_corto(raw) or raw),
+                "tope": str(it.get("tope") or ""),
+                "motivo": _motivo_no_apta(it),
+            }
+        filas.append({
+            "idx": idx,
+            "dia": d["nombre"],
+            "plural": d["plural"],
+            "slug": d["slug"],
+            "href": f"{DESCUENTOS_PATH}/{d['slug']}",
+            "hoy": idx == wd,
+            "n": len(del_dia),
+            "cuotas_n": sum(1 for it in del_dia if not it.get("percent")),
+            "mejor": mejor,
+            "otra": otra,
+        })
+    return filas if any(f["mejor"] for f in filas) else []
+
+
+def _faq_cadena_para_todos(nombre: str, filas: list[dict[str, Any]]) -> list[dict[str, str]]:
+    """Dos preguntas con el bloque día por día de la cadena: qué sirve a cualquiera y cuánto gastar."""
+    if not filas:
+        return []
+    con = [f for f in filas if f["mejor"]]
+    partes = []
+    for f in con:
+        m = f["mejor"]
+        tope = f", tope {m['tope_txt']}" if m["tope_txt"] else ""
+        partes.append(f"el {f['dia']} {m['pct_txt']}% con {m['bancos_txt']}{tope}")
+    sin = [f["dia"] for f in filas if not f["mejor"] and f["n"]]
+    vacios = [f["dia"] for f in filas if not f["n"]]
+    texto = f"Esta semana, según lo publicado por {nombre}: {_unir(partes)}."
+    if sin:
+        texto += (
+            f" {_unir([f'El {d}' if i == 0 else f'el {d}' for i, d in enumerate(sin)])} "
+            f"{'solo tiene' if len(sin) == 1 else 'solo tienen'} promos con condiciones (socios, productos seleccionados o tope no informado) o en cuotas."
+        )
+    if vacios:
+        texto += f" No hay promos cargadas para {_unir(['el ' + d for d in vacios])}."
+    texto += " Sin requisitos especiales quiere decir que no son solo para jubilados, socios de un club, una provincia o productos seleccionados; las exclusiones de rubros de cada legal siguen valiendo."
+    faq = [{"q": f"¿Qué descuentos bancarios de {nombre} puede usar cualquiera, día por día?", "a": texto}]
+    con_tope = sorted(
+        (f for f in con if f["mejor"]["compra_tope"]),
+        key=lambda f: (-f["mejor"]["pct"], -(f["mejor"]["tope_num"] or 0), f["idx"]),
+    )
+    if con_tope:
+        frases = []
+        for i, f in enumerate(con_tope[:3]):
+            m = f["mejor"]
+            rinde = "el descuento completo rinde hasta una compra de" if i == 0 else "rinde hasta"
+            frase = f"el {f['dia']}, con {m['bancos_txt']} ({m['pct_txt']}%, tope {m['tope_txt']}) {rinde} {m['compra_txt']}"
+            if m["minimo"]:
+                frase += f" y pide un mínimo de {m['minimo']}"
+            frases.append(frase)
+        faq.append({
+            "q": f"¿Cuánto conviene gastar en {nombre} para aprovechar el tope del descuento?",
+            "a": (
+                f"Esta semana, según lo publicado por {nombre}, " + "; ".join(frases) + ". "
+                "Arriba de ese monto el reintegro queda en el tope, así que el porcentaje real baja."
+            ),
         })
     return faq
 
