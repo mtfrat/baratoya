@@ -221,12 +221,43 @@
 
     {% if resumen and resumen.mejor_por_dia %}
     <h2>Qué día conviene comprar en {{ nombre }}</h2>
-    <p>El mayor porcentaje publicado para cada día de la semana. Revisá tope, canal y condiciones en la tabla de abajo antes de pagar.</p>
+    <p>El mayor porcentaje publicado para cada día de la semana. Revisá tope, canal y condiciones en la tabla de abajo antes de pagar.{% if por_dia_todos %} Los que puede usar cualquiera, con hasta cuánto comprar, están en <a href="#dia-por-dia">descuentos bancarios día por día</a>.{% endif %}</p>
     <ul>
       {% for f in resumen.mejor_por_dia %}
       <li><strong>{{ f.dia|capitalize }}</strong>: hasta {{ f.pct }} con {{ f.bancos }}{% if f.tope %} ({{ f.tope }}){% endif %}{% if f.condicion %}, {{ f.condicion }}{% if f.general_pct %}. Sin condiciones extra: hasta {{ f.general_pct }} con {{ f.general_bancos }}{% endif %}{% endif %}.</li>
       {% endfor %}
     </ul>
+    {% endif %}
+
+    {% if por_dia_todos %}
+    <h2 id="dia-por-dia">Descuentos bancarios en {{ nombre }} día por día: los que puede usar cualquiera</h2>
+    <p>De las promos de {{ nombre }}, muchas son en cuotas para electro o tienen condiciones (solo algunos productos, solo socios, una provincia). Acá queda, para cada día, el mayor porcentaje que puede usar cualquier cliente de ese banco o billetera, con el tope de reintegro publicado. Si el tope está en pesos, calculamos hasta qué compra rinde el porcentaje completo: tope dividido por el porcentaje.</p>
+    <div class="tabla-wrap">
+      <table class="dia-por-dia">
+        <caption>{{ nombre }}, de lunes a domingo, según lo publicado por la cadena esta semana.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Día</th>
+            <th scope="col">Sin requisitos especiales</th>
+            <th scope="col">Tope</th>
+            <th scope="col">Rinde hasta</th>
+            <th scope="col">Con condiciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in por_dia_todos %}
+          <tr id="dia-{{ f.slug }}">
+            <td data-label="Día"><a href="{{ f.href }}">{{ f.dia|capitalize }}</a>{% if f.hoy %} (hoy){% endif %}</td>
+            <td data-label="Para todos">{% if f.mejor %}<strong>{{ f.mejor.pct_txt }}%</strong> con {{ f.mejor.bancos_txt }}{% if f.mejor.canal or f.mejor.minimo or f.mejor.excluye %}<br /><span class="nota">{% if f.mejor.canal %}{{ f.mejor.canal }}{% endif %}{% if f.mejor.minimo %}{% if f.mejor.canal %} · {% endif %}mínimo {{ f.mejor.minimo }}{% endif %}{% if f.mejor.excluye %}{% if f.mejor.canal or f.mejor.minimo %} · {% endif %}excluye rubros{% endif %}</span>{% endif %}{% elif f.n %}ninguno{% else %}sin promos cargadas{% endif %}</td>
+            <td data-label="Tope">{% if f.mejor %}{{ f.mejor.tope_txt }}{% endif %}</td>
+            <td data-label="Rinde hasta">{% if f.mejor and f.mejor.compra_txt %}{{ f.mejor.compra_txt }}{% endif %}</td>
+            <td data-label="Condición">{% if f.otra %}{{ f.otra.pct_txt }}% con {{ f.otra.banco }}{% if f.otra.tope %}, {{ f.otra.tope }}{% endif %}: {{ f.otra.motivo }}{% elif f.cuotas_n and not f.mejor %}solo cuotas sin interés{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">"Rinde hasta" es la compra con la que el reintegro llega al tope. Si gastás más, el reintegro queda en el tope y el porcentaje real baja. "Excluye rubros" quiere decir que el legal deja afuera algunos productos (por ejemplo, electro o bodegas): el detalle está en la tabla por día de más abajo. Para comparar con las otras cadenas el mismo día, entrá al día en la primera columna.</p>
     {% endif %}
 
     {% if mayoristas %}
