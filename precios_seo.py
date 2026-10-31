@@ -2021,13 +2021,18 @@ def _con_hoy(vista: dict[str, Any], hoy: date) -> dict[str, Any]:
         )
     elif medida:
         vista["unidad"] = ""
-        vista["unidad_txt"] = f"El envase es de {vista['tamano']}: el precio de la tabla ya es el precio por {medida[0]}."
+        vista["unidad_txt"] = (
+            f"El envase es de 1 {medida[0]} ({vista['tamano']}): el precio de la tabla ya es el precio por {medida[0]}."
+        )
 
     vista["diferencia_txt"] = ""
     if high > low:
         vista["diferencia_txt"] = (
             f"Entre el más barato y el más caro de esta tabla hay {peso(high - low)} de diferencia por envase."
         )
+
+    # Precio promedio de la tabla y cuánto se ahorra en cada cadena contra ese promedio.
+    vista.update(precio_promedio(nombre, ofertas))
 
     # Promos bancarias publicadas para hoy en las cadenas de la tabla.
     por_cadena = promos_de_hoy_por_cadena(hoy)
@@ -2067,6 +2072,8 @@ def _con_hoy(vista: dict[str, Any], hoy: date) -> dict[str, Any]:
             "q": f"¿Cuánto sale el {vista['unidad']} de {nombre}?",
             "a": f"Captura del {vista['capturado_texto']}. {vista['unidad_txt']}",
         })
+    if vista["promedio_faq"]:
+        faq.insert(2 if vista["unidad"] else 1, vista["promedio_faq"])
     if dia_nombre:
         if promos_hoy:
             partes = "; ".join(f"{p['nombre']}: {p['linea']}" for p in promos_hoy)
@@ -2086,6 +2093,52 @@ def _con_hoy(vista: dict[str, Any], hoy: date) -> dict[str, Any]:
     vista["faq"] = faq
     vista["ld_faq"] = _ld_faq(faq)
     return vista
+
+
+# Con menos de 3 cadenas el promedio es solo el punto medio entre dos precios: no se muestra.
+MIN_CADENAS_PROMEDIO = 3
+
+
+def precio_promedio(nombre: str, ofertas: list[dict[str, Any]]) -> dict[str, Any]:
+    """Promedio simple del precio de góndola de la tabla (una oferta por cadena) y la diferencia
+    de cada cadena contra ese promedio. Sale solo de la captura: no se resta ninguna promo.
+
+    Vacío si hay menos de 3 cadenas o si todas publican el mismo precio.
+    """
+    vacio: dict[str, Any] = {"promedio": None, "promedio_txt": "", "promedio_filas": [], "promedio_faq": None}
+    precios = [float(o["precio"]) for o in ofertas]
+    if len(precios) < MIN_CADENAS_PROMEDIO:
+        return vacio
+    low, high = min(precios), max(precios)
+    if high == low:
+        return vacio
+    prom = round(sum(precios) / len(precios))
+    baratas = _lista_y([o["tienda"] for o in ofertas if o["precio"] == low])
+    caras = _lista_y([o["tienda"] for o in ofertas if o["precio"] == high])
+    ahorro = round(prom - low)
+    extra = round(high - prom)
+    pct = round(ahorro * 100 / prom) if prom else 0
+    texto = f"El precio promedio de {nombre} hoy es {peso(prom)}, entre {len(precios)} supermercados."
+    if ahorro >= 1:
+        texto += f" En {baratas} sale {peso(ahorro)} menos que el promedio"
+        texto += f" ({pct}% menos)." if pct >= 1 else "."
+    if extra >= 1:
+        texto += f" En {caras} sale {peso(extra)} más."
+    filas = []
+    for o in sorted(ofertas, key=lambda x: (x["precio"], x["tienda"])):
+        dif = round(float(o["precio"]) - prom)
+        if dif <= -1:
+            dif_txt = f"{peso(-dif)} menos que el promedio"
+        elif dif >= 1:
+            dif_txt = f"{peso(dif)} más que el promedio"
+        else:
+            dif_txt = "igual al promedio"
+        filas.append({"tienda": o["tienda"], "precio_txt": peso(o["precio"]), "dif": dif, "dif_txt": dif_txt})
+    faq = {
+        "q": f"¿Cuál es el precio promedio de {nombre} hoy?",
+        "a": f"{texto} Es el promedio del precio de góndola de esta tabla, sin promo bancaria.",
+    }
+    return {"promedio": prom, "promedio_txt": texto, "promedio_filas": filas, "promedio_faq": faq}
 
 
 def _dias_txt(dias: list[dict[str, Any]]) -> str:
