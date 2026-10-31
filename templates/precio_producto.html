@@ -129,6 +129,16 @@
     {% if unidad_txt or diferencia_txt %}
     <p>{% if unidad_txt %}{{ unidad_txt }}{% endif %}{% if unidad_txt and diferencia_txt %} {% endif %}{% if diferencia_txt %}{{ diferencia_txt }}{% endif %}</p>
     {% endif %}
+    {% if promedio_txt %}
+    <h2 id="promedio">Precio promedio de {{ nombre_visible }} hoy</h2>
+    <p>{{ promedio_txt }}</p>
+    <ul class="promedio-lista">
+      {% for f in promedio_filas %}
+      <li><strong>{{ f.tienda }}</strong>: {{ f.precio_txt }}, {{ f.dif_txt }}.</li>
+      {% endfor %}
+    </ul>
+    <p class="nota">Promedio simple del precio de góndola de la tabla (una cadena, un precio). No incluye promos bancarias.</p>
+    {% endif %}
     <div class="cta">
       <a class="btn" href="/">Comparar en BaratoYa</a>
       <a class="btn outline" href="/planes">Ver planes</a>
