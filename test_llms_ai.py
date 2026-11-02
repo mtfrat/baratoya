@@ -73,6 +73,16 @@ class LlmsAiTest(unittest.TestCase):
             for regla in reglas:
                 self.assertFalse(path.startswith(regla), f"robots.txt bloquea {path} con {regla}")
 
+    def test_robots_no_bloquea_bots_de_ia(self) -> None:
+        """Decisión GEO (2026-11-02): no bloqueamos bots de IA ni usamos el token __usage_ai-training."""
+        robots = self.client.get("/robots.txt").text
+        reglas = "\n".join(l for l in robots.splitlines() if not l.strip().startswith("#"))
+        for bot in ("GPTBot", "OAI-SearchBot", "ChatGPT-User", "ClaudeBot", "Claude-SearchBot",
+                    "PerplexityBot", "Google-Extended", "CCBot"):
+            self.assertIsNone(re.search(rf"user-agent:\s*{bot}", reglas, re.I), f"robots.txt tiene un grupo para {bot}")
+        self.assertNotIn("__usage", reglas.lower())
+        self.assertIsNone(re.search(r"^Disallow:\s*/\s*$", reglas, re.M | re.I), "robots.txt bloquea todo el sitio")
+
 
 if __name__ == "__main__":
     unittest.main()
