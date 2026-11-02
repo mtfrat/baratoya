@@ -1613,8 +1613,12 @@ def _faq_commodity(
             "a": (
                 f"El menor precio publicado es {frase}. "
                 f"Se capturó el {captura}. "
-                f"Hay {n} {prod} en {n_cadenas} {cad}. "
-                f"Captura más reciente: {reciente['capturado_texto']}."
+                f"Hay {n} {prod} en {n_cadenas} {cad}."
+                + (
+                    ""
+                    if captura == reciente["capturado_texto"]
+                    else f" Captura más reciente: {reciente['capturado_texto']}."
+                )
             ),
         },
         {
@@ -1740,6 +1744,90 @@ def _diferencias_commodity(productos: list[dict[str, Any]]) -> list[dict[str, An
     return out
 
 
+def _marca_visible(producto: dict[str, Any]) -> str:
+    """Marca con la grafía oficial (La Serenísima, Taragüí, Unión). Vacío si la cadena no la publica."""
+    return _nombre_visible(str(producto.get("marca") or "").strip())
+
+
+def _por_marca_commodity(
+    productos: list[dict[str, Any]],
+    medidas: dict[str, tuple[str, float]] | None,
+) -> list[dict[str, Any]]:
+    """Por marca: su producto más barato (por litro/kilo si se puede comparar) y dónde.
+
+    Sale de las mismas ofertas que la lista de productos: no se agrega ningún precio.
+    Lista vacía si hay menos de 2 marcas (no hay nada que comparar) o si algún
+    producto no trae marca (la comparación quedaría incompleta).
+    """
+    by: dict[str, dict[str, Any]] = {}
+    for p in productos:
+        marca = _marca_visible(p)
+        if not marca:
+            return []
+        base = medidas[p["slug"]][1] if medidas else 1.0
+        low = min(o["precio"] for o in p["ofertas"])
+        clave = low / base
+        fila = by.get(_fold(marca))
+        if fila is None:
+            by[_fold(marca)] = fila = {"marca": marca, "n": 0, "_clave": None}
+        fila["n"] += 1
+        if fila["_clave"] is None or clave < fila["_clave"] or (
+            clave == fila["_clave"] and low < fila["precio"]
+        ):
+            tiendas = [o["tienda"] for o in p["ofertas"] if o["precio"] == low]
+            fila.update({
+                "_clave": clave,
+                "precio": low,
+                "precio_txt": peso(low),
+                "producto": p["nombre_visible"],
+                "href": p["href"],
+                "tiendas_txt": _lista_y(tiendas[:3]) + (" y otras" if len(tiendas) > 3 else ""),
+                "unidad_txt": peso(_precio_unidad(low, base)) if medidas else "",
+            })
+    if len(by) < 2:
+        return []
+    filas = sorted(by.values(), key=lambda f: (f["_clave"], f["marca"].casefold()))
+    low = filas[0]["_clave"]
+    for f in filas:
+        f["barata"] = f["_clave"] == low
+        f["n_txt"] = f"{f['n']} {'producto' if f['n'] == 1 else 'productos'} en la lista"
+        del f["_clave"]
+    return filas
+
+
+def _faq_marca_commodity(
+    spec: dict[str, Any],
+    por_marca: list[dict[str, Any]],
+    unidad: str,
+) -> list[dict[str, str]]:
+    """¿Cuál es la marca más barata?, con los números de la tabla por marca."""
+    if not por_marca:
+        return []
+    def _desde(f: dict[str, Any]) -> str:
+        if unidad and f["unidad_txt"] != f["precio_txt"]:
+            return f"{f['unidad_txt']} el {unidad} ({f['precio_txt']} el envase)"
+        return f"{f['precio_txt']}" + (f" el {unidad}" if unidad else "")
+    baratas = [f for f in por_marca if f["barata"]]
+    resto = [f for f in por_marca if not f["barata"]]
+    marcas = _lista_y([f["marca"] for f in por_marca])
+    comparado = f"por {unidad}" if unidad else "por envase"
+    quien = baratas[0]
+    texto = (
+        f"De las {len(por_marca)} marcas de esta lista ({marcas}), la de menor precio {comparado} hoy es "
+        f"{_lista_y([f['marca'] for f in baratas])}: {quien['producto']} en {quien['tiendas_txt']} "
+        f"a {_desde(quien)}."
+    )
+    if resto:
+        texto += " Le " + ("sigue" if len(resto) == 1 else "siguen") + " " + _lista_y([
+            f"{f['marca']} desde {_desde(f)} en {f['tiendas_txt']}" for f in resto
+        ]) + "."
+    texto += (
+        " Es precio de góndola, sin promo bancaria. "
+        "Las marcas propias de cada cadena y las que no están en esta lista no entran en la comparación."
+    )
+    return [{"q": f"¿Cuál es la marca de {spec['etiqueta']} más barata hoy?", "a": texto}]
+
+
 def _faq_extra_commodity(
     spec: dict[str, Any],
     productos: list[dict[str, Any]],
@@ -1835,9 +1923,11 @@ def _armar_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> dict[
     medidas = _medidas_commodity(productos)
     por_cadena = _por_cadena_commodity(productos, medidas)
     diferencias = _diferencias_commodity(productos)
+    por_marca = _por_marca_commodity(productos, medidas)
+    unidad = next(iter(medidas.values()))[0] if medidas else ""
     faq = _faq_commodity(spec, productos, cadenas)
     extra = _faq_extra_commodity(spec, productos, medidas, diferencias)
-    faq = faq[:2] + extra + faq[2:]
+    faq = faq[:2] + _faq_marca_commodity(spec, por_marca, unidad) + extra + faq[2:]
     categoria = spec["categoria"]
     categoria_href = _href_categoria(categoria)
     return {
@@ -1857,6 +1947,8 @@ def _armar_commodity(spec: dict[str, Any], todas: list[dict[str, Any]]) -> dict[
         "unidad": next(iter(medidas.values()))[0] if medidas else "",
         "unidad_col": bool(medidas) and any(abs(b - 1.0) > 1e-9 for _, b in medidas.values()),
         "diferencias": diferencias,
+        "por_marca": por_marca,
+        "marcas_baratas_txt": _lista_y([f["marca"] for f in por_marca if f["barata"]]) if por_marca else "",
         "promos_cadena": {},
         "dia_hoy": "",
         "dia_hoy_href": "",
