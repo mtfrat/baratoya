@@ -136,6 +136,26 @@
     <p class="nota">Precio de góndola del catálogo online de cada cadena, sin restar promos: cada promo tiene banco, tope y exclusiones propias. {% if dia_hoy_href %}<a href="{{ dia_hoy_href }}">Descuentos en supermercados hoy {{ dia_hoy }}</a> · {% endif %}<a href="/promos-bancarias-supermercados">Promos bancarias de supermercados</a></p>
     {% endif %}
 
+    {% if es_commodity and por_marca %}
+    <h2 id="marcas">Precio {{ de_la }} por marca</h2>
+    <p>{% set m = por_marca[0] %}Hoy la marca con el precio más bajo{% if unidad %} por {{ unidad }}{% endif %} es <strong>{{ marcas_baratas_txt }}</strong>: {{ m.producto }} a {{ m.precio_txt }}{% if unidad_col %} ({{ m.unidad_txt }} el {{ unidad }}){% endif %} en {{ m.tiendas_txt }}. La tabla muestra el producto más barato de cada marca de esta lista y la cadena que lo publica{% if unidad_col %}, comparado por {{ unidad }}{% endif %}.</p>
+    <div class="tabla-wrap"><table class="tabla">
+      <thead><tr><th>Marca</th><th>Más barato de la marca</th><th class="num">Precio</th>{% if unidad_col %}<th class="num">Por {{ unidad }}</th>{% endif %}<th class="opc">Dónde</th></tr></thead>
+      <tbody>
+        {% for f in por_marca %}
+        <tr{% if f.barata %} class="barato"{% endif %}>
+          <td>{{ f.marca }}<span class="sub">{{ f.n_txt }}</span></td>
+          <td><a href="{{ f.href }}">{{ f.producto }}</a></td>
+          <td class="num">{{ f.precio_txt }}</td>
+          {% if unidad_col %}<td class="num">{{ f.unidad_txt }}</td>{% endif %}
+          <td class="opc">{{ f.tiendas_txt }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    <p class="nota">Solo las marcas de esta lista, con el precio de góndola de hoy y sin promo bancaria. Las marcas propias de cada cadena no entran en la comparación.</p>
+    {% endif %}
+
     <h2>El más barato de cada producto</h2>
     <ul>
       {% for p in productos %}

@@ -89,15 +89,16 @@ class CommodityPorCadenaTest(unittest.TestCase):
                 self.assertEqual(d["high_txt"], peso(p["high"]))
                 self.assertEqual(d["dif"], p["high"] - p["low"])
 
-    def test_faq_seis_con_numeros_de_la_tabla(self) -> None:
+    def test_faq_siete_con_numeros_de_la_tabla(self) -> None:
         for slug, vista in self.vistas.items():
             assert vista is not None
             qs = [q["q"] for q in vista["faq"]]
-            self.assertEqual(len(qs), 6, slug)
+            self.assertEqual(len(qs), 7, slug)
             etiqueta = precios_seo._COMMODITY[slug]["etiqueta"]
             unidad = vista["unidad"]
-            self.assertEqual(qs[2], f"¿Cuánto sale el {unidad} de {etiqueta} hoy?")
-            self.assertTrue(qs[3].startswith("¿Cuánto cambia el precio "), qs[3])
+            self.assertEqual(qs[2], f"¿Cuál es la marca de {etiqueta} más barata hoy?")
+            self.assertEqual(qs[3], f"¿Cuánto sale el {unidad} de {etiqueta} hoy?")
+            self.assertTrue(qs[4].startswith("¿Cuánto cambia el precio "), qs[4])
             # Cada $ de las respuestas nuevas está en las ofertas (envase) o es litro/kilo o diferencia.
             permitidos = set()
             medidas = precios_seo._medidas_commodity(vista["productos"])
@@ -107,7 +108,7 @@ class CommodityPorCadenaTest(unittest.TestCase):
                     permitidos.add(peso(o["precio"]))
                     if medidas:
                         permitidos.add(peso(precios_seo._precio_unidad(o["precio"], medidas[p["slug"]][1])))
-            for q in vista["faq"][2:4]:
+            for q in vista["faq"][2:5]:
                 for monto in re.findall(r"\$[\d.,]+\d", q["a"]):
                     self.assertIn(monto, permitidos, (slug, q["a"]))
 
@@ -131,13 +132,13 @@ class CommodityPorCadenaTest(unittest.TestCase):
             assert vista is not None
             self.assertIn(f"<h2>{vista['anchor']} por supermercado</h2>", html)
             self.assertIn(f"Cuánto cambia el precio {vista['de_la']} entre supermercados", unescape(html))
-            self.assertEqual(html.count('<table class="tabla">'), 2)
+            self.assertEqual(html.count('<table class="tabla">'), 3)  # por cadena, por marca, diferencias
             self.assertIn('href="/promos-bancarias-supermercados"', html)
             for f in vista["por_cadena"]:
                 self.assertIn(f'href="{f["href"]}"', html)
             ld = _ld(html)
             faq = next(x for x in ld if x["@type"] == "FAQPage")
-            self.assertEqual(len(faq["mainEntity"]), 6)
+            self.assertEqual(len(faq["mainEntity"]), 7)
             visible = unescape(html)
             for q in faq["mainEntity"]:
                 self.assertIn(q["name"], visible)
