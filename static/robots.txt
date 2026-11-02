@@ -1,3 +1,12 @@
+# AI crawlers policy (decision recorded 2026-11-02)
+# We WANT AI models and AI search engines to know us (GEO), so we do NOT block
+# GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-SearchBot, PerplexityBot,
+# Google-Extended or CCBot. They fall under the "*" group below (Allow: /).
+# We also do NOT use the new "__usage_ai-training" opt-out token, on purpose:
+# adding it would tell crawlers not to use our content for AI training,
+# and that is the opposite of what we want.
+# Do not add AI-bot Disallow rules or that token without an explicit decision from Martin.
+
 User-agent: *
 Allow: /
 Disallow: /admin
