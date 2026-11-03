@@ -1145,7 +1145,11 @@ async def precios_producto(request: Request, slug: str):
             request.state.cdn_corto = True
         vista = precios_seo.pagina_commodity(slug)
         if vista is None:
-            raise StarletteHTTPException(status_code=404)
+            # Hub conocido que hoy no llega al umbral de datos (p. ej. harina): la URL ya está
+            # indexada y vuelve cuando la captura alcance. 302 temporal a /precios en vez de 404,
+            # para no perder la URL en Google ni mandar al usuario a una página vacía.
+            request.state.cdn_corto = True
+            return RedirectResponse(url="/precios", status_code=302)
         return templates.TemplateResponse(
             request,
             "precios_categoria.html",
