@@ -2325,6 +2325,7 @@ def descripcion_cadena_hoy(
     top: dict[str, str] | None,
     semana_top: dict[str, Any] | None = None,
     hoy_idx: int | None = None,
+    cond_pct: str | None = None,
 ) -> str:
     """≤155. Arranca con la búsqueda. El % solo si hoy hay uno publicado sin condiciones extra.
 
@@ -2379,6 +2380,14 @@ def descripcion_cadena_hoy(
             f"{base}: hasta {pct} con {bancos}. Bancos, días y tope del supermercado. {cierre}",
             f"{base}: hasta {pct}. {_n_promos(n_hoy)} del supermercado hoy, con bancos, días y tope. {cierre}",
             f"{base}: hasta {pct}. Bancos, días y tope del supermercado. {cierre}",
+        ]
+    if n_hoy and not top and cond_pct:
+        # Hoy solo hay % con condición (socios, jubilados, sucursal): se dice el % y que tiene
+        # condición, en vez de "N promos" sin número (GSC 03/11: Disco 147 imp @9,8).
+        opciones += [
+            f"{base}: hasta {cond_pct} con condiciones (socios, edad o sucursal). {_n_promos(n_hoy)} hoy, con banco y tope. {cierre}",
+            f"{base}: hasta {cond_pct} con condiciones. {_n_promos(n_hoy)} hoy, con banco, días y tope. {cierre}",
+            f"{base}: hasta {cond_pct} con condiciones. {_n_promos(n_hoy)} hoy. {cierre}",
         ]
     if n_hoy:
         opciones += [
@@ -2990,6 +2999,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
     faq += _faq_cadena_semana(nombre, semana)
     resumen = resumen_cadena(items)
     top_hoy = next((f for f in resumen["mejor_por_dia"] if f["dia"] == dia), None)
+    cond_pct = top_hoy["pct"] if top_hoy and top_hoy.get("condicion") else None
     if top_hoy and top_hoy.get("condicion"):
         # El % del día tiene condiciones: en la meta va el mayor sin condiciones, si lo hay.
         top_hoy = (
@@ -3019,7 +3029,7 @@ def pagina_seo_cadena(slug: str, hoy: date | None = None) -> dict[str, Any] | No
         "title": titulo_cadena(nombre) if fija else titulo_cadena_hoy(nombre),
         "description": descripcion_cadena(
             nombre, dia, max((it["percent"] for it in hoy_promos if it.get("percent")), default=None)
-        ) if fija else descripcion_cadena_hoy(nombre, dia, len(hoy_promos), top_hoy, semana_top, wd),
+        ) if fija else descripcion_cadena_hoy(nombre, dia, len(hoy_promos), top_hoy, semana_top, wd, cond_pct),
         "canonical": canonical,
         "h1": h1_cadena(nombre) if fija else h1_cadena_hoy(nombre, dia),
         "path": href,
