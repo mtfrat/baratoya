@@ -42,3 +42,7 @@ Para el correcto funcionamiento del login, registro y recuperación de contrase�
 - **Plan Free (post-trial):** 5 búsquedas al mes por cuenta.
 - **BaratoYa Plus:** Búsquedas ilimitadas y alertas mediante Checkout Pro de Mercado Pago (`$1.990 ARS / mes`).
 - **Contacto de soporte:** `baratoyaba@gmail.com`.
+
+## Promos semanales
+
+Los lunes se regeneran con `python3 scripts/promos_semana.py --pr` (ver `scripts/promos/README.md`). Sólo abre PR; no mergea ni despliega.

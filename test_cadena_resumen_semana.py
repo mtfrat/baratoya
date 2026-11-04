@@ -91,7 +91,8 @@ class ResumenSemanaTest(unittest.TestCase):
             r = resumen_semana_cadena(c["nombre"], items)
             publicados = {promos_hoy._pct_txt(it["percent"]) for it in items if it.get("percent")}
             for linea in r["lineas"]:
-                for pct in re.findall(r"\b\d+(?:,\d+)?%", linea):
+                # lo que va entre «» es cita textual de la fuente (p. ej. un conflicto card/legal): puede nombrar otro %
+                for pct in re.findall(r"\b\d+(?:,\d+)?%", re.sub(r"«[^»]*»", "", linea)):
                     self.assertIn(pct, publicados, (c["slug"], linea))
                 for tope in re.findall(r"\$[\d.]+", linea):
                     self.assertTrue(any(tope in str(it.get("tope") or "") for it in items), (c["slug"], linea))
