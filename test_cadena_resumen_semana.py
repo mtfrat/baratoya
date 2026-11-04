@@ -8,7 +8,7 @@ import json
 import os
 import re
 import unittest
-from datetime import date
+from datetime import date, datetime
 from unittest import mock
 
 os.environ["BARATOYA_PRECIOS_OFFLINE"] = "1"
@@ -218,6 +218,7 @@ class FechaDatosNoFuturaTest(unittest.TestCase):
 
     def test_sitemap_sin_lastmod_futuro(self):
         client = TestClient(app_mod.app)
-        hoy = promos_hoy.hoy_art().isoformat()
+        # precios_seo usa el reloj real; conftest fija hoy_art() en una fecha vieja.
+        hoy = max(promos_hoy.hoy_art(), datetime.now(promos_hoy.ART).date()).isoformat()
         for lastmod in re.findall(r"<lastmod>([^<]+)</lastmod>", client.get("/sitemap.xml").text):
             self.assertLessEqual(lastmod[:10], hoy)
