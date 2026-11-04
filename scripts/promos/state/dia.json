@@ -1,0 +1,380 @@
+{
+ "0039805bfa7d15c9": {
+  "skip": "bloque viejo del CMS"
+ },
+ "008f8878058d844f": {
+  "bank": "Naranja X (Plan Inicial)",
+  "cap": 3000,
+  "channel": "both",
+  "days": [
+   2
+  ],
+  "dna": null,
+  "kind": "percent",
+  "minimum": null,
+  "note": "Tope $3.000 por semana.",
+  "ref": "D10",
+  "value": 20,
+  "vf": "2026-11-01",
+  "vt": "2026-11-30"
+ },
+ "0918754d7e9cd3a8": {
+  "bank": "Naranja X (Plan Turbo)",
+  "cap": 9500,
+  "channel": "both",
+  "days": [
+   2
+  ],
+  "dna": null,
+  "kind": "percent",
+  "minimum": null,
+  "note": "Tope $9.500 por semana.",
+  "ref": "D11",
+  "value": 25,
+  "vf": "2026-11-01",
+  "vt": "2026-11-30"
+ },
+ "1344696131089f17": {
+  "skip": "bloque viejo del CMS"
+ },
+ "1a76aac5e0c52ea0": {
+  "bank": "Mercado Pago",
+  "cap": null,
+  "channel": "both",
+  "days": [
+   3
+  ],
+  "dna": "Solo productos seleccionados; sin tope informado",
+  "kind": "percent",
+  "minimum": 20000,
+  "note": "Límite $1.999.999 por usuario (sin tope práctico); mínimo $20.000; productos seleccionados; no acumulable.",
+  "ref": "D4",
+  "value": 10,
+  "vf": "2026-11-02",
+  "vt": "2026-11-30"
+ },
+ "1c22f65e7f424231": {
+  "skip": "bloque viejo del CMS"
+ },
+ "238033d6120d4c47": {
+  "bank": "Sidecreer Platinum",
+  "cap": 3000,
+  "channel": "store",
+  "days": [
+   7
+  ],
+  "dna": "Solo sucursales de Entre Ríos",
+  "kind": "percent",
+  "minimum": null,
+  "note": "Tope $3.000 por transacción; + 2 y 3 cuotas; solo Entre Ríos.",
+  "ref": "D22",
+  "value": 20,
+  "vf": "2026-07-01",
+  "vt": "2026-11-30"
+ },
+ "2e5316db1af79500": {
+  "bank": "Banco de Corrientes (MásBanCo MODO)",
+  "cap": 20000,
+  "channel": "store",
+  "days": [
+   3,
+   4
+  ],
+  "dna": "Solo sucursales de Corrientes / clientes Banco de Corrientes",
+  "kind": "percent",
+  "minimum": null,
+  "note": "30% con tope $20.000 por mes por cuenta; + 5% sin tope; + 3 cuotas.",
+  "ref": "D25",
+  "value": 30,
+  "vf": "2026-01-01",
+  "vt": "2026-12-31"
+ },
+ "35e8720bb9c5a9b9": {
+  "bank": "Cuenta DNI",
+  "cap": null,
+  "channel": "store",
+  "days": [
+   1
+  ],
+  "dna": "Sin tope de reintegro",
+  "kind": "percent",
+  "minimum": null,
+  "note": "Sin tope.",
+  "ref": "D17",
+  "value": 10,
+  "vf": "2026-11-01",
+  "vt": "2026-11-30"
+ },
+ "403545ce65360a39": {
+  "bank": "MODO",
+  "cap": 20000,
+  "channel": "both",
+  "days": [
+   5,
+   6
+  ],
+  "dna": null,
+  "kind": "percent",
+  "minimum": 35000,
+  "note": "Tope $20.000 por banco por mes; mínimo $35.000.",
+  "ref": "D3",
+  "value": 20,
+  "vf": "2026-11-01",
+  "vt": "2026-12-31"
+ },
+ "4dfaae382e24702f": {
+  "skip": "bloque viejo del CMS"
+ },
+ "567e703c7fce6a9d": {
+  "bank": "Cuenta DNI (NFC Visa)",
+  "cap": null,
+  "channel": "store",
+  "days": [
+   1
+  ],
+  "dna": "Sin tope de reintegro",
+  "kind": "percent",
+  "minimum": null,
+  "note": "Sin tope.",
+  "ref": "D16",
+  "value": 20,
+  "vf": "2026-10-01",
+  "vt": "2026-12-31"
+ },
+ "57e64d2fe936a662": {
+  "bank": "Naranja X (Plan Z)",
+  "cap": null,
+  "channel": "both",
+  "days": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "dna": null,
+  "kind": "installments",
+  "minimum": null,
+  "note": "Plan Z 3 cuotas. {NOVIG}",
+  "ref": "D9",
+  "value": 3,
+  "vf": "W0",
+  "vt": "W1"
+ },
+ "5cb75de4beb376cd": {
+  "skip": "bloque viejo del CMS"
+ },
+ "5cd4674f879f6184": {
+  "skip": "bloque viejo del CMS"
+ },
+ "6704833560c4a20c": {
+  "skip": "bloque viejo del CMS"
+ },
+ "68d03ed00aaea74c": {
+  "bank": "Ciudadanía Porteña (tarjeta precargada social)",
+  "cap": null,
+  "channel": "store",
+  "days": [
+   1,
+   4
+  ],
+  "dna": "Solo titulares Ciudadanía Porteña; sin tope de reintegro",
+  "kind": "percent",
+  "minimum": null,
+  "note": "15% de reintegro sobre el total, sin tope; solo titulares de la tarjeta social Ciudadanía Porteña; no aplica con QR.",
+  "ref": "D1",
+  "value": 15,
+  "vf": "2026-01-01",
+  "vt": "2026-11-30"
+ },
+ "7c69aec9732cf38c": {
+  "skip": "bloque viejo del CMS"
+ },
+ "818cf33c5dc165e7": {
+  "bank": "Mercado Pago (tarjeta de crédito, QR)",
+  "cap": null,
+  "channel": "store",
+  "days": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "dna": null,
+  "kind": "installments",
+  "minimum": 150000,
+  "note": "2 cuotas desde $50.000 y 3 cuotas desde $150.000, pagando con QR. {NOVIG}",
+  "ref": "D14",
+  "value": 3,
+  "vf": "W0",
+  "vt": "W1"
+ },
+ "847960ae4781b9c6": {
+  "bank": "Sidecreer Verde",
+  "cap": 2000,
+  "channel": "store",
+  "days": [
+   7
+  ],
+  "dna": "Solo sucursales de Entre Ríos",
+  "kind": "percent",
+  "minimum": null,
+  "note": "Tope $2.000 por transacción; + 2 y 3 cuotas; solo Entre Ríos.",
+  "ref": "D23",
+  "value": 10,
+  "vf": "2026-07-01",
+  "vt": "2026-11-30"
+ },
+ "85109d37235927de": {
+  "bank": "Banco del Sol",
+  "cap": 10000,
+  "channel": "both",
+  "days": [
+   2
+  ],
+  "dna": null,
+  "kind": "percent",
+  "minimum": null,
+  "note": "Tope $10.000 por cliente por mes; solo débito Visa del banco.",
+  "ref": "D7",
+  "value": 25,
+  "vf": "2026-10-01",
+  "vt": "2026-11-30"
+ },
+ "87f83c1c8f52bc4a": {
+  "skip": "bloque viejo del CMS"
+ },
+ "8bfec56e53984529": {
+  "bank": "Personal Pay",
+  "cap": null,
+  "channel": "both",
+  "days": [
+   4
+  ],
+  "dna": "Sin tope de reintegro",
+  "kind": "percent",
+  "minimum": 20000,
+  "note": "Sin tope; mínimo $20.000; una transacción por jueves por usuario.",
+  "ref": "D2",
+  "value": 15,
+  "vf": "2026-10-01",
+  "vt": "2026-11-30"
+ },
+ "a5f17f2883432f67": {
+  "bank": "Visa / Mastercard / Amex / Cabal",
+  "cap": null,
+  "channel": "both",
+  "days": [
+   6
+  ],
+  "dna": null,
+  "kind": "installments",
+  "minimum": null,
+  "note": "3 cuotas sin interés los sábados; la card dice 01/01/2026 al 30/11/2026; tarjeta física; excluye Mastercard Cencosud.",
+  "ref": "D8",
+  "value": 3,
+  "vf": "W0",
+  "vt": "2026-11-30"
+ },
+ "aa2e0882463a0720": {
+  "bank": "Sidecreer Black",
+  "cap": 5000,
+  "channel": "store",
+  "days": [
+   7
+  ],
+  "dna": "Solo sucursales de Entre Ríos",
+  "kind": "percent",
+  "minimum": null,
+  "note": "Tope $5.000 por transacción; + 2 y 3 cuotas; solo Entre Ríos.",
+  "ref": "D21",
+  "value": 25,
+  "vf": "2026-07-01",
+  "vt": "2026-11-30"
+ },
+ "af1605da44a4873a": {
+  "skip": "bloque viejo del CMS"
+ },
+ "bb362ba29fc99767": {
+  "bank": "BNA+ MODO",
+  "cap": 7500,
+  "channel": "both",
+  "days": [
+   5,
+   6
+  ],
+  "dna": null,
+  "kind": "percent",
+  "minimum": 35000,
+  "note": "Tope $7.500 por mes; mínimo $35.000.",
+  "ref": "D15",
+  "value": 10,
+  "vf": "2026-10-01",
+  "vt": "2026-12-31"
+ },
+ "bdec67cb830c663b": {
+  "bank": "Cuenta DNI (jubilados)",
+  "cap": 5000,
+  "channel": "store",
+  "days": [
+   1
+  ],
+  "dna": "Solo jubilados",
+  "kind": "percent",
+  "minimum": null,
+  "note": "Adicional jubilados; tope $5.000 por semana.",
+  "ref": "D18",
+  "value": 5,
+  "vf": "2026-11-01",
+  "vt": "2026-11-30"
+ },
+ "c7129bca50eb17b7": {
+  "skip": "bloque viejo del CMS"
+ },
+ "c93fc99e67b99036": {
+  "skip": "bloque viejo del CMS"
+ },
+ "d65ae207125b4bff": {
+  "bank": "Naranja X (Plan Épico)",
+  "cap": 12000,
+  "channel": "both",
+  "days": [
+   2
+  ],
+  "dna": null,
+  "kind": "percent",
+  "minimum": null,
+  "note": "Tope $12.000 por semana.",
+  "ref": "D12",
+  "value": 30,
+  "vf": "2026-11-01",
+  "vt": "2026-11-30"
+ },
+ "e155415799d6ff50": {
+  "bank": "ANSES",
+  "cap": 2000,
+  "channel": "store",
+  "days": [
+   1
+  ],
+  "dna": "Solo beneficiarios ANSES",
+  "kind": "percent",
+  "minimum": null,
+  "note": "Tope $2.000 por transacción. {NOVIG}",
+  "ref": "D20",
+  "value": 10,
+  "vf": "W0",
+  "vt": "W1"
+ },
+ "f16ce86689fc5d9a": {
+  "skip": "bloque viejo del CMS"
+ },
+ "f2c34badb8895061": {
+  "skip": "bloque viejo del CMS"
+ }
+}

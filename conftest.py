@@ -56,3 +56,23 @@ def _fijar_entorno() -> None:
 
 if not os.environ.get("BARATOYA_TESTS_REALES"):
     _fijar_entorno()
+
+
+# Tests que verifican una fecha concreta del pasado (06/10 y 20/10) contra el snapshot semanal.
+# Con BARATOYA_TESTS_REALES=1 se corre contra la data de la semana vigente, donde esas fechas
+# ya no existen: se saltean en vez de fallar. Siguen corriendo en la suite normal.
+FECHA_FIJA = (
+    "test_match.py::PreciosLogosTypoTest::test_aplicar_oferta_con_banco_preferido_y_banco_inexistente",
+    "test_cadena_resumen_semana.py::MetaCadenaHoyTest::test_coto_y_carrefour_conservan_title_h1",
+)
+
+
+def pytest_collection_modifyitems(config, items):
+    if not os.environ.get("BARATOYA_TESTS_REALES"):
+        return
+    import pytest
+
+    marca = pytest.mark.skip(reason="fijado a una fecha pasada: sólo corre contra el snapshot (suite normal)")
+    for it in items:
+        if it.nodeid in FECHA_FIJA:
+            it.add_marker(marca)
